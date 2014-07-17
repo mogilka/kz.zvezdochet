@@ -6,9 +6,10 @@ import java.util.List;
 import kz.zvezdochet.bean.Aspect;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Planet;
-import kz.zvezdochet.core.bean.BaseEntity;
+import kz.zvezdochet.core.bean.Base;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.util.CalcUtil;
+import kz.zvezdochet.service.AspectService;
 import kz.zvezdochet.util.Configuration;
 
 import org.eclipse.swt.SWT;
@@ -25,7 +26,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
  * Виджет космограммы
- * @author nataly
+ * @author Nataly Didenko
  *
  */
 public class CosmogramComposite extends Composite { 
@@ -41,7 +42,7 @@ public class CosmogramComposite extends Composite {
 	
 	public CosmogramComposite(Composite parent, int style) {
 	    super(parent, style);
-	    setBackground(Display.getDefault().getSystemColor(SWT.COLOR_LIST_SELECTION));
+//	    setBackground(Display.getDefault().getSystemColor(SWT.COLOR_LIST_SELECTION));TODO
 	    setSize(514, 514);
 		xcenter = ycenter = getClientArea().width / 2;
 		addPaintListener(new PaintListener() {
@@ -112,7 +113,7 @@ public class CosmogramComposite extends Composite {
 	}
 	
 	private void drawHouses(Configuration conf, GC gc) {
-		Iterator<BaseEntity> i = conf.getHouses().iterator();
+		Iterator<Base> i = conf.getHouses().iterator();
 		while (i.hasNext()) {
 			House h = (House)i.next();
 			if (h.isMain()) {
@@ -130,7 +131,7 @@ public class CosmogramComposite extends Composite {
 	}
 
 	private void drawHouseParts(Configuration conf, GC gc) {
-		Iterator<BaseEntity> i = conf.getHouses().iterator();
+		Iterator<Base> i = conf.getHouses().iterator();
 		while (i.hasNext()) {
 			House h = (House)i.next();
 			if (!h.isMain()) {
@@ -140,7 +141,7 @@ public class CosmogramComposite extends Composite {
 	}
 
 	private void drawPlanets(Configuration conf, GC gc) throws DataAccessException {
-		Iterator<BaseEntity> i = conf.getPlanets().iterator();
+		Iterator<Base> i = conf.getPlanets().iterator();
 		while (i.hasNext()) {
 			Planet p = (Planet)i.next();
 			int x = CalcUtil.trunc(getXPoint(135, p.getCoord())) + xcenter - 5;
@@ -150,7 +151,7 @@ public class CosmogramComposite extends Composite {
 					p.getCode() + ".png").createImage();
 			gc.drawImage(image, x, y);
 			
-			Iterator<BaseEntity> j = conf.getPlanets().iterator();
+			Iterator<Base> j = conf.getPlanets().iterator();
 			while (j.hasNext()) {
 				Planet p2 = (Planet)j.next();
 				if (((!p.getCode().equals("Rakhu")) && (!p2.getCode().equals("Kethu"))) &&
@@ -167,8 +168,8 @@ public class CosmogramComposite extends Composite {
 
 	private void getAspect(double one, double two, GC gc) throws DataAccessException {
 		double res = CalcUtil.getDifference(one, two);
-		List<BaseEntity> aspects = Aspect.getService().getList();
-		Iterator<BaseEntity> i = aspects.iterator();
+		List<Base> aspects = new AspectService().getList();
+		Iterator<Base> i = aspects.iterator();
 		while (i.hasNext()) {
 			Aspect a = (Aspect)i.next();
 			if (params.contains(a.getType().getCode()) && a.isAspect(res))
