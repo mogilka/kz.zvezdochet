@@ -13,11 +13,15 @@ import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.bean.Sign;
 import kz.zvezdochet.bean.SkyPoint;
 import kz.zvezdochet.bean.SkyPointAspect;
-import kz.zvezdochet.core.bean.BaseEntity;
+import kz.zvezdochet.core.bean.Base;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.util.CalcUtil;
 import kz.zvezdochet.core.util.NumberUtil;
 import kz.zvezdochet.core.util.PlatformUtil;
+import kz.zvezdochet.service.AspectService;
+import kz.zvezdochet.service.AspectTypeService;
+import kz.zvezdochet.service.HouseService;
+import kz.zvezdochet.service.PlanetService;
 import kz.zvezdochet.sweph.Activator;
 import swisseph.SweConst;
 import swisseph.SweDate;
@@ -26,11 +30,11 @@ import swisseph.SwissLib;
 
 /**
  * Класс, представляющий Расчетную конфигурацию гороскопа
- * @author Nataly
+ * @author Nataly Didenko
  */
 public class Configuration {
-	private List<BaseEntity> planetList;
-	private	List<BaseEntity> houseList;
+	private List<Base> planetList;
+	private	List<Base> houseList;
 	private	List<SkyPointAspect> aspectList;
 
 	/**
@@ -38,8 +42,8 @@ public class Configuration {
 	 * @throws DataAccessException 
 	 */
 	public Configuration() throws DataAccessException {
-  	  	planetList = Sign.getService().getList();
-  	  	houseList = House.getService().getList();
+  	  	planetList = new PlanetService().getList();
+  	  	houseList = new HouseService().getList();
 	}
 
 	/**
@@ -52,13 +56,13 @@ public class Configuration {
 	 * @throws DataAccessException 
 	 */
 	public Configuration(String date, String time, String zone, String latitude, String longitude) throws DataAccessException {
-  	  	planetList = Planet.getService().getList();
-  	  	houseList = House.getService().getList();
+  	  	planetList = new PlanetService().getList();
+  	  	houseList = new HouseService().getList();
 		calculate(date, time, zone, latitude, longitude);
 		getPlanetInHouses();
 		getPlanetInSigns();
 		getPlanetAspects();
-		getPlanetStatistics();
+//		getPlanetStatistics();
 	}
 
 	/**
@@ -71,29 +75,21 @@ public class Configuration {
 	 */
   	private void calculate(String sdate, String stime, String szone, 
   							String slat, String slon) {
+		System.out.println("calculate " + sdate + " " + stime + "\n" +
+  			szone + " lat " + slat + " lon " + slon);
+  		
 		try {
-	  		long iflag = SweConst.SEFLG_SWIEPH | SweConst.SEFLG_SPEED;
+	  		long iflag = SweConst.SEFLG_SIDEREAL | SweConst.SEFLG_SPEED;
 	  		int iyear, imonth, iday, ihour = 0, imin = 0, isec = 0;
 	  	  	SwissEph sweph = new SwissEph();
 			String path = PlatformUtil.getPath(Activator.PLUGIN_ID, "/lib/ephe").getPath(); //$NON-NLS-1$
 	  		sweph.swe_set_ephe_path(path); //TODO вынести в конфиги
+	  		sweph.swe_set_sid_mode(SweConst.SE_SIDM_DJWHAL_KHUL, 0, 0);
 
 	  		//обрабатываем дату
 	  		iday = Integer.parseInt(sdate.substring(0, 2));
 	  		imonth = Integer.parseInt(sdate.substring(3, 5));
 	  		iyear = Integer.parseInt(sdate.substring(6, 10));
-
-	  		/**
-	  		 * Примерное количество лет, за которое происходит
-	  		 * сдвиг точки равноденствия на один градус
-	  		 */
-	  		final double ONE_DEGREE_DISPLACEMENT = 70.0;
-	  		/**
-	  		 * Переменная целого типа, определяющая,
-	  		 * на сколько градусов сдвинулась точка равноденствия
-	  		 * за количество лет до указанного года 
-	  		 */
-	  		int correction = CalcUtil.trunc(iyear / ONE_DEGREE_DISPLACEMENT);
 	  		
 	  		//обрабатываем время
 	  		double timing = Double.parseDouble(NumberUtil.trimLeadZero(stime.substring(0, 2)));
@@ -144,12 +140,12 @@ public class Configuration {
 	  		Planet p;
 	  		for (int i = 0; i < list.length; i++) {
 	  		    rflag = sweph.swe_calc(tjdet, list[i], (int)iflag, xx, sb);
-	  		    planets[i] = correctValue(xx[0], correction);
+	  		    planets[i] = xx[0];
 	  		    int n = constToPlanet(i);
 	  		    if (n >= 0) {
 	  		    	p = (Planet)planetList.get(n);
-	  	  			p.setCoord(planets[i]);
-//	  	  			p.setRetrograde(xx[i] < 0); //TODO correct!
+	  	  			p.setCoord(xx[0]);
+	  	  			p.setRetrograde(xx[3] < 0);
 	  		    }
 	  		}
 	  		//рассчитываем координату Кету по значению Раху
@@ -158,8 +154,9 @@ public class Configuration {
 	  			p.setCoord(planets[10] - 180);
 	  		else
 	  			p.setCoord(planets[10] + 180);
-	  		for (int i = 0; i < planets.length; i++) 
-	  			System.out.println(((Planet)planetList.get(i)).getCode() + " " + planets[i]);
+	  		for (int i = 0; i < planets.length; i++) {
+	  			System.out.println(((Planet)planetList.get(constToPlanet(i))).getCode() + " " + planets[i]);
+	  		}
 	
 	  		//расчёт куспидов домов
 	  		//{ for houses: ecliptic obliquity and nutation }
@@ -179,9 +176,7 @@ public class Configuration {
 	  		double[] ascmc = new double[10];
 	  		double[] hcusps = new double[13];
 	  		//используем систему Плацидуса
-	  		sweph.swe_houses_armc(armc, glat, eps_true, 'P', hcusps, ascmc);
-	  		for (int i = 0; i < 13; i++)
-	  			hcusps[i] = correctValue(hcusps[i], correction);
+	  		sweph.swe_houses(tjdut, SweConst.SEFLG_SIDEREAL, glat, glon, 'P', hcusps, ascmc);
 	  		calcHouseParts(hcusps);
 	  		for (int i = 1; i < hcusps.length; i++) 
 	  			System.out.println("house " + i + " = " + hcusps[i]);
@@ -190,19 +185,6 @@ public class Configuration {
 		}
   	}
   	
-  	/**
-  	 * Коррекция вычисленных координат с учетом смещения эклиптики
-  	 * @param n координата небесной точки
-  	 * @param correction градус, который нужно вычесть из координаты
-  	 * @return измененное значение координаты
-  	 */
-  	private double correctValue(double n, int correction) {
-  		if (n - correction > 0)
-  			return CalcUtil.decToDeg(n - correction);
-  		else
-  			return CalcUtil.decToDeg(n + 360 - correction);
-  	}
-
   	/**
   	 * Метод, возвращающий массив планет по Швейцарским эфемеридам
   	 * @return массив индексов планет
@@ -278,11 +260,11 @@ public class Configuration {
 		}
   	}
 
-	public List<BaseEntity> getPlanets() {
+	public List<Base> getPlanets() {
 		return planetList;
 	}
 
-	public List<BaseEntity> getHouses() {
+	public List<Base> getHouses() {
 		return houseList;
 	}
 
@@ -344,7 +326,7 @@ public class Configuration {
 	 */
 	public void getPlanetInSigns() throws DataAccessException {
 		if (planetList != null) 
-			for (BaseEntity entity : planetList) {
+			for (Base entity : planetList) {
 				Planet planet = (Planet)entity;
 				Sign sign = AstroUtil.getSkyPointSign(planet.getCoord());
 				planet.setSign(sign);
@@ -359,19 +341,19 @@ public class Configuration {
 	 */
 	public void getPlanetAspects() throws DataAccessException {
   	  	aspectList = new ArrayList<SkyPointAspect>();
-		List<BaseEntity> aspects = Aspect.getService().getList();
+		List<Base> aspects = new AspectService().getList();
 		if (planetList != null) 
-			for (BaseEntity entity : planetList) {
+			for (Base entity : planetList) {
 				Planet p = (Planet)entity;
 				
 				//создаем карту статистики по аспектам планеты
 				Map<String, Integer> aspcountmap = new HashMap<String, Integer>();
 				Map<String, String> aspmap = new HashMap<String, String>();
-				List<BaseEntity> aspectTypes = AspectType.getService().getList();
-				for (BaseEntity entity4 : aspectTypes) 
+				List<Base> aspectTypes = new AspectTypeService().getList();
+				for (Base entity4 : aspectTypes) 
 					aspcountmap.put(((AspectType)entity4).getCode(), 0);
 				
-				for (BaseEntity entity2 : planetList) {
+				for (Base entity2 : planetList) {
 					Planet p2 = (Planet)entity2;
 					if (p.getCode().equals(p2.getCode())) continue;
 					if (((p.getCode().equals("Rakhu")) && (p2.getCode().equals("Kethu"))) ||
@@ -380,7 +362,7 @@ public class Configuration {
 					double res = CalcUtil.getDifference(
 							Math.abs(CalcUtil.degToDec(p.getCoord())), 
 							Math.abs(CalcUtil.degToDec(p2.getCoord())));
-					for (BaseEntity entity3 : aspects) {
+					for (Base entity3 : aspects) {
 						Aspect a = (Aspect)entity3;
 						if (a.isAspect(res)) {
 							SkyPointAspect aspect = new SkyPointAspect();
@@ -439,7 +421,7 @@ public class Configuration {
 	 */
 	private void getDamagedPlanets() {
 		if (planetList != null) 
-			for (BaseEntity entity : planetList) {
+			for (Base entity : planetList) {
 				Planet planet = (Planet)entity;
 				
 				//сравнение количества хороших и плохих аспектов
@@ -473,7 +455,7 @@ public class Configuration {
 	 */
 	private void getBrokenPlanets() {
 		if (planetList != null) 
-			for (BaseEntity entity : planetList) {
+			for (Base entity : planetList) {
 				Planet planet = (Planet)entity;
 				if (aspectList != null) {
 					final String KETHU = "Kethu";
@@ -529,7 +511,7 @@ public class Configuration {
 		List<Planet> planets = new ArrayList<Planet>();
 
 		//определяем расстояние между планетами
-		for (BaseEntity entity : planetList) {
+		for (Base entity : planetList) {
 			Planet planet = (Planet)entity;
 			planets.add(planet);
 			if (planet.getCode().equals(point.getCode())) continue;
