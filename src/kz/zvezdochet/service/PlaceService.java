@@ -25,58 +25,6 @@ public class PlaceService extends ReferenceService {
 	}
 
 	@Override
-	public Base find(Long id) throws DataAccessException {
-		if (id == null) return null;
-		Place place = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-		try {
-			String query = "select * from " + tableName + " where id = ?";
-			ps = Connector.getInstance().getConnection().prepareStatement(query);
-			ps.setLong(1, id);
-			rs = ps.executeQuery();
-			if (rs.next()) 
-				place = init(rs);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try { 
-				if (rs != null) rs.close();
-				if (ps != null) ps.close();
-			} catch (SQLException e) { 
-				e.printStackTrace(); 
-			}
-		}
-		return place;
-	}
-
-	@Override
-	public List<Base> getList() throws DataAccessException {
-        List<Base> list = new ArrayList<Base>();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-		try {
-			String query = "select * from " + tableName + " order by name";
-			ps = Connector.getInstance().getConnection().prepareStatement(query);
-			rs = ps.executeQuery();
-			while (rs.next()) {
-				Place place = init(rs);
-				list.add(place);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try { 
-				if (rs != null) rs.close();
-				if (ps != null) ps.close();
-			} catch (SQLException e) { 
-				e.printStackTrace(); 
-			}
-		}
-		return list;
-	}
-
-	@Override
 	public Base save(Base element) throws DataAccessException {
 		Place reference = (Place)element;
 		int result = -1;
@@ -140,5 +88,37 @@ public class PlaceService extends ReferenceService {
 	@Override
 	public Base create() {
 		return new Place();
+	}
+
+	/**
+	 * Поиск местности по имени
+	 * @param name наименование
+	 * @return список мест
+	 * @throws DataAccessException
+	 */
+	public List<Place> findByName(String name) throws DataAccessException {
+		List<Place> list = new ArrayList<Place>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String query = "select * from " + tableName + " where name like ?";
+			ps = Connector.getInstance().getConnection().prepareStatement(query);
+			ps.setString(1, "%" + name + "%");
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				Place type = init(rs);
+				list.add(type);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
+		return list;
 	}
 }

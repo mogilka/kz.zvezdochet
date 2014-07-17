@@ -3,29 +3,26 @@
  */
 package kz.zvezdochet.parts;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.Place;
 import kz.zvezdochet.core.bean.Base;
-import kz.zvezdochet.core.bean.Reference;
 import kz.zvezdochet.core.handler.Handler;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.ui.decoration.InfoDecoration;
 import kz.zvezdochet.core.ui.decoration.RequiredDecoration;
 import kz.zvezdochet.core.ui.listener.NumberInputListener;
-import kz.zvezdochet.core.ui.provider.ReferenceProposalProvider;
 import kz.zvezdochet.core.ui.util.DialogUtil;
 import kz.zvezdochet.core.ui.util.GUIutil;
 import kz.zvezdochet.core.ui.view.ElementView;
 import kz.zvezdochet.core.util.CalcUtil;
 import kz.zvezdochet.core.util.DateUtil;
+import kz.zvezdochet.provider.PlaceProposalProvider;
+import kz.zvezdochet.provider.PlaceProposalProvider.PlaceContentProposal;
 import kz.zvezdochet.service.PlaceService;
 import kz.zvezdochet.util.Configuration;
 
@@ -296,6 +293,7 @@ public class EventPart extends ElementView {
 		txLatitude.setText(CalcUtil.formatNumber("###.##", place.getLatitude())); //$NON-NLS-1$
 		txLongitude.setText(CalcUtil.formatNumber("###.##", place.getLongitude())); //$NON-NLS-1$
 		txGreenwich.setText(CalcUtil.formatNumber("###.##", place.getGreenwich())); //$NON-NLS-1$
+		txZone.setText(String.valueOf(Math.abs(place.getGreenwich())));
 	}
 	
 	private String[] genders = {"",
@@ -320,18 +318,14 @@ public class EventPart extends ElementView {
 		cvRectification.setContentProvider(new ArrayContentProvider());
 		cvRectification.setInput(calcs);
 
-		try {
-			setPlaces(new PlaceService().getList());
-		} catch (DataAccessException e) {
-			e.printStackTrace();
-		}
+		setPlaces();
 	}
 
 	@Override
 	public boolean checkViewValues(int mode) throws Exception {
 		StringBuffer msgBody = new StringBuffer();
 		if (Handler.MODE_SAVE == mode) {
-			if (null == places.get(txPlace.getText())) {
+			if (null == txPlace.getText()) {
 				DialogUtil.alertError(Messages.getString("EventView.PlaceIsWrong"));
 				return false;
 			}
@@ -444,22 +438,10 @@ public class EventPart extends ElementView {
 	}
 
 	/**
-	 * Список для быстрого поиска местностей по названию
-	 */
-	Map<String, Place> places = new HashMap<String, Place>();
-	
-	/**
 	 * Инициализация местностей
-	 * @param input список мест
 	 */
-	private void setPlaces(List<Base> input) {
-		List<Reference> list = new ArrayList<Reference>();
-		for (Base entity : input) {
-			Place place = (Place)entity;
-			list.add(place);
-			places.put(place.getName(), place);
-		}
-	    ReferenceProposalProvider proposalProvider = new ReferenceProposalProvider(list);
+	private void setPlaces() {
+	    PlaceProposalProvider proposalProvider = new PlaceProposalProvider();
 	    proposalProvider.setFiltering(true);
 	    ContentProposalAdapter adapter = new ContentProposalAdapter(
 	        txPlace, new TextContentAdapter(),
@@ -469,8 +451,8 @@ public class EventPart extends ElementView {
 	    adapter.addContentProposalListener(new IContentProposalListener() {
 			@Override
 			public void proposalAccepted(IContentProposal proposal) {
-				Place place = places.get(txPlace.getText());
-				if (place != null) 
+				Place place = (Place)((PlaceContentProposal)proposal).getObject();
+				if (place != null)
 					setPlace(place);
 			}
 		});
