@@ -19,9 +19,17 @@ Import-Package: javax.inject;version="1.0.0",
  kz.zvezdochet.core.bean,
  kz.zvezdochet.core.ui.decoration,
  kz.zvezdochet.core.ui.listener,
+ org.eclipse.e4.ui.model,
+ org.eclipse.e4.ui.model.application,
+ org.eclipse.e4.ui.model.application.ui.basic,
+ org.eclipse.nebula.cwt.base,
+ org.eclipse.nebula.widgets.cdatetime,
  org.eclipse.ui.forms.widgets,
  swisseph
 Export-Package: kz.zvezdochet.bean,
  kz.zvezdochet.parts,
  kz.zvezdochet.service,
  kz.zvezdochet.util
+Bundle-ClassPath: lib/org.eclipse.nebula.cwt_0.9.0.HEAD.jar,
+ lib/org.eclipse.nebula.widgets.cdatetime_0.14.0.HEAD.jar,
+ .
