@@ -13,8 +13,9 @@ import javax.annotation.PostConstruct;
 
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.Place;
-import kz.zvezdochet.core.bean.BaseEntity;
+import kz.zvezdochet.core.bean.Base;
 import kz.zvezdochet.core.bean.Reference;
+import kz.zvezdochet.core.handler.Handler;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.ui.decoration.InfoDecoration;
 import kz.zvezdochet.core.ui.decoration.RequiredDecoration;
@@ -25,6 +26,7 @@ import kz.zvezdochet.core.ui.util.GUIutil;
 import kz.zvezdochet.core.ui.view.ElementView;
 import kz.zvezdochet.core.util.CalcUtil;
 import kz.zvezdochet.core.util.DateUtil;
+import kz.zvezdochet.service.PlaceService;
 import kz.zvezdochet.util.Configuration;
 
 import org.eclipse.e4.ui.di.Focus;
@@ -52,16 +54,20 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * Представление события
- * @author nataly
+ * @author Nataly Didenko
  */
 public class EventPart extends ElementView {
+	
+	public static int MODE_CALC = 1;
 
+	private Label lbGender;
 	private ComboViewer cvGender;
 	private Combo cmbGender;
 	private ComboViewer cvHand;
 	private Combo cmbHand;
 	private ComboViewer cvRectification;
 	private Combo cmbRectification;
+	private Label lbName;
 	private Text txName;
 	private Text txSurname;
 	private Text txPlace;
@@ -74,78 +80,25 @@ public class EventPart extends ElementView {
 	private Label lbBirth;
 	private CDateTime dtBirth; 
 	private CDateTime dtDeath; 
-	private Group secEvent;
-	private Group secPlace;
-	private Group secDescription;
 	private Button btCelebrity;
-
-	private Group grCosmogram;
 	private CosmogramComposite cmpCosmogram;
-	private Group grPlanets;
-	private Group grHouses;
 	
-	private Label lbSun;
-	private Label lbMoon;
-	private Label lbRakhu;
-	private Label lbKethu;
-	private Label lbMercury;
-	private Label lbVenus;
-	private Label lbMars;
-	private Label lbSelena;
-	private Label lbLilith;
-	private Label lbJupiter;
-	private Label lbSaturn;
-	private Label lbChiron;
-	private Label lbUranus;
-	private Label lbNeptune;
-	private Label lbPluto;
-	private Label lbProzerpine;
-	
-	private Label lbSunStat;
-	private Label lbMoonStat;
-	private Label lbRakhuStat;
-	private Label lbKethuStat;
-	private Label lbMercuryStat;
-	private Label lbVenusStat;
-	private Label lbMarsStat;
-	private Label lbSelenaStat;
-	private Label lbLilithStat;
-	private Label lbJupiterStat;
-	private Label lbSaturnStat;
-	private Label lbChironStat;
-	private Label lbUranusStat;
-	private Label lbNeptuneStat;
-	private Label lbPlutoStat;
-	private Label lbProzerpineStat;
-	
-	private Label lbHouse1;
-	private Label lbHouse2;
-	private Label lbHouse3;
-	private Label lbHouse4;
-	private Label lbHouse5;
-	private Label lbHouse6;
-	private Label lbHouse7;
-	private Label lbHouse8;
-	private Label lbHouse9;
-	private Label lbHouse10;
-	private Label lbHouse11;
-	private Label lbHouse12;
 	
 	@PostConstruct
-	public void createComposite(Composite parent) {
-		secEvent = new Group(parent, SWT.NONE);
+	public void create(Composite parent) {
+		Group secEvent = new Group(parent, SWT.NONE);
 		secEvent.setText(Messages.getString("PersonView.Options")); //$NON-NLS-1$
 
-		Label lb = new Label(secEvent, SWT.NONE);
-		lb.setText(Messages.getString("PersonView.Name")); //$NON-NLS-1$
+		lbName = new Label(secEvent, SWT.NONE);
+		lbName.setText(Messages.getString("PersonView.Name")); //$NON-NLS-1$
 		txName = new Text(secEvent, SWT.BORDER);
 
-		lb = new Label(secEvent, SWT.NONE);
+		Label lb = new Label(secEvent, SWT.NONE);
 		lb.setText(Messages.getString("PersonView.Surname")); //$NON-NLS-1$
 		txSurname = new Text(secEvent, SWT.BORDER);
 		
-		lb = new Label(secEvent, SWT.CENTER);
-		lb.setText(Messages.getString("PersonView.Gender")); //$NON-NLS-1$
+		lbGender = new Label(secEvent, SWT.CENTER);
+		lbGender.setText(Messages.getString("PersonView.Gender")); //$NON-NLS-1$
 		cvGender = new ComboViewer(secEvent, SWT.BORDER | SWT.READ_ONLY);
 		cmbGender = cvGender.getCombo();
 		
@@ -172,7 +125,7 @@ public class EventPart extends ElementView {
 		
 		//////////////////////////////////////////////////
 		
-		secPlace = new Group(secEvent, SWT.NONE);
+		Group secPlace = new Group(secEvent, SWT.NONE);
 		secPlace.setText(Messages.getString("PersonView.Place")); //$NON-NLS-1$
 		txPlace = new Text(secPlace, SWT.BORDER);
 		new InfoDecoration(txPlace, SWT.TOP | SWT.LEFT);
@@ -195,10 +148,13 @@ public class EventPart extends ElementView {
 		lb = new Label(secPlace, SWT.NONE);
 		lb.setText(Messages.getString("PersonView.Zone")); //$NON-NLS-1$
 		txZone = new Text(secPlace, SWT.BORDER);
-		
+
+		GridLayoutFactory.swtDefaults().numColumns(4).applyTo(secPlace);
+		GridDataFactory.fillDefaults().span(4, 1).grab(true, false).applyTo(secPlace);
+
 		//////////////////////////////////////////////////
 
-		secDescription = new Group(secEvent, SWT.NONE);
+		Group secDescription = new Group(secEvent, SWT.NONE);
 		secDescription.setText(Messages.getString("PersonView.Biography")); //$NON-NLS-1$
 		secEvent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		txBiography = new Text(secDescription, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
@@ -207,147 +163,35 @@ public class EventPart extends ElementView {
 		txCelebrity = new Text(secDescription, SWT.BORDER);
 		txCelebrity.setEditable(false);
 
+		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(secDescription);
+		GridDataFactory.fillDefaults().span(4, 1).grab(true, true).applyTo(secDescription);
+		
+		GridLayoutFactory.swtDefaults().numColumns(4).applyTo(secEvent);
+		GridDataFactory.fillDefaults().hint(500, SWT.DEFAULT).grab(false, true).applyTo(secEvent);
+
 		//////////////////////////////////////////////////
 
-		grCosmogram = new Group(parent, SWT.NONE);
+		Group grCosmogram = new Group(parent, SWT.NONE);
 		grCosmogram.setText("Cosmogram");
 		cmpCosmogram = new CosmogramComposite(grCosmogram, SWT.NONE);
 
-		grPlanets = new Group(grCosmogram, SWT.NONE);
+		Group grPlanets = new Group(grCosmogram, SWT.NONE);
 		grPlanets.setText("Planets");
-		lb = new Label(grPlanets, SWT.NONE);
-		lb.setText("Sun");
-		lbSun = new Label(grPlanets, SWT.NONE);
-		lbSunStat = new Label(grPlanets, SWT.NONE);
-
-		lb = new Label(grPlanets, SWT.NONE);
-		lb.setText("Moon");
-		lbMoon = new Label(grPlanets, SWT.NONE);
-		lbMoonStat = new Label(grPlanets, SWT.NONE);
-
-		lb = new Label(grPlanets, SWT.NONE);
-		lb.setText("Rakhu");
-		lbRakhu = new Label(grPlanets, SWT.NONE);
-		lbRakhuStat = new Label(grPlanets, SWT.NONE);
-
-		lb = new Label(grPlanets, SWT.NONE);
-		lb.setText("Kethu");
-		lbKethu = new Label(grPlanets, SWT.NONE);
-		lbKethuStat = new Label(grPlanets, SWT.NONE);
-
-		lb = new Label(grPlanets, SWT.NONE);
-		lb.setText("Mercury");
-		lbMercury = new Label(grPlanets, SWT.NONE);
-		lbMercuryStat = new Label(grPlanets, SWT.NONE);
-
-		lb = new Label(grPlanets, SWT.NONE);
-		lb.setText("Venus");
-		lbVenus = new Label(grPlanets, SWT.NONE);
-		lbVenusStat = new Label(grPlanets, SWT.NONE);
-
-		lb = new Label(grPlanets, SWT.NONE);
-		lb.setText("Mars");
-		lbMars = new Label(grPlanets, SWT.NONE);
-		lbMarsStat = new Label(grPlanets, SWT.NONE);
-
-		lb = new Label(grPlanets, SWT.NONE);
-		lb.setText("Selena");
-		lbSelena = new Label(grPlanets, SWT.NONE);
-		lbSelenaStat = new Label(grPlanets, SWT.NONE);
-		
-		lb = new Label(grPlanets, SWT.NONE);
-		lb.setText("Lilith");
-		lbLilith = new Label(grPlanets, SWT.NONE);
-		lbLilithStat = new Label(grPlanets, SWT.NONE);
-		
-		lb = new Label(grPlanets, SWT.NONE);
-		lb.setText("Jupiter");
-		lbJupiter = new Label(grPlanets, SWT.NONE);
-		lbJupiterStat = new Label(grPlanets, SWT.NONE);
-		
-		lb = new Label(grPlanets, SWT.NONE);
-		lb.setText("Saturn");
-		lbSaturn = new Label(grPlanets, SWT.NONE);
-		lbSaturnStat = new Label(grPlanets, SWT.NONE);
-
-		lb = new Label(grPlanets, SWT.NONE);
-		lb.setText("Chiron");
-		lbChiron = new Label(grPlanets, SWT.NONE);
-		lbChironStat = new Label(grPlanets, SWT.NONE);
-
-		lb = new Label(grPlanets, SWT.NONE);
-		lb.setText("Uranus");
-		lbUranus = new Label(grPlanets, SWT.NONE);
-		lbUranusStat = new Label(grPlanets, SWT.NONE);
-
-		lb = new Label(grPlanets, SWT.NONE);
-		lb.setText("Neptune");
-		lbNeptune = new Label(grPlanets, SWT.NONE);
-		lbNeptuneStat = new Label(grPlanets, SWT.NONE);
-
-		lb = new Label(grPlanets, SWT.NONE);
-		lb.setText("Pluto");
-		lbPluto = new Label(grPlanets, SWT.NONE);
-		lbPlutoStat = new Label(grPlanets, SWT.NONE);
-
-		lb = new Label(grPlanets, SWT.NONE);
-		lb.setText("Prozerpine");
-		lbProzerpine = new Label(grPlanets, SWT.NONE);
-		lbProzerpineStat = new Label(grPlanets, SWT.NONE);
 
 		//////////////////////////////////////////////////
 
-		grHouses = new Group(grCosmogram, SWT.NONE);
+		Group grHouses = new Group(grCosmogram, SWT.NONE);
 		grHouses.setText("Houses");
-		lb = new Label(grHouses, SWT.NONE);
-		lb.setText("ASC");
-		lbHouse1 = new Label(grHouses, SWT.NONE);
 
-		lb = new Label(grHouses, SWT.NONE);
-		lb.setText("II");
-		lbHouse2 = new Label(grHouses, SWT.NONE);
+		GridLayoutFactory.swtDefaults().numColumns(3).applyTo(grCosmogram);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(grCosmogram);
 
-		lb = new Label(grHouses, SWT.NONE);
-		lb.setText("III");
-		lbHouse3 = new Label(grHouses, SWT.NONE);
-
-		lb = new Label(grHouses, SWT.NONE);
-		lb.setText("IC");
-		lbHouse4 = new Label(grHouses, SWT.NONE);
-
-		lb = new Label(grHouses, SWT.NONE);
-		lb.setText("V");
-		lbHouse5 = new Label(grHouses, SWT.NONE);
+		GridLayoutFactory.swtDefaults().numColumns(3).applyTo(grPlanets);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(grPlanets);
+		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(grHouses);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(grHouses);
 		
-		lb = new Label(grHouses, SWT.NONE);
-		lb.setText("VI");
-		lbHouse6 = new Label(grHouses, SWT.NONE);
-		
-		lb = new Label(grHouses, SWT.NONE);
-		lb.setText("DSC");
-		lbHouse7 = new Label(grHouses, SWT.NONE);
-		
-		lb = new Label(grHouses, SWT.NONE);
-		lb.setText("VIII");
-		lbHouse8 = new Label(grHouses, SWT.NONE);
-
-		lb = new Label(grHouses, SWT.NONE);
-		lb.setText("IX");
-		lbHouse9 = new Label(grHouses, SWT.NONE);
-
-		lb = new Label(grHouses, SWT.NONE);
-		lb.setText("MC");
-		lbHouse10 = new Label(grHouses, SWT.NONE);
-
-		lb = new Label(grHouses, SWT.NONE);
-		lb.setText("XI");
-		lbHouse11 = new Label(grHouses, SWT.NONE);
-
-		lb = new Label(grHouses, SWT.NONE);
-		lb.setText("XII");
-		lbHouse12 = new Label(grHouses, SWT.NONE);
-
-		super.createComposite(parent);
+		super.create(parent);
 		try {
 			setDefaultElement();
 		} catch (DataAccessException e) {
@@ -362,7 +206,7 @@ public class EventPart extends ElementView {
 	private void setDefaultElement() throws DataAccessException {
 		element = new Event();
 		((Event)element).setZone(6.0); //TODO задавать через конфиг
-		Place place = (Place)Place.getService().getEntityById(115L); //TODO задавать через конфиг
+		Place place = (Place)new PlaceService().find(115L); //TODO задавать через конфиг
 		((Event)element).setPlace(place);
 		setElement(element, true);
 	}
@@ -372,12 +216,10 @@ public class EventPart extends ElementView {
 //		tableViewer.getTable().setFocus();
 	}
 
-	protected void prepareView(Composite parent) {
+	@Override
+	protected void init(Composite parent) {
 		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(parent);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(parent);
-
-		GridLayoutFactory.swtDefaults().numColumns(4).applyTo(secEvent);
-		GridDataFactory.fillDefaults().hint(500, SWT.DEFAULT).grab(false, true).applyTo(secEvent);
 
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			span(3, 1).grab(true, false).applyTo(txName);
@@ -394,8 +236,6 @@ public class EventPart extends ElementView {
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			span(3, 1).grab(true, false).applyTo(cmbRectification);
 
-		GridLayoutFactory.swtDefaults().numColumns(4).applyTo(secPlace);
-		GridDataFactory.fillDefaults().span(4, 1).grab(true, false).applyTo(secPlace);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			span(4, 1).grab(true, false).applyTo(txPlace);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
@@ -407,8 +247,6 @@ public class EventPart extends ElementView {
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			grab(true, false).applyTo(txGreenwich);
 
-		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(secDescription);
-		GridDataFactory.fillDefaults().span(4, 1).grab(true, true).applyTo(secDescription);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).
 			span(2, 1).grab(true, true).applyTo(txBiography);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
@@ -416,14 +254,8 @@ public class EventPart extends ElementView {
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).
 			grab(false, false).applyTo(btCelebrity);
 
-		GridLayoutFactory.swtDefaults().numColumns(3).applyTo(grCosmogram);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(grCosmogram);
 		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.FILL).
 			hint(514, 514).span(3, 1).grab(true, false).applyTo(cmpCosmogram);
-		GridLayoutFactory.swtDefaults().numColumns(3).applyTo(grPlanets);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(grPlanets);
-		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(grHouses);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(grHouses);
 	}
 
 	protected void setListeners() {
@@ -464,19 +296,15 @@ public class EventPart extends ElementView {
 		txLatitude.setText(CalcUtil.formatNumber("###.##", place.getLatitude())); //$NON-NLS-1$
 		txLongitude.setText(CalcUtil.formatNumber("###.##", place.getLongitude())); //$NON-NLS-1$
 		txGreenwich.setText(CalcUtil.formatNumber("###.##", place.getGreenwich())); //$NON-NLS-1$
-		txZone.setText(CalcUtil.formatNumber("###.##", place.getZone())); //$NON-NLS-1$
 	}
 	
-	private String[] genders = {
-		"",
+	private String[] genders = {"",
 		Messages.getString("PersonView.Male"),
 		Messages.getString("PersonView.Female")};
-	private String[] hands = {
-		"",
+	private String[] hands = {"",
 		Messages.getString("PersonView.Right-handed"),
 		Messages.getString("PersonView.Left-handed")};
-	private String[] calcs = {
-		"",
+	private String[] calcs = {"",
 		Messages.getString("PersonView.Success"),
 		Messages.getString("PersonView.Fault"),
 		Messages.getString("PersonView.Undefined")};
@@ -493,54 +321,69 @@ public class EventPart extends ElementView {
 		cvRectification.setInput(calcs);
 
 		try {
-			setPlaces(Place.getService().getList());
+			setPlaces(new PlaceService().getList());
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public boolean checkViewValues() throws Exception {
-		String msgBody = ""; //$NON-NLS-1$
-//		if (txName.getText().length() == 0) 
-//			msgBody += lbName.getText();
-//		if (cvGender.getSelection().isEmpty()) 
-//			msgBody += lbGender.getText();
-		if (dtBirth.getSelection() == null) 
-			msgBody += lbBirth.getText();
-		if (dtBirth.getSelection() != null && dtDeath.getSelection() != null)
-			if (!DateUtil.isDateRangeValid(dtBirth.getSelection(), dtDeath.getSelection()))
-				DialogUtil.alertWarning(GUIutil.INVALID_DATE_RANGE);
-//		if (places.get(txPlace.getText()) == null) {
-//			DialogUtil.alertError(Messages.getString("EventView.PlaceIsWrong")); //$NON-NLS-1$
-//			return false;
-//		}
-		if (!msgBody.equals("")) { //$NON-NLS-1$
+	public boolean checkViewValues(int mode) throws Exception {
+		StringBuffer msgBody = new StringBuffer();
+		if (Handler.MODE_SAVE == mode) {
+			if (null == places.get(txPlace.getText())) {
+				DialogUtil.alertError(Messages.getString("EventView.PlaceIsWrong"));
+				return false;
+			}
+			if (dtBirth.getSelection() != null && dtDeath.getSelection() != null)
+				if (!DateUtil.isDateRangeValid(dtBirth.getSelection(), dtDeath.getSelection())) {
+					DialogUtil.alertWarning(GUIutil.INVALID_DATE_RANGE);
+					return false;
+				}
+			if (txName.getText().length() == 0) 
+				msgBody.append(lbName.getText());
+			if (cvGender.getSelection().isEmpty())
+				msgBody.append(lbGender.getText());
+		}
+		if (null == dtBirth.getSelection())
+			msgBody.append(lbBirth.getText());
+
+		if (msgBody.length() > 0) {
 			DialogUtil.alertWarning(GUIutil.SOME_FIELDS_NOT_FILLED + msgBody);
 			return false;
 		} else return true;
 	}
 
-	protected void viewToModel() throws Exception {
-		if (!checkViewValues()) return;
+	@Override
+	protected void viewToModel(int mode) throws Exception {
+		if (!checkViewValues(mode)) return;
 		element = (element == null) ? new Event() : element;
 		Event event = (Event)element;
-		event.setName(txName.getText());
-		event.setSurname(txSurname.getText());
-		event.setFemale(cmbGender.getSelectionIndex() == 0);
-		event.setRightHanded(cmbHand.getSelectionIndex() == 0);
-		event.setRectification(cmbRectification.getSelectionIndex());
+		if (Handler.MODE_SAVE == mode) {
+			event.setName(txName.getText());
+			event.setSurname(txSurname.getText());
+			event.setFemale(0 == cmbGender.getSelectionIndex());
+			event.setRightHanded(0 == cmbHand.getSelectionIndex());
+			event.setRectification(cmbRectification.getSelectionIndex());
+			event.setDeath(dtDeath.getSelection());
+			event.setText(txBiography.getText());
+			event.setDescription(txCelebrity.getText());
+			event.setCelebrity(btCelebrity.getSelection());
+		}
+//		Place place = places.get(txPlace.getText()); //TODO идентифицировать по имени неправильно
+		if (null == event.getPlace()) {
+			Place place = new Place();
+			place.setLatitude(51.48);
+			place.setLongitude(0);
+			event.setPlace(place);
+		}
 		event.setBirth(dtBirth.getSelection());
-		event.setDeath(dtDeath.getSelection());
-		event.setText(txBiography.getText());
-		event.setDescription(txCelebrity.getText());
-		event.setCelebrity(btCelebrity.getSelection());
-		event.setPlace(places.get(txPlace.getText()));
-		event.setZone(Double.parseDouble(txZone.getText()));
+		double zone = (txZone.getText() != null) ? Double.parseDouble(txZone.getText()) : 0;
+		event.setZone(zone);
 	}
 	
-	protected void modelToView() {		
-		clearView();
+	protected void modelToView() {
+		clear();
 		element = (element == null) ? new Event() : element;
 		Event event = (Event)element;
 		setCodeEdit(true);
@@ -566,7 +409,7 @@ public class EventPart extends ElementView {
 		setCodeEdit(false); 
 	}
 	
-	public void clearView() {
+	public void clear() {
 		setCodeEdit(true);
 		txName.setText(""); //$NON-NLS-1$
 		txSurname.setText(""); //$NON-NLS-1$
@@ -586,7 +429,7 @@ public class EventPart extends ElementView {
 		setCodeEdit(false);
 	}
 	
-	public Object createElement() {
+	public Object addElement() {
 		return new Event();
 	}
 
@@ -609,9 +452,9 @@ public class EventPart extends ElementView {
 	 * Инициализация местностей
 	 * @param input список мест
 	 */
-	private void setPlaces(List<BaseEntity> input) {
+	private void setPlaces(List<Base> input) {
 		List<Reference> list = new ArrayList<Reference>();
-		for (BaseEntity entity : input) {
+		for (Base entity : input) {
 			Place place = (Place)entity;
 			list.add(place);
 			places.put(place.getName(), place);
@@ -634,12 +477,12 @@ public class EventPart extends ElementView {
 	}
 
 	@Override
-	public void setElement(BaseEntity element, boolean refresh) {
+	public void setElement(Base element, boolean refresh) {
 		super.setElement(element, refresh);
 		if (element != null && ((Event)element).getId() != null)
-			setViewTitle(((Event)element).getFullName());
+			setTitle(((Event)element).getFullName());
 		else
-			setViewTitle(Messages.getString("PersonView.New")); //$NON-NLS-1$
+			setTitle(Messages.getString("PersonView.New")); //$NON-NLS-1$
 		Event event = (Event)element;
 		Configuration conf = event.getConfiguration();
 		if (conf != null)
@@ -650,7 +493,6 @@ public class EventPart extends ElementView {
 		if (conf.getPlanets() != null && conf.getPlanets().size() > 0) {
 //			lbSun.setText(string);
 			//TODO сделать по-другому - идти по листу и динамически создавать надписи
-		}
-		
+		}		
 	}
 }
