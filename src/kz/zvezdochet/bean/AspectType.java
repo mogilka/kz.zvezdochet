@@ -9,7 +9,7 @@ import org.eclipse.swt.graphics.Color;
 
 /**
  * Класс, представляющий тип аспекта
- * @author Nataly
+ * @author Nataly Didenko
  *
  * @see Reference Прототип справочника
  */
@@ -72,7 +72,7 @@ public class AspectType extends DiagramObject {
 		return name;
 	}
 
-	public static ReferenceService getService() {
+	public ReferenceService getService() {
 		return new AspectTypeService();
 	}
 }

@@ -2,7 +2,7 @@ package kz.zvezdochet.bean;
 
 import java.util.Date;
 
-import kz.zvezdochet.core.bean.BaseEntity;
+import kz.zvezdochet.core.bean.Base;
 import kz.zvezdochet.core.service.ReferenceService;
 import kz.zvezdochet.core.util.StringUtil;
 import kz.zvezdochet.service.PlaceService;
@@ -12,11 +12,11 @@ import org.eclipse.swt.graphics.Image;
 
 /**
  * Класс, представляющий Событие
- * @author Nataly
+ * @author Nataly Didenko
  *
- * @see BaseEntity Базовая сущность
+ * @see Base Базовая сущность
  */
-public class Event extends BaseEntity {
+public class Event extends Base {
 	private static final long serialVersionUID = 3237544571447808520L;
 	
 	public Event() {
@@ -198,7 +198,7 @@ public class Event extends BaseEntity {
 		return StringUtil.safeString(getName()) + " " + StringUtil.safeString(surname);
 	}
 
-	public static ReferenceService getService() {
+	public ReferenceService getService() {
 		return new PlaceService();
 	}
 }

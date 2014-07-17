@@ -7,7 +7,7 @@ import kz.zvezdochet.service.AspectService;
 
 /**
  * Класс, представляющий Аспект (угол между небесными точками)
- * @author nataly
+ * @author Nataly Didenko
  * 
  * @see Reference Прототип справочника
  */
@@ -87,6 +87,7 @@ public class Aspect extends Reference {
 	/**
 	 * Вычисление максимального значения аспекта
 	 * @return
+	 * @todo учитывать нулевой градус
 	 */
 	public double getCeiling() {
 		return value + orbis;
@@ -95,12 +96,13 @@ public class Aspect extends Reference {
 	/**
 	 * Вычисление минимального значения аспекта
 	 * @return
+	 * @todo учитывать нулевой градус
 	 */
 	public double getFloor() {
 		return value - orbis;
 	}
 
-	public static ReferenceService getService() {
+	public ReferenceService getService() {
 		return new AspectService();
 	}
 }

@@ -7,14 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kz.zvezdochet.bean.Place;
-import kz.zvezdochet.core.bean.BaseEntity;
+import kz.zvezdochet.core.bean.Base;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.ReferenceService;
 import kz.zvezdochet.core.tool.Connector;
 
 /**
  * Реализация сервиса местностей
- * @author nataly
+ * @author Nataly Didenko
  * 
  * @see ReferenceService Реализация сервиса справочников  
  */
@@ -25,7 +25,7 @@ public class PlaceService extends ReferenceService {
 	}
 
 	@Override
-	public BaseEntity getEntityById(Long id) throws DataAccessException {
+	public Base find(Long id) throws DataAccessException {
 		if (id == null) return null;
 		Place place = null;
         PreparedStatement ps = null;
@@ -36,7 +36,7 @@ public class PlaceService extends ReferenceService {
 			ps.setLong(1, id);
 			rs = ps.executeQuery();
 			if (rs.next()) 
-				place = initEntity(rs);
+				place = init(rs);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -51,8 +51,8 @@ public class PlaceService extends ReferenceService {
 	}
 
 	@Override
-	public List<BaseEntity> getOrderedEntities() throws DataAccessException {
-        List<BaseEntity> list = new ArrayList<BaseEntity>();
+	public List<Base> getList() throws DataAccessException {
+        List<Base> list = new ArrayList<Base>();
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
@@ -60,7 +60,7 @@ public class PlaceService extends ReferenceService {
 			ps = Connector.getInstance().getConnection().prepareStatement(query);
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				Place place = initEntity(rs);
+				Place place = init(rs);
 				list.add(place);
 			}
 		} catch (Exception e) {
@@ -77,7 +77,7 @@ public class PlaceService extends ReferenceService {
 	}
 
 	@Override
-	public BaseEntity saveEntity(BaseEntity element) throws DataAccessException {
+	public Base save(Base element) throws DataAccessException {
 		Place reference = (Place)element;
 		int result = -1;
         PreparedStatement ps = null;
@@ -123,14 +123,14 @@ public class PlaceService extends ReferenceService {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			updateDictionary();
+			update();
 		}
 		return reference;
 	}
 	
 	@Override
-	public Place initEntity(ResultSet rs) throws DataAccessException, SQLException {
-		Place place = (Place)super.initEntity(rs);
+	public Place init(ResultSet rs) throws DataAccessException, SQLException {
+		Place place = (Place)super.init(rs);
 		place.setLatitude(Double.parseDouble(rs.getString("Latitude")));
 		place.setLongitude(Double.parseDouble(rs.getString("Longitude")));
 		place.setGreenwich(rs.getDouble("Greenwich"));
@@ -138,7 +138,7 @@ public class PlaceService extends ReferenceService {
 	}
 
 	@Override
-	public BaseEntity createEntity() {
+	public Base create() {
 		return new Place();
 	}
 }

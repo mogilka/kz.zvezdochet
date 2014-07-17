@@ -5,7 +5,7 @@ import kz.zvezdochet.service.HouseService;
 
 /**
  * Класс, представляющий Астрологический дом
- * @author nataly
+ * @author Nataly Didenko
  *
  */
 public class House extends SkyPoint {
@@ -106,7 +106,7 @@ public class House extends SkyPoint {
   		return false;
 	}
 
-	public static ReferenceService getService() {
+	public ReferenceService getService() {
 		return new HouseService();
 	}
 }

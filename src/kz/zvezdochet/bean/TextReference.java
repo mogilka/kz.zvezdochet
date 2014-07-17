@@ -4,7 +4,7 @@ import kz.zvezdochet.core.bean.Reference;
 
 /**
  * Прототип Справочника многотекстовых значений
- * @author Nataly
+ * @author Nataly Didenko
  *
  * @see Reference Прототип справочника
  */

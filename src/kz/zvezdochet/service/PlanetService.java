@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kz.zvezdochet.bean.Planet;
-import kz.zvezdochet.core.bean.BaseEntity;
+import kz.zvezdochet.core.bean.Base;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.ReferenceService;
 import kz.zvezdochet.core.tool.Connector;
@@ -15,7 +15,7 @@ import kz.zvezdochet.core.util.CoreUtil;
 
 /**
  * Реализация сервиса планет
- * @author nataly
+ * @author Nataly Didenko
  *
  * @see ReferenceService Реализация сервиса справочников  
  */
@@ -26,7 +26,7 @@ public class PlanetService extends ReferenceService {
 	}
 
 	@Override
-	public BaseEntity getEntityById(Long id) throws DataAccessException {
+	public Base find(Long id) throws DataAccessException {
         Planet planet = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -36,7 +36,7 @@ public class PlanetService extends ReferenceService {
 			ps = Connector.getInstance().getConnection().prepareStatement(query);
 			rs = ps.executeQuery();
 			if (rs.next()) 
-				planet = initEntity(rs);
+				planet = init(rs);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -51,8 +51,8 @@ public class PlanetService extends ReferenceService {
 	}
 
 	@Override
-	public List<BaseEntity> getOrderedEntities() throws DataAccessException {
-        List<BaseEntity> list = new ArrayList<BaseEntity>();
+	public List<Base> getList() throws DataAccessException {
+        List<Base> list = new ArrayList<Base>();
         PreparedStatement ps = null;
         ResultSet rs = null;
 		String query;
@@ -61,7 +61,7 @@ public class PlanetService extends ReferenceService {
 			ps = Connector.getInstance().getConnection().prepareStatement(query);
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				Planet planet = initEntity(rs);
+				Planet planet = init(rs);
 				list.add(planet);
 			}
 		} catch (Exception e) {
@@ -78,7 +78,7 @@ public class PlanetService extends ReferenceService {
 	}
 
 	@Override
-	public BaseEntity saveEntity(BaseEntity element) throws DataAccessException {
+	public Base save(Base element) throws DataAccessException {
 		Planet reference = (Planet)element;
 		int result = -1;
         PreparedStatement ps = null;
@@ -148,14 +148,14 @@ public class PlanetService extends ReferenceService {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			updateDictionary();
+			update();
 		}
 		return reference;
 	}
 
 	@Override
-	public Planet initEntity(ResultSet rs) throws DataAccessException, SQLException {
-		Planet planet = (Planet)super.initEntity(rs);
+	public Planet init(ResultSet rs) throws DataAccessException, SQLException {
+		Planet planet = (Planet)super.init(rs);
 		planet.setScore(Double.parseDouble(rs.getString("Score")));
 		planet.setSwordText(rs.getString("Sword"));
 		planet.setShieldText(rs.getString("Shield"));
@@ -178,7 +178,7 @@ public class PlanetService extends ReferenceService {
 	}
 
 	@Override
-	public BaseEntity createEntity() {
+	public Base create() {
 		return new Planet();
 	}
 }

@@ -5,7 +5,7 @@ import kz.zvezdochet.service.SignService;
 
 /**
  * Класс, представляющий Знак Зодиака
- * @author Nataly
+ * @author Nataly Didenko
  * 
  * @see SkyPoint Точка небесной сферы
  */
@@ -25,7 +25,7 @@ public class Sign extends SkyPoint {
 		this.initialPoint = initialPoint;
 	}
 
-	public static ReferenceService getService() {
+	public ReferenceService getService() {
 		return new SignService();
 	}
 }

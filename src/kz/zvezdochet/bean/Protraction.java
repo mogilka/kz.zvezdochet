@@ -4,7 +4,7 @@ import kz.zvezdochet.core.bean.Reference;
 
 /**
  * Класс, представляющий вид начертания линий
- * @author Nataly
+ * @author Nataly Didenko
  *
  */
 public class Protraction extends Reference {

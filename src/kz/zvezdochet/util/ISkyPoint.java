@@ -2,7 +2,7 @@ package kz.zvezdochet.util;
 
 /**
  * Интерфейс точки небесной сферы
- * @author Nataly
+ * @author Nataly Didenko
  *
  */
 public interface ISkyPoint extends IColorizedObject {

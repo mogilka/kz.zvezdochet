@@ -3,12 +3,13 @@ package kz.zvezdochet.util;
 import java.util.List;
 
 import kz.zvezdochet.bean.Sign;
-import kz.zvezdochet.core.bean.BaseEntity;
+import kz.zvezdochet.core.bean.Base;
 import kz.zvezdochet.core.service.DataAccessException;
+import kz.zvezdochet.service.SignService;
 
 /**
  * Класс, предоставляющий методы для работы с объектами гороскопа
- * @author Nataly
+ * @author Nataly Didenko
  *
  */
 public class AstroUtil {
@@ -19,8 +20,8 @@ public class AstroUtil {
 	 * @throws DataAccessException 
 	 */
 	public static Sign getSkyPointSign(double coord) throws DataAccessException {
-		List<BaseEntity> signs = Sign.getService().getList();
-		for (BaseEntity sign : signs) 
+		List<Base> signs = new SignService().getList();
+		for (Base sign : signs) 
 			if (coord >= ((Sign)sign).getInitialPoint() && coord < ((Sign)sign).getCoord()) 
 				return (Sign)sign;
 		return null;

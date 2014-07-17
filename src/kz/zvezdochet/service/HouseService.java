@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kz.zvezdochet.bean.House;
-import kz.zvezdochet.core.bean.BaseEntity;
+import kz.zvezdochet.core.bean.Base;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.ReferenceService;
 import kz.zvezdochet.core.tool.Connector;
@@ -15,7 +15,7 @@ import kz.zvezdochet.core.util.CoreUtil;
 
 /**
  * Реализация сервиса домов
- * @author nataly
+ * @author Nataly Didenko
  *
  * @see ReferenceService Реализация сервиса справочников  
  */
@@ -26,8 +26,8 @@ public class HouseService extends ReferenceService {
 	}
 	
 	@Override
-	public List<BaseEntity> getOrderedEntities() throws DataAccessException {
-        List<BaseEntity> list = new ArrayList<BaseEntity>();
+	public List<Base> getList() throws DataAccessException {
+        List<Base> list = new ArrayList<Base>();
         PreparedStatement ps = null;
         ResultSet rs = null;
 		String query;
@@ -36,7 +36,7 @@ public class HouseService extends ReferenceService {
 			ps = Connector.getInstance().getConnection().prepareStatement(query);
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				House house = initEntity(rs);
+				House house = init(rs);
 				list.add(house);
 			}
 		} catch (Exception e) {
@@ -53,7 +53,7 @@ public class HouseService extends ReferenceService {
 	}
 
 	@Override
-	public BaseEntity getEntityByCode(String code) throws DataAccessException {
+	public Base getEntityByCode(String code) throws DataAccessException {
         House house = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -63,7 +63,7 @@ public class HouseService extends ReferenceService {
 			ps = Connector.getInstance().getConnection().prepareStatement(query);
 			rs = ps.executeQuery();
 			if (rs.next()) 
-				house = initEntity(rs);
+				house = init(rs);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -78,7 +78,7 @@ public class HouseService extends ReferenceService {
 	}
 
 	@Override
-	public BaseEntity getEntityById(Long id) throws DataAccessException {
+	public Base find(Long id) throws DataAccessException {
         House house = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -88,7 +88,7 @@ public class HouseService extends ReferenceService {
 			ps = Connector.getInstance().getConnection().prepareStatement(query);
 			rs = ps.executeQuery();
 			if (rs.next()) 
-				house = initEntity(rs);
+				house = init(rs);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -103,7 +103,7 @@ public class HouseService extends ReferenceService {
 	}
 
 	@Override
-	public BaseEntity saveEntity(BaseEntity element) throws DataAccessException {
+	public Base save(Base element) throws DataAccessException {
 		House reference = (House)element;
 		int result = -1;
         PreparedStatement ps = null;
@@ -160,14 +160,14 @@ public class HouseService extends ReferenceService {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			updateDictionary();
+			update();
 		}
 		return reference;
 	}
 
 	@Override
-	public House initEntity(ResultSet rs) throws DataAccessException, SQLException {
-		House house = (House)super.initEntity(rs);
+	public House init(ResultSet rs) throws DataAccessException, SQLException {
+		House house = (House)super.init(rs);
 		house.setNumber(rs.getInt("OrdinalNumber"));
 		house.setCombination(rs.getString("Combination"));
 		house.setShortName(rs.getString("Short"));
@@ -180,7 +180,7 @@ public class HouseService extends ReferenceService {
 	}
 
 	@Override
-	public BaseEntity createEntity() {
+	public Base create() {
 		return new House();
 	}
 
@@ -200,7 +200,7 @@ public class HouseService extends ReferenceService {
 			ps = Connector.getInstance().getConnection().prepareStatement(query);
 			rs = ps.executeQuery();
 			if (rs.next()) 
-				house = initEntity(rs);
+				house = init(rs);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

@@ -1,12 +1,12 @@
 package kz.zvezdochet.service;
 
 import kz.zvezdochet.bean.Protraction;
-import kz.zvezdochet.core.bean.BaseEntity;
+import kz.zvezdochet.core.bean.Base;
 import kz.zvezdochet.core.service.ReferenceService;
 
 /**
  * Реализация сервиса начертаний аспектов
- * @author nataly
+ * @author Nataly Didenko
  *
  * @see ReferenceService Реализация сервиса справочников  
  */
@@ -17,7 +17,7 @@ public class ProtractionService extends ReferenceService {
 	}
 
 	@Override
-	public BaseEntity createEntity() {
+	public Base create() {
 		return new Protraction();
 	}
 }

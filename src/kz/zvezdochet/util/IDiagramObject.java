@@ -2,7 +2,7 @@ package kz.zvezdochet.util;
 
 /**
  * Интерфейс объекта, отображаемого в диаграмме
- * @author Nataly
+ * @author Nataly Didenko
  *
  */
 public interface IDiagramObject {

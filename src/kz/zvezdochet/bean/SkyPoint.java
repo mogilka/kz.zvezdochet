@@ -8,7 +8,7 @@ import kz.zvezdochet.util.ISkyPoint;
 
 /**
  * Класс, представляющий Точку Небесной сферы
- * @author Nataly
+ * @author Nataly Didenko
  *
  */
 public abstract class SkyPoint extends DiagramObject implements ISkyPoint {

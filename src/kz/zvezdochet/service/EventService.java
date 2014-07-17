@@ -12,10 +12,10 @@ import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Place;
 import kz.zvezdochet.bean.Planet;
-import kz.zvezdochet.core.bean.BaseEntity;
+import kz.zvezdochet.core.bean.Base;
 import kz.zvezdochet.core.bean.Reference;
 import kz.zvezdochet.core.service.DataAccessException;
-import kz.zvezdochet.core.service.EntityService;
+import kz.zvezdochet.core.service.BaseService;
 import kz.zvezdochet.core.tool.Connector;
 import kz.zvezdochet.core.util.DateUtil;
 import kz.zvezdochet.util.Configuration;
@@ -25,11 +25,11 @@ import org.eclipse.swt.widgets.Display;
 
 /**
  * Реализация сервиса событий
- * @author nataly
+ * @author Nataly Didenko
  *
- * @see EntityService Реализация интерфейса сервиса управления объектами на уровне БД  
+ * @see BaseService Реализация интерфейса сервиса управления объектами на уровне БД  
  */
-public class EventService extends EntityService {
+public class EventService extends BaseService {
 
 	public EventService() {
 		tableName = "events";
@@ -41,8 +41,8 @@ public class EventService extends EntityService {
 	 * @return список событий
 	 * @throws DataAccessException
 	 */
-	public List<BaseEntity> getEvents(String fullname) throws DataAccessException {
-        List<BaseEntity> list = new ArrayList<BaseEntity>();
+	public List<Base> getEvents(String fullname) throws DataAccessException {
+        List<Base> list = new ArrayList<Base>();
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
@@ -85,7 +85,7 @@ public class EventService extends EntityService {
 	}
 	
 	@Override
-	public BaseEntity getEntityById(Long id) throws DataAccessException {
+	public Base find(Long id) throws DataAccessException {
         Event event = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -116,7 +116,7 @@ public class EventService extends EntityService {
 				event.setFemale(s.equals("1") ? true : false);
 				if (rs.getString("Place") != null) {
 					Long placeId = Long.parseLong(rs.getString("Place"));
-					BaseEntity place = new PlaceService().getEntityById(placeId);
+					Base place = new PlaceService().find(placeId);
 					event.setPlace((Place)place);
 				}
 				if (rs.getString("Zone") != null)
@@ -141,7 +141,7 @@ public class EventService extends EntityService {
 				pst.setLong(1, id);
 				ResultSet rst = pst.executeQuery();
 				if (rst.next()) {
-					for (BaseEntity entity : event.getConfiguration().getPlanets()) {
+					for (Base entity : event.getConfiguration().getPlanets()) {
 						Planet planet = (Planet)entity;
 						if (rst.getString(planet.getCode()) != null)
 							planet.setCoord(rst.getDouble(planet.getCode()));
@@ -153,7 +153,7 @@ public class EventService extends EntityService {
 				pst.setLong(1, id);
 				rst = pst.executeQuery();
 				if (rst.next()) {
-					for (BaseEntity entity : event.getConfiguration().getHouses()) {
+					for (Base entity : event.getConfiguration().getHouses()) {
 						House house = (House)entity;
 						if (rst.getString(house.getCode()) != null)
 							house.setCoord(rst.getDouble(house.getCode()));
@@ -178,7 +178,7 @@ public class EventService extends EntityService {
 	}
 
 	@Override
-	public BaseEntity saveEntity(BaseEntity element) throws DataAccessException {
+	public Base save(Base element) throws DataAccessException {
 		Event event = (Event)element;
 		int result = -1;
         PreparedStatement ps = null;
@@ -286,19 +286,19 @@ public class EventService extends EntityService {
 	}
 
 	@Override
-	public Reference initEntity(ResultSet rs) throws SQLException {
+	public Reference init(ResultSet rs) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<BaseEntity> getOrderedEntities() throws DataAccessException {
+	public List<Base> getList() throws DataAccessException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public BaseEntity createEntity() {
+	public Base create() {
 		// TODO Auto-generated method stub
 		return null;
 	}

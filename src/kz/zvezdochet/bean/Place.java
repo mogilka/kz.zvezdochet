@@ -22,10 +22,6 @@ public class Place extends Reference {
 	 */
 	private double latitude;
 	/**
-	 * Зона (пояс)
-	 */
-	private double zone;
-	/**
 	 * Разница с Гринвичем
 	 */
 	private double greenwich;
@@ -42,12 +38,6 @@ public class Place extends Reference {
 	public void setLatitude(double latitude) {
 		this.latitude = latitude;
 	}
-	public double getZone() {
-		return zone;
-	}
-	public void setZone(double zone) {
-		this.zone = zone;
-	}
 	public double getGreenwich() {
 		return greenwich;
 	}
@@ -55,7 +45,7 @@ public class Place extends Reference {
 		this.greenwich = greenwich;
 	}
 	
-	public static ReferenceService getService() {
+	public ReferenceService getService() {
 		return new PlaceService();
 	}
 }

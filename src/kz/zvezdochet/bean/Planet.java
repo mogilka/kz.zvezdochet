@@ -10,7 +10,7 @@ import org.eclipse.swt.graphics.Image;
 
 /**
  * Класс, представляющий Планету
- * @author Nataly
+ * @author Nataly Didenko
  * 
  * @see SkyPoint Точка небесной сферы
  */
@@ -433,7 +433,7 @@ public class Planet extends SkyPoint {
 		this.retrograde = retrograde;
 	}
 
-	public static ReferenceService getService() {
+	public ReferenceService getService() {
 		return new PlanetService();
 	}
 }

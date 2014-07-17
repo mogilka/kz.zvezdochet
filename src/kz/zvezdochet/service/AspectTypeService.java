@@ -8,7 +8,7 @@ import java.util.List;
 
 import kz.zvezdochet.bean.AspectType;
 import kz.zvezdochet.bean.Protraction;
-import kz.zvezdochet.core.bean.BaseEntity;
+import kz.zvezdochet.core.bean.Base;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.ReferenceService;
 import kz.zvezdochet.core.tool.Connector;
@@ -16,7 +16,7 @@ import kz.zvezdochet.core.util.CoreUtil;
 
 /**
  * Реализация сервиса типов аспектов
- * @author nataly
+ * @author Nataly Didenko
  *
  * @see ReferenceService Реализация сервиса справочников  
  */
@@ -27,7 +27,7 @@ public class AspectTypeService extends ReferenceService {
 	}
 
 	@Override
-	public BaseEntity getEntityById(Long id) throws DataAccessException {
+	public Base find(Long id) throws DataAccessException {
         AspectType type = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -37,7 +37,7 @@ public class AspectTypeService extends ReferenceService {
 			ps = Connector.getInstance().getConnection().prepareStatement(query);
 			rs = ps.executeQuery();
 			if (rs.next()) 
-				type = initEntity(rs);
+				type = init(rs);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -52,8 +52,8 @@ public class AspectTypeService extends ReferenceService {
 	}
 
 	@Override
-	public List<BaseEntity> getOrderedEntities() throws DataAccessException {
-        List<BaseEntity> list = new ArrayList<BaseEntity>();
+	public List<Base> getList() throws DataAccessException {
+        List<Base> list = new ArrayList<Base>();
         PreparedStatement ps = null;
         ResultSet rs = null;
 		String query;
@@ -62,7 +62,7 @@ public class AspectTypeService extends ReferenceService {
 			ps = Connector.getInstance().getConnection().prepareStatement(query);
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				AspectType type = initEntity(rs);
+				AspectType type = init(rs);
 				list.add(type);
 			}
 		} catch (Exception e) {
@@ -79,7 +79,7 @@ public class AspectTypeService extends ReferenceService {
 	}
 
 	@Override
-	public BaseEntity saveEntity(BaseEntity element) throws DataAccessException {
+	public Base save(Base element) throws DataAccessException {
 		AspectType reference = (AspectType)element;
 		int result = -1;
         PreparedStatement ps = null;
@@ -133,21 +133,21 @@ public class AspectTypeService extends ReferenceService {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			updateDictionary();
+			update();
 		}
 		return reference;
 	}
 
 	@Override
-	public AspectType initEntity(ResultSet rs) throws DataAccessException, SQLException {
-		AspectType type = (AspectType)super.initEntity(rs);
+	public AspectType init(ResultSet rs) throws DataAccessException, SQLException {
+		AspectType type = (AspectType)super.init(rs);
 		type.setProtraction((Protraction)new ProtractionService().
-				getEntityById(Long.parseLong(rs.getString("ProtractionID"))));
+				find(Long.parseLong(rs.getString("ProtractionID"))));
 		type.setColor(CoreUtil.rgbToColor(rs.getString("Color")));
 		type.setDimColor(CoreUtil.rgbToColor(rs.getString("DimColor")));
 		if (rs.getString("ParentTypeID") != null) {
 			Long typeId = Long.parseLong(rs.getString("ParentTypeID"));
-			type.setParentType((AspectType)new AspectTypeService().getEntityById(typeId));
+			type.setParentType((AspectType)new AspectTypeService().find(typeId));
 		}
 		if (rs.getString("Symbol") != null)
 			type.setSymbol(rs.getString("Symbol").charAt(0));
@@ -155,7 +155,7 @@ public class AspectTypeService extends ReferenceService {
 	}
 
 	@Override
-	public BaseEntity createEntity() {
+	public Base create() {
 		return new AspectType();
 	}
 }

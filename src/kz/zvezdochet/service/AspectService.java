@@ -8,14 +8,14 @@ import java.util.List;
 
 import kz.zvezdochet.bean.Aspect;
 import kz.zvezdochet.bean.AspectType;
-import kz.zvezdochet.core.bean.BaseEntity;
+import kz.zvezdochet.core.bean.Base;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.ReferenceService;
 import kz.zvezdochet.core.tool.Connector;
 
 /**
  * Реализация сервиса аспектов
- * @author nataly
+ * @author Nataly Didenko
  *
  * @see ReferenceService Реализация сервиса справочников  
  */
@@ -26,14 +26,14 @@ public class AspectService extends ReferenceService {
 	}
 
 	@Override
-	public BaseEntity getEntityByCode(String code) throws DataAccessException {
+	public Base getEntityByCode(String code) throws DataAccessException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<BaseEntity> getOrderedEntities() throws DataAccessException {
-        List<BaseEntity> list = new ArrayList<BaseEntity>();
+	public List<Base> getList() throws DataAccessException {
+        List<Base> list = new ArrayList<Base>();
         PreparedStatement ps = null;
         ResultSet rs = null;
 		String query;
@@ -42,7 +42,7 @@ public class AspectService extends ReferenceService {
 			ps = Connector.getInstance().getConnection().prepareStatement(query);
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				Aspect aspect = initEntity(rs);
+				Aspect aspect = init(rs);
 				list.add(aspect);
 			}
 		} catch (Exception e) {
@@ -59,7 +59,7 @@ public class AspectService extends ReferenceService {
 	}
 
 	@Override
-	public BaseEntity saveEntity(BaseEntity element) throws DataAccessException {
+	public Base save(Base element) throws DataAccessException {
 		Aspect reference = (Aspect)element;
 		int result = -1;
         PreparedStatement ps = null;
@@ -105,23 +105,23 @@ public class AspectService extends ReferenceService {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			updateDictionary();
+			update();
 		}
 		return reference;
 	}
 
 	@Override
-	public Aspect initEntity(ResultSet rs) throws DataAccessException, SQLException {
-		Aspect aspect = (Aspect)super.initEntity(rs);
+	public Aspect init(ResultSet rs) throws DataAccessException, SQLException {
+		Aspect aspect = (Aspect)super.init(rs);
 		aspect.setValue(Double.parseDouble(rs.getString("Value")));
 		aspect.setOrbis(Double.parseDouble(rs.getString("Orbis")));
 		Long typeId = Long.parseLong(rs.getString("TypeID"));
-		aspect.setType((AspectType)new AspectTypeService().getEntityById(typeId));
+		aspect.setType((AspectType)new AspectTypeService().find(typeId));
 		return aspect;
 	}
 
 	@Override
-	public BaseEntity createEntity() {
+	public Base create() {
 		return new Aspect();
 	}
 }
