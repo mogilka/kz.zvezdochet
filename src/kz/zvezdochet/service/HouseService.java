@@ -53,56 +53,6 @@ public class HouseService extends ReferenceService {
 	}
 
 	@Override
-	public Base getEntityByCode(String code) throws DataAccessException {
-        House house = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-		String query;
-		try {
-			query = "select * from " + tableName + " where code = " + code;
-			ps = Connector.getInstance().getConnection().prepareStatement(query);
-			rs = ps.executeQuery();
-			if (rs.next()) 
-				house = init(rs);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try { 
-				if (rs != null) rs.close();
-				if (ps != null) ps.close();
-			} catch (SQLException e) { 
-				e.printStackTrace(); 
-			}
-		}
-		return house;
-	}
-
-	@Override
-	public Base find(Long id) throws DataAccessException {
-        House house = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-		String query;
-		try {
-			query = "select * from " + tableName + " where id = " + id;
-			ps = Connector.getInstance().getConnection().prepareStatement(query);
-			rs = ps.executeQuery();
-			if (rs.next()) 
-				house = init(rs);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try { 
-				if (rs != null) rs.close();
-				if (ps != null) ps.close();
-			} catch (SQLException e) { 
-				e.printStackTrace(); 
-			}
-		}
-		return house;
-	}
-
-	@Override
 	public Base save(Base element) throws DataAccessException {
 		House reference = (House)element;
 		int result = -1;

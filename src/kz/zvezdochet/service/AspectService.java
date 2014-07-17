@@ -3,8 +3,6 @@ package kz.zvezdochet.service;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import kz.zvezdochet.bean.Aspect;
 import kz.zvezdochet.bean.AspectType;
@@ -23,39 +21,6 @@ public class AspectService extends ReferenceService {
 
 	public AspectService() {
 		tableName = "aspects";
-	}
-
-	@Override
-	public Base getEntityByCode(String code) throws DataAccessException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Base> getList() throws DataAccessException {
-        List<Base> list = new ArrayList<Base>();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-		String query;
-		try {
-			query = "select * from " + tableName + " order by name";
-			ps = Connector.getInstance().getConnection().prepareStatement(query);
-			rs = ps.executeQuery();
-			while (rs.next()) {
-				Aspect aspect = init(rs);
-				list.add(aspect);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try { 
-				if (rs != null) rs.close();
-				if (ps != null) ps.close();
-			} catch (SQLException e) { 
-				e.printStackTrace(); 
-			}
-		}
-		return list;
 	}
 
 	@Override

@@ -26,38 +26,13 @@ public class SignService extends ReferenceService {
 	}
 
 	@Override
-	public Base getEntityByCode(String code) throws DataAccessException {
+	public Base find(String code) throws DataAccessException {
         Sign sign = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
 		String query;
 		try {
 			query = "select * from " + tableName + " where code = " + code;
-			ps = Connector.getInstance().getConnection().prepareStatement(query);
-			rs = ps.executeQuery();
-			if (rs.next()) 
-				sign = init(rs);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try { 
-				if (rs != null) rs.close();
-				if (ps != null) ps.close();
-			} catch (SQLException e) { 
-				e.printStackTrace(); 
-			}
-		}
-		return sign;
-	}
-
-	@Override
-	public Base find(Long id) throws DataAccessException {
-        Sign sign = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-		String query;
-		try {
-			query = "select * from " + tableName + " where id = " + id;
 			ps = Connector.getInstance().getConnection().prepareStatement(query);
 			rs = ps.executeQuery();
 			if (rs.next()) 

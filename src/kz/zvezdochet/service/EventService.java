@@ -292,12 +292,6 @@ public class EventService extends BaseService {
 	}
 
 	@Override
-	public List<Base> getList() throws DataAccessException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Base create() {
 		// TODO Auto-generated method stub
 		return null;

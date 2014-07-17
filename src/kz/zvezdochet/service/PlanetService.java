@@ -26,31 +26,6 @@ public class PlanetService extends ReferenceService {
 	}
 
 	@Override
-	public Base find(Long id) throws DataAccessException {
-        Planet planet = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-		String query;
-		try {
-			query = "select * from " + tableName + " where id = " + id;
-			ps = Connector.getInstance().getConnection().prepareStatement(query);
-			rs = ps.executeQuery();
-			if (rs.next()) 
-				planet = init(rs);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try { 
-				if (rs != null) rs.close();
-				if (ps != null) ps.close();
-			} catch (SQLException e) { 
-				e.printStackTrace(); 
-			}
-		}
-		return planet;
-	}
-
-	@Override
 	public List<Base> getList() throws DataAccessException {
         List<Base> list = new ArrayList<Base>();
         PreparedStatement ps = null;

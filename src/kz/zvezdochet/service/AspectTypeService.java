@@ -3,8 +3,6 @@ package kz.zvezdochet.service;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import kz.zvezdochet.bean.AspectType;
 import kz.zvezdochet.bean.Protraction;
@@ -24,58 +22,6 @@ public class AspectTypeService extends ReferenceService {
 
 	public AspectTypeService() {
 		tableName = "aspecttypes";
-	}
-
-	@Override
-	public Base find(Long id) throws DataAccessException {
-        AspectType type = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-		String query;
-		try {
-			query = "select * from " + tableName + " where id = " + id;
-			ps = Connector.getInstance().getConnection().prepareStatement(query);
-			rs = ps.executeQuery();
-			if (rs.next()) 
-				type = init(rs);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try { 
-				if (rs != null) rs.close();
-				if (ps != null) ps.close();
-			} catch (SQLException e) { 
-				e.printStackTrace(); 
-			}
-		}
-		return type;
-	}
-
-	@Override
-	public List<Base> getList() throws DataAccessException {
-        List<Base> list = new ArrayList<Base>();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-		String query;
-		try {
-			query = "select * from " + tableName + " order by name";
-			ps = Connector.getInstance().getConnection().prepareStatement(query);
-			rs = ps.executeQuery();
-			while (rs.next()) {
-				AspectType type = init(rs);
-				list.add(type);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try { 
-				if (rs != null) rs.close();
-				if (ps != null) ps.close();
-			} catch (SQLException e) { 
-				e.printStackTrace(); 
-			}
-		}
-		return list;
 	}
 
 	@Override
