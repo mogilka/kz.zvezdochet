@@ -10,6 +10,7 @@ import kz.zvezdochet.util.Configuration;
 
 import org.eclipse.e4.core.contexts.Active;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 
 /**
  * Расчёт конфигурации
@@ -21,9 +22,8 @@ public class CalcHandler {
 	public void execute(@Active MPart activePart) {
 		try {
 			EventPart eventPart = (EventPart)activePart.getObject();
-			Event event = (Event)eventPart.getElement();
+			Event event = (Event)eventPart.getElement(EventPart.MODE_CALC);
 			if (null == event) return;
-			if (!eventPart.checkViewValues()) return;
 //			updateStatus("Расчет конфигурации", false);
 			//new Configuration("12.12.2009", "23:11:16", "6.0", "43.15", "76.55");
 			Configuration configuration = new Configuration(
