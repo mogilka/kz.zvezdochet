@@ -340,58 +340,63 @@ public class Configuration {
 	 * @throws DataAccessException 
 	 */
 	public void getPlanetAspects() throws DataAccessException {
-  	  	aspectList = new ArrayList<SkyPointAspect>();
-		List<Base> aspects = new AspectService().getList();
-		if (planetList != null) 
-			for (Base entity : planetList) {
-				Planet p = (Planet)entity;
-				
-				//создаем карту статистики по аспектам планеты
-				Map<String, Integer> aspcountmap = new HashMap<String, Integer>();
-				Map<String, String> aspmap = new HashMap<String, String>();
-				List<Base> aspectTypes = new AspectTypeService().getList();
-				for (Base entity4 : aspectTypes) 
-					aspcountmap.put(((AspectType)entity4).getCode(), 0);
-				
-				for (Base entity2 : planetList) {
-					Planet p2 = (Planet)entity2;
-					if (p.getCode().equals(p2.getCode())) continue;
-					if (((p.getCode().equals("Rakhu")) && (p2.getCode().equals("Kethu"))) ||
-							((p.getCode().equals("Kethu")) && (p2.getCode().equals("Rakhu")))) 
-						continue;
-					double res = CalcUtil.getDifference(
-							Math.abs(CalcUtil.degToDec(p.getCoord())), 
-							Math.abs(CalcUtil.degToDec(p2.getCoord())));
-					for (Base entity3 : aspects) {
-						Aspect a = (Aspect)entity3;
-						if (a.isAspect(res)) {
-							SkyPointAspect aspect = new SkyPointAspect();
-							aspect.setSkyPoint1(p);
-							aspect.setSkyPoint2(p2);
-							aspect.setAspect(a);
-							aspectList.add(aspect);
-							
-							//фиксируем аспекты планеты
-							aspmap.put(p2.getCode(), a.getCode());
-							//суммируем аспекты каждого типа для планеты
-							String aspectTypeCode = a.getType().getCode();
-							int score = aspcountmap.get(aspectTypeCode);
-							aspcountmap.put(aspectTypeCode, ++score);
-							//System.out.println(score + "\t" + map.get(aspectTypeCode));
-							//суммируем сильные аспекты
-							aspectTypeCode = "COMMON";
-							if (a.getType().getParentType() != null &&
-									a.getType().getParentType().getCode().equals(aspectTypeCode)) {
-								score = aspcountmap.get(aspectTypeCode);
+		try {
+	  	  	aspectList = new ArrayList<SkyPointAspect>();
+			List<Base> aspects = new AspectService().getList();
+			if (planetList != null) 
+				for (Base entity : planetList) {
+					Planet p = (Planet)entity;
+					
+					//создаем карту статистики по аспектам планеты
+					Map<String, Integer> aspcountmap = new HashMap<String, Integer>();
+					Map<String, String> aspmap = new HashMap<String, String>();
+					List<Base> aspectTypes = new AspectTypeService().getList();
+					for (Base entity4 : aspectTypes) 
+						aspcountmap.put(((AspectType)entity4).getCode(), 0);
+					
+					for (Base entity2 : planetList) {
+						Planet p2 = (Planet)entity2;
+						if (p.getCode().equals(p2.getCode())) continue;
+						if (((p.getCode().equals("Rakhu")) && (p2.getCode().equals("Kethu"))) ||
+								((p.getCode().equals("Kethu")) && (p2.getCode().equals("Rakhu")))) 
+							continue;
+						double res = CalcUtil.getDifference(
+								Math.abs(CalcUtil.degToDec(p.getCoord())), 
+								Math.abs(CalcUtil.degToDec(p2.getCoord())));
+						for (Base entity3 : aspects) {
+							Aspect a = (Aspect)entity3;
+							if (a.isAspect(res)) {
+								SkyPointAspect aspect = new SkyPointAspect();
+								aspect.setSkyPoint1(p);
+								aspect.setSkyPoint2(p2);
+								aspect.setAspect(a);
+								aspectList.add(aspect);
+								
+								//фиксируем аспекты планеты
+								aspmap.put(p2.getCode(), a.getCode());
+								//суммируем аспекты каждого типа для планеты
+								String aspectTypeCode = a.getType().getCode();
+								int score = aspcountmap.get(aspectTypeCode);
 								aspcountmap.put(aspectTypeCode, ++score);
 								//System.out.println(score + "\t" + map.get(aspectTypeCode));
+								//суммируем сильные аспекты
+								aspectTypeCode = "COMMON";
+								if (a.getType().getParentType() != null &&
+										a.getType().getParentType().getCode() != null &&
+										a.getType().getParentType().getCode().equals(aspectTypeCode)) {
+									score = aspcountmap.get(aspectTypeCode);
+									aspcountmap.put(aspectTypeCode, ++score);
+									//System.out.println(score + "\t" + map.get(aspectTypeCode));
+								}
 							}
 						}
 					}
+					p.setAspectCountMap(aspcountmap);
+					p.setAspectMap(aspmap);
 				}
-				p.setAspectCountMap(aspcountmap);
-				p.setAspectMap(aspmap);
-			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

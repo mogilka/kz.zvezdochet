@@ -373,10 +373,6 @@ public class Planet extends SkyPoint {
 		return false; //TODO добавить реальное условие
 	}
 
-	public boolean isRetro() {
-		return coord < 0.0;
-	}
-
 	public boolean isDamaged() {
 		return damaged;
 	}

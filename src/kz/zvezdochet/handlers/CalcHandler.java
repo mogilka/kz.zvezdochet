@@ -1,7 +1,5 @@
 package kz.zvezdochet.handlers;
 
-import java.util.List;
-
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.core.ui.util.DialogUtil;
 import kz.zvezdochet.core.util.DateUtil;
@@ -35,8 +33,7 @@ public class CalcHandler {
 //			updateStatus("Расчет завершен", false);
 			event.setConfiguration(configuration);
 			eventPart.setElement(event, false);
-			List<String> params = CardHandler.getAspectParams(activePart);
-			eventPart.refreshCard(params);
+			eventPart.onCalc();
 //			updateStatus("Расчетная конфигурация создана", false);
 		} catch (Exception e) {
 			DialogUtil.alertError(e.getMessage());

@@ -78,8 +78,7 @@ public class CosmogramComposite extends Composite {
 	 */
 	private void paintCard(GC gc) {
    	    Image image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/card.png").createImage(); 
-   		if (image != null) 
-   			gc.drawImage(image, 52, 53);
+		gc.drawImage(image, 52, 53);
 		if (conf.getHouses() != null && conf.getHouses().size() > 0) 
 			drawHouses(conf, gc);
 	    if (conf.getPlanets() != null && conf.getPlanets().size() > 0)

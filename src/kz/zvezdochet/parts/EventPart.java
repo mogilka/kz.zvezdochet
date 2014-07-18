@@ -3,14 +3,18 @@
  */
 package kz.zvezdochet.parts;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
 import kz.zvezdochet.bean.Event;
+import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Place;
+import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.core.bean.Base;
+import kz.zvezdochet.core.bean.Reference;
 import kz.zvezdochet.core.handler.Handler;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.ui.decoration.InfoDecoration;
@@ -39,15 +43,24 @@ import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.internal.SwitchToWindowMenu;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
  * Представление события
@@ -79,6 +92,9 @@ public class EventPart extends ElementView {
 	private CDateTime dtDeath; 
 	private Button btCelebrity;
 	private CosmogramComposite cmpCosmogram;
+	private Group grPlanets;
+	private Group grHouses;
+	private CTabFolder folder;
 	
 	
 	@PostConstruct
@@ -169,24 +185,22 @@ public class EventPart extends ElementView {
 		//////////////////////////////////////////////////
 
 		Group grCosmogram = new Group(parent, SWT.NONE);
-		grCosmogram.setText("Cosmogram");
+		grCosmogram.setText("Космограмма");
 		cmpCosmogram = new CosmogramComposite(grCosmogram, SWT.NONE);
-
-		Group grPlanets = new Group(grCosmogram, SWT.NONE);
-		grPlanets.setText("Planets");
-
-		//////////////////////////////////////////////////
-
-		Group grHouses = new Group(grCosmogram, SWT.NONE);
-		grHouses.setText("Houses");
-
-		GridLayoutFactory.swtDefaults().numColumns(3).applyTo(grCosmogram);
+		
+		folder = new CTabFolder(grCosmogram, SWT.BORDER);
+		folder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		folder.setSimple(false);
+		folder.setUnselectedCloseVisible(false);
+		Tab[] tabs = initTabs();
+		for (Tab tab : tabs) {
+			CTabItem item = new CTabItem(folder, SWT.CLOSE);
+			item.setText(tab.name);
+			item.setImage(tab.image);
+			item.setControl(tab.control);
+		}
+		GridLayoutFactory.swtDefaults().applyTo(grCosmogram);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(grCosmogram);
-
-		GridLayoutFactory.swtDefaults().numColumns(3).applyTo(grPlanets);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(grPlanets);
-		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(grHouses);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(grHouses);
 		
 		super.create(parent);
 		try {
@@ -194,6 +208,52 @@ public class EventPart extends ElementView {
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Инициализация вкладок космограммы
+	 * @return массив вкладок
+	 */
+	private Tab[] initTabs() {
+		Tab[] tabs = new Tab[3];
+		Tab tab = new Tab();
+		tab.name = "Настройки";
+		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet.runner", "icons/configure.gif").createImage();
+		tab.control = new Group(folder, SWT.NONE);
+		//TODO кнопки из тулбара
+		tabs[0] = tab;
+		
+		tab = new Tab();
+		tab.name = "Планеты";
+		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet.gif").createImage();
+		grPlanets = new Group(folder, SWT.NONE);
+		tab.control = grPlanets;
+		GridLayoutFactory.swtDefaults().applyTo(grPlanets);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(grPlanets);
+		tabs[1] = tab;
+		
+		tab = new Tab();
+		tab.name = "Дома";
+		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/home.gif").createImage();
+		grHouses = new Group(folder, SWT.NONE);
+		tab.control = grHouses;
+		GridLayoutFactory.swtDefaults().applyTo(grHouses);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(grHouses);
+		tabs[2] = tab;
+		return tabs;
+	}
+
+	/**
+	 * Вспомогательный класс для формирования вкладок космограммы
+	 * @author Nataly Didenko
+	 */
+	private class Tab {
+		@SuppressWarnings("unused")
+		public String name;
+		@SuppressWarnings("unused")
+		public Image image;
+		@SuppressWarnings("unused")
+		public Control control;
 	}
 
 	/**
@@ -428,10 +488,126 @@ public class EventPart extends ElementView {
 	}
 
 	/**
-	 * Перерисовка космограммы
-	 * @param params параметры перерисовки
+	 * Обновление содержимого представления после расчёта
 	 */
-	public void refreshCard(List<String> params) {
+	public void onCalc() {
+		refreshCard();
+		refreshTabs();
+	}
+
+	/**
+	 * Обновление вкладок
+	 */
+	private void refreshTabs() {
+		Table table;
+		Event event = (Event)element;
+
+		//планеты
+		folder.setSelection(1);
+		String[] titles = {"Планета", "Координата", "Направление"};
+		Control[] controls = grPlanets.getChildren();
+		if (controls.length > 0) {
+			table = (Table)controls[0];
+			table.removeAll();
+		} else {
+			table = new Table(grPlanets, SWT.BORDER | SWT.V_SCROLL);
+			table.setLinesVisible(true);
+			table.setHeaderVisible(true);
+			table.setSize(grPlanets.getSize());
+			GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(table);
+			for (int i = 0; i < titles.length; i++) {
+				TableColumn column = new TableColumn (table, SWT.NONE);
+				column.setText(titles[i]);
+			}	
+		}
+		for (Base base : event.getConfiguration().getPlanets()) {
+			Planet planet = (Planet)base;
+			TableItem item = new TableItem(table, SWT.NONE);
+			item.setText(0, planet.getName());		
+			item.setText(1, String.valueOf(planet.getCoord()));
+			item.setText(2, planet.isRetrograde() ? "R" : "");
+		}
+		for (int i = 0; i < titles.length; i++)
+			table.getColumn(i).pack();
+
+		//дома
+		String[] titles2 = {"Дом", "Координата"};
+		controls = grHouses.getChildren();
+		if (controls.length > 0) {
+			table = (Table)controls[0];
+			table.removeAll();
+		} else {
+			table = new Table(grHouses, SWT.BORDER | SWT.V_SCROLL);
+			table.setLinesVisible(true);
+			table.setHeaderVisible(true);
+			table.setSize(grHouses.getSize());
+			GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(table);
+			for (int i = 0; i < titles2.length; i++) {
+				TableColumn column = new TableColumn (table, SWT.NONE);
+				column.setText(titles2[i]);
+			}	
+		}
+		for (Base base : event.getConfiguration().getHouses()) {
+			House house = (House)base;
+			TableItem item = new TableItem(table, SWT.NONE);
+			item.setText(0, house.getName());		
+			item.setText(1, String.valueOf(house.getCoord()));
+		}
+		for (int i = 0; i < titles2.length; i++)
+			table.getColumn(i).pack();	
+	}
+
+	/**
+	 * Перерисовка космограммы
+	 */
+	public void refreshCard() {
+		List<String> params = new ArrayList<String>();
+		params.add("NEUTRAL");
+
+		params.add("POSITIVE");
+		params.add("POSITIVE_HIDDEN");
+		params.add("NEGATIVE");
+		params.add("NEGATIVE_HIDDEN");
+		params.add("CREATIVE");
+		params.add("KARMIC");
+		params.add("SPIRITUAL");
+		params.add("ENSLAVEMENT");
+		params.add("DAO");
+		params.add("MAGIC");
+		params.add("PROGRESSIVE");
+		params.add("TEMPTATION");
+
+//		for (MToolBarElement item : activePart.getToolbar().getChildren()) {
+//			HandledToolItemImpl hti = (HandledToolItemImpl)item;
+////			MHandledToolItem hti = (MHandledToolItem)item;
+//			if (hti.isSelected())
+//				switch (hti.getElementId()) {
+//				case "kz.zvezdochet.handledtoolitem.harmonic":
+//					params.add("POSITIVE");
+//					params.add("POSITIVE_HIDDEN");
+//					break;
+//				case "kz.zvezdochet.handledtoolitem.disharmonic":
+//					params.add("NEGATIVE");
+//					params.add("NEGATIVE_HIDDEN");
+//					break;
+//				case "kz.zvezdochet.handledtoolitem.creative":
+//					params.add("CREATIVE");
+//					break;
+//				case "kz.zvezdochet.handledtoolitem.karmic":
+//					params.add("KARMIC");
+//					break;
+//				case "kz.zvezdochet.handledtoolitem.spiritual":
+//					params.add("SPIRITUAL");
+//					params.add("ENSLAVEMENT");
+//					params.add("DAO");
+//					params.add("MAGIC");
+//					break;
+//				case "kz.zvezdochet.handledtoolitem.progressive":
+//					params.add("PROGRESSIVE");
+//					params.add("TEMPTATION");
+//					break;
+//				}
+//		}
 		if (params.size() < 1) return;
 		Event event = (Event)element;
 		cmpCosmogram.paint(event.getConfiguration(), params);
