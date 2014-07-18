@@ -77,8 +77,9 @@ public class PlaceService extends ReferenceService {
 	}
 	
 	@Override
-	public Place init(ResultSet rs) throws DataAccessException, SQLException {
-		Place place = (Place)super.init(rs);
+	public Place init(ResultSet rs, Base base) throws DataAccessException, SQLException {
+		Place place = new Place();
+		super.init(rs, place);
 		place.setLatitude(Double.parseDouble(rs.getString("Latitude")));
 		place.setLongitude(Double.parseDouble(rs.getString("Longitude")));
 		place.setGreenwich(rs.getDouble("Greenwich"));
@@ -106,7 +107,7 @@ public class PlaceService extends ReferenceService {
 			ps.setString(1, "%" + name + "%");
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				Place type = init(rs);
+				Place type = init(rs, null);
 				list.add(type);
 			}
 		} catch (Exception e) {

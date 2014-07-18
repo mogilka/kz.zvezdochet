@@ -26,31 +26,6 @@ public class SignService extends ReferenceService {
 	}
 
 	@Override
-	public Base find(String code) throws DataAccessException {
-        Sign sign = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-		String query;
-		try {
-			query = "select * from " + tableName + " where code = " + code;
-			ps = Connector.getInstance().getConnection().prepareStatement(query);
-			rs = ps.executeQuery();
-			if (rs.next()) 
-				sign = init(rs);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try { 
-				if (rs != null) rs.close();
-				if (ps != null) ps.close();
-			} catch (SQLException e) { 
-				e.printStackTrace(); 
-			}
-		}
-		return sign;
-	}
-
-	@Override
 	public List<Base> getList() throws DataAccessException {
         List<Base> list = new ArrayList<Base>();
         PreparedStatement ps = null;
@@ -61,7 +36,7 @@ public class SignService extends ReferenceService {
 			ps = Connector.getInstance().getConnection().prepareStatement(query);
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				Sign sign = init(rs);
+				Sign sign = init(rs, null);
 				list.add(sign);
 			}
 		} catch (Exception e) {
@@ -135,8 +110,9 @@ public class SignService extends ReferenceService {
 	}
 
 	@Override
-	public Sign init(ResultSet rs) throws DataAccessException, SQLException {
-		Sign sign = (Sign)super.init(rs);
+	public Sign init(ResultSet rs, Base base) throws DataAccessException, SQLException {
+		Sign sign = new Sign();
+		super.init(rs, sign);
 		sign.setCoord(Double.parseDouble(rs.getString("FinalPoint")));
 		sign.setInitialPoint(rs.getDouble("InitialPoint"));
 		sign.setNumber(rs.getInt("OrdinalNumber"));

@@ -76,8 +76,9 @@ public class AspectService extends ReferenceService {
 	}
 
 	@Override
-	public Aspect init(ResultSet rs) throws DataAccessException, SQLException {
-		Aspect aspect = (Aspect)super.init(rs);
+	public Aspect init(ResultSet rs, Base base) throws DataAccessException, SQLException {
+		Aspect aspect = new Aspect();
+		super.init(rs, aspect);
 		aspect.setValue(Double.parseDouble(rs.getString("Value")));
 		aspect.setOrbis(Double.parseDouble(rs.getString("Orbis")));
 		Long typeId = Long.parseLong(rs.getString("TypeID"));

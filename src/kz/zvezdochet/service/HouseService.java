@@ -36,7 +36,7 @@ public class HouseService extends ReferenceService {
 			ps = Connector.getInstance().getConnection().prepareStatement(query);
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				House house = init(rs);
+				House house = init(rs, null);
 				list.add(house);
 			}
 		} catch (Exception e) {
@@ -116,8 +116,9 @@ public class HouseService extends ReferenceService {
 	}
 
 	@Override
-	public House init(ResultSet rs) throws DataAccessException, SQLException {
-		House house = (House)super.init(rs);
+	public House init(ResultSet rs, Base base) throws DataAccessException, SQLException {
+		House house = new House();
+		super.init(rs, house);
 		house.setNumber(rs.getInt("OrdinalNumber"));
 		house.setCombination(rs.getString("Combination"));
 		house.setShortName(rs.getString("Short"));
@@ -150,7 +151,7 @@ public class HouseService extends ReferenceService {
 			ps = Connector.getInstance().getConnection().prepareStatement(query);
 			rs = ps.executeQuery();
 			if (rs.next()) 
-				house = init(rs);
+				house = init(rs, null);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

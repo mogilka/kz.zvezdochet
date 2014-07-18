@@ -286,14 +286,13 @@ public class EventService extends BaseService {
 	}
 
 	@Override
-	public Reference init(ResultSet rs) throws SQLException {
+	public Reference init(ResultSet rs, Base base) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Base create() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Event();
 	}
 }

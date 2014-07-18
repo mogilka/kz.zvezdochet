@@ -36,7 +36,7 @@ public class PlanetService extends ReferenceService {
 			ps = Connector.getInstance().getConnection().prepareStatement(query);
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				Planet planet = init(rs);
+				Planet planet = init(rs, null);
 				list.add(planet);
 			}
 		} catch (Exception e) {
@@ -129,8 +129,9 @@ public class PlanetService extends ReferenceService {
 	}
 
 	@Override
-	public Planet init(ResultSet rs) throws DataAccessException, SQLException {
-		Planet planet = (Planet)super.init(rs);
+	public Planet init(ResultSet rs, Base base) throws DataAccessException, SQLException {
+		Planet planet = new Planet();
+		super.init(rs, planet);
 		planet.setScore(Double.parseDouble(rs.getString("Score")));
 		planet.setSwordText(rs.getString("Sword"));
 		planet.setShieldText(rs.getString("Shield"));

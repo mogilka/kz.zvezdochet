@@ -85,8 +85,9 @@ public class AspectTypeService extends ReferenceService {
 	}
 
 	@Override
-	public AspectType init(ResultSet rs) throws DataAccessException, SQLException {
-		AspectType type = (AspectType)super.init(rs);
+	public AspectType init(ResultSet rs, Base base) throws DataAccessException, SQLException {
+		AspectType type = new AspectType();
+		super.init(rs, type);
 		type.setProtraction((Protraction)new ProtractionService().
 				find(Long.parseLong(rs.getString("ProtractionID"))));
 		type.setColor(CoreUtil.rgbToColor(rs.getString("Color")));
