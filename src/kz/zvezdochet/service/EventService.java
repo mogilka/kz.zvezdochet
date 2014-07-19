@@ -1,7 +1,5 @@
 package kz.zvezdochet.service;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,18 +8,12 @@ import java.util.List;
 
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
-import kz.zvezdochet.bean.Place;
 import kz.zvezdochet.bean.Planet;
-import kz.zvezdochet.core.bean.Base;
-import kz.zvezdochet.core.bean.Reference;
-import kz.zvezdochet.core.service.DataAccessException;
+import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.BaseService;
+import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.tool.Connector;
 import kz.zvezdochet.core.util.DateUtil;
-import kz.zvezdochet.util.Configuration;
-
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
 
 /**
  * Реализация сервиса событий
@@ -41,8 +33,8 @@ public class EventService extends BaseService {
 	 * @return список событий
 	 * @throws DataAccessException
 	 */
-	public List<Base> findByName(String text) throws DataAccessException {
-        List<Base> list = new ArrayList<Base>();
+	public List<Model> findByName(String text) throws DataAccessException {
+        List<Model> list = new ArrayList<Model>();
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
@@ -69,7 +61,7 @@ public class EventService extends BaseService {
 	}
 	
 	@Override
-	public Base find(Long id) throws DataAccessException {
+	public Model find(Long id) throws DataAccessException {
         Event event = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -78,76 +70,8 @@ public class EventService extends BaseService {
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, id);
 			rs = ps.executeQuery();
-			while (rs.next()) {
-				event = new Event();
-				event.setId(Long.parseLong(rs.getString("ID")));
-				if (rs.getString("Callname") != null)
-					event.setName(rs.getString("Callname"));
-				if (rs.getString("Surname") != null)
-					event.setSurname(rs.getString("Surname"));
-				event.setBirth(DateUtil.getDatabaseDateTime(rs.getString("initialdate")));
-				if (rs.getString("Death") != null) 
-					event.setBirth(DateUtil.getDatabaseDateTime(rs.getString("finaldate")));
-				String s = rs.getString("RightHanded");
-				event.setRightHanded(s.equals("1") ? true : false);
-				if (rs.getString("Rectification") != null) 
-					event.setRectification(Integer.parseInt(rs.getString("Rectification")));
-				s = rs.getString("Celebrity");
-				event.setCelebrity(s.equals("1") ? true : false);
-				if (rs.getString("Comment") != null)
-					event.setDescription(rs.getString("Comment"));
-				s = rs.getString("Gender");
-				event.setFemale(s.equals("1") ? true : false);
-				if (rs.getString("Place") != null) {
-					Long placeId = Long.parseLong(rs.getString("Place"));
-					Base place = new PlaceService().find(placeId);
-					event.setPlace((Place)place);
-				}
-				if (rs.getString("Zone") != null)
-					event.setZone(Double.parseDouble(rs.getString("Zone")));
-				
-				//блобы
-				Object[] blob = getEventBlobs(event.getId());
-				if (blob != null && blob.length > 0) {
-					if (blob[0] != null)
-						event.setText(blob[0].toString());
-					if (blob[1] != null) {
-		                InputStream is = new ByteArrayInputStream((byte[])blob[1]);
-						event.setImage(new Image(Display.getDefault(), is));
-					}
-				}
-				
-				//конфигурация
-				event.setConfiguration(new Configuration());
-				//планеты
-				sql = "select * from eventplanets where eventid = ?";
-				PreparedStatement pst = Connector.getInstance().getConnection().prepareStatement(sql);
-				pst.setLong(1, id);
-				ResultSet rst = pst.executeQuery();
-				if (rst.next()) {
-					for (Base entity : event.getConfiguration().getPlanets()) {
-						Planet planet = (Planet)entity;
-						if (rst.getString(planet.getCode()) != null)
-							planet.setCoord(rst.getDouble(planet.getCode()));
-					}
-				}
-				//дома
-				sql = "select * from eventhouses where eventid = ?";
-				pst = Connector.getInstance().getConnection().prepareStatement(sql);
-				pst.setLong(1, id);
-				rst = pst.executeQuery();
-				if (rst.next()) {
-					for (Base entity : event.getConfiguration().getHouses()) {
-						House house = (House)entity;
-						if (rst.getString(house.getCode()) != null)
-							house.setCoord(rst.getDouble(house.getCode()));
-					}
-				}
-				event.getConfiguration().getPlanetInHouses();
-				event.getConfiguration().getPlanetInSigns();
-				event.getConfiguration().getPlanetAspects();
-				event.getConfiguration().getPlanetStatistics();
-			}
+			while (rs.next())
+				event = (Event)init(rs, null);				
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -162,7 +86,7 @@ public class EventService extends BaseService {
 	}
 
 	@Override
-	public Base save(Base element) throws DataAccessException {
+	public Model save(Model element) throws DataAccessException {
 		Event event = (Event)element;
 		int result = -1;
         PreparedStatement ps = null;
@@ -240,7 +164,7 @@ public class EventService extends BaseService {
 	 * - изображение
 	 * @throws DataAccessException
 	 */
-	private Object[] getEventBlobs(Long eventId) throws DataAccessException {
+	public Object[] findBlob(Long eventId) throws DataAccessException {
 		if (eventId == null) return null;
 		Object[] blob = new Object[2];
         PreparedStatement ps = null;
@@ -270,7 +194,7 @@ public class EventService extends BaseService {
 	}
 
 	@Override
-	public Base init(ResultSet rs, Base base) throws SQLException {
+	public Model init(ResultSet rs, Model base) throws SQLException {
 		Event event = (Event)create();
 		event.setId(Long.parseLong(rs.getString("ID")));
 		if (rs.getString("Callname") != null)
@@ -278,15 +202,98 @@ public class EventService extends BaseService {
 		if (rs.getString("Surname") != null)
 			event.setSurname(rs.getString("Surname"));
 		event.setBirth(DateUtil.getDatabaseDateTime(rs.getString("initialdate")));
+		if (rs.getString("Death") != null) 
+			event.setBirth(DateUtil.getDatabaseDateTime(rs.getString("finaldate")));
+		String s = rs.getString("RightHanded");
+		event.setRightHanded(s.equals("1") ? true : false);
+		if (rs.getString("Rectification") != null) 
+			event.setRectification(Integer.parseInt(rs.getString("Rectification")));
+		s = rs.getString("Celebrity");
+		event.setCelebrity(s.equals("1") ? true : false);
+		if (rs.getString("Comment") != null)
+			event.setDescription(rs.getString("Comment"));
+		s = rs.getString("Gender");
+		event.setFemale(s.equals("1") ? true : false);
 		if (rs.getString("Sign") != null)
 			event.setSign(rs.getString("Sign"));
 		if (rs.getString("Element") != null)
 			event.setElement(rs.getString("Element"));
+		if (rs.getString("Place") != null)
+			event.setPlaceid(Long.parseLong(rs.getString("Place")));
+		if (rs.getString("Zone") != null)
+			event.setZone(Double.parseDouble(rs.getString("Zone")));
 		return event;
 	}
 
 	@Override
-	public Base create() {
+	public Model create() {
 		return new Event();
+	}
+
+	/**
+	 * Инициализация планет события
+	 * @param event событие
+	 * @throws DataAccessException
+	 */
+	public void initPlanets(Event event) throws DataAccessException {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String sql = "select * from eventplanets where eventid = ?";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, event.getId());
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				for (Model model : event.getConfiguration().getPlanets()) {
+					Planet planet = (Planet)model;
+					if (rs.getString(planet.getCode()) != null) {
+						double coord = rs.getDouble(planet.getCode());
+						planet.setCoord(Math.abs(coord));
+						planet.setRetrograde(coord < 0);
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
+	}
+
+	/**
+	 * Инициализация астрологических домов события
+	 * @param event событие
+	 * @throws DataAccessException
+	 */
+	public void initHouses(Event event) throws DataAccessException {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String sql = "select * from eventhouses where eventid = ?";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, event.getId());
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				for (Model model : event.getConfiguration().getHouses()) {
+					House house = (House)model;
+					if (rs.getString(house.getCode()) != null)
+						house.setCoord(rs.getDouble(house.getCode()));
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
 	}
 }
