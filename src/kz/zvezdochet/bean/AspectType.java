@@ -20,21 +20,22 @@ public class AspectType extends DiagramObject {
 	 * Начертание
 	 */
 	private Protraction protraction;
-	
 	/**
 	 * Родительский тип
 	 */
 	private AspectType parentType;
-
 	/**
 	 * Дополнительный цвет (для отчетов, менее яркий)
 	 */
 	private Color dimColor;
-	
 	/**
 	 * Символ, обозначающий тип аспекта
 	 */
 	private char symbol;
+	/**
+	 * Изображение
+	 */
+	private String image;
 	
 	public Protraction getProtraction() {
 		return protraction;
@@ -74,5 +75,13 @@ public class AspectType extends DiagramObject {
 
 	public ReferenceService getService() {
 		return new AspectTypeService();
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
 	}
 }

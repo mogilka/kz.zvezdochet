@@ -3,10 +3,11 @@ package kz.zvezdochet.service;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import kz.zvezdochet.bean.AspectType;
 import kz.zvezdochet.bean.Protraction;
-import kz.zvezdochet.core.bean.Base;
+import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.ReferenceService;
 import kz.zvezdochet.core.tool.Connector;
@@ -25,7 +26,7 @@ public class AspectTypeService extends ReferenceService {
 	}
 
 	@Override
-	public Base save(Base element) throws DataAccessException {
+	public Model save(Model element) throws DataAccessException {
 		AspectType reference = (AspectType)element;
 		int result = -1;
         PreparedStatement ps = null;
@@ -85,7 +86,7 @@ public class AspectTypeService extends ReferenceService {
 	}
 
 	@Override
-	public AspectType init(ResultSet rs, Base base) throws DataAccessException, SQLException {
+	public AspectType init(ResultSet rs, Model base) throws DataAccessException, SQLException {
 		AspectType type = new AspectType();
 		super.init(rs, type);
 		type.setProtraction((Protraction)new ProtractionService().
@@ -98,11 +99,22 @@ public class AspectTypeService extends ReferenceService {
 		}
 		if (rs.getString("Symbol") != null)
 			type.setSymbol(rs.getString("Symbol").charAt(0));
+		if (rs.getString("image") != null)
+			type.setImage(rs.getString("image"));
 		return type;
 	}
 
 	@Override
-	public Base create() {
+	public Model create() {
 		return new AspectType();
+	}
+
+	private List<Model> list;
+	
+	@Override
+	public List<Model> getList() throws DataAccessException {
+		if (null == list)
+			list = super.getList();
+		return list;
 	}
 }
