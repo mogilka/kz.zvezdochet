@@ -13,7 +13,7 @@ import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.bean.Sign;
 import kz.zvezdochet.bean.SkyPoint;
 import kz.zvezdochet.bean.SkyPointAspect;
-import kz.zvezdochet.core.bean.Base;
+import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.util.CalcUtil;
 import kz.zvezdochet.core.util.NumberUtil;
@@ -33,8 +33,8 @@ import swisseph.SwissLib;
  * @author Nataly Didenko
  */
 public class Configuration {
-	private List<Base> planetList;
-	private	List<Base> houseList;
+	private List<Model> planetList;
+	private	List<Model> houseList;
 	private	List<SkyPointAspect> aspectList;
 
 	/**
@@ -260,11 +260,11 @@ public class Configuration {
 		}
   	}
 
-	public List<Base> getPlanets() {
+	public List<Model> getPlanets() {
 		return planetList;
 	}
 
-	public List<Base> getHouses() {
+	public List<Model> getHouses() {
 		return houseList;
 	}
 
@@ -326,7 +326,7 @@ public class Configuration {
 	 */
 	public void getPlanetInSigns() throws DataAccessException {
 		if (planetList != null) 
-			for (Base entity : planetList) {
+			for (Model entity : planetList) {
 				Planet planet = (Planet)entity;
 				Sign sign = AstroUtil.getSkyPointSign(planet.getCoord());
 				planet.setSign(sign);
@@ -342,19 +342,19 @@ public class Configuration {
 	public void getPlanetAspects() throws DataAccessException {
 		try {
 	  	  	aspectList = new ArrayList<SkyPointAspect>();
-			List<Base> aspects = new AspectService().getList();
+			List<Model> aspects = new AspectService().getList();
 			if (planetList != null) 
-				for (Base entity : planetList) {
+				for (Model entity : planetList) {
 					Planet p = (Planet)entity;
 					
 					//создаем карту статистики по аспектам планеты
 					Map<String, Integer> aspcountmap = new HashMap<String, Integer>();
 					Map<String, String> aspmap = new HashMap<String, String>();
-					List<Base> aspectTypes = new AspectTypeService().getList();
-					for (Base entity4 : aspectTypes) 
+					List<Model> aspectTypes = new AspectTypeService().getList();
+					for (Model entity4 : aspectTypes) 
 						aspcountmap.put(((AspectType)entity4).getCode(), 0);
 					
-					for (Base entity2 : planetList) {
+					for (Model entity2 : planetList) {
 						Planet p2 = (Planet)entity2;
 						if (p.getCode().equals(p2.getCode())) continue;
 						if (((p.getCode().equals("Rakhu")) && (p2.getCode().equals("Kethu"))) ||
@@ -363,7 +363,7 @@ public class Configuration {
 						double res = CalcUtil.getDifference(
 								Math.abs(CalcUtil.degToDec(p.getCoord())), 
 								Math.abs(CalcUtil.degToDec(p2.getCoord())));
-						for (Base entity3 : aspects) {
+						for (Model entity3 : aspects) {
 							Aspect a = (Aspect)entity3;
 							if (a.isAspect(res)) {
 								SkyPointAspect aspect = new SkyPointAspect();
@@ -426,7 +426,7 @@ public class Configuration {
 	 */
 	private void getDamagedPlanets() {
 		if (planetList != null) 
-			for (Base entity : planetList) {
+			for (Model entity : planetList) {
 				Planet planet = (Planet)entity;
 				
 				//сравнение количества хороших и плохих аспектов
@@ -460,7 +460,7 @@ public class Configuration {
 	 */
 	private void getBrokenPlanets() {
 		if (planetList != null) 
-			for (Base entity : planetList) {
+			for (Model entity : planetList) {
 				Planet planet = (Planet)entity;
 				if (aspectList != null) {
 					final String KETHU = "Kethu";
@@ -516,7 +516,7 @@ public class Configuration {
 		List<Planet> planets = new ArrayList<Planet>();
 
 		//определяем расстояние между планетами
-		for (Base entity : planetList) {
+		for (Model entity : planetList) {
 			Planet planet = (Planet)entity;
 			planets.add(planet);
 			if (planet.getCode().equals(point.getCode())) continue;
@@ -606,4 +606,11 @@ for i:=2 to 17 do
 end;
 
  */
+
+	public void setPlanets(List<Model> planets) {
+		planetList = planets;
+	}
+	public void setHouses(List<Model> houses) {
+		houseList = houses;
+	}
 }

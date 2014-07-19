@@ -3,7 +3,7 @@ package kz.zvezdochet.util;
 import java.util.List;
 
 import kz.zvezdochet.bean.Sign;
-import kz.zvezdochet.core.bean.Base;
+import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.service.SignService;
 
@@ -20,8 +20,8 @@ public class AstroUtil {
 	 * @throws DataAccessException 
 	 */
 	public static Sign getSkyPointSign(double coord) throws DataAccessException {
-		List<Base> signs = new SignService().getList();
-		for (Base sign : signs) 
+		List<Model> signs = new SignService().getList();
+		for (Model sign : signs) 
 			if (coord >= ((Sign)sign).getInitialPoint() && coord < ((Sign)sign).getCoord()) 
 				return (Sign)sign;
 		return null;
