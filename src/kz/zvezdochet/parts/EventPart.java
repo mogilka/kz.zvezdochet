@@ -9,11 +9,12 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import kz.zvezdochet.bean.AspectType;
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Place;
 import kz.zvezdochet.bean.Planet;
-import kz.zvezdochet.core.bean.Base;
+import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.handler.Handler;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.ui.Tab;
@@ -27,6 +28,7 @@ import kz.zvezdochet.core.util.CalcUtil;
 import kz.zvezdochet.core.util.DateUtil;
 import kz.zvezdochet.provider.PlaceProposalProvider;
 import kz.zvezdochet.provider.PlaceProposalProvider.PlaceContentProposal;
+import kz.zvezdochet.service.AspectTypeService;
 import kz.zvezdochet.service.PlaceService;
 import kz.zvezdochet.util.Configuration;
 
@@ -47,6 +49,7 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -93,7 +96,7 @@ public class EventPart extends ModelView {
 	private Group grPlanets;
 	private Group grHouses;
 	private CTabFolder folder;
-	
+	private Group grAspectType;
 	
 	@PostConstruct
 	public void create(Composite parent) {
@@ -112,7 +115,7 @@ public class EventPart extends ModelView {
 		lbGender.setText(Messages.getString("PersonView.Gender")); //$NON-NLS-1$
 		cvGender = new ComboViewer(secEvent, SWT.BORDER | SWT.READ_ONLY);
 		cmbGender = cvGender.getCombo();
-		
+
 		lb = new Label(secEvent, SWT.CENTER);
 		lb.setText(Messages.getString("PersonView.Hand")); //$NON-NLS-1$
 		cvHand = new ComboViewer(secEvent, SWT.BORDER | SWT.READ_ONLY);
@@ -122,7 +125,7 @@ public class EventPart extends ModelView {
 		lbBirth.setText(Messages.getString("PersonView.BirthDate")); //$NON-NLS-1$
 		dtBirth = new CDateTime(secEvent, CDT.BORDER | CDT.COMPACT | CDT.DROP_DOWN | CDT.DATE_LONG | CDT.TIME_MEDIUM);
 		dtBirth.setNullText(""); //$NON-NLS-1$
-		new RequiredDecoration(lb, SWT.TOP | SWT.RIGHT);
+		new RequiredDecoration(lbBirth, SWT.TOP | SWT.RIGHT);
 
 		lb = new Label(secEvent, SWT.CENTER);
 		lb.setText(Messages.getString("PersonView.DeathDate")); //$NON-NLS-1$
@@ -197,6 +200,7 @@ public class EventPart extends ModelView {
 			item.setImage(tab.image);
 			item.setControl(tab.control);
 		}
+		folder.pack();
 		GridLayoutFactory.swtDefaults().applyTo(grCosmogram);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(grCosmogram);
 		
@@ -213,14 +217,18 @@ public class EventPart extends ModelView {
 	 * @return массив вкладок
 	 */
 	private Tab[] initTabs() {
-		Tab[] tabs = new Tab[3];
+		Tab[] tabs = new Tab[4];
+		//настройки расчёта
 		Tab tab = new Tab();
 		tab.name = "Настройки";
 		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet.runner", "icons/configure.gif").createImage();
-		tab.control = new Group(folder, SWT.NONE);
-		//TODO кнопки из тулбара
+		Group group = new Group(folder, SWT.NONE);
+		group.setText("Общие");
+		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		tab.control = group;
 		tabs[0] = tab;
 		
+		//планеты
 		tab = new Tab();
 		tab.name = "Планеты";
 		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet.gif").createImage();
@@ -240,6 +248,7 @@ public class EventPart extends ModelView {
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(grPlanets);
 		tabs[1] = tab;
 		
+		//дома
 		tab = new Tab();
 		tab.name = "Дома";
 		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/home.gif").createImage();
@@ -253,12 +262,46 @@ public class EventPart extends ModelView {
 		for (int i = 0; i < titles2.length; i++) {
 			TableColumn column = new TableColumn (table, SWT.NONE);
 			column.setText(titles2[i]);
-		}	
-
+		}
 		tab.control = grHouses;
 		GridLayoutFactory.swtDefaults().applyTo(grHouses);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(grHouses);
 		tabs[2] = tab;
+		
+		//аспекты
+		tab = new Tab();
+		tab.name = "Аспекты";
+		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect.gif").createImage();
+		grAspectType = new Group(folder, SWT.NONE);
+		grAspectType.setLayout(new GridLayout());
+		List<Model> types = new ArrayList<Model>();
+		try {
+			types = new AspectTypeService().getList();
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+		}
+		for (Model model : types) {
+			AspectType type = (AspectType)model;
+			if (type.getImage() != null) {
+				final Button bt = new Button(grAspectType, SWT.BORDER | SWT.CHECK);
+				bt.setText(type.getName());
+				bt.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/" + type.getImage()).createImage());
+				bt.setSelection(true);
+				bt.setData("type", type.getCode());
+				bt.addSelectionListener(new SelectionListener() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						if (bt.getSelection())
+							refreshCard();
+					}
+					@Override
+					public void widgetDefaultSelected(SelectionEvent e) {}
+				});
+			}
+		}
+		tab.control = grAspectType;
+		tabs[3] = tab;
+		
 		return tabs;
 	}
 
@@ -500,14 +543,14 @@ public class EventPart extends ModelView {
 	 */
 	private void refreshTabs() {
 		//планеты
-		folder.setSelection(1);
 		Control[] controls = grPlanets.getChildren();
 		Table table = (Table)controls[0];
 		table.removeAll();
 		Event event = (Event)model;
 		Configuration conf = event.getConfiguration();
 		if (conf != null) {
-			for (Base base : conf.getPlanets()) {
+			folder.setSelection(1);
+			for (Model base : conf.getPlanets()) {
 				Planet planet = (Planet)base;
 				TableItem item = new TableItem(table, SWT.NONE);
 				item.setText(0, planet.getName());		
@@ -516,13 +559,15 @@ public class EventPart extends ModelView {
 			}
 			for (int i = 0; i < table.getColumnCount(); i++)
 				table.getColumn(i).pack();
-		}
+		} else
+			folder.setSelection(0);
+			
 		//дома
 		controls = grHouses.getChildren();
 		table = (Table)controls[0];
 		table.removeAll();
 		if (conf != null) {
-			for (Base base : conf.getHouses()) {
+			for (Model base : conf.getHouses()) {
 				House house = (House)base;
 				TableItem item = new TableItem(table, SWT.NONE);
 				item.setText(0, house.getName());		
@@ -536,54 +581,40 @@ public class EventPart extends ModelView {
 	/**
 	 * Перерисовка космограммы
 	 */
-	public void refreshCard() {
+	private void refreshCard() {
 		List<String> params = new ArrayList<String>();
 		params.add("NEUTRAL");
-
-		params.add("POSITIVE");
-		params.add("POSITIVE_HIDDEN");
-		params.add("NEGATIVE");
-		params.add("NEGATIVE_HIDDEN");
-		params.add("CREATIVE");
-		params.add("KARMIC");
-		params.add("SPIRITUAL");
-		params.add("ENSLAVEMENT");
-		params.add("DAO");
-		params.add("MAGIC");
-		params.add("PROGRESSIVE");
-		params.add("TEMPTATION");
-
-//		for (MToolBarElement item : activePart.getToolbar().getChildren()) {
-//			HandledToolItemImpl hti = (HandledToolItemImpl)item;
-////			MHandledToolItem hti = (MHandledToolItem)item;
-//			if (hti.isSelected())
-//				switch (hti.getElementId()) {
-//				case "kz.zvezdochet.handledtoolitem.harmonic":
-//					params.add("POSITIVE");
-//					params.add("POSITIVE_HIDDEN");
-//					break;
-//				case "kz.zvezdochet.handledtoolitem.disharmonic":
-//					params.add("NEGATIVE");
-//					params.add("NEGATIVE_HIDDEN");
-//					break;
-//				case "kz.zvezdochet.handledtoolitem.creative":
-//					params.add("CREATIVE");
-//					break;
-//				case "kz.zvezdochet.handledtoolitem.karmic":
-//					params.add("KARMIC");
-//					break;
-//				case "kz.zvezdochet.handledtoolitem.spiritual":
-//					params.add("SPIRITUAL");
-//					params.add("ENSLAVEMENT");
-//					params.add("DAO");
-//					params.add("MAGIC");
-//					break;
-//				case "kz.zvezdochet.handledtoolitem.progressive":
-//					params.add("PROGRESSIVE");
-//					params.add("TEMPTATION");
-//					break;
-//				}
-//		}
+		for (Control control : grAspectType.getChildren()) {
+			Button button = (Button)control;
+			if (button.getSelection())
+				switch (button.getData("type").toString()) {
+				case "POSITIVE":
+					params.add("POSITIVE");
+					params.add("POSITIVE_HIDDEN");
+					break;
+				case "NEGATIVE":
+					params.add("NEGATIVE");
+					params.add("NEGATIVE_HIDDEN");
+					break;
+				case "CREATIVE":
+					params.add("CREATIVE");
+					break;
+				case "KARMIC":
+					params.add("KARMIC");
+					break;
+				case "SPIRITUAL":
+					params.add("SPIRITUAL");
+					params.add("ENSLAVEMENT");
+					params.add("DAO");
+					params.add("MAGIC");
+					break;
+				case "PROGRESSIVE":
+					params.add("PROGRESSIVE");
+					params.add("TEMPTATION");
+					break;
+				}
+		}
+		if (params.size() < 1) return;
 		Event event = (Event)model;
 		cmpCosmogram.paint(event.getConfiguration(), params);
 	}
@@ -610,13 +641,14 @@ public class EventPart extends ModelView {
 	}
 
 	@Override
-	public void setModel(Base model, boolean refresh) {
-		super.setModel(model, refresh);
+	public void setModel(Model model, boolean refresh) {
 		Event event = (Event)model;
-		if (model != null && event.getId() != null)
+		if (model != null && event.getId() != null) {
+			event.init();
 			setTitle(event.getFullName());
-		else
+		} else
 			setTitle(Messages.getString("PersonView.New")); //$NON-NLS-1$
+		super.setModel(model, refresh);
 		refreshCard();
 		refreshTabs();
 	}

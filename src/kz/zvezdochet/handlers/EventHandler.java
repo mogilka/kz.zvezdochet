@@ -4,7 +4,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import kz.zvezdochet.bean.Event;
-import kz.zvezdochet.core.bean.Base;
+import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.parts.EventPart;
 import kz.zvezdochet.parts.SearchPart;
 
@@ -32,7 +32,7 @@ public class EventHandler {
 			@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
 		Object part = activePart.getObject();
 		if (part instanceof SearchPart) {
-			Base model = (Base)((SearchPart)activePart.getObject()).getModel();
+			Model model = (Model)((SearchPart)activePart.getObject()).getModel();
 			if (model != null)
 				checkPart(shell, model);
 		} else
@@ -50,7 +50,7 @@ public class EventHandler {
 	 * @param part представление
 	 * @param model событие
 	 */
-	private void openEvent(MPart part, Base model) {
+	private void openEvent(MPart part, Model model) {
 		if (model != null)
 			((EventPart)part.getObject()).setModel(model, true);
 	    part.setVisible(true);
@@ -62,7 +62,7 @@ public class EventHandler {
 	 * @param shell окно приложения
 	 * @param element событие
 	 */
-	protected void checkPart(Shell shell, Base element) {
+	protected void checkPart(Shell shell, Model element) {
 		MPart part = partService.findPart("kz.zvezdochet.part.event");
 	    if (part.isDirty()) {
 			if (MessageDialog.openConfirm(shell, "Подтверждение",
