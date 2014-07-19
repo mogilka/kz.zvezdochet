@@ -1,0 +1,191 @@
+package kz.zvezdochet.parts;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+import kz.zvezdochet.core.service.DataAccessException;
+import kz.zvezdochet.core.ui.Tab;
+import kz.zvezdochet.core.ui.comparator.TableSortListenerFactory;
+import kz.zvezdochet.core.ui.view.ModelListView;
+import kz.zvezdochet.core.util.DateUtil;
+import kz.zvezdochet.handlers.EventHandler;
+import kz.zvezdochet.service.EventService;
+
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
+
+/**
+ * Поиск событий
+ * @author Nataly Didenko
+ */
+public class SearchPart extends ModelListView {
+	private CTabFolder folder;
+	
+	@Inject
+	public SearchPart() {
+		
+	}
+
+	@PostConstruct @Override
+	public void create(Composite parent) {
+		super.create(parent);
+//		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
+//			@Override
+//			public void doubleClick(DoubleClickEvent event) {
+//				new EventHandler().execute(SearchPart.this);				
+//			}
+//		});
+	}
+	
+	@Override
+	public void initFilter() {
+		grFilter = new Group(container, SWT.NONE);
+		grFilter.setText("Поиск");
+		grFilter.setLayout(new GridLayout());
+		folder = new CTabFolder(grFilter, SWT.BORDER);
+		folder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		folder.setSimple(false);
+		folder.setUnselectedCloseVisible(false);
+		Tab[] tabs = initTabs();
+		for (Tab tab : tabs) {
+			CTabItem item = new CTabItem(folder, SWT.CLOSE);
+			item.setText(tab.name);
+			item.setImage(tab.image);
+			item.setControl(tab.control);
+		}
+		folder.setSelection(0);
+	}
+
+	/**
+	 * Инициализация вкладок поиска
+	 * @return массив вкладок
+	 */
+	private Tab[] initTabs() {
+		Tab[] tabs = new Tab[5];
+		Tab tab = new Tab();
+		tab.name = "по имени";
+		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet.core", "icons/correction_linked_rename.gif").createImage();
+		final Text txSearch = new Text(folder, SWT.BORDER);
+		txSearch.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		txSearch.setFocus();
+		txSearch.addListener(SWT.DefaultSelection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				String text = txSearch.getText();
+				if (text.length() > 1)
+					findByName(text);
+			}
+		});
+		tab.control = txSearch;
+		tabs[0] = tab;
+		
+		tab = new Tab();
+		tab.name = "по знакам Зодиака";
+		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/cosmogram.png").createImage();
+		Group group = new Group(folder, SWT.NONE);
+		//TODO интерфейс
+		tab.control = group;
+		GridLayoutFactory.swtDefaults().applyTo(group);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(group);
+		tabs[1] = tab;
+		
+		tab = new Tab();
+		tab.name = "по домам";
+		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/home.gif").createImage();
+		group = new Group(folder, SWT.NONE);
+		//TODO интерфейс
+		tab.control = group;
+		GridLayoutFactory.swtDefaults().applyTo(group);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(group);
+		tabs[2] = tab;
+
+		tab = new Tab();
+		tab.name = "по аспектам";
+		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect.gif").createImage();
+		group = new Group(folder, SWT.NONE);
+		//TODO интерфейс
+		tab.control = group;
+		GridLayoutFactory.swtDefaults().applyTo(group);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(group);
+		tabs[3] = tab;
+
+		tab = new Tab();
+		tab.name = "по дате";
+		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/calendar_view_day.png").createImage();
+		group = new Group(folder, SWT.NONE);
+		//TODO интерфейс
+		tab.control = group;
+		GridLayoutFactory.swtDefaults().applyTo(group);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(group);
+		tabs[4] = tab;
+		return tabs;
+	}
+
+	/**
+	 * Поиск по имени
+	 * @param text поисковое выражение
+	 */
+	private void findByName(String text) {
+		try {
+			modelList = new EventService().findByName(text);
+			initTable();
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private Map<Integer, String> columns = new HashMap<Integer, String>(); 
+	
+	@Override
+	protected void addColumns() {
+		columns.put(0, "Имя");
+		columns.put(1, "Фамилия");
+		columns.put(2, "Дата");
+		columns.put(3, "Знак Зодиака");
+		columns.put(4, "Стихия");
+		for (Map.Entry<Integer, String> column : columns.entrySet()) {
+			TableColumn tableColumn = new TableColumn(table, SWT.NONE);
+			tableColumn.setText(column.getValue());		
+			tableColumn.setWidth(table.getSize().x / columns.size());
+			tableColumn.addListener(SWT.Selection, TableSortListenerFactory.getListener(
+				TableSortListenerFactory.STRING_COMPARATOR));
+		}
+	}
+
+	@Override
+	protected IBaseLabelProvider getLabelProvider() {
+		return new ModelLabelProvider() {
+			@Override
+			public String getColumnText(Object element, int columnIndex) {
+				kz.zvezdochet.bean.Event event = (kz.zvezdochet.bean.Event)element;
+				switch (columnIndex) {
+					case 0: return event.getName();
+					case 1: return event.getSurname();
+					case 2: return DateUtil.formatDateTime(event.getBirth());
+					case 3: return event.getSign();
+					case 4: return event.getElement();
+				}
+				return null;
+			}
+		};
+	}
+}

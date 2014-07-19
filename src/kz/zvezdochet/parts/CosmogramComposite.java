@@ -47,14 +47,12 @@ public class CosmogramComposite extends Composite {
 		xcenter = ycenter = getClientArea().width / 2;
 		addPaintListener(new PaintListener() {
 	        public void paintControl(final PaintEvent e) {
-	        	if (conf != null) {
-	        		BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
-	        			@Override
-	        			public void run() {
-	    	        		paintCard(e.gc);
-	        			}
-	        		});
-	        	}
+        		BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
+        			@Override
+        			public void run() {
+    	        		paintCard(e.gc);
+        			}
+        		});
 	        }
 		});
 	}
@@ -63,9 +61,9 @@ public class CosmogramComposite extends Composite {
 	 * Прорисовка космограммы
 	 * @param conf расчётная конфигурация события
 	 * @param params массив параметров
+	 * @todo если параметры не заданы, брать все по умолчанию
 	 */
 	public void paint(Configuration conf, List<String> params) {
-		if (null == conf) return;
 		this.conf = conf;
 		this.params = params;
 		redraw();
@@ -79,14 +77,16 @@ public class CosmogramComposite extends Composite {
 	private void paintCard(GC gc) {
    	    Image image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/card.png").createImage(); 
 		gc.drawImage(image, 52, 53);
-		if (conf.getHouses() != null && conf.getHouses().size() > 0) 
-			drawHouses(conf, gc);
-	    if (conf.getPlanets() != null && conf.getPlanets().size() > 0)
-			try {
-				drawPlanets(conf, gc);
-			} catch (DataAccessException e) {
-				e.printStackTrace();
-			}
+		if (conf != null) {
+			if (conf.getHouses() != null && conf.getHouses().size() > 0) 
+				drawHouses(conf, gc);
+		    if (conf.getPlanets() != null && conf.getPlanets().size() > 0)
+				try {
+					drawPlanets(conf, gc);
+				} catch (DataAccessException e) {
+					e.printStackTrace();
+				}
+		}
 	    gc.dispose(); 
 	    image.dispose();
 	}

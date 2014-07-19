@@ -20,7 +20,7 @@ public class CalcHandler {
 	public void execute(@Active MPart activePart) {
 		try {
 			EventPart eventPart = (EventPart)activePart.getObject();
-			Event event = (Event)eventPart.getElement(EventPart.MODE_CALC);
+			Event event = (Event)eventPart.getModel(EventPart.MODE_CALC);
 			if (null == event) return;
 //			updateStatus("Расчет конфигурации", false);
 			//new Configuration("12.12.2009", "23:11:16", "6.0", "43.15", "76.55");
@@ -32,7 +32,7 @@ public class CalcHandler {
 				Double.toString(event.getPlace().getLongitude()));
 //			updateStatus("Расчет завершен", false);
 			event.setConfiguration(configuration);
-			eventPart.setElement(event, false);
+			eventPart.setModel(event, false);
 			eventPart.onCalc();
 //			updateStatus("Расчетная конфигурация создана", false);
 		} catch (Exception e) {

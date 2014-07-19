@@ -36,41 +36,25 @@ public class EventService extends BaseService {
 	}
 
 	/**
-	 * Поиск события
-	 * @param fullname sql-запрос
+	 * Поиск события по наименованию
+	 * @param text поисковое выражение
 	 * @return список событий
 	 * @throws DataAccessException
 	 */
-	public List<Base> getEvents(String fullname) throws DataAccessException {
+	public List<Base> findByName(String text) throws DataAccessException {
         List<Base> list = new ArrayList<Base>();
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
-			String sql = 
-				"select id, surname, callname, initialdate, comment, sign, element " +
-				"from " + tableName + 
+			String sql = "select * from " + tableName + 
 				" where callname like ? or surname like ?" +
 				" order by initialdate";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			ps.setString(1, "%" + fullname + "%");
-			ps.setString(2, "%" + fullname + "%");
+			ps.setString(1, "%" + text + "%");
+			ps.setString(2, "%" + text + "%");
 			rs = ps.executeQuery();
-			while (rs.next()) {
-				Event event = new Event();
-				event.setId(Long.parseLong(rs.getString("ID")));
-				if (rs.getString("Callname") != null)
-					event.setName(rs.getString("Callname"));
-				if (rs.getString("Surname") != null)
-					event.setSurname(rs.getString("Surname"));
-				event.setBirth(DateUtil.getDatabaseDateTime(rs.getString("initialdate")));
-				if (rs.getString("Comment") != null)
-					event.setDescription(rs.getString("Comment"));
-				if (rs.getString("Sign") != null)
-					event.setSign(rs.getString("Sign"));
-				if (rs.getString("Element") != null)
-					event.setElement(rs.getString("Element"));
-				list.add(event);
-			}
+			while (rs.next())
+				list.add(init(rs, null));
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -286,9 +270,19 @@ public class EventService extends BaseService {
 	}
 
 	@Override
-	public Reference init(ResultSet rs, Base base) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+	public Base init(ResultSet rs, Base base) throws SQLException {
+		Event event = (Event)create();
+		event.setId(Long.parseLong(rs.getString("ID")));
+		if (rs.getString("Callname") != null)
+			event.setName(rs.getString("Callname"));
+		if (rs.getString("Surname") != null)
+			event.setSurname(rs.getString("Surname"));
+		event.setBirth(DateUtil.getDatabaseDateTime(rs.getString("initialdate")));
+		if (rs.getString("Sign") != null)
+			event.setSign(rs.getString("Sign"));
+		if (rs.getString("Element") != null)
+			event.setElement(rs.getString("Element"));
+		return event;
 	}
 
 	@Override

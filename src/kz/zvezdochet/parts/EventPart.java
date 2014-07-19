@@ -14,15 +14,15 @@ import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Place;
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.core.bean.Base;
-import kz.zvezdochet.core.bean.Reference;
 import kz.zvezdochet.core.handler.Handler;
 import kz.zvezdochet.core.service.DataAccessException;
+import kz.zvezdochet.core.ui.Tab;
 import kz.zvezdochet.core.ui.decoration.InfoDecoration;
 import kz.zvezdochet.core.ui.decoration.RequiredDecoration;
 import kz.zvezdochet.core.ui.listener.NumberInputListener;
 import kz.zvezdochet.core.ui.util.DialogUtil;
 import kz.zvezdochet.core.ui.util.GUIutil;
-import kz.zvezdochet.core.ui.view.ElementView;
+import kz.zvezdochet.core.ui.view.ModelView;
 import kz.zvezdochet.core.util.CalcUtil;
 import kz.zvezdochet.core.util.DateUtil;
 import kz.zvezdochet.provider.PlaceProposalProvider;
@@ -30,7 +30,6 @@ import kz.zvezdochet.provider.PlaceProposalProvider.PlaceContentProposal;
 import kz.zvezdochet.service.PlaceService;
 import kz.zvezdochet.util.Configuration;
 
-import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.IContentProposal;
@@ -47,7 +46,6 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
@@ -59,14 +57,14 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.internal.SwitchToWindowMenu;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
  * Представление события
  * @author Nataly Didenko
+ * @todo при любом изменении данных делать представление грязным
  */
-public class EventPart extends ElementView {
+public class EventPart extends ModelView {
 	
 	public static int MODE_CALC = 1;
 
@@ -227,6 +225,16 @@ public class EventPart extends ElementView {
 		tab.name = "Планеты";
 		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet.gif").createImage();
 		grPlanets = new Group(folder, SWT.NONE);
+		String[] titles = {"Планета", "Координата", "Направление"};
+		Table table = new Table(grPlanets, SWT.BORDER | SWT.V_SCROLL);
+		table.setLinesVisible(true);
+		table.setHeaderVisible(true);
+		table.setSize(grPlanets.getSize());
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(table);
+		for (int i = 0; i < titles.length; i++) {
+			TableColumn column = new TableColumn (table, SWT.NONE);
+			column.setText(titles[i]);
+		}	
 		tab.control = grPlanets;
 		GridLayoutFactory.swtDefaults().applyTo(grPlanets);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(grPlanets);
@@ -236,6 +244,17 @@ public class EventPart extends ElementView {
 		tab.name = "Дома";
 		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/home.gif").createImage();
 		grHouses = new Group(folder, SWT.NONE);
+		String[] titles2 = {"Дом", "Координата"};
+		table = new Table(grHouses, SWT.BORDER | SWT.V_SCROLL);
+		table.setLinesVisible(true);
+		table.setHeaderVisible(true);
+		table.setSize(grHouses.getSize());
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(table);
+		for (int i = 0; i < titles2.length; i++) {
+			TableColumn column = new TableColumn (table, SWT.NONE);
+			column.setText(titles2[i]);
+		}	
+
 		tab.control = grHouses;
 		GridLayoutFactory.swtDefaults().applyTo(grHouses);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(grHouses);
@@ -244,33 +263,15 @@ public class EventPart extends ElementView {
 	}
 
 	/**
-	 * Вспомогательный класс для формирования вкладок космограммы
-	 * @author Nataly Didenko
-	 */
-	private class Tab {
-		@SuppressWarnings("unused")
-		public String name;
-		@SuppressWarnings("unused")
-		public Image image;
-		@SuppressWarnings("unused")
-		public Control control;
-	}
-
-	/**
 	 * Инициализация события по умолчанию
 	 * @throws DataAccessException 
 	 */
 	private void setDefaultElement() throws DataAccessException {
-		element = new Event();
-		((Event)element).setZone(6.0); //TODO задавать через конфиг
+		model = new Event();
+		((Event)model).setZone(6.0); //TODO задавать через конфиг
 		Place place = (Place)new PlaceService().find(115L); //TODO задавать через конфиг
-		((Event)element).setPlace(place);
-		setElement(element, true);
-	}
-
-	@Focus
-	public void setFocus() {
-//		tableViewer.getTable().setFocus();
+		((Event)model).setPlace(place);
+		setModel(model, true);
 	}
 
 	@Override
@@ -368,7 +369,7 @@ public class EventPart extends ElementView {
 		Messages.getString("PersonView.Undefined")};
 
 	@Override
-	protected void initializeControls() {
+	protected void initControls() {
 		cvGender.setContentProvider(new ArrayContentProvider());
 		cvGender.setInput(genders);
 
@@ -382,7 +383,7 @@ public class EventPart extends ElementView {
 	}
 
 	@Override
-	public boolean checkViewValues(int mode) throws Exception {
+	public boolean check(int mode) throws Exception {
 		StringBuffer msgBody = new StringBuffer();
 		if (Handler.MODE_SAVE == mode) {
 			if (null == txPlace.getText()) {
@@ -409,10 +410,10 @@ public class EventPart extends ElementView {
 	}
 
 	@Override
-	protected void viewToModel(int mode) throws Exception {
-		if (!checkViewValues(mode)) return;
-		element = (element == null) ? new Event() : element;
-		Event event = (Event)element;
+	protected void syncModel(int mode) throws Exception {
+		if (!check(mode)) return;
+		model = (model == null) ? new Event() : model;
+		Event event = (Event)model;
 		if (Handler.MODE_SAVE == mode) {
 			event.setName(txName.getText());
 			event.setSurname(txSurname.getText());
@@ -424,7 +425,6 @@ public class EventPart extends ElementView {
 			event.setDescription(txCelebrity.getText());
 			event.setCelebrity(btCelebrity.getSelection());
 		}
-//		Place place = places.get(txPlace.getText()); //TODO идентифицировать по имени неправильно
 		if (null == event.getPlace()) {
 			Place place = new Place();
 			place.setLatitude(51.48);
@@ -436,10 +436,10 @@ public class EventPart extends ElementView {
 		event.setZone(zone);
 	}
 	
-	protected void modelToView() {
+	protected void syncView() {
 		clear();
-		element = (element == null) ? new Event() : element;
-		Event event = (Event)element;
+		model = (model == null) ? new Event() : model;
+		Event event = (Event)model;
 		setCodeEdit(true);
 		txName.setText(event.getName());
 		if (event.getSurname() != null)
@@ -483,7 +483,7 @@ public class EventPart extends ElementView {
 		setCodeEdit(false);
 	}
 	
-	public Object addElement() {
+	public Object addModel() {
 		return new Event();
 	}
 
@@ -499,62 +499,38 @@ public class EventPart extends ElementView {
 	 * Обновление вкладок
 	 */
 	private void refreshTabs() {
-		Table table;
-		Event event = (Event)element;
-
 		//планеты
 		folder.setSelection(1);
-		String[] titles = {"Планета", "Координата", "Направление"};
 		Control[] controls = grPlanets.getChildren();
-		if (controls.length > 0) {
-			table = (Table)controls[0];
-			table.removeAll();
-		} else {
-			table = new Table(grPlanets, SWT.BORDER | SWT.V_SCROLL);
-			table.setLinesVisible(true);
-			table.setHeaderVisible(true);
-			table.setSize(grPlanets.getSize());
-			GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(table);
-			for (int i = 0; i < titles.length; i++) {
-				TableColumn column = new TableColumn (table, SWT.NONE);
-				column.setText(titles[i]);
-			}	
+		Table table = (Table)controls[0];
+		table.removeAll();
+		Event event = (Event)model;
+		Configuration conf = event.getConfiguration();
+		if (conf != null) {
+			for (Base base : conf.getPlanets()) {
+				Planet planet = (Planet)base;
+				TableItem item = new TableItem(table, SWT.NONE);
+				item.setText(0, planet.getName());		
+				item.setText(1, String.valueOf(planet.getCoord()));
+				item.setText(2, planet.isRetrograde() ? "R" : "");
+			}
+			for (int i = 0; i < table.getColumnCount(); i++)
+				table.getColumn(i).pack();
 		}
-		for (Base base : event.getConfiguration().getPlanets()) {
-			Planet planet = (Planet)base;
-			TableItem item = new TableItem(table, SWT.NONE);
-			item.setText(0, planet.getName());		
-			item.setText(1, String.valueOf(planet.getCoord()));
-			item.setText(2, planet.isRetrograde() ? "R" : "");
-		}
-		for (int i = 0; i < titles.length; i++)
-			table.getColumn(i).pack();
-
 		//дома
-		String[] titles2 = {"Дом", "Координата"};
 		controls = grHouses.getChildren();
-		if (controls.length > 0) {
-			table = (Table)controls[0];
-			table.removeAll();
-		} else {
-			table = new Table(grHouses, SWT.BORDER | SWT.V_SCROLL);
-			table.setLinesVisible(true);
-			table.setHeaderVisible(true);
-			table.setSize(grHouses.getSize());
-			GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(table);
-			for (int i = 0; i < titles2.length; i++) {
-				TableColumn column = new TableColumn (table, SWT.NONE);
-				column.setText(titles2[i]);
-			}	
+		table = (Table)controls[0];
+		table.removeAll();
+		if (conf != null) {
+			for (Base base : conf.getHouses()) {
+				House house = (House)base;
+				TableItem item = new TableItem(table, SWT.NONE);
+				item.setText(0, house.getName());		
+				item.setText(1, String.valueOf(house.getCoord()));
+			}
+			for (int i = 0; i < table.getColumnCount(); i++)
+				table.getColumn(i).pack();
 		}
-		for (Base base : event.getConfiguration().getHouses()) {
-			House house = (House)base;
-			TableItem item = new TableItem(table, SWT.NONE);
-			item.setText(0, house.getName());		
-			item.setText(1, String.valueOf(house.getCoord()));
-		}
-		for (int i = 0; i < titles2.length; i++)
-			table.getColumn(i).pack();	
 	}
 
 	/**
@@ -608,8 +584,7 @@ public class EventPart extends ElementView {
 //					break;
 //				}
 //		}
-		if (params.size() < 1) return;
-		Event event = (Event)element;
+		Event event = (Event)model;
 		cmpCosmogram.paint(event.getConfiguration(), params);
 	}
 
@@ -635,22 +610,14 @@ public class EventPart extends ElementView {
 	}
 
 	@Override
-	public void setElement(Base element, boolean refresh) {
-		super.setElement(element, refresh);
-		if (element != null && ((Event)element).getId() != null)
-			setTitle(((Event)element).getFullName());
+	public void setModel(Base model, boolean refresh) {
+		super.setModel(model, refresh);
+		Event event = (Event)model;
+		if (model != null && event.getId() != null)
+			setTitle(event.getFullName());
 		else
 			setTitle(Messages.getString("PersonView.New")); //$NON-NLS-1$
-		Event event = (Event)element;
-		Configuration conf = event.getConfiguration();
-		if (conf != null)
-			showCardDetails(conf);
-	}
-
-	private void showCardDetails(Configuration conf) {
-		if (conf.getPlanets() != null && conf.getPlanets().size() > 0) {
-//			lbSun.setText(string);
-			//TODO сделать по-другому - идти по листу и динамически создавать надписи
-		}		
+		refreshCard();
+		refreshTabs();
 	}
 }
