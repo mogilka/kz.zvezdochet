@@ -1,7 +1,7 @@
 package kz.zvezdochet.service;
 
 import kz.zvezdochet.bean.Protraction;
-import kz.zvezdochet.core.bean.Base;
+import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.ReferenceService;
 
 /**
@@ -17,7 +17,7 @@ public class ProtractionService extends ReferenceService {
 	}
 
 	@Override
-	public Base create() {
+	public Model create() {
 		return new Protraction();
 	}
 }

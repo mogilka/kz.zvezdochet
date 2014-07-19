@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kz.zvezdochet.bean.Sign;
-import kz.zvezdochet.core.bean.Base;
+import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.ReferenceService;
 import kz.zvezdochet.core.tool.Connector;
@@ -26,8 +26,8 @@ public class SignService extends ReferenceService {
 	}
 
 	@Override
-	public List<Base> getList() throws DataAccessException {
-        List<Base> list = new ArrayList<Base>();
+	public List<Model> getList() throws DataAccessException {
+        List<Model> list = new ArrayList<Model>();
         PreparedStatement ps = null;
         ResultSet rs = null;
 		String query;
@@ -53,7 +53,7 @@ public class SignService extends ReferenceService {
 	}
 
 	@Override
-	public Base save(Base element) throws DataAccessException {
+	public Model save(Model element) throws DataAccessException {
 		Sign reference = (Sign)element;
 		int result = -1;
         PreparedStatement ps = null;
@@ -110,7 +110,7 @@ public class SignService extends ReferenceService {
 	}
 
 	@Override
-	public Sign init(ResultSet rs, Base base) throws DataAccessException, SQLException {
+	public Sign init(ResultSet rs, Model base) throws DataAccessException, SQLException {
 		Sign sign = new Sign();
 		super.init(rs, sign);
 		sign.setCoord(Double.parseDouble(rs.getString("FinalPoint")));
@@ -122,7 +122,7 @@ public class SignService extends ReferenceService {
 	}
 
 	@Override
-	public Base create() {
+	public Model create() {
 		return new Sign();
 	}
 }

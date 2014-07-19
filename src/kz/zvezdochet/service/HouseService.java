@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kz.zvezdochet.bean.House;
-import kz.zvezdochet.core.bean.Base;
+import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.ReferenceService;
 import kz.zvezdochet.core.tool.Connector;
@@ -26,8 +26,8 @@ public class HouseService extends ReferenceService {
 	}
 	
 	@Override
-	public List<Base> getList() throws DataAccessException {
-        List<Base> list = new ArrayList<Base>();
+	public List<Model> getList() throws DataAccessException {
+        List<Model> list = new ArrayList<Model>();
         PreparedStatement ps = null;
         ResultSet rs = null;
 		String query;
@@ -53,7 +53,7 @@ public class HouseService extends ReferenceService {
 	}
 
 	@Override
-	public Base save(Base element) throws DataAccessException {
+	public Model save(Model element) throws DataAccessException {
 		House reference = (House)element;
 		int result = -1;
         PreparedStatement ps = null;
@@ -116,7 +116,7 @@ public class HouseService extends ReferenceService {
 	}
 
 	@Override
-	public House init(ResultSet rs, Base base) throws DataAccessException, SQLException {
+	public House init(ResultSet rs, Model base) throws DataAccessException, SQLException {
 		House house = new House();
 		super.init(rs, house);
 		house.setNumber(rs.getInt("OrdinalNumber"));
@@ -131,7 +131,7 @@ public class HouseService extends ReferenceService {
 	}
 
 	@Override
-	public Base create() {
+	public Model create() {
 		return new House();
 	}
 

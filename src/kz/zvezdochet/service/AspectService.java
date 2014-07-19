@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 import kz.zvezdochet.bean.Aspect;
 import kz.zvezdochet.bean.AspectType;
-import kz.zvezdochet.core.bean.Base;
+import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.ReferenceService;
 import kz.zvezdochet.core.tool.Connector;
@@ -24,7 +24,7 @@ public class AspectService extends ReferenceService {
 	}
 
 	@Override
-	public Base save(Base element) throws DataAccessException {
+	public Model save(Model element) throws DataAccessException {
 		Aspect reference = (Aspect)element;
 		int result = -1;
         PreparedStatement ps = null;
@@ -76,7 +76,7 @@ public class AspectService extends ReferenceService {
 	}
 
 	@Override
-	public Aspect init(ResultSet rs, Base base) throws DataAccessException, SQLException {
+	public Aspect init(ResultSet rs, Model base) throws DataAccessException, SQLException {
 		Aspect aspect = new Aspect();
 		super.init(rs, aspect);
 		aspect.setValue(Double.parseDouble(rs.getString("Value")));
@@ -87,7 +87,7 @@ public class AspectService extends ReferenceService {
 	}
 
 	@Override
-	public Base create() {
+	public Model create() {
 		return new Aspect();
 	}
 }

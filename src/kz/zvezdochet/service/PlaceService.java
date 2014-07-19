@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kz.zvezdochet.bean.Place;
-import kz.zvezdochet.core.bean.Base;
+import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.ReferenceService;
 import kz.zvezdochet.core.tool.Connector;
@@ -25,7 +25,7 @@ public class PlaceService extends ReferenceService {
 	}
 
 	@Override
-	public Base save(Base element) throws DataAccessException {
+	public Model save(Model element) throws DataAccessException {
 		Place reference = (Place)element;
 		int result = -1;
         PreparedStatement ps = null;
@@ -77,7 +77,7 @@ public class PlaceService extends ReferenceService {
 	}
 	
 	@Override
-	public Place init(ResultSet rs, Base base) throws DataAccessException, SQLException {
+	public Place init(ResultSet rs, Model base) throws DataAccessException, SQLException {
 		Place place = new Place();
 		super.init(rs, place);
 		place.setLatitude(Double.parseDouble(rs.getString("Latitude")));
@@ -87,7 +87,7 @@ public class PlaceService extends ReferenceService {
 	}
 
 	@Override
-	public Base create() {
+	public Model create() {
 		return new Place();
 	}
 
