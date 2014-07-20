@@ -109,8 +109,6 @@ public class AspectTypeService extends ReferenceService {
 		return new AspectType();
 	}
 
-	private List<Model> list;
-	
 	@Override
 	public List<Model> getList() throws DataAccessException {
 		if (null == list)

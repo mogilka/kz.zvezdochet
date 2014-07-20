@@ -3,6 +3,7 @@ package kz.zvezdochet.service;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import kz.zvezdochet.bean.Aspect;
 import kz.zvezdochet.bean.AspectType;
@@ -76,7 +77,7 @@ public class AspectService extends ReferenceService {
 	}
 
 	@Override
-	public Aspect init(ResultSet rs, Model base) throws DataAccessException, SQLException {
+	public Aspect init(ResultSet rs, Model model) throws DataAccessException, SQLException {
 		Aspect aspect = new Aspect();
 		super.init(rs, aspect);
 		aspect.setValue(Double.parseDouble(rs.getString("Value")));
@@ -89,5 +90,12 @@ public class AspectService extends ReferenceService {
 	@Override
 	public Model create() {
 		return new Aspect();
+	}
+
+	@Override
+	public List<Model> getList() throws DataAccessException {
+		if (null == list)
+			list = super.getList();
+		return list;
 	}
 }

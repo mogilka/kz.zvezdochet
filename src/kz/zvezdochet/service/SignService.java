@@ -27,26 +27,28 @@ public class SignService extends ReferenceService {
 
 	@Override
 	public List<Model> getList() throws DataAccessException {
-        List<Model> list = new ArrayList<Model>();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-		String query;
-		try {
-			query = "select * from " + tableName + " order by finalpoint";
-			ps = Connector.getInstance().getConnection().prepareStatement(query);
-			rs = ps.executeQuery();
-			while (rs.next()) {
-				Sign sign = init(rs, null);
-				list.add(sign);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try { 
-				if (rs != null) rs.close();
-				if (ps != null) ps.close();
-			} catch (SQLException e) { 
-				e.printStackTrace(); 
+		if (null == list) {
+			list = new ArrayList<Model>();
+	        PreparedStatement ps = null;
+	        ResultSet rs = null;
+			String query;
+			try {
+				query = "select * from " + tableName + " order by finalpoint";
+				ps = Connector.getInstance().getConnection().prepareStatement(query);
+				rs = ps.executeQuery();
+				while (rs.next()) {
+					Sign sign = init(rs, null);
+					list.add(sign);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try { 
+					if (rs != null) rs.close();
+					if (ps != null) ps.close();
+				} catch (SQLException e) { 
+					e.printStackTrace(); 
+				}
 			}
 		}
 		return list;

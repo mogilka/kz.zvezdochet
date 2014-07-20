@@ -16,14 +16,16 @@ public class AstroUtil {
 
 	/**
 	 * Определение знака, в котором находится объект
-	 * @param coord координата объекта
+	 * @param point координата объекта
 	 * @throws DataAccessException 
 	 */
-	public static Sign getSkyPointSign(double coord) throws DataAccessException {
+	public static Sign getSkyPointSign(double point) throws DataAccessException {
 		List<Model> signs = new SignService().getList();
-		for (Model sign : signs) 
-			if (coord >= ((Sign)sign).getInitialPoint() && coord < ((Sign)sign).getCoord()) 
-				return (Sign)sign;
+		for (Model model : signs) {
+			Sign sign = (Sign)model;
+			if (point >= sign.getInitialPoint() && point < sign.getCoord()) 
+				return sign;
+		}
 		return null;
 	}
 
