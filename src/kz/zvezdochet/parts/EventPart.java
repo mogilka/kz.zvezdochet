@@ -206,7 +206,7 @@ public class EventPart extends ModelView {
 		
 		super.create(parent);
 		try {
-			setDefaultElement();
+			setDefaultEvent();
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
@@ -227,7 +227,7 @@ public class EventPart extends ModelView {
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		tab.control = group;
 		tabs[0] = tab;
-		
+
 		//планеты
 		tab = new Tab();
 		tab.name = "Планеты";
@@ -309,7 +309,7 @@ public class EventPart extends ModelView {
 	 * Инициализация события по умолчанию
 	 * @throws DataAccessException 
 	 */
-	private void setDefaultElement() throws DataAccessException {
+	private void setDefaultEvent() throws DataAccessException {
 		model = new Event();
 		((Event)model).setZone(6.0); //TODO задавать через конфиг
 		Place place = (Place)new PlaceService().find(115L); //TODO задавать через конфиг
