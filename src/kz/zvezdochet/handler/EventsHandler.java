@@ -1,4 +1,4 @@
-package kz.zvezdochet.handlers;
+package kz.zvezdochet.handler;
 
 import javax.inject.Inject;
 

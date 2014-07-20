@@ -454,7 +454,7 @@ public class EventPart extends ModelView {
 
 	@Override
 	protected void syncModel(int mode) throws Exception {
-		if (!check(mode)) return;
+		if (!check(mode)) return;//TODO часто дублируется вызов из хэндлеров
 		model = (model == null) ? new Event() : model;
 		Event event = (Event)model;
 		if (Handler.MODE_SAVE == mode) {
@@ -483,11 +483,10 @@ public class EventPart extends ModelView {
 		clear();
 		model = (model == null) ? new Event() : model;
 		Event event = (Event)model;
-		setCodeEdit(true);
 		txName.setText(event.getName());
 		if (event.getSurname() != null)
 			txSurname.setText(event.getSurname());
-		cmbGender.setText(genders[event.isFemale() ? 0 : 1]);
+		cmbGender.setText(genders[event.isFemale() ? 2 : 1]);
 		cmbHand.setText(hands[event.isRightHanded() ? 0 : 1]);
 		if (event.getRectification() > 0)
 			cmbRectification.setText(calcs[event.getRectification()]);
@@ -503,11 +502,9 @@ public class EventPart extends ModelView {
 		if (event.getPlace() != null)
 			setPlace(event.getPlace());
 		txZone.setText(CalcUtil.formatNumber("###.##", event.getZone()));
-		setCodeEdit(false); 
 	}
 	
 	public void clear() {
-		setCodeEdit(true);
 		txName.setText(""); //$NON-NLS-1$
 		txSurname.setText(""); //$NON-NLS-1$
 		txPlace.setText(""); //$NON-NLS-1$
@@ -523,7 +520,6 @@ public class EventPart extends ModelView {
 		cvHand.setSelection(null);
 		cvRectification.setSelection(null);
 		btCelebrity.setSelection(false);
-		setCodeEdit(false);
 	}
 	
 	public Object addModel() {
@@ -534,6 +530,7 @@ public class EventPart extends ModelView {
 	 * Обновление содержимого представления после расчёта
 	 */
 	public void onCalc() {
+		part.setDirty(true);
 		refreshCard();
 		refreshTabs();
 	}
@@ -641,15 +638,19 @@ public class EventPart extends ModelView {
 	}
 
 	@Override
-	public void setModel(Model model, boolean refresh) {
-		Event event = (Event)model;
-		if (model != null && event.getId() != null) {
-			event.init();
-			setTitle(event.getFullName());
-		} else
-			setTitle(Messages.getString("PersonView.New")); //$NON-NLS-1$
-		super.setModel(model, refresh);
-		refreshCard();
-		refreshTabs();
+	public void setModel(Model model, boolean sync) {
+		if (sync) {
+			Event event = (Event)model;
+			if (model != null && event.getId() != null) {
+				event.init();
+				setTitle(event.getFullName());
+			} else
+				setTitle(Messages.getString("PersonView.New")); //$NON-NLS-1$
+		}
+		super.setModel(model, sync);
+		if (sync) {
+			refreshCard();
+			refreshTabs();
+		}
 	}
 }

@@ -11,7 +11,7 @@ import kz.zvezdochet.core.ui.Tab;
 import kz.zvezdochet.core.ui.comparator.TableSortListenerFactory;
 import kz.zvezdochet.core.ui.view.ModelListView;
 import kz.zvezdochet.core.util.DateUtil;
-import kz.zvezdochet.handlers.EventHandler;
+import kz.zvezdochet.handler.EventHandler;
 import kz.zvezdochet.service.EventService;
 
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;

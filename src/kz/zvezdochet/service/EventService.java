@@ -4,13 +4,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.core.bean.Model;
-import kz.zvezdochet.core.service.BaseService;
+import kz.zvezdochet.core.service.ModelService;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.tool.Connector;
 import kz.zvezdochet.core.util.DateUtil;
@@ -19,9 +20,9 @@ import kz.zvezdochet.core.util.DateUtil;
  * Реализация сервиса событий
  * @author Nataly Didenko
  *
- * @see BaseService Реализация интерфейса сервиса управления объектами на уровне БД  
+ * @see ModelService Реализация интерфейса сервиса управления объектами на уровне БД  
  */
-public class EventService extends BaseService {
+public class EventService extends ModelService {
 
 	public EventService() {
 		tableName = "events";
@@ -70,7 +71,7 @@ public class EventService extends BaseService {
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, id);
 			rs = ps.executeQuery();
-			while (rs.next())
+			if (rs.next())
 				event = (Event)init(rs, null);				
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -86,64 +87,70 @@ public class EventService extends BaseService {
 	}
 
 	@Override
-	public Model save(Model element) throws DataAccessException {
-		Event event = (Event)element;
+	public Model save(Model model) throws DataAccessException {
+		Event event = (Event)model;
 		int result = -1;
         PreparedStatement ps = null;
 		try {
-			String query;
-			if (element.getId() == null) 
-				query = "insert into " + tableName + 
-					"(surname, callname, gender, initialdate, place, zone, finaldate, " +
-					"sign, element, celebrity, comment, rectification, righthanded) " +
-					"values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			String sql;
+			if (null == model.getId()) 
+				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
-				query = "update " + tableName + " set " +
+				sql = "update " + tableName + " set " +
 					"surname = ?, " +
 					"callname = ?, " +
 					"gender = ?, " +
-					"initialdate = ?, " +
-					"place = ?, " +
+					"placeid = ?, " +
 					"zone = ?, " +
-					"finaldate = ?, " +
 					"sign = ?, " +
 					"element = ?, " +
 					"celebrity = ?, " +
 					"comment = ?, " +
 					"rectification = ?, " +
-					"righthanded = ? " +
-					"where id = " + event.getId();
-			ps = Connector.getInstance().getConnection().prepareStatement(query);
+					"righthanded = ?, " +
+					"initialdate = ?, " +
+					"finaldate = ?, " +
+					"date = ? " +
+					"where id = ?";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setString(1, event.getSurname());
 			ps.setString(2, event.getName());
 			ps.setBoolean(3, event.isFemale());
-			ps.setString(4, DateUtil.formatCustomDateTime(event.getBirth(), "yyyy-MM-dd HH:mm:ss"));
 			if (event.getPlace() != null)
-				ps.setLong(5, event.getPlace().getId());
+				ps.setLong(4, event.getPlace().getId());
 			else
-				ps.setLong(5, java.sql.Types.NULL);
-			ps.setDouble(6, event.getZone());
-			ps.setString(7, event.getDeath() != null ? DateUtil.formatCustomDateTime(event.getDeath(), "yyyy-MM-dd HH:mm:ss") : null);
-			ps.setString(8, event.getSign());
-			ps.setString(9, event.getElement());
-			ps.setBoolean(10, event.isCelebrity());
-			ps.setString(11, event.getDescription());
-			ps.setInt(12, event.getRectification());
-			ps.setBoolean(13, event.isRightHanded());
+				ps.setLong(4, java.sql.Types.NULL);
+			ps.setDouble(5, event.getZone());
+			ps.setString(6, event.getSign());
+			ps.setString(7, event.getElement());
+			ps.setBoolean(8, event.isCelebrity());
+			ps.setString(9, event.getDescription());
+			ps.setInt(10, event.getRectification());
+			ps.setBoolean(11, event.isRightHanded());
+			ps.setString(12, DateUtil.formatCustomDateTime(event.getBirth(), "yyyy-MM-dd HH:mm:ss"));
+			ps.setString(13, event.getDeath() != null ? DateUtil.formatCustomDateTime(event.getDeath(), "yyyy-MM-dd HH:mm:ss") : null);
+			ps.setString(14, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
+			if (model.getId() != null) 
+				ps.setLong(15, model.getId());
+
 			result = ps.executeUpdate();
-			if (result == 1) {
-				if (element.getId() == null) { 
+			if (1 == result) {
+				if (null == model.getId()) { 
 					Long autoIncKeyFromApi = -1L;
 					ResultSet rsid = ps.getGeneratedKeys();
 					if (rsid.next()) {
 				        autoIncKeyFromApi = rsid.getLong(1);
-				        element.setId(autoIncKeyFromApi);
+				        model.setId(autoIncKeyFromApi);
 					    System.out.println("inserted " + tableName + "\t" + autoIncKeyFromApi);
 					}
-					if (rsid != null) rsid.close();
+					if (rsid != null)
+						rsid.close();
 				}
 			}
-			//TODO добавить сохранение блобов
+			savePlanets(event);
+			saveHouses(event);
+			savePlanetHouses(event);
+			saveBlob(event);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -153,7 +160,53 @@ public class EventService extends BaseService {
 				e.printStackTrace();
 			}
 		}
-		return event;
+		return model;
+	}
+
+	/**
+	 * Сохранение текстовой и мультимедийной информации о событии
+	 * @param event событие
+	 */
+	private void saveBlob(Event event) throws DataAccessException {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String table = getBlobTable();
+		try {
+			String sql = "select id from " + table + " where eventid = ?";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, event.getId());
+			rs = ps.executeQuery();
+			long id = (rs.next()) ? rs.getLong("id") : 0;
+			ps.close();
+			
+			if (0 == id)
+				sql = "insert into " + table + " values(0,?,?,?,?)";
+			else {
+				sql = "update " + table + " set "
+					+ "eventid = ?,"
+					+ "photo = ?,"
+					+ "biography = ?,"
+					+ "test = ?"
+					+ "where id = ?";
+			}
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, event.getId());
+			ps.setString(2, ""); //TODO сохранять изображение в папку
+			ps.setString(3, event.getText());
+			ps.setString(4, "");
+			if (id != 0)
+				ps.setLong(5, id);
+			ps.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (ps != null)	ps.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
@@ -170,7 +223,7 @@ public class EventService extends BaseService {
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
-			String query = "select * from blobs where code = ?";
+			String query = "select * from blobs where eventid = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(query);
 			ps.setLong(1, eventId);
 			rs = ps.executeQuery();
@@ -178,7 +231,7 @@ public class EventService extends BaseService {
 				if (rs.getString("Biography") != null)
 					blob[0] = rs.getString("Biography");
 				if (rs.getString("Photo") != null)
-					blob[0] = rs.getBytes("Photo");
+					blob[1] = rs.getBytes("Photo");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -202,7 +255,7 @@ public class EventService extends BaseService {
 		if (rs.getString("Surname") != null)
 			event.setSurname(rs.getString("Surname"));
 		event.setBirth(DateUtil.getDatabaseDateTime(rs.getString("initialdate")));
-		if (rs.getString("Death") != null) 
+		if (rs.getString("finaldate") != null) 
 			event.setBirth(DateUtil.getDatabaseDateTime(rs.getString("finaldate")));
 		String s = rs.getString("RightHanded");
 		event.setRightHanded(s.equals("1") ? true : false);
@@ -218,8 +271,8 @@ public class EventService extends BaseService {
 			event.setSign(rs.getString("Sign"));
 		if (rs.getString("Element") != null)
 			event.setElement(rs.getString("Element"));
-		if (rs.getString("Place") != null)
-			event.setPlaceid(Long.parseLong(rs.getString("Place")));
+		if (rs.getString("Placeid") != null)
+			event.setPlaceid(Long.parseLong(rs.getString("Placeid")));
 		if (rs.getString("Zone") != null)
 			event.setZone(Double.parseDouble(rs.getString("Zone")));
 		return event;
@@ -239,7 +292,7 @@ public class EventService extends BaseService {
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
-			String sql = "select * from eventplanets where eventid = ?";
+			String sql = "select * from " + getPlanetTable() + " where eventid = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, event.getId());
 			rs = ps.executeQuery();
@@ -293,6 +346,197 @@ public class EventService extends BaseService {
 				if (ps != null) ps.close();
 			} catch (SQLException e) { 
 				e.printStackTrace(); 
+			}
+		}
+	}
+
+	/**
+	 * Сохранение планет конфигурации события
+	 * @param event событие
+	 * @throws DataAccessException
+	 */
+	private void savePlanets(Event event) throws DataAccessException {
+		if (null == event.getConfiguration()) return;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String table = getPlanetTable();
+		try {
+			String sql = "select id from " + table + " where eventid = ?";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, event.getId());
+			rs = ps.executeQuery();
+			long id = (rs.next()) ? rs.getLong("id") : 0;
+			ps.close();
+			
+			List<Model> planets = event.getConfiguration().getPlanets();
+			if (0 == id)
+				sql = "insert into " + table + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			else {
+				sql = "update " + table + " set eventid = ?,";
+				for (int i = 0; i < planets.size(); i++) {
+					sql += " " + ((Planet)planets.get(i)).getCode() + " = ?";
+					if (i < planets.size() - 1)
+						sql += ",";
+				}
+				sql += " where id = ?";
+			}
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, event.getId());
+			for (int i = 0; i < planets.size(); i++) {
+				Planet planet = ((Planet)planets.get(i));
+				double coord = planet.getCoord();
+				if (planet.isRetrograde())
+					coord *= -1;
+				ps.setDouble(i + 2, coord);
+			}
+			if (id != 0)
+				ps.setLong(18, id);
+			ps.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (ps != null)	ps.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Возвращает имя таблицы, хранящей планеты конфигурации события
+	 * @return имя ТБД
+	 */
+	private String getPlanetTable() {
+		return "eventplanets";
+	}
+
+	/**
+	 * Возвращает имя таблицы, хранящей дома конфигурации события
+	 * @return имя ТБД
+	 */
+	private String getHouseTable() {
+		return "eventhouses";
+	}
+
+	/**
+	 * Возвращает имя таблицы, хранящей позиции планет в домах конфигурации события
+	 * @return имя ТБД
+	 */
+	private String getPlanetHouseTable() {
+		return "eventpositions";
+	}
+
+	/**
+	 * Возвращает имя таблицы, хранящей текстовую и мультимедийную информацию о событии
+	 * @return имя ТБД
+	 */
+	private String getBlobTable() {
+		return "blobs";
+	}
+
+	/**
+	 * Сохранение домов конфигурации события
+	 * @param event событие
+	 * @throws DataAccessException
+	 */
+	private void saveHouses(Event event) throws DataAccessException {
+		if (null == event.getConfiguration()) return;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String table = getHouseTable();
+		try {
+			String sql = "select id from " + table + " where eventid = ?";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, event.getId());
+			rs = ps.executeQuery();
+			long id = (rs.next()) ? rs.getLong("id") : 0;
+			ps.close();
+			
+			List<Model> houses = event.getConfiguration().getHouses();
+			if (0 == id)
+				sql = "insert into " + table + " values(0,?,"
+						+ "?,?,?,?,?,?,?,?,?,?,"
+						+ "?,?,?,?,?,?,?,?,?,?,"
+						+ "?,?,?,?,?,?,?,?,?,?,"
+						+ "?,?,?,?,?,?)";
+			else {
+				sql = "update " + table + " set eventid = ?,";
+				for (int i = 0; i < houses.size(); i++) {
+					sql += " " + ((House)houses.get(i)).getCode() + " = ?";
+					if (i < houses.size() - 1)
+						sql += ",";
+				}
+				sql += " where id = ?";
+			}
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, event.getId());
+			for (int i = 0; i < houses.size(); i++)
+				ps.setDouble(i + 2, ((House)houses.get(i)).getCoord());
+			if (id != 0)
+				ps.setLong(38, id);
+			ps.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (ps != null)	ps.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Сохранение позиций планет в домах конфигурации события
+	 * @param event событие
+	 * @throws DataAccessException
+	 */
+	private void savePlanetHouses(Event event) throws DataAccessException {
+		if (null == event.getConfiguration()) return;
+		event.getConfiguration().initPlanetHouses();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String table = getPlanetHouseTable();
+		try {
+			String sql = "select id from " + table + " where eventid = ?";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, event.getId());
+			rs = ps.executeQuery();
+			long id = (rs.next()) ? rs.getLong("id") : 0;
+			ps.close();
+			
+			List<Model> planets = event.getConfiguration().getPlanets();
+			if (0 == id)
+				sql = "insert into " + table + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			else {
+				sql = "update " + table + " set eventid = ?,";
+				for (int i = 0; i < planets.size(); i++) {
+					sql += " " + ((Planet)planets.get(i)).getCode() + " = ?";
+					if (i < planets.size() - 1)
+						sql += ",";
+				}
+				sql += " where id = ?";
+			}
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, event.getId());
+			for (int i = 0; i < planets.size(); i++) {
+				Planet planet = ((Planet)planets.get(i));
+				ps.setInt(i + 2, planet.getHouse().getNumber());
+			}
+			if (id != 0)
+				ps.setLong(18, id);
+			ps.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (ps != null)	ps.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 		}
 	}

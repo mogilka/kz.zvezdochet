@@ -1,19 +1,16 @@
 package kz.zvezdochet.bean;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.Date;
 
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
-import kz.zvezdochet.core.service.ReferenceService;
+import kz.zvezdochet.core.service.ModelService;
 import kz.zvezdochet.core.util.StringUtil;
 import kz.zvezdochet.service.EventService;
 import kz.zvezdochet.service.PlaceService;
 import kz.zvezdochet.util.Configuration;
 
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
 
 /**
  * Класс, представляющий Событие
@@ -207,8 +204,8 @@ public class Event extends Model {
 		return StringUtil.safeString(getName()) + " " + StringUtil.safeString(surname);
 	}
 
-	public ReferenceService getService() {
-		return new PlaceService();
+	public ModelService getService() {
+		return new EventService();
 	}
 
 	/**
@@ -226,20 +223,16 @@ public class Event extends Model {
 			if (blob != null && blob.length > 0) {
 				if (blob[0] != null)
 					text = blob[0].toString();
-				if (blob[1] != null) {
-	                InputStream is = new ByteArrayInputStream((byte[])blob[1]);
-					image = new Image(Display.getDefault(), is);
-				}
+//				if (blob[1] != null) {
+//	                InputStream is = new ByteArrayInputStream((byte[])blob[1]);
+//					image = new Image(Display.getDefault(), is);
+//				}
 			}
 			
 			//конфигурация
 			configuration = new Configuration();
 			service.initPlanets(this);
 			service.initHouses(this);
-//			event.getConfiguration().getPlanetInHouses();
-//			event.getConfiguration().getPlanetInSigns();
-//			event.getConfiguration().getPlanetAspects();
-//			event.getConfiguration().getPlanetStatistics();
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}

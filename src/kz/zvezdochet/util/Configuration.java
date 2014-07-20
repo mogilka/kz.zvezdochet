@@ -59,9 +59,9 @@ public class Configuration {
   	  	planetList = new PlanetService().getList();
   	  	houseList = new HouseService().getList();
 		calculate(date, time, zone, latitude, longitude);
-		getPlanetInHouses();
-		getPlanetInSigns();
-		getPlanetAspects();
+//		getPlanetInHouses();
+//		getPlanetInSigns();
+//		getPlanetAspects();
 //		getPlanetStatistics();
 	}
 
@@ -119,7 +119,8 @@ public class Configuration {
 	  		ilatmin = CalcUtil.trunc(Math.abs(lat) - ilatdeg) * 100;
 	  		ilatsec = 0;
 	  		
-	  		double tjd, tjdet, tjdut, tsid, armc, dhour, deltat;
+	  		@SuppressWarnings("unused")
+			double tjd, tjdet, tjdut, tsid, armc, dhour, deltat;
 	  		@SuppressWarnings("unused")
 			double eps_true, nut_long, glon, glat;
 	  		dhour = ihour + imin/60.0 + isec/3600.0;
@@ -273,52 +274,68 @@ public class Configuration {
 	}
 
 	/**
+	 * Проверка инициализации домов планет
+	 * @return true - для планет определены дома,<br>
+	 * false - планеты не определены либо для них не указаны позиции в домах
+	 */
+	private boolean isPlanetHoused() {
+		return (planetList != null &&
+			((Planet)planetList.get(0)).getHouse() != null);
+	}
+
+	/**
 	 * Определение позиций планет в домах
 	 */
-	public void getPlanetInHouses() {
-		for (int i = 0; i < planetList.size(); i++) 
+	public void initPlanetHouses() {
+		if (isPlanetHoused()) return;
+		for (Model model : planetList) {
+			Planet planet = (Planet)model;
 			for (int j = 0; j < houseList.size(); j++) { 
 				House house = ((House)houseList.get(j));
-				double planet = ((Planet)planetList.get(i)).getCoord();
-				Double hmargin = (j == houseList.size() - 1) ? 
+				double pcoord = planet.getCoord();
+				Double hmargin = (j == houseList.size() - 1) ?
 					((House)houseList.get(0)).getCoord() : 
 					((House)houseList.get(j + 1)).getCoord();
-				double[] res = setMarginalValuesEx(house.getCoord(), hmargin, planet);
+				double[] res = checkMarginalValues(house.getCoord(), hmargin, pcoord);
 				hmargin = res[0];
-				planet = res[1];
+				pcoord = res[1];
 				//если градус планеты находится в пределах куспидов
-				//текущего и предыдущего домов,
-				//то запоминаем, в каком доме находится планета
-				if (Math.abs(planet) < hmargin & 
-						Math.abs(planet) >= house.getCoord())
-					((Planet)planetList.get(i)).setHouse(house);
-				//TODO реализовать механизм сохранения планет в домах в базе
+				//текущей и предыдущей трети домов,
+				//запоминаем, в каком доме находится планета
+				if (Math.abs(pcoord) < hmargin & 
+						Math.abs(pcoord) >= house.getCoord())
+					planet.setHouse(house);
 			}
+		}
 	}
 
 	/**
 	 * Корректировка координат для определения
 	 * местонахождения объекта на участке космограммы
 	 * (используется для домов)
+	 * @param margin1 начальный градус сектора
+	 * @param margin2 конечный градус сектора
+	 * @param point координата точки
+	 * @return массив модифицированных значений точки и верхней границы сектора
 	 */ 
-	private static double[] setMarginalValuesEx(double margin1, double margin2, double planet) {
-		//если границы находятся по разные стороны нуля
+	private double[] checkMarginalValues(double margin1, double margin2, double point) {
+		//если границы сектора находятся по разные стороны нуля
 		if (margin1 > 200 & margin2 < 160) {
-			//если градус планеты находится по другую сторону
+			//если координата точки находится по другую сторону
 			//от нуля относительно второй границы,
-			//увеличиваем эту границу на 2*пи
-			if (Math.abs(planet) > 200)
-				margin2 = margin2 + 360;
-			else if (Math.abs(planet) < 160) {
+			//увеличиваем эту границу на 2*Pi
+			if (Math.abs(point) > 200)
+				margin2 += 360;
+			else if (Math.abs(point) < 160) {
 				//если градус планеты меньше 160,
-				//увеличиваем его, а также вторую границу на 2*пи
-		       planet = Math.abs(planet) + 360;
-		       margin2 = margin2 + 360;
+				//увеличиваем его, а также вторую границу на 2*Pi
+		       point = Math.abs(point) + 360;
+		       margin2 += 360;
 			}
 		}
 		//если же границы находятся по одну сторону от нуля,
-		//оставляем всё как есть
-		return new double[] {margin2, planet};
+		//оставляем координаты как есть
+		return new double[] {margin2, point};
 	}
 
 	/**
