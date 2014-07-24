@@ -1,4 +1,4 @@
-package kz.zvezdochet.parts;
+package kz.zvezdochet.part;
 
 import java.util.Iterator;
 import java.util.List;

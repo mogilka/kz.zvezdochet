@@ -5,8 +5,8 @@ import javax.inject.Inject;
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.ui.util.DialogUtil;
-import kz.zvezdochet.parts.EventPart;
-import kz.zvezdochet.parts.SearchPart;
+import kz.zvezdochet.part.EventPart;
+import kz.zvezdochet.part.SearchPart;
 
 import org.eclipse.e4.core.contexts.Active;
 import org.eclipse.e4.core.di.annotations.CanExecute;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package kz.zvezdochet.parts;
+package kz.zvezdochet.part;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -392,7 +392,7 @@ public class EventPart extends ModelView {
 	 * @param place местность
 	 */
 	private void setPlace(Place place) {
-		if (place == null) return;
+		if (null == place) return;
 		txPlace.setText(place.getName());
 		txLatitude.setText(CalcUtil.formatNumber("###.##", place.getLatitude())); //$NON-NLS-1$
 		txLongitude.setText(CalcUtil.formatNumber("###.##", place.getLongitude())); //$NON-NLS-1$
@@ -468,7 +468,7 @@ public class EventPart extends ModelView {
 			event.setDescription(txCelebrity.getText());
 			event.setCelebrity(btCelebrity.getSelection());
 		}
-		if (null == event.getPlace()) {
+		if (null == event.getPlace()) { //TODO использовать модель из базы с айдишником
 			Place place = new Place();
 			place.setLatitude(51.48);
 			place.setLongitude(0);
@@ -481,7 +481,7 @@ public class EventPart extends ModelView {
 	
 	protected void syncView() {
 		clear();
-		model = (model == null) ? new Event() : model;
+		model = (null == model) ? new Event() : model;
 		Event event = (Event)model;
 		txName.setText(event.getName());
 		if (event.getSurname() != null)
@@ -631,8 +631,10 @@ public class EventPart extends ModelView {
 			@Override
 			public void proposalAccepted(IContentProposal proposal) {
 				Place place = (Place)((PlaceContentProposal)proposal).getObject();
-				if (place != null)
+				if (place != null) {
+					((Event)model).setPlace(place);
 					setPlace(place);
+				}
 			}
 		});
 	}

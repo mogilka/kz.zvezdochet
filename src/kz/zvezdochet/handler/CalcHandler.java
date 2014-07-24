@@ -4,7 +4,7 @@ import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.core.handler.Handler;
 import kz.zvezdochet.core.ui.util.DialogUtil;
 import kz.zvezdochet.core.util.DateUtil;
-import kz.zvezdochet.parts.EventPart;
+import kz.zvezdochet.part.EventPart;
 import kz.zvezdochet.util.Configuration;
 
 import org.eclipse.e4.core.contexts.Active;

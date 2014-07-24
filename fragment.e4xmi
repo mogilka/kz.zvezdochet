@@ -23,13 +23,13 @@
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Tap5ENZ9EeK-x7EaamJw9Q" featurename="children" parentElementId="kz.zvezdochet.runner.partstack.main">
-    <elements xsi:type="basic:Part" xmi:id="_pWdpENZ9EeK-x7EaamJw9Q" elementId="kz.zvezdochet.part.event" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.parts.EventPart" label="&#x421;&#x43e;&#x431;&#x44b;&#x442;&#x438;&#x435;" iconURI="platform:/plugin/kz.zvezdochet/icons/calendar_view_day.png">
+    <elements xsi:type="basic:Part" xmi:id="_pWdpENZ9EeK-x7EaamJw9Q" elementId="kz.zvezdochet.part.event" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.part.EventPart" label="&#x421;&#x43e;&#x431;&#x44b;&#x442;&#x438;&#x435;" iconURI="platform:/plugin/kz.zvezdochet/icons/calendar_view_day.png">
       <toolbar xmi:id="_xX2FkNZ9EeK-x7EaamJw9Q" elementId="kz.zvezdochet.toolbar.event">
         <children xsi:type="menu:HandledToolItem" xmi:id="_TuvyYNaAEeK-x7EaamJw9Q" elementId="kz.zvezdochet.handledtoolitem.calc" label="&#x420;&#x430;&#x441;&#x447;&#x451;&#x442;" iconURI="platform:/plugin/kz.zvezdochet/icons/calc.png" command="_0kTdsNaBEeK-x7EaamJw9Q"/>
         <children xsi:type="menu:HandledToolItem" xmi:id="_Jo_LQA9sEeSB-9NCSQtAZQ" elementId="kz.zvezdochet.handledtoolitem." label="&#x421;&#x43e;&#x445;&#x440;&#x430;&#x43d;&#x438;&#x442;&#x44c;" iconURI="platform:/plugin/kz.zvezdochet.core/icons/applyElement.gif" command="_MmQNoA9sEeSB-9NCSQtAZQ"/>
       </toolbar>
     </elements>
-    <elements xsi:type="basic:Part" xmi:id="_6atxgA5_EeSg-JkqPuRrkA" elementId="kz.zvezdochet.part.events" visible="false" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.parts.SearchPart" label="&#x41f;&#x43e;&#x438;&#x441;&#x43a; &#x441;&#x43e;&#x431;&#x44b;&#x442;&#x438;&#x439;" iconURI="platform:/plugin/kz.zvezdochet/icons/calendar.png" closeable="true">
+    <elements xsi:type="basic:Part" xmi:id="_6atxgA5_EeSg-JkqPuRrkA" elementId="kz.zvezdochet.part.events" visible="false" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.part.SearchPart" label="&#x41f;&#x43e;&#x438;&#x441;&#x43a; &#x441;&#x43e;&#x431;&#x44b;&#x442;&#x438;&#x439;" iconURI="platform:/plugin/kz.zvezdochet/icons/calendar.png" closeable="true">
       <toolbar xmi:id="_ChY9sA6AEeSg-JkqPuRrkA" elementId="kz.zvezdochet.toolbar.events">
         <children xsi:type="menu:HandledToolItem" xmi:id="_vTKG4A6CEeSg-JkqPuRrkA" elementId="kz.zvezdochet.handledtoolitem.add" label="&#x414;&#x43e;&#x431;&#x430;&#x432;&#x438;&#x442;&#x44c;" iconURI="platform:/plugin/kz.zvezdochet.core/icons/addElement.gif" command="_j9Q7UNZzEeK-x7EaamJw9Q"/>
         <children xsi:type="menu:HandledToolItem" xmi:id="_NU6YYA6FEeSg-JkqPuRrkA" elementId="kz.zvezdochet.handledtoolitem.edit" label="&#x418;&#x437;&#x43c;&#x435;&#x43d;&#x438;&#x442;&#x44c;" iconURI="platform:/plugin/kz.zvezdochet.core/icons/editElement.png" command="_EZFS8NZfEeK-x7EaamJw9Q"/>

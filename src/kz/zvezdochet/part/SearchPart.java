@@ -1,4 +1,4 @@
-package kz.zvezdochet.parts;
+package kz.zvezdochet.part;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,15 +11,11 @@ import kz.zvezdochet.core.ui.Tab;
 import kz.zvezdochet.core.ui.comparator.TableSortListenerFactory;
 import kz.zvezdochet.core.ui.view.ModelListView;
 import kz.zvezdochet.core.util.DateUtil;
-import kz.zvezdochet.handler.EventHandler;
 import kz.zvezdochet.service.EventService;
 
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -146,17 +142,16 @@ public class SearchPart extends ModelListView {
 	 */
 	private void findByName(String text) {
 		try {
-			modelList = new EventService().findByName(text);
+			data = new EventService().findByName(text);
 			initTable();
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private Map<Integer, String> columns = new HashMap<Integer, String>(); 
-	
 	@Override
 	protected void addColumns() {
+		Map<Integer, String> columns = new HashMap<Integer, String>();
 		columns.put(0, "Имя");
 		columns.put(1, "Фамилия");
 		columns.put(2, "Дата");
