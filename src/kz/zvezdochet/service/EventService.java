@@ -116,7 +116,7 @@ public class EventService extends ModelService {
 			ps.setString(1, event.getSurname());
 			ps.setString(2, event.getName());
 			ps.setBoolean(3, event.isFemale());
-			if (event.getPlace() != null)
+			if (event.getPlace() != null && event.getPlace().getId() != null)
 				ps.setLong(4, event.getPlace().getId());
 			else
 				ps.setLong(4, java.sql.Types.NULL);
