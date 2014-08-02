@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -11,10 +12,11 @@ import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.core.bean.Model;
-import kz.zvezdochet.core.service.ModelService;
 import kz.zvezdochet.core.service.DataAccessException;
+import kz.zvezdochet.core.service.ModelService;
 import kz.zvezdochet.core.tool.Connector;
 import kz.zvezdochet.core.util.DateUtil;
+import kz.zvezdochet.util.Configuration;
 
 /**
  * Реализация сервиса событий
@@ -574,5 +576,90 @@ public class EventService extends ModelService {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * Поиск похожих по характеру людей
+	 * @param event человек
+	 * @param celebrity true - поиск только знаменитостей
+	 * @return список людей
+	 * @throws DataAccessException
+	 */
+	public List<Model> findSimilar(Event event, int celebrity) throws DataAccessException {
+        List<Model> list = new ArrayList<Model>();
+		if (null == event.getConfiguration()) return list;
+		Configuration conf = event.getConfiguration();
+		conf.initPlanetSigns();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String sql = "select e.* from " + getPlanetSignTable() + " es" + 
+					" inner join " + tableName + " e on es.eventid = e.id" +
+				" where sun = ? and mercury = ? and venus = ? and mars = ?" +
+					" and e.id <> ?";
+			if (celebrity >= 0)
+				sql += " and es.celebrity = " + celebrity;
+			sql += " order by year(initialdate)";
+			
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, ((Planet)conf.getPlanets().get(0)).getSign().getId());
+			ps.setLong(2, ((Planet)conf.getPlanets().get(4)).getSign().getId());
+			ps.setLong(3, ((Planet)conf.getPlanets().get(5)).getSign().getId());
+			ps.setLong(4, ((Planet)conf.getPlanets().get(6)).getSign().getId());
+			ps.setLong(5, event.getId());
+			rs = ps.executeQuery();
+			while (rs.next())
+				list.add(init(rs, null));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * Поиск известных людей, родившихся в указанную дату
+	 * @param date дата
+	 * @return список людей
+	 * @throws DataAccessException
+	 */
+	public List<Event> findEphemeron(Date date) throws DataAccessException {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		int day = calendar.get(Calendar.DAY_OF_MONTH);
+		int month = calendar.get(Calendar.MONTH) + 1;
+
+        List<Event> list = new ArrayList<Event>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String sql = 
+				"select * from " + tableName +
+				" where celebrity = 1 " +
+					"and cast(initialDate as char) like ?" + 
+				" order by initialDate";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setString(1, "%-" + DateUtil.formatDateNumber(month) +
+				"-" + DateUtil.formatDateNumber(day) + "%");
+			rs = ps.executeQuery();
+			while (rs.next())
+				list.add((Event)init(rs, null));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
+		return list;
 	}
 }

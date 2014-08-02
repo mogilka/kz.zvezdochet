@@ -142,8 +142,7 @@ public class SearchPart extends ModelListView {
 	 */
 	private void findByName(String text) {
 		try {
-			data = new EventService().findByName(text);
-			initTable();
+			setData(new EventService().findByName(text));
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
@@ -157,6 +156,7 @@ public class SearchPart extends ModelListView {
 		columns.put(2, "Дата");
 		columns.put(3, "Знак Зодиака");
 		columns.put(4, "Стихия");
+		columns.put(5, "Описание");
 		for (Map.Entry<Integer, String> column : columns.entrySet()) {
 			TableColumn tableColumn = new TableColumn(table, SWT.NONE);
 			tableColumn.setText(column.getValue());		
@@ -178,6 +178,7 @@ public class SearchPart extends ModelListView {
 					case 2: return DateUtil.formatDateTime(event.getBirth());
 					case 3: return event.getSign();
 					case 4: return event.getElement();
+					case 5: return event.getDescription();
 				}
 				return null;
 			}
