@@ -22,7 +22,7 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
     /**
      * Порядковый номер
      */
-    private int number;
+    protected int number;
 
 	public int getNumber() {
 		return number;
@@ -51,5 +51,5 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
 	/**
 	 * Карта статистики типов аспектов для небесной точки
 	 */
-	private Map<String, Integer> aspectCountMap;
+	protected Map<String, Integer> aspectCountMap;
 }

@@ -11,7 +11,6 @@ import kz.zvezdochet.bean.AspectType;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.bean.Sign;
-import kz.zvezdochet.bean.SkyPoint;
 import kz.zvezdochet.bean.SkyPointAspect;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
@@ -59,7 +58,7 @@ public class Configuration {
   	  	planetList = new PlanetService().getList();
   	  	houseList = new HouseService().getList();
 		calculate(date, time, zone, latitude, longitude);
-//		getPlanetStatistics();
+		initPlanetStatistics();
 	}
 
 	/**
@@ -360,11 +359,12 @@ public class Configuration {
 	/**
 	 * Расчет аспектов планет.
 	 * Параллельно выполняется составление статистики по каждой планете:
-	 * сколько у нее аспектов всех существующих типов
+	 * сколько у неё аспектов всех существующих типов
 	 * @throws DataAccessException 
 	 */
 	public void initPlanetAspects() throws DataAccessException {
 		try {
+			if (aspectList != null) return;
 	  	  	aspectList = new ArrayList<SkyPointAspect>();
 			List<Model> aspects = new AspectService().getList();
 			if (planetList != null) 
@@ -375,8 +375,8 @@ public class Configuration {
 					Map<String, Integer> aspcountmap = new HashMap<String, Integer>();
 					Map<String, String> aspmap = new HashMap<String, String>();
 					List<Model> aspectTypes = new AspectTypeService().getList();
-					for (Model entity4 : aspectTypes) 
-						aspcountmap.put(((AspectType)entity4).getCode(), 0);
+					for (Model asptype : aspectTypes) 
+						aspcountmap.put(((AspectType)asptype).getCode(), 0);
 					
 					for (Model model2 : planetList) {
 						Planet p2 = (Planet)model2;
@@ -437,203 +437,150 @@ public class Configuration {
 	 * - благоприятная связь (хороший или нейтральный аспект планеты с Раху и Селеной)
 	 * - неблагоприятная связь (плохой или нейтральный аспект планеты с Кету и Лилит)
 	 * - нахождение планеты в градусе
+	 * //TODO расчитать все важные позиции планет
+	 * определяем позиции планет в целом (обитель изгнание экзальтация падение)
+	 * определяем пустые знаки
+	 * определяем пустые дома а также включенные и какие там ещё есть
+	 * //определяем управителей домов
+		//определяем знак, где находится куспид дома,
+		//и определяем планету знака
 	 */
-	public void getPlanetStatistics() throws DataAccessException {
-		getDamagedPlanets();
-		getBrokenPlanets();
-//		getSunNeighbours();
+	public void initPlanetStatistics() throws DataAccessException {
+		initPlanetAspects();
+		initDamagedPlanets();
+		initBrokenPlanets();
+		initAngularPlanets();
+		initSunNeighbours();
 	}
 
 	/**
-	 * Поиск пораженных планет
+	 * Поиск поражённых и непоражённых планет
 	 */
-	private void getDamagedPlanets() {
-		if (planetList != null) 
-			for (Model entity : planetList) {
-				Planet planet = (Planet)entity;
-				
-				//сравнение количества хороших и плохих аспектов
-				int good = planet.getAspectCountMap().get("POSITIVE") +
-						planet.getAspectCountMap().get("POSITIVE_HIDDEN");
-				int bad = planet.getAspectCountMap().get("NEGATIVE") +
-						planet.getAspectCountMap().get("NEGATIVE_HIDDEN");
-				if (good == 0 && bad > 0) {
+	private void initDamagedPlanets() {
+		for (Model model : planetList) {
+			Planet planet = (Planet)model;
+			
+			//сравнение количества хороших и плохих аспектов
+			int good = planet.getAspectCountMap().get("POSITIVE") +
+					planet.getAspectCountMap().get("POSITIVE_HIDDEN");
+			int bad = planet.getAspectCountMap().get("NEGATIVE") +
+					planet.getAspectCountMap().get("NEGATIVE_HIDDEN");
+			if (0 == good && bad > 0) {
+				planet.setDamaged(true); 
+				System.out.println(planet.getCode() + " is damaged");
+				continue;
+			} else if (0 == bad && good > 0) {
+				planet.setPerfect(true); 
+				System.out.println(planet.getCode() + " is perfect");
+				continue;
+			}
+			final String LILITH = "Lilith";
+			for (SkyPointAspect aspect : aspectList) {
+				if (aspect.getAspect().getCode().equals("CONJUNCTION") &&
+						aspect.getSkyPoint1().getCode().equals(LILITH) &&
+						!aspect.getSkyPoint2().getCode().equals(LILITH) &&
+						aspect.getSkyPoint2().getCode().equals(planet.getCode())) {
 					planet.setDamaged(true); 
 					System.out.println(planet.getCode() + " is damaged");
 					continue;
 				}
-				if (aspectList != null) {
-					final String LILITH = "Lilith";
-					for (SkyPointAspect aspect : aspectList) {
-						if (aspect.getSkyPoint1().getCode().equals(LILITH) &&
-								!aspect.getSkyPoint2().getCode().equals(LILITH) &&
-								aspect.getSkyPoint2().getCode().equals(planet.getCode()) &&
-								aspect.getAspect().getCode().equals("CONJUNCTION")) {
-							planet.setDamaged(true); 
-							System.out.println(planet.getCode() + " is damaged");
-							continue;
-						}
-					}
-				}
 			}
+		}
 	}
 
 	/**
 	 * Поиск ослабленных планет
 	 */
-	private void getBrokenPlanets() {
-		if (planetList != null) 
-			for (Model entity : planetList) {
-				Planet planet = (Planet)entity;
-				if (aspectList != null) {
-					final String KETHU = "Kethu";
-					for (SkyPointAspect aspect : aspectList) {
-						if (aspect.getSkyPoint1().getCode().equals(KETHU) &&
-								!aspect.getSkyPoint2().getCode().equals(KETHU) &&
-								aspect.getSkyPoint2().getCode().equals(planet.getCode()) &&
-								aspect.getAspect().getCode().equals("CONJUNCTION")) {
-							planet.setBroken(true); 
-							System.out.println(planet.getCode() + " is broken");
-							continue;
-						}
-					}
+	private void initBrokenPlanets() {
+		for (Model model : planetList) {
+			Planet planet = (Planet)model;
+			final String KETHU = "Kethu";
+			for (SkyPointAspect aspect : aspectList) {
+				if (aspect.getAspect().getCode().equals("CONJUNCTION") &&
+						aspect.getSkyPoint1().getCode().equals(KETHU) &&
+						!aspect.getSkyPoint2().getCode().equals(KETHU) &&
+						aspect.getSkyPoint2().getCode().equals(planet.getCode())) {
+					planet.setBroken(true); 
+					System.out.println(planet.getCode() + " is broken");
+					continue;
 				}
 			}
-	}
-	
-	/**
-	 * Поиск планет, приближенных к Солнцу
-	 */
-	private void getSunNeighbours() {
-		if (planetList == null) return; 
-		Planet sun = (Planet)planetList.get(0);
-		//if sun+5<=360 then min:=sun+5 else min:=sun+5-360;
-		//max:=sun;
-		SkyPoint shield = getNearestToSun(sun, 3.0, 1);                          //планета-Щит
-		//min:=sun;
-		//if sun>=5 then max:=sun-5 else max:=360-5+sun;
-		SkyPoint sword = getNearestToSun(sun, 3.0, 2);                           //планета-Меч
-
-		//if sun>=3 then min:=sun-3 else min:=360-3+sun;
-		//if sun<=357 then max:=sun+3 else max:=sun+3-360;
-		SkyPoint belt = getNearestToSun(sun, 0.17, 0);                           //планета-Пояс (сожженная)
-
-		//if sun>=0.17 then min:=sun-0.17 else min:=360-0.17+sun;
-		//if sun<=359.43 then max:=sun+0.17 else max:=sun+0.17-360;
-		SkyPoint kernel = getNearestToSun(sun, 0.0, 0);                          //планета-Ядро
-	}
-	
-	/**
-	 * Поиск ближайшей планеты к Солнцу.
-	 * С помощью данной функции вычисляюся
-	 * ближайшие к Солнцу позиции планет (щит, меч, пояс, ядро)
-	 */
-	private SkyPoint getNearestToSun(SkyPoint point, double limit, int sign) {
-		int sun;
-		double min, res;
-		SkyPoint minim, result;
-		/**
-		 * Массив разниц координаты Солнца с координатами других планет
-		 */
-		double[] diffs = new double[16]; 
-		List<Planet> planets = new ArrayList<Planet>();
-
-		//определяем расстояние между планетами
-		for (Model entity : planetList) {
-			Planet planet = (Planet)entity;
-			planets.add(planet);
-			if (planet.getCode().equals(point.getCode())) continue;
-			res = CalcUtil.getDifference(
-					Math.abs(CalcUtil.degToDec(planet.getCoord())), 
-					Math.abs(CalcUtil.degToDec(point.getCoord())));
-			//если планета укладывается в диапазон, запоминаем ее индекс
-			int index = planet.getNumber() - 1;
-			if ((limit > 2 && res <= limit) ||
-					(limit < 0.18 && (res < 0.18 || res > 3)) ||
-					(limit < 0.1 && res > 0.17)) {
-				diffs[index] = 360.0; continue;
-			} else 
-				diffs[index] = res;
 		}
-		
+	}
+	
+	/**
+	 * Определяем ближайшие планеты к Солнцу
+	 * //TODO проверить что мы используем координаты градусов а не десятые
+	 */
+	private void initSunNeighbours() {
+		Planet sun = (Planet)planetList.get(0);
+		List<Planet> planets = new ArrayList<Planet>();
+		planets.add(sun);
+		//определяем ядро и пояс
+		for (int i = 1; i < planetList.size(); i++) {
+			Planet planet = (Planet)planetList.get(i);
+			double res = Math.abs(CalcUtil.getDifference(sun.getCoord(), planet.getCoord()));
+			if (res < 0.18)
+				planet.setKernel(true);
+			else if (res <= 3)
+				planet.setBelt(true);
+			else
+				planets.add(planet);
+		}
 		//упорядочиваем массив планет по возрастанию
 		Collections.sort(planets, new SkyPointComparator());
 		//определяем новый индекс солнца
-		sun = planets.indexOf(point);
+		int sunindex = planets.indexOf(sun);
 
 		//определяем щит и меч
-		for (int i = 0; i < 10; i++) {
-			if (sun == planets.size() - 1)
-				minim = planets.get(0); 
-			else 
-				minim = planets.get(sun - 1);
-			
-			if (CalcUtil.getDifference(
-					Math.abs(CalcUtil.degToDec(point.getCoord())), 
-					Math.abs(CalcUtil.degToDec(minim.getCoord()))) > 3) {
-				result = minim; break;
-			}
-		}
+		int isword = (sunindex == planets.size() - 1) ? 0 : sunindex + 1;
+		Planet sword = planets.get(isword);
+		int pindex = planetList.indexOf(sword);
+		((Planet)planetList.get(pindex)).setSword(true);
 
-		//определяем наименьшее соединение
-		min = 360.0;
-		result = planets.get(0);
-		for (int i = 0; i < diffs.length; i++)
-			if (diffs[i] < min) {
-				min = diffs[i];
-				for (Planet planet : planets)
-					if (i > 0 &&
-							planet.getNumber() == i + 1) {
-						result = planet; break;
-					}
-			}
-		return result;
-	}	
-	
-/*
- * //--------------------------------------------------------------
-//определяем ближайшую планету к указанному объекту
-//--------------------------------------------------------------
-function TfmData.GetNearest(coord,margin1,margin2:real):byte;
-{данная функция создана для определения планеты,
- ближайшей к таким точкам гороскопа как ASC и МС.
- И в этом случае мы рассматриваем только непосредственно близкие
- к точкам планеты, т.е. находящиеся соответственно
- в XII и I домах - для ASC, в IX и X домах - для МС}
-var
-i:byte;
-planet,min:real;
-diffs:array[2..17] of real; //массив разниц с планетами
-begin
-for i:=2 to 17 do
-  begin
-   planet:=abs(fmPersonal.qrPlanets.Fields[i].AsFloat);
-   MarginalValuesEx(margin1,margin2,planet);
-   //если планета укладывается в диапазон,
-   //рассчитываем ее расстояние до точки
-   //и запоминаем ее индекс
-   if(planet>=margin1)and(planet<=margin2)
-    then diffs[i]:=Difference(coord,planet)
-    else diffs[i]:=360.0;
-  end;
-//определяем планету с наименьшим расстоянием
-min:=360.0;
-result:=0;
-for i:=2 to 17 do
-  if diffs[i]<min
-   then
-   begin
-    min:=diffs[i];
-    result:=i
-   end;
-end;
-
- */
+		int ishield = (sunindex == planets.size() - 1) ? 0 : sunindex - 1;
+		Planet shield = planets.get(ishield);
+		pindex = planetList.indexOf(shield);
+		((Planet)planetList.get(pindex)).setShield(true);
+	}
 
 	public void setPlanets(List<Model> planets) {
 		planetList = planets;
 	}
 	public void setHouses(List<Model> houses) {
 		houseList = houses;
+	}
+
+	/**
+	 * Поиск угловых планет, расположенных на ASC, IC, DSC, MC
+	 */
+	private void initAngularPlanets() {
+		Model[] hangular = {
+			houseList.get(0),
+			houseList.get(9),	
+			houseList.get(18),	
+			houseList.get(27)	
+		};
+		for (Model model : hangular) {
+			House house = (House)model;
+			int prev = (1 == house.getNumber()) ? 34 : house.getNumber() - 3;
+			int next = house.getNumber() + 3;
+			double phouse = ((House)houseList.get(prev)).getCoord();
+			double nhouse = ((House)houseList.get(next)).getCoord();
+
+			for (Model pmodel : planetList) {
+				Planet planet = (Planet)pmodel;
+				double[] res = checkMarginalValues(phouse, nhouse, planet.getCoord());
+				if (Math.abs(res[1]) < res[0] & 
+						Math.abs(res[1]) >= nhouse) {
+					switch (house.getNumber()) {
+					case 1: planet.setOnASC(true); break;
+					case 10: planet.setOnIC(true); break;
+					case 19: planet.setOnDSC(true); break;
+					case 28: planet.setOnMC(true); break;
+					}
+				}
+			}
+		}
 	}
 }

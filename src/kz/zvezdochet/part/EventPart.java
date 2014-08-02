@@ -233,15 +233,26 @@ public class EventPart extends ModelView {
 		tab.name = "Планеты";
 		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet.gif").createImage();
 		grPlanets = new Group(folder, SWT.NONE);
-		String[] titles = {"Планета", "Координата", "Направление"};
+		Object[] titles = {
+			"Планета",
+			"Координата",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			""
+		};
 		Table table = new Table(grPlanets, SWT.BORDER | SWT.V_SCROLL);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 		table.setSize(grPlanets.getSize());
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(table);
-		for (int i = 0; i < titles.length; i++) {
-			TableColumn column = new TableColumn (table, SWT.NONE);
-			column.setText(titles[i]);
+		for (Object title : titles) {
+			TableColumn column = new TableColumn(table, SWT.NONE);
+			column.setText(title.toString());
 		}	
 		tab.control = grPlanets;
 		GridLayoutFactory.swtDefaults().applyTo(grPlanets);
@@ -553,6 +564,21 @@ public class EventPart extends ModelView {
 				item.setText(0, planet.getName());		
 				item.setText(1, String.valueOf(planet.getCoord()));
 				item.setText(2, planet.isRetrograde() ? "R" : "");
+				item.setImage(3, planet.isDamaged() ?
+					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/disharmonic.gif").createImage() : null);
+				item.setImage(4, planet.isPerfect() ?
+					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/harmonic.gif").createImage() : null);
+				item.setImage(5, planet.inMine() ?
+					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/mine.gif").createImage() : null);
+				item.setImage(6, planet.isSword() ?
+					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/sword.png").createImage() : null);
+				item.setImage(7, planet.isShield() ?
+					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/shield.png").createImage() : null);
+				item.setImage(8, planet.isKernel() ?
+					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/core.png").createImage() : null);
+				item.setImage(9, planet.isBelt() ?
+					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/belt.png").createImage() : null);
+				//TODO обитель и т.п.
 			}
 			for (int i = 0; i < table.getColumnCount(); i++)
 				table.getColumn(i).pack();
@@ -648,6 +674,12 @@ public class EventPart extends ModelView {
 				setTitle(event.getFullName());
 			} else
 				setTitle(Messages.getString("PersonView.New")); //$NON-NLS-1$
+			try {
+				if (event.getConfiguration() != null)
+					event.getConfiguration().initPlanetStatistics();
+			} catch (DataAccessException e) {
+				e.printStackTrace();
+			}
 		}
 		super.setModel(model, sync);
 		if (sync) {

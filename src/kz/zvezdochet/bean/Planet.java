@@ -369,8 +369,9 @@ public class Planet extends SkyPoint {
      * Метод, проверяющий, находится ли планета в шахте
      * @return <i>true</i> если планета не имеет сильных аспектов
      */
-	public boolean isInMine() {
-		return false; //TODO добавить реальное условие
+	public boolean inMine() {
+		return (aspectCountMap != null) ?
+				0 == getAspectCountMap().get("COMMON") : false;
 	}
 
 	public boolean isDamaged() {
@@ -431,5 +432,84 @@ public class Planet extends SkyPoint {
 
 	public ReferenceService getService() {
 		return new PlanetService();
+	}
+
+	/**
+	 * Признаки угловой планеты
+	 */
+	private boolean onASC = false;
+	private boolean onIC = false;
+	private boolean onDSC = false;
+	private boolean onMC = false;
+	
+	public void setOnASC(boolean onAsc) {
+		onASC = onAsc;
+	}
+	public boolean onIC() {
+		return onIC;
+	}
+
+	public void setOnIC(boolean onIC) {
+		this.onIC = onIC;
+	}
+
+	public boolean onDSC() {
+		return onDSC;
+	}
+
+	public void setOnDSC(boolean onDSC) {
+		this.onDSC = onDSC;
+	}
+
+	public boolean onMC() {
+		return onMC;
+	}
+
+	public void setOnMC(boolean onMC) {
+		this.onMC = onMC;
+	}
+
+	public boolean onASC() {
+		return onASC;
+	}
+
+	/**
+	 * Признаки соединения с Солнцем
+	 */
+	private boolean kernel = false;
+	private boolean belt = false;
+	private boolean shield = false;
+	private boolean sword = false;
+
+	public boolean isKernel() {
+		return kernel;
+	}
+
+	public void setKernel(boolean kernel) {
+		this.kernel = kernel;
+	}
+
+	public boolean isBelt() {
+		return belt;
+	}
+
+	public void setBelt(boolean belt) {
+		this.belt = belt;
+	}
+
+	public boolean isShield() {
+		return shield;
+	}
+
+	public void setShield(boolean shield) {
+		this.shield = shield;
+	}
+
+	public boolean isSword() {
+		return sword;
+	}
+
+	public void setSword(boolean sword) {
+		this.sword = sword;
 	}
 }
