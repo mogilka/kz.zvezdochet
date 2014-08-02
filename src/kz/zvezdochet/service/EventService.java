@@ -62,31 +62,6 @@ public class EventService extends ModelService {
 	}
 	
 	@Override
-	public Model find(Long id) throws DataAccessException {
-        Event event = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-		try {
-			String sql = "select * from " + tableName + " where id = ?";
-			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			ps.setLong(1, id);
-			rs = ps.executeQuery();
-			if (rs.next())
-				event = (Event)init(rs, null);				
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try { 
-				if (rs != null) rs.close();
-				if (ps != null) ps.close();
-			} catch (SQLException e) { 
-				e.printStackTrace(); 
-			}
-		}
-		return event;
-	}
-
-	@Override
 	public Model save(Model model) throws DataAccessException {
 		Event event = (Event)model;
 		int result = -1;
@@ -150,6 +125,7 @@ public class EventService extends ModelService {
 			savePlanets(event);
 			saveHouses(event);
 			savePlanetHouses(event);
+			savePlanetSigns(event);
 			saveBlob(event);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -247,8 +223,8 @@ public class EventService extends ModelService {
 	}
 
 	@Override
-	public Model init(ResultSet rs, Model base) throws SQLException {
-		Event event = (Event)create();
+	public Model init(ResultSet rs, Model model) throws SQLException {
+		Event event = (model != null) ? (Event)model : (Event)create();
 		event.setId(Long.parseLong(rs.getString("ID")));
 		if (rs.getString("Callname") != null)
 			event.setName(rs.getString("Callname"));
@@ -408,7 +384,7 @@ public class EventService extends ModelService {
 	 * Возвращает имя таблицы, хранящей планеты конфигурации события
 	 * @return имя ТБД
 	 */
-	private String getPlanetTable() {
+	public String getPlanetTable() {
 		return "eventplanets";
 	}
 
@@ -426,6 +402,14 @@ public class EventService extends ModelService {
 	 */
 	private String getPlanetHouseTable() {
 		return "eventpositions";
+	}
+
+	/**
+	 * Возвращает имя таблицы, хранящей позиции планет в знаках конфигурации события
+	 * @return имя ТБД
+	 */
+	public String getPlanetSignTable() {
+		return "eventsigns";
 	}
 
 	/**
@@ -528,6 +512,57 @@ public class EventService extends ModelService {
 			}
 			if (id != 0)
 				ps.setLong(18, id);
+			ps.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (ps != null)	ps.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Сохранение позиций планет в знаках конфигурации события
+	 * @param event событие
+	 * @throws DataAccessException
+	 */
+	private void savePlanetSigns(Event event) throws DataAccessException {
+		if (null == event.getConfiguration()) return;
+		event.getConfiguration().initPlanetSigns();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String table = getPlanetSignTable();
+		try {
+			String sql = "select id from " + table + " where eventid = ?";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, event.getId());
+			rs = ps.executeQuery();
+			long id = (rs.next()) ? rs.getLong("id") : 0;
+			ps.close();
+			
+			List<Model> planets = event.getConfiguration().getPlanets();
+			if (0 == id)
+				sql = "insert into " + table + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			else {
+				sql = "update " + table + " set eventid = ?,";
+				for (int i = 0; i < planets.size(); i++)
+					sql += " " + ((Planet)planets.get(i)).getCode() + " = ?,";
+				sql += "celebrity = ?";
+				sql += " where id = ?";
+			}
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, event.getId());
+			for (int i = 0; i < planets.size(); i++) {
+				Planet planet = ((Planet)planets.get(i));
+				ps.setLong(i + 2, planet.getSign().getId());
+			}
+			ps.setInt(18, event.isCelebrity() ? 1 : 0);
+			if (id != 0)
+				ps.setLong(19, id);
 			ps.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
