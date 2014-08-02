@@ -129,8 +129,8 @@ public class PlanetService extends ReferenceService {
 	}
 
 	@Override
-	public Planet init(ResultSet rs, Model base) throws DataAccessException, SQLException {
-		Planet planet = new Planet();
+	public Planet init(ResultSet rs, Model model) throws DataAccessException, SQLException {
+		Planet planet = (model != null) ? (Planet)model : (Planet)create();
 		super.init(rs, planet);
 		planet.setScore(Double.parseDouble(rs.getString("Score")));
 		planet.setSwordText(rs.getString("Sword"));

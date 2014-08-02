@@ -116,8 +116,8 @@ public class HouseService extends ReferenceService {
 	}
 
 	@Override
-	public House init(ResultSet rs, Model base) throws DataAccessException, SQLException {
-		House house = new House();
+	public House init(ResultSet rs, Model model) throws DataAccessException, SQLException {
+		House house = (model != null) ? (House)model : (House)create();
 		super.init(rs, house);
 		house.setNumber(rs.getInt("OrdinalNumber"));
 		house.setCombination(rs.getString("Combination"));

@@ -112,8 +112,8 @@ public class SignService extends ReferenceService {
 	}
 
 	@Override
-	public Sign init(ResultSet rs, Model base) throws DataAccessException, SQLException {
-		Sign sign = new Sign();
+	public Sign init(ResultSet rs, Model model) throws DataAccessException, SQLException {
+		Sign sign = (model != null) ? (Sign)model : (Sign)create();
 		super.init(rs, sign);
 		sign.setCoord(Double.parseDouble(rs.getString("FinalPoint")));
 		sign.setInitialPoint(rs.getDouble("InitialPoint"));

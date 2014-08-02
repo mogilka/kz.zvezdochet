@@ -86,8 +86,8 @@ public class AspectTypeService extends ReferenceService {
 	}
 
 	@Override
-	public AspectType init(ResultSet rs, Model base) throws DataAccessException, SQLException {
-		AspectType type = new AspectType();
+	public AspectType init(ResultSet rs, Model model) throws DataAccessException, SQLException {
+		AspectType type = (model != null) ? (AspectType)model : (AspectType)create();
 		super.init(rs, type);
 		type.setProtraction((Protraction)new ProtractionService().
 				find(Long.parseLong(rs.getString("ProtractionID"))));

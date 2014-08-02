@@ -77,8 +77,8 @@ public class PlaceService extends ReferenceService {
 	}
 	
 	@Override
-	public Place init(ResultSet rs, Model base) throws DataAccessException, SQLException {
-		Place place = new Place();
+	public Place init(ResultSet rs, Model model) throws DataAccessException, SQLException {
+		Place place = (model != null) ? (Place)model : (Place)create();
 		super.init(rs, place);
 		place.setLatitude(Double.parseDouble(rs.getString("Latitude")));
 		place.setLongitude(Double.parseDouble(rs.getString("Longitude")));
