@@ -48,6 +48,7 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -243,7 +244,9 @@ public class EventPart extends ModelView {
 			"",
 			"",
 			"",
-			""
+			"",
+			"Знаки",
+			"Дома"
 		};
 		Table table = new Table(grPlanets, SWT.BORDER | SWT.V_SCROLL);
 		table.setLinesVisible(true);
@@ -561,7 +564,7 @@ public class EventPart extends ModelView {
 			for (Model base : conf.getPlanets()) {
 				Planet planet = (Planet)base;
 				TableItem item = new TableItem(table, SWT.NONE);
-				item.setText(0, planet.getName());		
+				item.setText(0, planet.getName());
 				item.setText(1, String.valueOf(planet.getCoord()));
 				item.setText(2, planet.isRetrograde() ? "R" : "");
 				item.setImage(3, planet.isDamaged() ?
@@ -578,7 +581,30 @@ public class EventPart extends ModelView {
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/core.png").createImage() : null);
 				item.setImage(9, planet.isBelt() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/belt.png").createImage() : null);
-				//TODO обитель и т.п.
+
+				Image image = null;
+				if (planet.isSignHome())
+					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/home.gif").createImage();
+				else if (planet.isSignExaltated())
+					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/previous.gif").createImage();
+				else if (planet.isSignExile())
+					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/exile.png").createImage();
+				else if (planet.isSignDeclined())
+					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/next_nav.gif").createImage();
+				if (image != null)
+					item.setImage(10, image);
+
+				image = null;
+				if (planet.isHouseHome())
+					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/home.gif").createImage();
+				else if (planet.isHouseExaltated())
+					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/previous.gif").createImage();
+				else if (planet.isHouseExile())
+					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/exile.png").createImage();
+				else if (planet.isHouseDeclined())
+					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/next_nav.gif").createImage();
+				if (image != null)
+					item.setImage(11, image);
 			}
 			for (int i = 0; i < table.getColumnCount(); i++)
 				table.getColumn(i).pack();

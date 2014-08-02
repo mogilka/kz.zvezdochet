@@ -230,7 +230,7 @@ public class Event extends Model {
 			}
 			
 			//конфигурация
-			configuration = new Configuration();
+			configuration = new Configuration(birth);
 			service.initPlanets(this);
 			service.initHouses(this);
 		} catch (DataAccessException e) {

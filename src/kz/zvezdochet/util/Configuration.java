@@ -2,6 +2,7 @@ package kz.zvezdochet.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,17 +11,20 @@ import kz.zvezdochet.bean.Aspect;
 import kz.zvezdochet.bean.AspectType;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Planet;
+import kz.zvezdochet.bean.PositionType;
 import kz.zvezdochet.bean.Sign;
 import kz.zvezdochet.bean.SkyPointAspect;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.util.CalcUtil;
+import kz.zvezdochet.core.util.DateUtil;
 import kz.zvezdochet.core.util.NumberUtil;
 import kz.zvezdochet.core.util.PlatformUtil;
 import kz.zvezdochet.service.AspectService;
 import kz.zvezdochet.service.AspectTypeService;
 import kz.zvezdochet.service.HouseService;
 import kz.zvezdochet.service.PlanetService;
+import kz.zvezdochet.service.PositionTypeService;
 import kz.zvezdochet.sweph.Activator;
 import swisseph.SweConst;
 import swisseph.SweDate;
@@ -35,14 +39,17 @@ public class Configuration {
 	private List<Model> planetList;
 	private	List<Model> houseList;
 	private	List<SkyPointAspect> aspectList;
+	private Date date;
 
 	/**
 	 * Создание пустой расчетной конфигурации
+	 * @param date дата
 	 * @throws DataAccessException 
 	 */
-	public Configuration() throws DataAccessException {
+	public Configuration(Date date) throws DataAccessException {
   	  	planetList = new PlanetService().getList();
   	  	houseList = new HouseService().getList();
+  	  	this.date = date;
 	}
 
 	/**
@@ -54,9 +61,12 @@ public class Configuration {
 	 * @param longitude строковое значение долготы местности
 	 * @throws DataAccessException 
 	 */
-	public Configuration(String date, String time, String zone, String latitude, String longitude) throws DataAccessException {
+	public Configuration(Date eventdate, String zone, String latitude, String longitude) throws DataAccessException {
   	  	planetList = new PlanetService().getList();
   	  	houseList = new HouseService().getList();
+  	  	this.date = eventdate;
+  	  	String date = DateUtil.formatCustomDateTime(eventdate, DateUtil.sdf.toPattern());
+  	  	String time = DateUtil.formatCustomDateTime(eventdate, DateUtil.stf.toPattern());
 		calculate(date, time, zone, latitude, longitude);
 		initPlanetStatistics();
 	}
@@ -451,6 +461,53 @@ public class Configuration {
 		initBrokenPlanets();
 		initAngularPlanets();
 		initSunNeighbours();
+		initPlanetPositions();
+	}
+
+	/**
+	 * Инициализация позиций планет
+	 */
+	private void initPlanetPositions() {
+		try {
+			initPlanetSigns();
+			initPlanetHouses();
+
+			PlanetService service = new PlanetService();
+			for (Model model : planetList) {
+				Planet planet = (Planet)model;
+				for (Model type : new PositionTypeService().getList()) {
+					PositionType pType = (PositionType)type;
+					String pCode = pType.getCode();
+					boolean daily = true;
+					if (!planet.getCode().equals("Sun") &&
+							(pCode.equals("HOME") || pCode.equals("EXILE")))
+						daily = DateUtil.isDaily(date);
+
+					Sign sign = service.getSignPosition(planet, pCode, daily);
+					if (sign != null && sign.getId() == planet.getSign().getId()) {
+						switch (pCode) {
+						case "HOME": planet.setSignHome(true); break;
+						case "EXALTATION": planet.setSignExaltated(true); break;
+						case "EXILE": planet.setSignExile(true); break;
+						case "DECLINE": planet.setSignDeclined(true); break;
+						}
+					}
+
+					House house = service.getHousePosition(planet, pCode, daily);
+					int hnumber = CalcUtil.trunc((planet.getHouse().getNumber() + 2) / 3);
+					if (house != null && CalcUtil.trunc((house.getNumber() + 2) / 3) == hnumber) {
+						switch (pCode) {
+						case "HOME": planet.setHouseHome(true); break;
+						case "EXALTATION": planet.setHouseExaltated(true); break;
+						case "EXILE": planet.setHouseExile(true); break;
+						case "DECLINE": planet.setHouseDeclined(true); break;
+						}
+					}
+				}
+			}		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

@@ -1,6 +1,5 @@
 package kz.zvezdochet.bean;
 
-import java.util.List;
 import java.util.Map;
 
 import kz.zvezdochet.core.service.ReferenceService;
@@ -32,56 +31,6 @@ public class Planet extends SkyPoint {
 	 */
 	private boolean retrograde = false;
 	
-    /**
-     * Список знаков обители
-     */
-    private List<Sign> signHomes;
-    
-    /**
-     * Список знаков экзальтации
-     */
-    private List<Sign> signExaltations;
-    
-    /**
-     * Список знаков изгнания
-     */
-    private List<Sign> signExiles;
-    
-    /**
-     * Список знаков родства
-     */
-    private List<Sign> signCognation;
-    
-    /**
-     * Список знаков падения
-     */
-    private List<Sign> signDeclines;
-
-    /**
-     * Список домов обители
-     */
-    private List<House> houseHomes;
-    
-    /**
-     * Список домов экзальтации
-     */
-    private List<House> houseExaltations;
-    
-    /**
-     * Список домов изгнания
-     */
-    private List<House> houseExiles;
-    
-    /**
-     * Список домов падения
-     */
-    private List<House> houseDeclines;
-
-    /**
-     * Список домов родства
-     */
-    private List<House> houseCognation;
-    
     /**
      * Знак Зодиака, в котором находится планета
      */
@@ -282,7 +231,7 @@ public class Planet extends SkyPoint {
      * @return <i>true</i> если планета является главной
      */
 	public boolean isMain() {
-		return score > 1.0;
+		return score > 1;
 	}
 
 	public Sign getSign() {
@@ -299,70 +248,6 @@ public class Planet extends SkyPoint {
 
 	public void setHouse(House house) {
 		this.house = house;
-	}
-
-	public List<Sign> getSignHomes() {
-		return signHomes;
-	}
-
-	public void setSignHomes(List<Sign> shome) {
-		this.signHomes = shome;
-	}
-
-	public List<House> getHouseHomes() {
-		return houseHomes;
-	}
-
-	public void setHouseHomes(List<House> hhome) {
-		this.houseHomes = hhome;
-	}
-
-	public List<Sign> getSignExaltations() {
-		return signExaltations;
-	}
-
-	public void setSignExaltations(List<Sign> sexaltation) {
-		this.signExaltations = sexaltation;
-	}
-
-	public List<House> getHouseExaltations() {
-		return houseExaltations;
-	}
-
-	public void setHouseExaltations(List<House> hexaltation) {
-		this.houseExaltations = hexaltation;
-	}
-
-	public List<Sign> getSignExiles() {
-		return signExiles;
-	}
-
-	public void setSignExiles(List<Sign> sexile) {
-		this.signExiles = sexile;
-	}
-
-	public List<House> getHouseExiles() {
-		return houseExiles;
-	}
-
-	public void setHouseExiles(List<House> hexile) {
-		this.houseExiles = hexile;
-	}
-
-	public List<Sign> getSignDeclines() {
-		return signDeclines;
-	}
-
-	public void setSignDeclines(List<Sign> sdecline) {
-		this.signDeclines = sdecline;
-	}
-
-	public List<House> getHouseDeclines() {
-		return houseDeclines;
-	}
-
-	public void setHouseDeclines(List<House> hdecline) {
-		this.houseDeclines = hdecline;
 	}
 
     /**
@@ -404,22 +289,6 @@ public class Planet extends SkyPoint {
 
 	public void setBroken(boolean broken) {
 		this.broken = broken;
-	}
-
-	public List<Sign> getSignCognation() {
-		return signCognation;
-	}
-
-	public void setSignCognation(List<Sign> signCognation) {
-		this.signCognation = signCognation;
-	}
-
-	public List<House> getHouseCognation() {
-		return houseCognation;
-	}
-
-	public void setHouseCognation(List<House> houseCognation) {
-		this.houseCognation = houseCognation;
 	}
 
 	public boolean isRetrograde() {
@@ -511,5 +380,82 @@ public class Planet extends SkyPoint {
 
 	public void setSword(boolean sword) {
 		this.sword = sword;
+	}
+
+	/**
+	 * Позиции в знаках и домах
+	 */
+	private boolean signHome = false;
+	private boolean signExaltated = false;
+	private boolean signExile = false;
+	private boolean signDeclined = false;
+
+	private boolean houseHome = false;
+	private boolean houseExaltated = false;
+	private boolean houseExile = false;
+	private boolean houseDeclined = false;
+
+	public boolean isSignHome() {
+		return signHome;
+	}
+
+	public void setSignHome(boolean signHome) {
+		this.signHome = signHome;
+	}
+
+	public boolean isSignExaltated() {
+		return signExaltated;
+	}
+
+	public void setSignExaltated(boolean signExaltated) {
+		this.signExaltated = signExaltated;
+	}
+
+	public boolean isSignExile() {
+		return signExile;
+	}
+
+	public void setSignExile(boolean signExile) {
+		this.signExile = signExile;
+	}
+
+	public boolean isSignDeclined() {
+		return signDeclined;
+	}
+
+	public void setSignDeclined(boolean signDeclined) {
+		this.signDeclined = signDeclined;
+	}
+
+	public boolean isHouseHome() {
+		return houseHome;
+	}
+
+	public void setHouseHome(boolean houseHome) {
+		this.houseHome = houseHome;
+	}
+
+	public boolean isHouseExaltated() {
+		return houseExaltated;
+	}
+
+	public void setHouseExaltated(boolean houseExaltated) {
+		this.houseExaltated = houseExaltated;
+	}
+
+	public boolean isHouseExile() {
+		return houseExile;
+	}
+
+	public void setHouseExile(boolean houseExile) {
+		this.houseExile = houseExile;
+	}
+
+	public boolean isHouseDeclined() {
+		return houseDeclined;
+	}
+
+	public void setHouseDeclined(boolean houseDeclined) {
+		this.houseDeclined = houseDeclined;
 	}
 }

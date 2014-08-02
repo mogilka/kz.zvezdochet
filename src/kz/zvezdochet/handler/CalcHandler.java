@@ -3,7 +3,6 @@ package kz.zvezdochet.handler;
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.core.handler.Handler;
 import kz.zvezdochet.core.ui.util.DialogUtil;
-import kz.zvezdochet.core.util.DateUtil;
 import kz.zvezdochet.part.EventPart;
 import kz.zvezdochet.util.Configuration;
 
@@ -26,8 +25,7 @@ public class CalcHandler extends Handler {
 			updateStatus("Расчет конфигурации", false);
 			//new Configuration("12.12.2009", "23:11:16", "6.0", "43.15", "76.55");
 			Configuration configuration = new Configuration(
-				DateUtil.formatCustomDateTime(event.getBirth(), DateUtil.sdf.toPattern()),
-				DateUtil.formatCustomDateTime(event.getBirth(), DateUtil.stf.toPattern()),
+				event.getBirth(),
 				Double.toString(event.getZone()),
 				Double.toString(event.getPlace().getLatitude()),
 				Double.toString(event.getPlace().getLongitude()));
