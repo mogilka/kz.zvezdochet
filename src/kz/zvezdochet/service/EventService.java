@@ -201,8 +201,8 @@ public class EventService extends ModelService {
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
-			String query = "select * from blobs where eventid = ?";
-			ps = Connector.getInstance().getConnection().prepareStatement(query);
+			String sql = "select * from blobs where eventid = ?";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, eventId);
 			rs = ps.executeQuery();
 			if (rs.next()) {
@@ -238,7 +238,7 @@ public class EventService extends ModelService {
 		String s = rs.getString("RightHanded");
 		event.setRightHanded(s.equals("1") ? true : false);
 		if (rs.getString("Rectification") != null) 
-			event.setRectification(Integer.parseInt(rs.getString("Rectification")));
+			event.setRectification(rs.getInt("Rectification"));
 		s = rs.getString("Celebrity");
 		event.setCelebrity(s.equals("1") ? true : false);
 		if (rs.getString("Comment") != null)
@@ -250,9 +250,9 @@ public class EventService extends ModelService {
 		if (rs.getString("Element") != null)
 			event.setElement(rs.getString("Element"));
 		if (rs.getString("Placeid") != null)
-			event.setPlaceid(Long.parseLong(rs.getString("Placeid")));
+			event.setPlaceid(rs.getLong("Placeid"));
 		if (rs.getString("Zone") != null)
-			event.setZone(Double.parseDouble(rs.getString("Zone")));
+			event.setZone(rs.getDouble("Zone"));
 		return event;
 	}
 

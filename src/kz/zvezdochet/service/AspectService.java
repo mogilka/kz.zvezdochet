@@ -30,12 +30,12 @@ public class AspectService extends ReferenceService {
 		int result = -1;
         PreparedStatement ps = null;
 		try {
-			String query;
+			String sql;
 			if (element.getId() == null) 
-				query = "insert into " + tableName + 
+				sql = "insert into " + tableName + 
 					"(value, orbis, code, name, description, typeid) values(?,?,?,?,?,?)";
 			else
-				query = "update " + tableName + " set " +
+				sql = "update " + tableName + " set " +
 					"value = ?, " +
 					"orbis = ?, " +
 					"code = ?, " +
@@ -43,7 +43,7 @@ public class AspectService extends ReferenceService {
 					"description = ?, " +
 					"typeid = ? " +
 					"where id = " + reference.getId();
-			ps = Connector.getInstance().getConnection().prepareStatement(query);
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setDouble(1, reference.getValue());
 			ps.setDouble(2, reference.getOrbis());
 			ps.setString(3, reference.getCode());
@@ -80,9 +80,9 @@ public class AspectService extends ReferenceService {
 	public Aspect init(ResultSet rs, Model model) throws DataAccessException, SQLException {
 		Aspect aspect = (model != null) ? (Aspect)model : (Aspect)create();
 		super.init(rs, aspect);
-		aspect.setValue(Double.parseDouble(rs.getString("Value")));
-		aspect.setOrbis(Double.parseDouble(rs.getString("Orbis")));
-		Long typeId = Long.parseLong(rs.getString("TypeID"));
+		aspect.setValue(rs.getDouble("Value"));
+		aspect.setOrbis(rs.getDouble("Orbis"));
+		Long typeId = rs.getLong("TypeID");
 		aspect.setType((AspectType)new AspectTypeService().find(typeId));
 		return aspect;
 	}

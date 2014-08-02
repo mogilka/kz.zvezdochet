@@ -31,10 +31,10 @@ public class SignService extends ReferenceService {
 			list = new ArrayList<Model>();
 	        PreparedStatement ps = null;
 	        ResultSet rs = null;
-			String query;
+			String sql;
 			try {
-				query = "select * from " + tableName + " order by finalpoint";
-				ps = Connector.getInstance().getConnection().prepareStatement(query);
+				sql = "select * from " + tableName + " order by finalpoint";
+				ps = Connector.getInstance().getConnection().prepareStatement(sql);
 				rs = ps.executeQuery();
 				while (rs.next()) {
 					Sign sign = init(rs, null);
@@ -60,13 +60,13 @@ public class SignService extends ReferenceService {
 		int result = -1;
         PreparedStatement ps = null;
 		try {
-			String query;
+			String sql;
 			if (element.getId() == null) 
-				query = "insert into " + tableName + 
+				sql = "insert into " + tableName + 
 					"(ordinalnumber, color, code, name, description, initialpoint, finalpoint, diagram) " +
 					"values(?,?,?,?,?,?,?,?)";
 			else
-				query = "update " + tableName + " set " +
+				sql = "update " + tableName + " set " +
 					"ordinalnumber = ?, " +
 					"color = ?, " +
 					"code = ?, " +
@@ -76,7 +76,7 @@ public class SignService extends ReferenceService {
 					"finalpoint = ?, " +
 					"diagram = ? " +
 					"where id = " + reference.getId();
-			ps = Connector.getInstance().getConnection().prepareStatement(query);
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setInt(1, reference.getNumber());
 			ps.setString(2, CoreUtil.colorToRGB(reference.getColor()));
 			ps.setString(3, reference.getCode());
@@ -115,7 +115,7 @@ public class SignService extends ReferenceService {
 	public Sign init(ResultSet rs, Model model) throws DataAccessException, SQLException {
 		Sign sign = (model != null) ? (Sign)model : (Sign)create();
 		super.init(rs, sign);
-		sign.setCoord(Double.parseDouble(rs.getString("FinalPoint")));
+		sign.setCoord(rs.getDouble("FinalPoint"));
 		sign.setInitialPoint(rs.getDouble("InitialPoint"));
 		sign.setNumber(rs.getInt("OrdinalNumber"));
 		sign.setColor(CoreUtil.rgbToColor(rs.getString("Color")));

@@ -30,12 +30,12 @@ public class PlaceService extends ReferenceService {
 		int result = -1;
         PreparedStatement ps = null;
 		try {
-			String query;
+			String sql;
 			if (element.getId() == null) 
-				query = "insert into " + tableName + 
+				sql = "insert into " + tableName + 
 					"(latitude, longitude, code, name, description, greenwich) values(?,?,?,?,?,?)";
 			else
-				query = "update " + tableName + " set " +
+				sql = "update " + tableName + " set " +
 					"latitude = ?, " +
 					"longitude = ?, " +
 					"code = ?, " +
@@ -43,7 +43,7 @@ public class PlaceService extends ReferenceService {
 					"description = ?, " +
 					"greenwich = ? " +
 					"where id = " + reference.getId();
-			ps = Connector.getInstance().getConnection().prepareStatement(query);
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setDouble(1, reference.getLatitude());
 			ps.setDouble(2, reference.getLongitude());
 			ps.setString(3, reference.getCode());
@@ -80,8 +80,8 @@ public class PlaceService extends ReferenceService {
 	public Place init(ResultSet rs, Model model) throws DataAccessException, SQLException {
 		Place place = (model != null) ? (Place)model : (Place)create();
 		super.init(rs, place);
-		place.setLatitude(Double.parseDouble(rs.getString("Latitude")));
-		place.setLongitude(Double.parseDouble(rs.getString("Longitude")));
+		place.setLatitude(rs.getDouble("Latitude"));
+		place.setLongitude(rs.getDouble("Longitude"));
 		place.setGreenwich(rs.getDouble("Greenwich"));
 		return place;
 	}
@@ -102,8 +102,8 @@ public class PlaceService extends ReferenceService {
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
-			String query = "select * from " + tableName + " where name like ?";
-			ps = Connector.getInstance().getConnection().prepareStatement(query);
+			String sql = "select * from " + tableName + " where name like ?";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setString(1, "%" + name + "%");
 			rs = ps.executeQuery();
 			while (rs.next()) {

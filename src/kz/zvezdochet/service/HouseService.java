@@ -30,10 +30,10 @@ public class HouseService extends ReferenceService {
         List<Model> list = new ArrayList<Model>();
         PreparedStatement ps = null;
         ResultSet rs = null;
-		String query;
+		String sql;
 		try {
-			query = "select * from " + tableName + " order by id";
-			ps = Connector.getInstance().getConnection().prepareStatement(query);
+			sql = "select * from " + tableName + " order by id";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				House house = init(rs, null);
@@ -58,13 +58,13 @@ public class HouseService extends ReferenceService {
 		int result = -1;
         PreparedStatement ps = null;
 		try {
-			String query;
+			String sql;
 			if (element.getId() == null) 
-				query = "insert into " + tableName + 
+				sql = "insert into " + tableName + 
 					"(ordinalnumber, color, code, name, description, combination, short, designation, diagram, header, linkname) " +
 					"values(?,?,?,?,?,?,?,?,?,?,?)";
 			else
-				query = "update " + tableName + " set " +
+				sql = "update " + tableName + " set " +
 					"ordinalnumber = ?, " +
 					"color = ?, " +
 					"code = ?, " +
@@ -77,7 +77,7 @@ public class HouseService extends ReferenceService {
 					"header = ?, " +
 					"linkname = ? " +
 					"where id = " + reference.getId();
-			ps = Connector.getInstance().getConnection().prepareStatement(query);
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setInt(1, reference.getNumber());
 			ps.setString(2, CoreUtil.colorToRGB(reference.getColor()));
 			ps.setString(3, reference.getCode());
@@ -145,10 +145,10 @@ public class HouseService extends ReferenceService {
         House house = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-		String query;
+		String sql;
 		try {
-			query = "select * from " + tableName + " where OrdinalNumber = " + index;
-			ps = Connector.getInstance().getConnection().prepareStatement(query);
+			sql = "select * from " + tableName + " where OrdinalNumber = " + index;
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			rs = ps.executeQuery();
 			if (rs.next()) 
 				house = init(rs, null);

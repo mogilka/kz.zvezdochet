@@ -31,13 +31,13 @@ public class AspectTypeService extends ReferenceService {
 		int result = -1;
         PreparedStatement ps = null;
 		try {
-			String query;
+			String sql;
 			if (element.getId() == null) 
-				query = "insert into " + tableName + 
+				sql = "insert into " + tableName + 
 					"(parenttypeid, protractionid, code, name, description, symbol, color, dimcolor) " +
 					"values(?,?,?,?,?,?,?,?)";
 			else
-				query = "update " + tableName + " set " +
+				sql = "update " + tableName + " set " +
 					"parenttypeid = ?, " +
 					"protractionid = ?, " +
 					"code = ?, " +
@@ -47,7 +47,7 @@ public class AspectTypeService extends ReferenceService {
 					"color = ?, " +
 					"dimcolor = ? " +
 					"where id = " + reference.getId();
-			ps = Connector.getInstance().getConnection().prepareStatement(query);
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			if (reference.getParentType() != null)
 				ps.setLong(1, reference.getParentType().getId());
 			else
@@ -90,11 +90,11 @@ public class AspectTypeService extends ReferenceService {
 		AspectType type = (model != null) ? (AspectType)model : (AspectType)create();
 		super.init(rs, type);
 		type.setProtraction((Protraction)new ProtractionService().
-				find(Long.parseLong(rs.getString("ProtractionID"))));
+				find(rs.getLong("ProtractionID")));
 		type.setColor(CoreUtil.rgbToColor(rs.getString("Color")));
 		type.setDimColor(CoreUtil.rgbToColor(rs.getString("DimColor")));
 		if (rs.getString("ParentTypeID") != null) {
-			Long typeId = Long.parseLong(rs.getString("ParentTypeID"));
+			Long typeId = rs.getLong("ParentTypeID");
 			type.setParentType((AspectType)new AspectTypeService().find(typeId));
 		}
 		if (rs.getString("Symbol") != null)
