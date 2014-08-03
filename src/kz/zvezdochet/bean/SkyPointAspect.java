@@ -20,6 +20,10 @@ public class SkyPointAspect {
 	 * Аспект
 	 */
 	private Aspect aspect;
+	/**
+	 * Расстояние между объектами в градусах
+	 */
+	private double score;
 	
 	public SkyPointAspect() {
 		super();
@@ -47,5 +51,13 @@ public class SkyPointAspect {
 
 	public void setAspect(Aspect aspect) {
 		this.aspect = aspect;
+	}
+
+	public double getScore() {
+		return score;
+	}
+
+	public void setScore(double score) {
+		this.score = score;
 	}
 }

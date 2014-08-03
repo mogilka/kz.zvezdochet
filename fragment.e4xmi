@@ -9,6 +9,7 @@
     <elements xsi:type="commands:Command" xmi:id="_MmQNoA9sEeSB-9NCSQtAZQ" elementId="kz.zvezdochet.command.save" commandName="saveCommand"/>
     <elements xsi:type="commands:Command" xmi:id="_JrsRYBoqEeSUudsvByCRlw" elementId="kz.zvezdochet.command.ephemeron" commandName="ephemeronCommand"/>
     <elements xsi:type="commands:Command" xmi:id="_OY8DoBoqEeSUudsvByCRlw" elementId="kz.zvezdochet.command.similar" commandName="similarCommand"/>
+    <elements xsi:type="commands:Command" xmi:id="_w1rFEBsQEeSmDKwadHMMRA" elementId="kz.zvezdochet.command.aspect" commandName="aspectCommand"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_nj-6cNZfEeK-x7EaamJw9Q" featurename="handlers" parentElementId="org.eclipse.e4.ide.application">
     <elements xsi:type="commands:Handler" xmi:id="_fSwJcNZyEeK-x7EaamJw9Q" elementId="kz.zvezdochet.handler.event" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.handler.EventHandler" command="_EZFS8NZfEeK-x7EaamJw9Q"/>
@@ -18,6 +19,7 @@
     <elements xsi:type="commands:Handler" xmi:id="_RxHwAA9sEeSB-9NCSQtAZQ" elementId="kz.zvezdochet.handler.save" contributionURI="bundleclass://kz.zvezdochet.core/kz.zvezdochet.core.handler.SaveHandler" command="_MmQNoA9sEeSB-9NCSQtAZQ"/>
     <elements xsi:type="commands:Handler" xmi:id="_S68PMBoqEeSUudsvByCRlw" elementId="kz.zvezdochet.handler.similar" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.handler.SimilarHandler" command="_OY8DoBoqEeSUudsvByCRlw"/>
     <elements xsi:type="commands:Handler" xmi:id="_YxsAIBoqEeSUudsvByCRlw" elementId="kz.zvezdochet.handler.ephemeron" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.handler.EphemeronHandler" command="_JrsRYBoqEeSUudsvByCRlw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_0n1IEBsQEeSmDKwadHMMRA" elementId="kz.zvezdochet.handler.aspect" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.handler.AspectHandler" command="_w1rFEBsQEeSmDKwadHMMRA"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_I0RPYNZgEeK-x7EaamJw9Q" featurename="children" parentElementId="org.eclipse.ui.main.menu" positionInList="first">
     <elements xsi:type="menu:Menu" xmi:id="_OThtYNZgEeK-x7EaamJw9Q" elementId="kz.zvezdochet.menu.events" label="&#x421;&#x43e;&#x431;&#x44b;&#x442;&#x438;&#x44f;">
@@ -33,6 +35,7 @@
         <children xsi:type="menu:HandledToolItem" xmi:id="_Jo_LQA9sEeSB-9NCSQtAZQ" elementId="kz.zvezdochet.handledtoolitem." label="&#x421;&#x43e;&#x445;&#x440;&#x430;&#x43d;&#x438;&#x442;&#x44c;" iconURI="platform:/plugin/kz.zvezdochet.core/icons/applyElement.gif" command="_MmQNoA9sEeSB-9NCSQtAZQ"/>
         <children xsi:type="menu:HandledToolItem" xmi:id="_fyhloBoqEeSUudsvByCRlw" elementId="kz.zvezdochet.handledtoolitem.ephemeron" label="&#x41f;&#x43e;&#x445;&#x43e;&#x436;&#x438;&#x435; &#x43f;&#x43e; &#x445;&#x430;&#x440;&#x430;&#x43a;&#x442;&#x435;&#x440;&#x443;" iconURI="platform:/plugin/kz.zvezdochet/icons/contacts.gif" command="_OY8DoBoqEeSUudsvByCRlw"/>
         <children xsi:type="menu:HandledToolItem" xmi:id="_pFJnkBoqEeSUudsvByCRlw" elementId="kz.zvezdochet.handledtoolitem." label="&#x41e;&#x434;&#x43d;&#x43e;&#x434;&#x43d;&#x435;&#x432;&#x43a;&#x438;" iconURI="platform:/plugin/kz.zvezdochet/icons/star.png" command="_JrsRYBoqEeSUudsvByCRlw"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_wpajABsWEeSmDKwadHMMRA" elementId="kz.zvezdochet.handledtoolitem.aspect" label="&#x410;&#x441;&#x43f;&#x435;&#x43a;&#x442;&#x44b; &#x43f;&#x43b;&#x430;&#x43d;&#x435;&#x442;" iconURI="platform:/plugin/kz.zvezdochet/icons/aspect.gif" command="_w1rFEBsQEeSmDKwadHMMRA"/>
       </toolbar>
     </elements>
     <elements xsi:type="basic:Part" xmi:id="_6atxgA5_EeSg-JkqPuRrkA" elementId="kz.zvezdochet.part.events" visible="false" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.part.SearchPart" label="&#x41f;&#x43e;&#x438;&#x441;&#x43a; &#x441;&#x43e;&#x431;&#x44b;&#x442;&#x438;&#x439;" iconURI="platform:/plugin/kz.zvezdochet/icons/calendar.png" closeable="true">
@@ -42,5 +45,6 @@
         <children xsi:type="menu:HandledToolItem" xmi:id="_ByB18A6DEeSg-JkqPuRrkA" elementId="kz.zvezdochet.handledtoolitem.delete" label="&#x423;&#x434;&#x430;&#x43b;&#x438;&#x442;&#x44c;" iconURI="platform:/plugin/kz.zvezdochet.core/icons/trash.png" command="_z8gNkA6jEeSg-JkqPuRrkA"/>
       </toolbar>
     </elements>
+    <elements xsi:type="basic:Part" xmi:id="_5N80EBsPEeSmDKwadHMMRA" elementId="kz.zvezdochet.part.aspect" visible="false" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.part.AspectPart" label="&#x410;&#x441;&#x43f;&#x435;&#x43a;&#x442;&#x44b; &#x43f;&#x43b;&#x430;&#x43d;&#x435;&#x442;" iconURI="platform:/plugin/kz.zvezdochet/icons/aspect.gif" closeable="true"/>
   </fragments>
 </fragment:ModelFragments>
