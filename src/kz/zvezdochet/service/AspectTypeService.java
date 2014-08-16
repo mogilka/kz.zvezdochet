@@ -9,30 +9,28 @@ import kz.zvezdochet.bean.AspectType;
 import kz.zvezdochet.bean.Protraction;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
-import kz.zvezdochet.core.service.ReferenceService;
+import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.core.tool.Connector;
 import kz.zvezdochet.core.util.CoreUtil;
 
 /**
- * Реализация сервиса типов аспектов
+ * Сервис типов аспектов
  * @author Nataly Didenko
- *
- * @see ReferenceService Реализация сервиса справочников  
  */
-public class AspectTypeService extends ReferenceService {
+public class AspectTypeService extends DictionaryService {
 
 	public AspectTypeService() {
 		tableName = "aspecttypes";
 	}
 
 	@Override
-	public Model save(Model element) throws DataAccessException {
-		AspectType reference = (AspectType)element;
+	public Model save(Model model) throws DataAccessException {
+		AspectType dict = (AspectType)model;
 		int result = -1;
         PreparedStatement ps = null;
 		try {
 			String sql;
-			if (element.getId() == null) 
+			if (model.getId() == null) 
 				sql = "insert into " + tableName + 
 					"(parenttypeid, protractionid, code, name, description, symbol, color, dimcolor) " +
 					"values(?,?,?,?,?,?,?,?)";
@@ -46,28 +44,27 @@ public class AspectTypeService extends ReferenceService {
 					"symbol = ?, " +
 					"color = ?, " +
 					"dimcolor = ? " +
-					"where id = " + reference.getId();
+					"where id = " + dict.getId();
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			if (reference.getParentType() != null)
-				ps.setLong(1, reference.getParentType().getId());
+			if (dict.getParentType() != null)
+				ps.setLong(1, dict.getParentType().getId());
 			else
 				ps.setLong(1, java.sql.Types.NULL);
-			ps.setLong(2, reference.getProtraction().getId());
-			ps.setString(3, reference.getCode());
-			ps.setString(4, reference.getName());
-			ps.setString(5, reference.getDescription());
-			ps.setString(6, String.valueOf(reference.getSymbol()));
-			ps.setString(7, CoreUtil.colorToRGB(reference.getColor()));
-			ps.setString(8, CoreUtil.colorToRGB(reference.getDimColor()));
+			ps.setLong(2, dict.getProtraction().getId());
+			ps.setString(3, dict.getCode());
+			ps.setString(4, dict.getName());
+			ps.setString(5, dict.getDescription());
+			ps.setString(6, String.valueOf(dict.getSymbol()));
+			ps.setString(7, CoreUtil.colorToRGB(dict.getColor()));
+			ps.setString(8, CoreUtil.colorToRGB(dict.getDimColor()));
 			result = ps.executeUpdate();
 			if (result == 1) {
-				if (element.getId() == null) { 
+				if (model.getId() == null) { 
 					Long autoIncKeyFromApi = -1L;
 					ResultSet rsid = ps.getGeneratedKeys();
 					if (rsid.next()) {
 				        autoIncKeyFromApi = rsid.getLong(1);
-				        element.setId(autoIncKeyFromApi);
-					    //System.out.println("inserted " + tableName + "\t" + autoIncKeyFromApi);
+				        model.setId(autoIncKeyFromApi);
 					}
 					if (rsid != null) rsid.close();
 				}
@@ -82,7 +79,7 @@ public class AspectTypeService extends ReferenceService {
 			}
 			update();
 		}
-		return reference;
+		return dict;
 	}
 
 	@Override

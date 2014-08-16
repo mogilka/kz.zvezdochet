@@ -9,29 +9,27 @@ import java.util.List;
 import kz.zvezdochet.bean.Place;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
-import kz.zvezdochet.core.service.ReferenceService;
+import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.core.tool.Connector;
 
 /**
- * Реализация сервиса местностей
+ * Сервис местностей
  * @author Nataly Didenko
- * 
- * @see ReferenceService Реализация сервиса справочников  
  */
-public class PlaceService extends ReferenceService {
+public class PlaceService extends DictionaryService {
 
 	public PlaceService() {
 		tableName = "places";
 	}
 
 	@Override
-	public Model save(Model element) throws DataAccessException {
-		Place reference = (Place)element;
+	public Model save(Model model) throws DataAccessException {
+		Place dict = (Place)model;
 		int result = -1;
         PreparedStatement ps = null;
 		try {
 			String sql;
-			if (element.getId() == null) 
+			if (model.getId() == null) 
 				sql = "insert into " + tableName + 
 					"(latitude, longitude, code, name, description, greenwich) values(?,?,?,?,?,?)";
 			else
@@ -42,23 +40,22 @@ public class PlaceService extends ReferenceService {
 					"name = ?, " +
 					"description = ?, " +
 					"greenwich = ? " +
-					"where id = " + reference.getId();
+					"where id = " + dict.getId();
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			ps.setDouble(1, reference.getLatitude());
-			ps.setDouble(2, reference.getLongitude());
-			ps.setString(3, reference.getCode());
-			ps.setString(4, reference.getName());
-			ps.setString(5, reference.getDescription());
-			ps.setDouble(6, reference.getGreenwich());
+			ps.setDouble(1, dict.getLatitude());
+			ps.setDouble(2, dict.getLongitude());
+			ps.setString(3, dict.getCode());
+			ps.setString(4, dict.getName());
+			ps.setString(5, dict.getDescription());
+			ps.setDouble(6, dict.getGreenwich());
 			result = ps.executeUpdate();
 			if (result == 1) {
-				if (element.getId() == null) { 
+				if (model.getId() == null) { 
 					Long autoIncKeyFromApi = -1L;
 					ResultSet rsid = ps.getGeneratedKeys();
 					if (rsid.next()) {
 				        autoIncKeyFromApi = rsid.getLong(1);
-				        element.setId(autoIncKeyFromApi);
-					    //System.out.println("inserted " + tableName + "\t" + autoIncKeyFromApi);
+				        model.setId(autoIncKeyFromApi);
 					}
 					if (rsid != null) rsid.close();
 				}
@@ -73,7 +70,7 @@ public class PlaceService extends ReferenceService {
 			}
 			update();
 		}
-		return reference;
+		return dict;
 	}
 	
 	@Override

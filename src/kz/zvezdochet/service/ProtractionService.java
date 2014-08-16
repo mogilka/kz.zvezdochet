@@ -2,15 +2,13 @@ package kz.zvezdochet.service;
 
 import kz.zvezdochet.bean.Protraction;
 import kz.zvezdochet.core.bean.Model;
-import kz.zvezdochet.core.service.ReferenceService;
+import kz.zvezdochet.core.service.DictionaryService;
 
 /**
- * Реализация сервиса начертаний аспектов
+ * Сервиса начертаний аспектов
  * @author Nataly Didenko
- *
- * @see ReferenceService Реализация сервиса справочников  
  */
-public class ProtractionService extends ReferenceService {
+public class ProtractionService extends DictionaryService {
 
 	public ProtractionService() {
 		tableName = "protraction";

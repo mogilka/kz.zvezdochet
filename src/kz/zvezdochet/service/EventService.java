@@ -19,10 +19,8 @@ import kz.zvezdochet.core.util.DateUtil;
 import kz.zvezdochet.util.Configuration;
 
 /**
- * Реализация сервиса событий
+ * Сервис событий
  * @author Nataly Didenko
- *
- * @see ModelService Реализация интерфейса сервиса управления объектами на уровне БД  
  */
 public class EventService extends ModelService {
 
@@ -71,7 +69,7 @@ public class EventService extends ModelService {
 		try {
 			String sql;
 			if (null == model.getId()) 
-				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
 					"surname = ?, " +
@@ -87,7 +85,8 @@ public class EventService extends ModelService {
 					"righthanded = ?, " +
 					"initialdate = ?, " +
 					"finaldate = ?, " +
-					"date = ? " +
+					"date = ?, " +
+					"human = ? " +
 					"where id = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setString(1, event.getSurname());
@@ -107,8 +106,9 @@ public class EventService extends ModelService {
 			ps.setString(12, DateUtil.formatCustomDateTime(event.getBirth(), "yyyy-MM-dd HH:mm:ss"));
 			ps.setString(13, event.getDeath() != null ? DateUtil.formatCustomDateTime(event.getDeath(), "yyyy-MM-dd HH:mm:ss") : null);
 			ps.setString(14, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
+			ps.setBoolean(15, event.isHuman());
 			if (model.getId() != null) 
-				ps.setLong(15, model.getId());
+				ps.setLong(16, model.getId());
 
 			result = ps.executeUpdate();
 			if (1 == result) {
