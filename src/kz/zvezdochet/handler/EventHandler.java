@@ -28,7 +28,7 @@ public class EventHandler {
 	public void execute(@Active MPart activePart) {
 		Object part = activePart.getObject();
 		if (part instanceof SearchPart) {
-			Model model = (Model)((SearchPart)activePart.getObject()).getModel();
+			Model model = (Model)((SearchPart)part).getModel();
 			if (model != null)
 				checkPart(model);
 		} else
@@ -38,7 +38,7 @@ public class EventHandler {
 	@CanExecute
 	public boolean canExecute() {
 		return true;
-//		return ((SearchPart)activePart).getElement() != null;
+//		return ((SearchPart)activePart).getModel() != null;
 	}
 
 	/**
@@ -59,18 +59,18 @@ public class EventHandler {
 
 	/**
 	 * Проверка состояния представления события
-	 * @param element событие
+	 * @param model событие
 	 */
-	protected void checkPart(Model element) {
+	protected void checkPart(Model model) {
 		MPart part = partService.findPart("kz.zvezdochet.part.event");
 	    if (part.isDirty()) {
 			if (DialogUtil.alertConfirm(
 					"Открытое ранее событие не сохранено\n"
 					+ "и утратит все внесённые изменения,\n"
 					+ "если Вы откроете новое событие. Продолжить?")) {
-				openEvent(part, element);
+				openEvent(part, model);
 			}
 	    } else
-	    	openEvent(part, element);
+	    	openEvent(part, model);
 	}
 }
