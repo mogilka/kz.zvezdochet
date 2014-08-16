@@ -1,8 +1,5 @@
 package kz.zvezdochet.part;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -42,7 +39,7 @@ public class SearchPart extends ModelListView {
 	}
 
 	@PostConstruct @Override
-	public void create(Composite parent) {
+	public Composite create(Composite parent) {
 		super.create(parent);
 //		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 //			@Override
@@ -50,6 +47,7 @@ public class SearchPart extends ModelListView {
 //				new EventHandler().execute(SearchPart.this);				
 //			}
 //		});
+		return null;
 	}
 	
 	@Override
@@ -150,17 +148,16 @@ public class SearchPart extends ModelListView {
 
 	@Override
 	protected void addColumns() {
-		Map<Integer, String> columns = new HashMap<Integer, String>();
-		columns.put(0, "Имя");
-		columns.put(1, "Фамилия");
-		columns.put(2, "Дата");
-		columns.put(3, "Знак Зодиака");
-		columns.put(4, "Стихия");
-		columns.put(5, "Описание");
-		for (Map.Entry<Integer, String> column : columns.entrySet()) {
+		String[] columns = {
+				"Имя",
+				"Фамилия",
+				"Дата",
+				"Знак Зодиака",
+				"Стихия",
+				"Описание" };
+		for (String column : columns) {
 			TableColumn tableColumn = new TableColumn(table, SWT.NONE);
-			tableColumn.setText(column.getValue());		
-			tableColumn.setWidth(table.getSize().x / columns.size());
+			tableColumn.setText(column);		
 			tableColumn.addListener(SWT.Selection, TableSortListenerFactory.getListener(
 				TableSortListenerFactory.STRING_COMPARATOR));
 		}

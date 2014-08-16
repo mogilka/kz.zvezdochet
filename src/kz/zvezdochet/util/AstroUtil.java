@@ -8,7 +8,7 @@ import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.service.SignService;
 
 /**
- * Класс, предоставляющий методы для работы с объектами гороскопа
+ * Утилита для работы с объектами гороскопа
  * @author Nataly Didenko
  *
  */

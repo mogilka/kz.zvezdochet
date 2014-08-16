@@ -32,8 +32,8 @@ public class AspectPart extends ListView {
 	}
 	
 	@PostConstruct @Override
-	public void create(Composite parent) {
-		super.create(parent);
+	public Composite create(Composite parent) {
+		return super.create(parent);
 	}
 
 	/**

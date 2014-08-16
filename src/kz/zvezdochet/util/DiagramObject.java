@@ -1,14 +1,14 @@
 package kz.zvezdochet.util;
 
-import kz.zvezdochet.core.bean.Reference;
+import kz.zvezdochet.core.bean.Dictionary;
 
 import org.eclipse.swt.graphics.Color;
 
 /**
- * Класс, представляющий абстрактный диаграммный объект
+ * Прототип диаграммного объекта
  * @author Nataly Didenko
  */
-public abstract class DiagramObject extends Reference implements IColorizedObject, IDiagramObject {
+public abstract class DiagramObject extends Dictionary implements IColorizedObject, IDiagramObject {
 	private static final long serialVersionUID = 3257825153209037032L;
 
 	/**

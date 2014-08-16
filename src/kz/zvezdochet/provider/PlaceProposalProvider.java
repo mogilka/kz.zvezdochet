@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kz.zvezdochet.bean.Place;
-import kz.zvezdochet.core.bean.Reference;
+import kz.zvezdochet.core.bean.Dictionary;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.service.PlaceService;
 
@@ -12,7 +12,7 @@ import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 
 /**
- * Класс, обеспечивающий автозаполнение местностей
+ * Обработчик автозаполнения местностей
  * @author Nataly Didenko
  *
  */
@@ -30,7 +30,7 @@ public class PlaceProposalProvider implements IContentProposalProvider {
 		}
 		if (filterProposals) {
 			ArrayList<Object> list = new ArrayList<Object>();
-			for (Reference p : proposals) {
+			for (Dictionary p : proposals) {
 				if (p.getName().length() >= contents.length()
 						&& p.getName().substring(0, contents.length()).equalsIgnoreCase(contents)) {
 					list.add(makeContentProposal(p));
@@ -61,25 +61,25 @@ public class PlaceProposalProvider implements IContentProposalProvider {
 	 * @param proposal объект
 	 * @return описание найденного объекта
 	 */
-	private IContentProposal makeContentProposal(final Reference proposal) {
+	private IContentProposal makeContentProposal(final Dictionary proposal) {
 		return new PlaceContentProposal(proposal);
 	}
 
 	/**
-	 * Класс для передачи выбранного элемента в визуальный компонент
+	 * Обработчик передачи выбранного элемента в визуальный компонент
 	 * @author Nataly Didenko
 	 *
 	 */
 	public class PlaceContentProposal implements IContentProposal {
-		private Reference reference;
+		private Dictionary dict;
 
-		public PlaceContentProposal(Reference reference) {
-			this.reference = reference;
+		public PlaceContentProposal(Dictionary dict) {
+			this.dict = dict;
 		}
 
 		@Override
 		public String getContent() {
-			return reference.getId().toString();
+			return dict.getId().toString();
 		}
 
 		@Override
@@ -89,20 +89,20 @@ public class PlaceProposalProvider implements IContentProposalProvider {
 
 		@Override
 		public String getLabel() {
-			return reference.getName();
+			return dict.getName();
 		}
 
 		@Override
 		public String getDescription() {
-			return reference.getDescription();
+			return dict.getDescription();
 		}		
 
 		/**
 		 * Возвращает найденный объект
 		 * @return объект справочника
 		 */
-		public Reference getObject() {
-			return reference;
+		public Dictionary getObject() {
+			return dict;
 		}
 	}
 }

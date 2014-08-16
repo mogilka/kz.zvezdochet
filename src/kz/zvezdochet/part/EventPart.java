@@ -23,7 +23,7 @@ import kz.zvezdochet.core.ui.decoration.RequiredDecoration;
 import kz.zvezdochet.core.ui.listener.NumberInputListener;
 import kz.zvezdochet.core.ui.util.DialogUtil;
 import kz.zvezdochet.core.ui.util.GUIutil;
-import kz.zvezdochet.core.ui.view.ModelView;
+import kz.zvezdochet.core.ui.view.ModelPart;
 import kz.zvezdochet.core.util.CalcUtil;
 import kz.zvezdochet.core.util.DateUtil;
 import kz.zvezdochet.provider.PlaceProposalProvider;
@@ -68,7 +68,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
  * @author Nataly Didenko
  * @todo при любом изменении данных делать представление грязным
  */
-public class EventPart extends ModelView {
+public class EventPart extends ModelPart {
 	
 	public static int MODE_CALC = 1;
 
@@ -100,7 +100,7 @@ public class EventPart extends ModelView {
 	private Group grAspectType;
 	
 	@PostConstruct
-	public void create(Composite parent) {
+	public Composite create(Composite parent) {
 		Group secEvent = new Group(parent, SWT.NONE);
 		secEvent.setText(Messages.getString("PersonView.Options")); //$NON-NLS-1$
 
@@ -211,6 +211,7 @@ public class EventPart extends ModelView {
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 	
 	/**
@@ -494,7 +495,7 @@ public class EventPart extends ModelView {
 	}
 	
 	protected void syncView() {
-		clear();
+		reset();
 		model = (null == model) ? new Event() : model;
 		Event event = (Event)model;
 		txName.setText(event.getName());
@@ -518,7 +519,7 @@ public class EventPart extends ModelView {
 		txZone.setText(CalcUtil.formatNumber("###.##", event.getZone()));
 	}
 	
-	public void clear() {
+	public void reset() {
 		txName.setText(""); //$NON-NLS-1$
 		txSurname.setText(""); //$NON-NLS-1$
 		txPlace.setText(""); //$NON-NLS-1$
@@ -536,7 +537,7 @@ public class EventPart extends ModelView {
 		btCelebrity.setSelection(false);
 	}
 	
-	public Object addModel() {
+	public Model addModel() {
 		return new Event();
 	}
 

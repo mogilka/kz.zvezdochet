@@ -32,7 +32,7 @@ import swisseph.SwissEph;
 import swisseph.SwissLib;
 
 /**
- * Класс, представляющий Расчетную конфигурацию гороскопа
+ * Расчётная конфигурация события
  * @author Nataly Didenko
  */
 public class Configuration {
