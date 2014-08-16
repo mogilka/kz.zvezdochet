@@ -1,13 +1,11 @@
 package kz.zvezdochet.bean;
 
-import kz.zvezdochet.core.service.ReferenceService;
+import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.service.SignService;
 
 /**
- * Класс, представляющий Знак Зодиака
+ * Знак Зодиака
  * @author Nataly Didenko
- * 
- * @see SkyPoint Точка небесной сферы
  */
 public class Sign extends SkyPoint {
 	private static final long serialVersionUID = 70695380750415678L;
@@ -25,7 +23,7 @@ public class Sign extends SkyPoint {
 		this.initialPoint = initialPoint;
 	}
 
-	public ReferenceService getService() {
+	public DictionaryService getService() {
 		return new SignService();
 	}
 }

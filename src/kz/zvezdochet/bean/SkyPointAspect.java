@@ -1,7 +1,7 @@
 package kz.zvezdochet.bean;
 
 /**
- * Класс, представляющий Аспект между небесными объектами
+ * Аспект между объектами гороскопа
  * @author Nataly Didenko
  */
 public class SkyPointAspect {

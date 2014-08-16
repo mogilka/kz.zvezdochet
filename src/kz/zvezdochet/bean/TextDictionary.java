@@ -1,14 +1,12 @@
 package kz.zvezdochet.bean;
 
-import kz.zvezdochet.core.bean.Reference;
+import kz.zvezdochet.core.bean.Dictionary;
 
 /**
- * Прототип Справочника многотекстовых значений
+ * Прототип справочника многотекстовых значений
  * @author Nataly Didenko
- *
- * @see Reference Прототип справочника
  */
-public class TextReference extends Reference {
+public class TextDictionary extends Dictionary {
 	private static final long serialVersionUID = 6051185469564751147L;
 
 	/**

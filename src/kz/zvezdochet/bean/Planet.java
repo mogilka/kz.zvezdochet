@@ -2,16 +2,14 @@ package kz.zvezdochet.bean;
 
 import java.util.Map;
 
-import kz.zvezdochet.core.service.ReferenceService;
+import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.service.PlanetService;
 
 import org.eclipse.swt.graphics.Image;
 
 /**
- * Класс, представляющий Планету
+ * Планета
  * @author Nataly Didenko
- * 
- * @see SkyPoint Точка небесной сферы
  */
 public class Planet extends SkyPoint {
 	private static final long serialVersionUID = -8328248201235163517L;
@@ -299,7 +297,7 @@ public class Planet extends SkyPoint {
 		this.retrograde = retrograde;
 	}
 
-	public ReferenceService getService() {
+	public DictionaryService getService() {
 		return new PlanetService();
 	}
 

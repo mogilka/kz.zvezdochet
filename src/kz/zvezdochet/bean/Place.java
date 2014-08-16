@@ -1,16 +1,14 @@
 package kz.zvezdochet.bean;
 
-import kz.zvezdochet.core.bean.Reference;
-import kz.zvezdochet.core.service.ReferenceService;
+import kz.zvezdochet.core.bean.Dictionary;
+import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.service.PlaceService;
 
 /**
- * Класс, представляющий Местонахождение
+ * Местонахождение
  * @author Nataly Didenko
- *
- * @see Reference Справочник
  */
-public class Place extends Reference {
+public class Place extends Dictionary {
 	private static final long serialVersionUID = 7176275971217317131L;
 
 	/**
@@ -45,7 +43,7 @@ public class Place extends Reference {
 		this.greenwich = greenwich;
 	}
 	
-	public ReferenceService getService() {
+	public DictionaryService getService() {
 		return new PlaceService();
 	}
 }

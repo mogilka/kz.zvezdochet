@@ -1,10 +1,10 @@
 package kz.zvezdochet.bean;
 
-import kz.zvezdochet.core.service.ReferenceService;
+import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.service.HouseService;
 
 /**
- * Класс, представляющий Астрологический дом
+ * Астрологический дом
  * @author Nataly Didenko
  *
  */
@@ -106,7 +106,7 @@ public class House extends SkyPoint {
   		return false;
 	}
 
-	public ReferenceService getService() {
+	public DictionaryService getService() {
 		return new HouseService();
 	}
 }

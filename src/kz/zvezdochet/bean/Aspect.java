@@ -1,17 +1,15 @@
 package kz.zvezdochet.bean;
 
-import kz.zvezdochet.core.bean.Reference;
-import kz.zvezdochet.core.service.ReferenceService;
+import kz.zvezdochet.core.bean.Dictionary;
+import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.core.util.CalcUtil;
 import kz.zvezdochet.service.AspectService;
 
 /**
- * Класс, представляющий Аспект (угол между небесными точками)
+ * Аспект (угол между небесными точками)
  * @author Nataly Didenko
- * 
- * @see Reference Прототип справочника
  */
-public class Aspect extends Reference {
+public class Aspect extends Dictionary {
 	private static final long serialVersionUID = 4389850164699356397L;
 
 	/**
@@ -102,7 +100,7 @@ public class Aspect extends Reference {
 		return value - orbis;
 	}
 
-	public ReferenceService getService() {
+	public DictionaryService getService() {
 		return new AspectService();
 	}
 }

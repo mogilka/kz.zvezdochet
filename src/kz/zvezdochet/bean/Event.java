@@ -13,10 +13,8 @@ import kz.zvezdochet.util.Configuration;
 import org.eclipse.swt.graphics.Image;
 
 /**
- * Класс, представляющий Событие
+ * Событие или персона
  * @author Nataly Didenko
- *
- * @see Model Базовая сущность
  */
 public class Event extends Model {
 	private static final long serialVersionUID = 3237544571447808520L;
@@ -243,5 +241,9 @@ public class Event extends Model {
 	}
 	public void setPlaceid(long placeid) {
 		this.placeid = placeid;
+	}
+
+	public boolean isHuman() {//TODO сделать поле
+		return true;
 	}
 }

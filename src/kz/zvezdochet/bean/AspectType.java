@@ -1,17 +1,14 @@
 package kz.zvezdochet.bean;
 
-import kz.zvezdochet.core.bean.Reference;
-import kz.zvezdochet.core.service.ReferenceService;
+import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.service.AspectTypeService;
 import kz.zvezdochet.util.DiagramObject;
 
 import org.eclipse.swt.graphics.Color;
 
 /**
- * Класс, представляющий тип аспекта
+ * Тип аспекта
  * @author Nataly Didenko
- *
- * @see Reference Прототип справочника
  */
 public class AspectType extends DiagramObject {
 	private static final long serialVersionUID = 4739420822269120670L;
@@ -73,7 +70,7 @@ public class AspectType extends DiagramObject {
 		return name;
 	}
 
-	public ReferenceService getService() {
+	public DictionaryService getService() {
 		return new AspectTypeService();
 	}
 

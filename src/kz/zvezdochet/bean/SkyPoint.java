@@ -7,7 +7,7 @@ import kz.zvezdochet.util.ISkyPoint;
 
 
 /**
- * Класс, представляющий Точку Небесной сферы
+ * Точка Небесной сферы
  * @author Nataly Didenko
  *
  */
