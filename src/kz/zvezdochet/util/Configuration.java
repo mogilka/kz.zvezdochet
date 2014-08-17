@@ -595,7 +595,7 @@ public class Configuration {
 		int pindex = planetList.indexOf(sword);
 		((Planet)planetList.get(pindex)).setSword(true);
 
-		int ishield = (sunindex == planets.size() - 1) ? 0 : sunindex - 1;
+		int ishield = (sunindex == planets.size() - 1) ? 0 : planets.size() - 1;
 		Planet shield = planets.get(ishield);
 		pindex = planetList.indexOf(shield);
 		((Planet)planetList.get(pindex)).setShield(true);
