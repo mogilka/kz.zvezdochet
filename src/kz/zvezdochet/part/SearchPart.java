@@ -5,7 +5,7 @@ import javax.inject.Inject;
 
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.ui.Tab;
-import kz.zvezdochet.core.ui.comparator.TableSortListenerFactory;
+import kz.zvezdochet.core.ui.view.ModelLabelProvider;
 import kz.zvezdochet.core.ui.view.ModelListView;
 import kz.zvezdochet.core.util.DateUtil;
 import kz.zvezdochet.service.EventService;
@@ -22,7 +22,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
@@ -147,20 +146,15 @@ public class SearchPart extends ModelListView {
 	}
 
 	@Override
-	protected void addColumns() {
+	protected String[] initTableColumns() {
 		String[] columns = {
-				"Имя",
-				"Фамилия",
-				"Дата",
-				"Знак Зодиака",
-				"Стихия",
-				"Описание" };
-		for (String column : columns) {
-			TableColumn tableColumn = new TableColumn(table, SWT.NONE);
-			tableColumn.setText(column);		
-			tableColumn.addListener(SWT.Selection, TableSortListenerFactory.getListener(
-				TableSortListenerFactory.STRING_COMPARATOR));
-		}
+			"Имя",
+			"Фамилия",
+			"Дата",
+			"Знак Зодиака",
+			"Стихия",
+			"Описание" };
+		return columns;
 	}
 
 	@Override

@@ -85,4 +85,9 @@ public class AspectPart extends ListView {
 			}
 		};
 	}
+
+	@Override
+	protected String[] initTableColumns() {
+		return null;
+	}
 }
