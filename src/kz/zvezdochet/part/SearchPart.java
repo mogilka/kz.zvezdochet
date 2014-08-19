@@ -7,6 +7,7 @@ import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.ui.Tab;
 import kz.zvezdochet.core.ui.view.ModelLabelProvider;
 import kz.zvezdochet.core.ui.view.ModelListView;
+import kz.zvezdochet.core.ui.view.View;
 import kz.zvezdochet.core.util.DateUtil;
 import kz.zvezdochet.service.EventService;
 
@@ -38,7 +39,7 @@ public class SearchPart extends ModelListView {
 	}
 
 	@PostConstruct @Override
-	public Composite create(Composite parent) {
+	public View create(Composite parent) {
 		super.create(parent);
 //		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 //			@Override

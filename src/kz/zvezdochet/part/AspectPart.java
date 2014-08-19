@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.bean.SkyPointAspect;
 import kz.zvezdochet.core.ui.view.ListView;
+import kz.zvezdochet.core.ui.view.View;
 import kz.zvezdochet.util.Configuration;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
@@ -32,7 +33,7 @@ public class AspectPart extends ListView {
 	}
 	
 	@PostConstruct @Override
-	public Composite create(Composite parent) {
+	public View create(Composite parent) {
 		return super.create(parent);
 	}
 

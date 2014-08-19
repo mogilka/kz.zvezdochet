@@ -24,6 +24,7 @@ import kz.zvezdochet.core.ui.listener.NumberInputListener;
 import kz.zvezdochet.core.ui.util.DialogUtil;
 import kz.zvezdochet.core.ui.util.GUIutil;
 import kz.zvezdochet.core.ui.view.ModelPart;
+import kz.zvezdochet.core.ui.view.View;
 import kz.zvezdochet.core.util.CalcUtil;
 import kz.zvezdochet.core.util.DateUtil;
 import kz.zvezdochet.provider.PlaceProposalProvider;
@@ -100,7 +101,7 @@ public class EventPart extends ModelPart {
 	private Group grAspectType;
 	
 	@PostConstruct
-	public Composite create(Composite parent) {
+	public View create(Composite parent) {
 		Group secEvent = new Group(parent, SWT.NONE);
 		secEvent.setText(Messages.getString("PersonView.Options")); //$NON-NLS-1$
 
@@ -468,9 +469,9 @@ public class EventPart extends ModelPart {
 	}
 
 	@Override
-	protected void syncModel(int mode) throws Exception {
+	public void syncModel(int mode) throws Exception {
 		if (!check(mode)) return;//TODO часто дублируется вызов из хэндлеров
-		model = (model == null) ? new Event() : model;
+		model = (null == model) ? new Event() : model;
 		Event event = (Event)model;
 		if (Handler.MODE_SAVE == mode) {
 			event.setName(txName.getText());
