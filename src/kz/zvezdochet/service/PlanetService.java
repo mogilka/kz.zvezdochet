@@ -60,7 +60,7 @@ public class PlanetService extends DictionaryService {
         PreparedStatement ps = null;
 		try {
 			String sql;
-			if (model.getId() == null) 
+			if (null == model.getId()) 
 				sql = "insert into " + tableName + 
 					"(ordinalnumber, color, code, name, description, score, sword, shield, belt, kernel, " +
 						"mine, strong, weak, retro, damaged, perfect, fictitious) " +
@@ -105,7 +105,7 @@ public class PlanetService extends DictionaryService {
 			ps.setBoolean(17, dict.isFictitious());
 			result = ps.executeUpdate();
 			if (result == 1) {
-				if (model.getId() == null) { 
+				if (null == model.getId()) { 
 					Long autoIncKeyFromApi = -1L;
 					ResultSet rsid = ps.getGeneratedKeys();
 					if (rsid.next()) {

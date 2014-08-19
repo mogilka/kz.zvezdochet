@@ -196,7 +196,7 @@ public class EventService extends ModelService {
 	 * @throws DataAccessException
 	 */
 	public Object[] findBlob(Long eventId) throws DataAccessException {
-		if (eventId == null) return null;
+		if (null == eventId) return null;
 		Object[] blob = new Object[2];
         PreparedStatement ps = null;
         ResultSet rs = null;

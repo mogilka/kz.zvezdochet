@@ -29,7 +29,7 @@ public class AspectService extends DictionaryService {
         PreparedStatement ps = null;
 		try {
 			String sql;
-			if (model.getId() == null) 
+			if (null == model.getId()) 
 				sql = "insert into " + tableName + 
 					"(value, orbis, code, name, description, typeid) values(?,?,?,?,?,?)";
 			else
@@ -50,7 +50,7 @@ public class AspectService extends DictionaryService {
 			ps.setLong(6, dict.getType().getId());
 			result = ps.executeUpdate();
 			if (result == 1) {
-				if (model.getId() == null) { 
+				if (null == model.getId()) { 
 					Long autoIncKeyFromApi = -1L;
 					ResultSet rsid = ps.getGeneratedKeys();
 					if (rsid.next()) {

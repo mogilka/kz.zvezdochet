@@ -57,7 +57,7 @@ public class HouseService extends DictionaryService {
         PreparedStatement ps = null;
 		try {
 			String sql;
-			if (model.getId() == null) 
+			if (null == model.getId()) 
 				sql = "insert into " + tableName + 
 					"(ordinalnumber, color, code, name, description, combination, short, designation, diagram, header, linkname) " +
 					"values(?,?,?,?,?,?,?,?,?,?,?)";
@@ -89,7 +89,7 @@ public class HouseService extends DictionaryService {
 			ps.setString(11, dict.getLinkName());
 			result = ps.executeUpdate();
 			if (result == 1) {
-				if (model.getId() == null) { 
+				if (null == model.getId()) { 
 					Long autoIncKeyFromApi = -1L;
 					ResultSet rsid = ps.getGeneratedKeys();
 					if (rsid.next()) {

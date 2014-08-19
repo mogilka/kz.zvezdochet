@@ -29,7 +29,7 @@ public class PlaceService extends DictionaryService {
         PreparedStatement ps = null;
 		try {
 			String sql;
-			if (model.getId() == null) 
+			if (null == model.getId()) 
 				sql = "insert into " + tableName + 
 					"(latitude, longitude, code, name, description, greenwich) values(?,?,?,?,?,?)";
 			else
@@ -50,7 +50,7 @@ public class PlaceService extends DictionaryService {
 			ps.setDouble(6, dict.getGreenwich());
 			result = ps.executeUpdate();
 			if (result == 1) {
-				if (model.getId() == null) { 
+				if (null == model.getId()) { 
 					Long autoIncKeyFromApi = -1L;
 					ResultSet rsid = ps.getGeneratedKeys();
 					if (rsid.next()) {

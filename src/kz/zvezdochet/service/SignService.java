@@ -59,7 +59,7 @@ public class SignService extends DictionaryService {
         PreparedStatement ps = null;
 		try {
 			String sql;
-			if (model.getId() == null) 
+			if (null == model.getId()) 
 				sql = "insert into " + tableName + 
 					"(ordinalnumber, color, code, name, description, initialpoint, finalpoint, diagram) " +
 					"values(?,?,?,?,?,?,?,?)";
@@ -85,7 +85,7 @@ public class SignService extends DictionaryService {
 			ps.setString(8, dict.getDiaName());
 			result = ps.executeUpdate();
 			if (result == 1) {
-				if (model.getId() == null) { 
+				if (null == model.getId()) { 
 					Long autoIncKeyFromApi = -1L;
 					ResultSet rsid = ps.getGeneratedKeys();
 					if (rsid.next()) {
