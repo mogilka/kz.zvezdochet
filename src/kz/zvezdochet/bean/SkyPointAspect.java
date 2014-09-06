@@ -24,9 +24,17 @@ public class SkyPointAspect {
 	 * Расстояние между объектами в градусах
 	 */
 	private double score;
+	/**
+	 * Признак ретроградности
+	 */
+	private boolean retro = false;
 	
-	public SkyPointAspect() {
-		super();
+	public boolean isRetro() {
+		return retro;
+	}
+
+	public void setRetro(boolean retro) {
+		this.retro = retro;
 	}
 
 	public SkyPoint getSkyPoint1() {

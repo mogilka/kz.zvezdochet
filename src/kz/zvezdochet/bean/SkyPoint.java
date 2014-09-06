@@ -52,4 +52,9 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
 	 * Карта статистики типов аспектов для небесной точки
 	 */
 	protected Map<String, Integer> aspectCountMap;
+
+	@Override
+	public String toString() {
+		return name + " " + coord;
+	}
 }
