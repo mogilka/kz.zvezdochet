@@ -146,17 +146,14 @@ public class CosmogramComposite extends Composite {
 			int x = CalcUtil.trunc(getXPoint(135, p.getCoord())) + xcenter - 5;
 			int y = CalcUtil.trunc(getYPoint(135, p.getCoord())) + ycenter - 5;
 			//String tooltip = p.getName() + " (" + Utils.replace(String.valueOf(p.getCoord()), ".", "\u00b0") + "\u2032)";
-			Image image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/" + 
-					p.getCode() + ".png").createImage();
-			gc.drawImage(image, x, y);
+			gc.drawImage(p.getImage(), x, y);
 			
 			Iterator<Model> j = conf.getPlanets().iterator();
 			while (j.hasNext()) {
 				Planet p2 = (Planet)j.next();
 				if (((!p.getCode().equals("Rakhu")) && (!p2.getCode().equals("Kethu"))) &&
 						((!p.getCode().equals("Kethu")) && (!p2.getCode().equals("Rakhu")))) 
-						getAspect(Math.abs(CalcUtil.degToDec(p.getCoord())),
-									Math.abs(CalcUtil.degToDec(p2.getCoord())), gc);
+						getAspect(Math.abs(p.getCoord()), Math.abs(p2.getCoord()), gc);
 			}
 		}
 	}
@@ -173,16 +170,7 @@ public class CosmogramComposite extends Composite {
 			Aspect a = (Aspect)i.next();
 			if (params.contains(a.getType().getCode()) && a.isAspect(res))
 				drawAspect(a.getType().getColor(), 0f, one, two, gc, 
-						getAspectProtraction(a.getType().getProtraction().getCode()));
+						a.getType().getProtraction().getLineStyle());
 		}
-	}
-	
-	private int getAspectProtraction(String code) {
-		if (code.contains("SOLID")) return SWT.LINE_SOLID;
-		else if (code.contains("DASHDOTDOT")) return SWT.LINE_DASHDOTDOT;
-		else if (code.contains("DASHDOT")) return SWT.LINE_DASHDOT;
-		else if (code.contains("DASH")) return SWT.LINE_DASH;
-		else if (code.contains("DOT")) return SWT.LINE_DOT;
-		return SWT.LINE_SOLID;
 	}
 } 
