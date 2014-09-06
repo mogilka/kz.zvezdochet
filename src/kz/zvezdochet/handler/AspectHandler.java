@@ -62,9 +62,7 @@ public class AspectHandler extends Handler {
 						continue;
 					}
 					Planet planet2 = (Planet)planets.get(r);
-					double res = CalcUtil.getDifference(
-						CalcUtil.degToDec(planet.getCoord()), 
-						CalcUtil.degToDec(planet2.getCoord()));
+					double res = CalcUtil.getDifference(planet.getCoord(), planet2.getCoord());
 					SkyPointAspect aspect = new SkyPointAspect();
 					aspect.setSkyPoint1(planet);
 					aspect.setSkyPoint2(planet2);

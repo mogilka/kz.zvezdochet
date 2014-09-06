@@ -88,6 +88,7 @@ public class Configuration {
 	  		long iflag = SweConst.SEFLG_SIDEREAL | SweConst.SEFLG_SPEED;
 	  		int iyear, imonth, iday, ihour = 0, imin = 0, isec = 0;
 	  	  	SwissEph sweph = new SwissEph();
+//	  	  	String path = "/home/nataly/workspacercp/kz.zvezdochet.sweph/lib/ephe";
 			String path = PlatformUtil.getPath(Activator.PLUGIN_ID, "/lib/ephe").getPath(); //$NON-NLS-1$
 	  		sweph.swe_set_ephe_path(path); //TODO вынести в конфиги
 	  		sweph.swe_set_sid_mode(SweConst.SE_SIDM_DJWHAL_KHUL, 0, 0);
@@ -243,9 +244,9 @@ public class Configuration {
 	  			if (h.isMain())
 	  	  			h.setCoord(houses[i]);
 	  			else {
-	  				double one = CalcUtil.degToDec(houses[i]);
-	  				if (i == 12) i = 0;
-	  				double two = CalcUtil.degToDec(houses[i + 1]);
+	  				double one = houses[i];
+	  				if (12 == i) i = 0;
+	  				double two = houses[i + 1];
 	  				if ((one > 300) && (one < 360) && (two < 60))
 	  					two = two + 360;
 	  				//вычисляем и сохраняем значения вершин третей дома
@@ -256,9 +257,7 @@ public class Configuration {
 	  					multiple = 1;
 	  				double res = multiple * ((two - one) / 3) + one;
 	  				if (res > 360) 
-	  					res = CalcUtil.decToDeg(res - 360); 
-	  				else 
-	  					res = CalcUtil.decToDeg(res);
+	  					res = res - 360; 
 	  	  			h.setCoord(res);
 	  			}
 	  		}
@@ -394,9 +393,7 @@ public class Configuration {
 						if (((p.getCode().equals("Rakhu")) && (p2.getCode().equals("Kethu"))) ||
 								((p.getCode().equals("Kethu")) && (p2.getCode().equals("Rakhu")))) 
 							continue;
-						double res = CalcUtil.getDifference(
-								CalcUtil.degToDec(p.getCoord()), 
-								CalcUtil.degToDec(p2.getCoord()));
+						double res = CalcUtil.getDifference(p.getCoord(), p2.getCoord());
 						for (Model realasp : aspects) {
 							Aspect a = (Aspect)realasp;
 							if (a.isAspect(res)) {
@@ -411,6 +408,7 @@ public class Configuration {
 								//суммируем аспекты каждого типа для планеты
 								String aspectTypeCode = a.getType().getCode();
 								int score = aspcountmap.get(aspectTypeCode);
+								//для людей считаем только аспекты главных планет
 								aspcountmap.put(aspectTypeCode, ++score);
 
 								//суммируем сильные аспекты
@@ -522,8 +520,8 @@ public class Configuration {
 					planet.getAspectCountMap().get("POSITIVE_HIDDEN");
 			int bad = planet.getAspectCountMap().get("NEGATIVE") +
 					planet.getAspectCountMap().get("NEGATIVE_HIDDEN");
-			if (0 == good && bad > 0) {
-				planet.setDamaged(true); 
+			if (0 == good && bad > 2) {
+				planet.setDamaged(true);
 				System.out.println(planet.getCode() + " is damaged");
 				continue;
 			} else if (0 == bad && good > 0) {
