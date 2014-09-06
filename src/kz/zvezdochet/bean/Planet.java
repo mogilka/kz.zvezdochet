@@ -6,6 +6,7 @@ import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.service.PlanetService;
 
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
  * Планета
@@ -19,11 +20,6 @@ public class Planet extends SkyPoint {
 	 */
     private double score;
 
-	/**
-	 * Изображение
-	 */
-    private Image image;
-    
 	/**
 	 * Признак ретроградности
 	 */
@@ -274,11 +270,9 @@ public class Planet extends SkyPoint {
 	}
 
 	public Image getImage() {
-		return image;
-	}
+		return AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/" + 
+			getCode() + ".png").createImage();
 
-	public void setImage(Image image) {
-		this.image = image;
 	}
 
 	public boolean isBroken() {
