@@ -158,22 +158,20 @@ public class EventService extends ModelService {
 			ps.close();
 			
 			if (0 == id)
-				sql = "insert into " + table + " values(0,?,?,?,?)";
+				sql = "insert into " + table + " values(0,?,?,?)";
 			else {
 				sql = "update " + table + " set "
 					+ "eventid = ?,"
 					+ "photo = ?,"
-					+ "biography = ?,"
-					+ "test = ?"
+					+ "biography = ?"
 					+ "where id = ?";
 			}
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, event.getId());
 			ps.setString(2, ""); //TODO сохранять изображение в папку
 			ps.setString(3, event.getText());
-			ps.setString(4, "");
 			if (id != 0)
-				ps.setLong(5, id);
+				ps.setLong(4, id);
 			ps.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -234,7 +232,7 @@ public class EventService extends ModelService {
 			event.setSurname(rs.getString("Surname"));
 		event.setBirth(DateUtil.getDatabaseDateTime(rs.getString("initialdate")));
 		if (rs.getString("finaldate") != null) 
-			event.setBirth(DateUtil.getDatabaseDateTime(rs.getString("finaldate")));
+			event.setDeath(DateUtil.getDatabaseDateTime(rs.getString("finaldate")));
 		String s = rs.getString("RightHanded");
 		event.setRightHanded(s.equals("1") ? true : false);
 		if (rs.getString("Rectification") != null) 
@@ -333,7 +331,7 @@ public class EventService extends ModelService {
 	 * @param event событие
 	 * @throws DataAccessException
 	 */
-	private void savePlanets(Event event) throws DataAccessException {
+	public void savePlanets(Event event) throws DataAccessException {
 		if (null == event.getConfiguration()) return;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -427,7 +425,7 @@ public class EventService extends ModelService {
 	 * @param event событие
 	 * @throws DataAccessException
 	 */
-	private void saveHouses(Event event) throws DataAccessException {
+	public void saveHouses(Event event) throws DataAccessException {
 		if (null == event.getConfiguration()) return;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -480,7 +478,7 @@ public class EventService extends ModelService {
 	 * @param event событие
 	 * @throws DataAccessException
 	 */
-	private void savePlanetHouses(Event event) throws DataAccessException {
+	public void savePlanetHouses(Event event) throws DataAccessException {
 		if (null == event.getConfiguration()) return;
 		event.getConfiguration().initPlanetHouses();
         PreparedStatement ps = null;
@@ -593,14 +591,15 @@ public class EventService extends ModelService {
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
-			String sql = "select e.* from " + getPlanetSignTable() + " es" + 
+			String sql = "select distinct e.* from " + getPlanetSignTable() + " es" + 
 					" inner join " + tableName + " e on es.eventid = e.id" +
 				" where sun = ? and mercury = ? and venus = ? and mars = ?" +
 					" and e.id <> ?";
 			if (celebrity >= 0)
-				sql += " and es.celebrity = " + celebrity;
+				sql += " and e.celebrity = " + celebrity;
 			sql += " order by year(initialdate)";
-			
+			System.out.println(sql);
+
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, ((Planet)conf.getPlanets().get(0)).getSign().getId());
 			ps.setLong(2, ((Planet)conf.getPlanets().get(4)).getSign().getId());
@@ -621,6 +620,14 @@ public class EventService extends ModelService {
 			}
 		}
 		return list;
+/*
+select distinct e.* from eventsigns es 
+inner join events e on es.eventid = e.id 
+where sun = 5 and mercury = 6 and venus = 6 and mars = 3
+and e.id <> 31
+and e.celebrity = 1 
+order by year(initialdate)
+ */
 	}
 
 	/**
