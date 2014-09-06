@@ -176,4 +176,9 @@ public class SearchPart extends ModelListView {
 			}
 		};
 	}
+
+	@Override
+	public boolean check(int mode) throws Exception {
+		return false;
+	}
 }

@@ -5,6 +5,7 @@ import javax.inject.Inject;
 
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.bean.SkyPointAspect;
+import kz.zvezdochet.core.ui.ArrayLabelProvider;
 import kz.zvezdochet.core.ui.view.ListView;
 import kz.zvezdochet.core.ui.view.View;
 import kz.zvezdochet.util.Configuration;
@@ -90,5 +91,10 @@ public class AspectPart extends ListView {
 	@Override
 	protected String[] initTableColumns() {
 		return null;
+	}
+
+	@Override
+	public boolean check(int mode) throws Exception {
+		return false;
 	}
 }
