@@ -93,6 +93,10 @@ public class Event extends Model {
 	 * Краткий комментарий
 	 */
 	private String description;
+	/**
+	 * Источник времени рождения
+	 */
+	private String accuracy;
 	
 	public String getDescription() {
 		return description;
@@ -243,7 +247,13 @@ public class Event extends Model {
 		this.placeid = placeid;
 	}
 
-	public boolean isHuman() {//TODO сделать поле
+	public boolean isHuman() {
 		return true;
+	}
+	public String getAccuracy() {
+		return accuracy;
+	}
+	public void setAccuracy(String accuracy) {
+		this.accuracy = accuracy;
 	}
 }
