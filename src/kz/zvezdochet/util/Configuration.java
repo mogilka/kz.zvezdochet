@@ -491,6 +491,7 @@ public class Configuration {
 						}
 					}
 
+					if (null == planet.getHouse()) continue;
 					House house = service.getHousePosition(planet, pCode, daily);
 					int hnumber = CalcUtil.trunc((planet.getHouse().getNumber() + 2) / 3);
 					if (house != null && CalcUtil.trunc((house.getNumber() + 2) / 3) == hnumber) {
@@ -593,7 +594,7 @@ public class Configuration {
 		int pindex = planetList.indexOf(sword);
 		((Planet)planetList.get(pindex)).setSword(true);
 
-		int ishield = (sunindex == planets.size() - 1) ? 0 : planets.size() - 1;
+		int ishield = (0 == sunindex) ? planets.size() - 1 : sunindex - 1;
 		Planet shield = planets.get(ishield);
 		pindex = planetList.indexOf(shield);
 		((Planet)planetList.get(pindex)).setShield(true);
