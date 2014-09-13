@@ -118,6 +118,13 @@ public class SignService extends DictionaryService {
 		sign.setNumber(rs.getInt("OrdinalNumber"));
 		sign.setColor(CoreUtil.rgbToColor(rs.getString("Color")));
 		sign.setDiaName(rs.getString("Diagram"));
+		sign.setElementId(rs.getInt("elementid"));
+		sign.setYinyangId(rs.getInt("yinyangid"));
+		sign.setCrossId(rs.getInt("crossid"));
+		sign.setSquareId(rs.getInt("squareid"));
+		sign.setZoneId(rs.getInt("zoneid"));
+		sign.setVerticalHalfSphereId(rs.getInt("halfspherevid"));
+		sign.setHorizontalalHalfSphereId(rs.getInt("halfspherehid"));
 		return sign;
 	}
 

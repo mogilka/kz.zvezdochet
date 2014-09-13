@@ -124,6 +124,13 @@ public class HouseService extends DictionaryService {
 		house.setHeaderName(rs.getString("Header"));
 		house.setLinkName(rs.getString("LinkName"));
 		house.setColor(CoreUtil.rgbToColor(rs.getString("Color")));
+		house.setElementId(rs.getInt("elementid"));
+		house.setYinyangId(rs.getInt("yinyangid"));
+		house.setCrossId(rs.getInt("crossid"));
+		house.setSquareId(rs.getInt("squareid"));
+		house.setZoneId(rs.getInt("zoneid"));
+		house.setVerticalHalfSphereId(rs.getInt("halfspherevid"));
+		house.setHorizontalalHalfSphereId(rs.getInt("halfspherehid"));
 		return house;
 	}
 
