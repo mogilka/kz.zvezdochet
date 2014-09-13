@@ -109,4 +109,89 @@ public class House extends SkyPoint {
 	public DictionaryService getService() {
 		return new HouseService();
 	}
+
+	/**
+	 * Идентификатор стихии
+	 */
+	private long elementId;
+	/**
+	 * Идентификатор Инь-Ян
+	 */
+	private long yinyangId;
+	/**
+	 * Идентификатор креста
+	 */
+	private long crossId;
+	/**
+	 * Идентификатор квадрата
+	 */
+	private long squareId;
+	/**
+	 * Идентификатор зоны
+	 */
+	private long zoneId;
+	/**
+	 * Идентификатор вертикальной полусферы
+	 */
+	private long verticalHalfSphereId;
+	/**
+	 * Идентификатор горизонтальной полусферы
+	 */
+	private long horizontalalHalfSphereId;
+
+	public long getElementId() {
+		return elementId;
+	}
+
+	public void setElementId(long elementId) {
+		this.elementId = elementId;
+	}
+
+	public long getYinyangId() {
+		return yinyangId;
+	}
+
+	public void setYinyangId(long yinyangId) {
+		this.yinyangId = yinyangId;
+	}
+
+	public long getCrossId() {
+		return crossId;
+	}
+
+	public void setCrossId(long crossId) {
+		this.crossId = crossId;
+	}
+
+	public long getSquareId() {
+		return squareId;
+	}
+
+	public void setSquareId(long squareId) {
+		this.squareId = squareId;
+	}
+
+	public long getZoneId() {
+		return zoneId;
+	}
+
+	public void setZoneId(long zoneId) {
+		this.zoneId = zoneId;
+	}
+
+	public long getVerticalHalfSphereId() {
+		return verticalHalfSphereId;
+	}
+
+	public void setVerticalHalfSphereId(long verticalHalfSphereId) {
+		this.verticalHalfSphereId = verticalHalfSphereId;
+	}
+
+	public long getHorizontalalHalfSphereId() {
+		return horizontalalHalfSphereId;
+	}
+
+	public void setHorizontalalHalfSphereId(long horizontalalHalfSphereId) {
+		this.horizontalalHalfSphereId = horizontalalHalfSphereId;
+	}
 }
