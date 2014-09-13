@@ -88,7 +88,7 @@ public class EventPart extends ModelPart {
 	private Text txLongitude;
 	private Text txZone;
 	private Text txGreenwich;
-	private Text txCelebrity;
+	private Text txComment;
 	private Text txBiography;
 	private Label lbBirth;
 	private CDateTime dtBirth; 
@@ -176,8 +176,8 @@ public class EventPart extends ModelPart {
 		txBiography = new Text(secDescription, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 
 		btCelebrity = new Button(secDescription, SWT.BORDER | SWT.CHECK);
-		txCelebrity = new Text(secDescription, SWT.BORDER);
-		txCelebrity.setEditable(false);
+		txComment = new Text(secDescription, SWT.BORDER);
+		txComment.setEditable(false);
 
 		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(secDescription);
 		GridDataFactory.fillDefaults().span(4, 1).grab(true, true).applyTo(secDescription);
@@ -367,36 +367,34 @@ public class EventPart extends ModelPart {
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).
 			span(2, 1).grab(true, true).applyTo(txBiography);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
-			grab(true, false).applyTo(txCelebrity);
+			grab(true, false).applyTo(txComment);
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).
 			grab(false, false).applyTo(btCelebrity);
 
 		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.FILL).
 			hint(514, 514).span(3, 1).grab(true, false).applyTo(cmpCosmogram);
-	}
 
-	protected void setListeners() {
-		StateChangedListener listener = new StateChangedListener();
-		dtBirth.addSelectionListener(listener);
-		dtDeath.addSelectionListener(listener);
-		cvGender.addSelectionChangedListener(listener);
-		cvHand.addSelectionChangedListener(listener);
-		cvRectification.addSelectionChangedListener(listener);
-		txName.addModifyListener(listener);
-		txSurname.addModifyListener(listener);
-		txPlace.addModifyListener(listener);
-		txLatitude.addModifyListener(listener);
-		txLongitude.addModifyListener(listener);
-		txZone.addModifyListener(listener);
-		txZone.addListener(SWT.Verify, new NumberInputListener());
-		txGreenwich.addModifyListener(listener); 
-		txBiography.addModifyListener(listener);
-		txCelebrity.addModifyListener(listener);
-		btCelebrity.addSelectionListener(listener);
+//		StateChangedListener listener = new StateChangedListener();
+//		dtBirth.addSelectionListener(listener);
+//		dtDeath.addSelectionListener(listener);
+//		cvGender.addSelectionChangedListener(listener);
+//		cvHand.addSelectionChangedListener(listener);
+//		cvRectification.addSelectionChangedListener(listener);
+//		txName.addModifyListener(listener);
+//		txSurname.addModifyListener(listener);
+//		txPlace.addModifyListener(listener);
+//		txLatitude.addModifyListener(listener);
+//		txLongitude.addModifyListener(listener);
+//		txZone.addModifyListener(listener);
+//		txZone.addListener(SWT.Verify, new NumberInputListener());
+//		txGreenwich.addModifyListener(listener); 
+//		txBiography.addModifyListener(listener);
+//		txComment.addModifyListener(listener);
+//		btCelebrity.addSelectionListener(listener);
 		btCelebrity.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				txCelebrity.setEditable(btCelebrity.getSelection());
+				txComment.setEditable(btCelebrity.getSelection());
 			}
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
@@ -476,12 +474,12 @@ public class EventPart extends ModelPart {
 		if (Handler.MODE_SAVE == mode) {
 			event.setName(txName.getText());
 			event.setSurname(txSurname.getText());
-			event.setFemale(0 == cmbGender.getSelectionIndex());
-			event.setRightHanded(0 == cmbHand.getSelectionIndex());
+			event.setFemale(2 == cmbGender.getSelectionIndex());
+			event.setRightHanded(2 == cmbHand.getSelectionIndex());
 			event.setRectification(cmbRectification.getSelectionIndex());
 			event.setDeath(dtDeath.getSelection());
 			event.setText(txBiography.getText());
-			event.setDescription(txCelebrity.getText());
+			event.setDescription(txComment.getText());
 			event.setCelebrity(btCelebrity.getSelection());
 		}
 		if (null == event.getPlace()) { //TODO использовать модель из базы с айдишником
@@ -511,8 +509,9 @@ public class EventPart extends ModelPart {
 		if (event.getDeath() != null)
 			dtDeath.setSelection(event.getDeath());
 		btCelebrity.setSelection(event.isCelebrity());
+		txComment.setEditable(btCelebrity.getSelection());
 		if (event.getDescription() != null)
-			txCelebrity.setText(event.getDescription());
+			txComment.setText(event.getDescription());
 		if (event.getText() != null)
 			txBiography.setText(event.getText());
 		if (event.getPlace() != null)
@@ -529,7 +528,7 @@ public class EventPart extends ModelPart {
 		txZone.setText(""); //$NON-NLS-1$
 		txGreenwich.setText(""); //$NON-NLS-1$
 		txBiography.setText(""); //$NON-NLS-1$
-		txCelebrity.setText(""); //$NON-NLS-1$
+		txComment.setText(""); //$NON-NLS-1$
 		dtBirth.setSelection(new Date());
 		dtDeath.setSelection(null);
 		cvGender.setSelection(null);
