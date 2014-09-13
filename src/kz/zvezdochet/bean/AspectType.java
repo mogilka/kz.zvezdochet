@@ -1,8 +1,8 @@
 package kz.zvezdochet.bean;
 
+import kz.zvezdochet.core.bean.DiagramObject;
 import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.service.AspectTypeService;
-import kz.zvezdochet.util.DiagramObject;
 
 import org.eclipse.swt.graphics.Color;
 

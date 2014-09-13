@@ -2,7 +2,7 @@ package kz.zvezdochet.bean;
 
 import java.util.Map;
 
-import kz.zvezdochet.util.DiagramObject;
+import kz.zvezdochet.core.bean.DiagramObject;
 import kz.zvezdochet.util.ISkyPoint;
 
 
