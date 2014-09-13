@@ -1,5 +1,7 @@
 package kz.zvezdochet.util;
 
+import kz.zvezdochet.core.bean.IColorizedObject;
+
 /**
  * Интерфейс точки небесной сферы
  * @author Nataly Didenko
