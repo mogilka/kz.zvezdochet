@@ -69,7 +69,7 @@ public class EventService extends ModelService {
 		try {
 			String sql;
 			if (null == model.getId()) 
-				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
 					"surname = ?, " +
@@ -86,6 +86,7 @@ public class EventService extends ModelService {
 					"initialdate = ?, " +
 					"finaldate = ?, " +
 					"date = ?, " +
+					"accuracy = ?, " +
 					"human = ? " +
 					"where id = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
@@ -103,12 +104,14 @@ public class EventService extends ModelService {
 			ps.setString(9, event.getDescription());
 			ps.setInt(10, event.getRectification());
 			ps.setBoolean(11, event.isRightHanded());
-			ps.setString(12, DateUtil.formatCustomDateTime(event.getBirth(), "yyyy-MM-dd HH:mm:ss"));
+			String birth = DateUtil.formatCustomDateTime(event.getBirth(), "yyyy-MM-dd HH:mm:ss");
+			ps.setString(12, birth);
 			ps.setString(13, event.getDeath() != null ? DateUtil.formatCustomDateTime(event.getDeath(), "yyyy-MM-dd HH:mm:ss") : null);
 			ps.setString(14, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
-			ps.setBoolean(15, event.isHuman());
+			ps.setString(15, event.getAccuracy());
+			ps.setBoolean(16, event.isHuman());
 			if (model.getId() != null) 
-				ps.setLong(16, model.getId());
+				ps.setLong(17, model.getId());
 
 			result = ps.executeUpdate();
 			if (1 == result) {
@@ -125,10 +128,12 @@ public class EventService extends ModelService {
 				}
 			}
 			savePlanets(event);
-			saveHouses(event);
-			savePlanetHouses(event);
 			savePlanetSigns(event);
 			saveBlob(event);
+			if (!birth.contains("00:00:00")) {
+				saveHouses(event);
+				savePlanetHouses(event);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
