@@ -4,7 +4,6 @@ import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.core.handler.Handler;
 import kz.zvezdochet.core.ui.util.DialogUtil;
 import kz.zvezdochet.part.EventPart;
-import kz.zvezdochet.util.Configuration;
 
 import org.eclipse.e4.core.contexts.Active;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -23,16 +22,9 @@ public class CalcHandler extends Handler {
 			Event event = (Event)eventPart.getModel(EventPart.MODE_CALC, true);
 			if (null == event) return;
 			updateStatus("Расчет конфигурации", false);
-			//new Configuration("12.12.2009", "23:11:16", "6.0", "43.15", "76.55");
-			Configuration configuration = new Configuration(
-				event.getBirth(),
-				Double.toString(event.getZone()),
-				Double.toString(event.getPlace().getLatitude()),
-				Double.toString(event.getPlace().getLongitude()));
-			updateStatus("Расчет завершен", false);
-			event.setConfiguration(configuration);
+			event.calc();
 			eventPart.setModel(event, false);
-			eventPart.onCalc();
+			eventPart.onCalc(null);
 			updateStatus("Расчетная конфигурация создана", false);
 		} catch (Exception e) {
 			DialogUtil.alertError(e.getMessage());
