@@ -8,9 +8,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import kz.zvezdochet.bean.Aspect;
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Planet;
+import kz.zvezdochet.bean.Sign;
+import kz.zvezdochet.bean.SkyPoint;
+import kz.zvezdochet.bean.SkyPointAspect;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.ModelService;
@@ -31,20 +35,21 @@ public class EventService extends ModelService {
 	/**
 	 * Поиск события по наименованию
 	 * @param text поисковое выражение
+	 * @param human -1|0|1 все|события|люди
 	 * @return список событий
 	 * @throws DataAccessException
 	 */
-	public List<Model> findByName(String text) throws DataAccessException {
+	public List<Model> findByName(String text, int human) throws DataAccessException {
         List<Model> list = new ArrayList<Model>();
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
+			String wherehuman = (human > -1) ? "and human = " + human : "";
 			String sql = "select * from " + tableName + 
-				" where callname like ? or surname like ?" +
+				" where name like ? " + wherehuman +
 				" order by initialdate";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setString(1, "%" + text + "%");
-			ps.setString(2, "%" + text + "%");
 			rs = ps.executeQuery();
 			while (rs.next())
 				list.add(init(rs, null));
@@ -72,8 +77,7 @@ public class EventService extends ModelService {
 				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
-					"surname = ?, " +
-					"callname = ?, " +
+					"name = ?, " +
 					"gender = ?, " +
 					"placeid = ?, " +
 					"zone = ?, " +
@@ -87,31 +91,33 @@ public class EventService extends ModelService {
 					"finaldate = ?, " +
 					"date = ?, " +
 					"accuracy = ?, " +
-					"human = ? " +
+					"human = ?," +
+					"userid = ? " +
 					"where id = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			ps.setString(1, event.getSurname());
-			ps.setString(2, event.getName());
-			ps.setBoolean(3, event.isFemale());
+			ps.setString(1, event.getName());
+			ps.setBoolean(2, event.isFemale());
 			if (event.getPlace() != null && event.getPlace().getId() != null)
-				ps.setLong(4, event.getPlace().getId());
+				ps.setLong(3, event.getPlace().getId());
 			else
-				ps.setLong(4, java.sql.Types.NULL);
-			ps.setDouble(5, event.getZone());
-			ps.setString(6, event.getSign());
-			ps.setString(7, event.getElement());
-			ps.setBoolean(8, event.isCelebrity());
-			ps.setString(9, event.getDescription());
-			ps.setInt(10, event.getRectification());
-			ps.setBoolean(11, event.isRightHanded());
+				ps.setLong(3, java.sql.Types.NULL);
+			ps.setDouble(4, event.getZone());
+			ps.setString(5, event.getSign());
+			ps.setString(6, event.getElement());
+			ps.setBoolean(7, event.isCelebrity());
+			ps.setString(8, event.getDescription());
+			ps.setInt(9, event.getRectification());
+			ps.setBoolean(10, event.isRightHanded());
 			String birth = DateUtil.formatCustomDateTime(event.getBirth(), "yyyy-MM-dd HH:mm:ss");
-			ps.setString(12, birth);
-			ps.setString(13, event.getDeath() != null ? DateUtil.formatCustomDateTime(event.getDeath(), "yyyy-MM-dd HH:mm:ss") : null);
-			ps.setString(14, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
-			ps.setString(15, event.getAccuracy());
-			ps.setBoolean(16, event.isHuman());
+			ps.setString(11, birth);
+			ps.setString(12, event.getDeath() != null ? DateUtil.formatCustomDateTime(event.getDeath(), "yyyy-MM-dd HH:mm:ss") : null);
+			ps.setString(13, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
+			ps.setString(14, event.getAccuracy());
+			ps.setBoolean(15, event.isHuman());
+			ps.setLong(16, 0);
 			if (model.getId() != null) 
 				ps.setLong(17, model.getId());
+			System.out.println(ps);
 
 			result = ps.executeUpdate();
 			if (1 == result) {
@@ -163,18 +169,18 @@ public class EventService extends ModelService {
 			ps.close();
 			
 			if (0 == id)
-				sql = "insert into " + table + " values(0,?,?,?)";
+				sql = "insert into " + table + "(eventid, biography, conversation) values(?,?,?)";
 			else {
 				sql = "update " + table + " set "
 					+ "eventid = ?,"
-					+ "photo = ?,"
-					+ "biography = ?"
+					+ "biography = ?,"
+					+ "conversation = ?"
 					+ "where id = ?";
 			}
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, event.getId());
-			ps.setString(2, ""); //TODO сохранять изображение в папку
-			ps.setString(3, event.getText());
+			ps.setString(2, event.getText());
+			ps.setString(3, event.getConversation()); //TODO сохранять изображение в папку
 			if (id != 0)
 				ps.setLong(4, id);
 			ps.executeUpdate();
@@ -200,7 +206,7 @@ public class EventService extends ModelService {
 	 */
 	public Object[] findBlob(Long eventId) throws DataAccessException {
 		if (null == eventId) return null;
-		Object[] blob = new Object[2];
+		Object[] blob = new Object[3];
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
@@ -213,6 +219,8 @@ public class EventService extends ModelService {
 					blob[0] = rs.getString("Biography");
 				if (rs.getString("Photo") != null)
 					blob[1] = rs.getBytes("Photo");
+				if (rs.getString("conversation") != null)
+					blob[2] = rs.getString("conversation");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -231,10 +239,8 @@ public class EventService extends ModelService {
 	public Model init(ResultSet rs, Model model) throws SQLException {
 		Event event = (model != null) ? (Event)model : (Event)create();
 		event.setId(Long.parseLong(rs.getString("ID")));
-		if (rs.getString("Callname") != null)
-			event.setName(rs.getString("Callname"));
-		if (rs.getString("Surname") != null)
-			event.setSurname(rs.getString("Surname"));
+		if (rs.getString("name") != null)
+			event.setName(rs.getString("name"));
 		event.setBirth(DateUtil.getDatabaseDateTime(rs.getString("initialdate")));
 		if (rs.getString("finaldate") != null) 
 			event.setDeath(DateUtil.getDatabaseDateTime(rs.getString("finaldate")));
@@ -256,6 +262,10 @@ public class EventService extends ModelService {
 			event.setPlaceid(rs.getLong("Placeid"));
 		if (rs.getString("Zone") != null)
 			event.setZone(rs.getDouble("Zone"));
+		s = rs.getString("human");
+		event.setHuman(s != null && s.equals("1") ? true : false);
+		if (rs.getString("accuracy") != null)
+			event.setAccuracy(rs.getString("accuracy"));
 		return event;
 	}
 
@@ -603,7 +613,6 @@ public class EventService extends ModelService {
 			if (celebrity >= 0)
 				sql += " and e.celebrity = " + celebrity;
 			sql += " order by year(initialdate)";
-			System.out.println(sql);
 
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, ((Planet)conf.getPlanets().get(0)).getSign().getId());
@@ -673,5 +682,191 @@ order by year(initialdate)
 			}
 		}
 		return list;
+	}
+
+	/**
+	 * Поиск события по знаку планеты
+	 * @param planet планета
+	 * @param sign знак Зодиака
+	 * @return список событий
+	 * @throws DataAccessException
+	 */
+	public List<Model> findByPlanetSign(Planet planet, Sign sign) throws DataAccessException {
+        List<Model> list = new ArrayList<Model>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String sql = "select e.* from " + tableName + " e" + 
+				" inner join " + getPlanetSignTable() + " ep on e.id = ep.eventid" +
+				" where " + planet.getCode() + " = ?" +
+				" order by initialdate";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setInt(1, sign.getNumber());
+			System.out.println(ps);
+			rs = ps.executeQuery();
+			while (rs.next())
+				list.add(init(rs, null));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * Поиск события по дому планеты
+	 * @param planet планета
+	 * @param house астрологический дом
+	 * @return список событий
+	 * @throws DataAccessException
+	 */
+	public List<Model> findByPlanetHouse(Planet planet, House house) throws DataAccessException {
+        List<Model> list = new ArrayList<Model>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String sql = "select e.* from " + tableName + " e" + 
+				" inner join " + getPlanetHouseTable() + " ep on e.id = ep.eventid" +
+				" where " + planet.getCode() + " = ?" +
+				" order by initialdate";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setInt(1, house.getNumber());
+			System.out.println(ps);
+			rs = ps.executeQuery();
+			while (rs.next())
+				list.add(init(rs, null));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * Поиск события по знаку планеты
+	 * @param planet планета
+	 * @param planet2 планета
+	 * @param aspect астрологический аспект
+	 * @return список событий
+	 * @throws DataAccessException
+	 * @todo для аспектов тоже сделать отдельную таблицу
+	 */
+	public List<Model> findByPlanetAspect(Planet planet, Planet planet2, Aspect aspect) throws DataAccessException {
+        List<Model> list = new ArrayList<Model>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String sql = "select e.* from " + tableName + " e" + 
+				" inner join " + getPlanetTable() + " ep on e.id = ep.eventid" +
+				" where " + aspect.getValue() + 
+					" between abs(" +
+					"abs(" + planet.getCode() + ") + " + aspect.getOrbis() +
+						"- abs(" + planet2.getCode() + ") + " + aspect.getOrbis() + ")" +
+				" order by initialdate";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			System.out.println(ps);
+			rs = ps.executeQuery();
+			while (rs.next())
+				list.add(init(rs, null));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * Возвращает имя таблицы, хранящей аспекты планет конфигурации события
+	 * @return имя ТБД
+	 */
+	public String getAspectTable() {
+		return "eventaspects";
+	}
+
+	/**
+	 * Сохранение аспектов планет конфигурации события
+	 * @param event событие
+	 * @throws DataAccessException
+	 */
+	public void saveAspects(Event event) throws DataAccessException {
+		if (null == event.getConfiguration()) return;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String table = getAspectTable();
+		try {
+			String sql = "update " + table + " set aspectid = null where eventid = ?";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, event.getId());
+			ps.executeUpdate();
+			ps.close();
+
+			List<SkyPointAspect> aspects = event.getConfiguration().getAspects();
+			for (SkyPointAspect aspect : aspects) {
+				SkyPoint point = aspect.getSkyPoint1();
+				SkyPoint point2 = aspect.getSkyPoint2();
+				if (point.getNumber() > point2.getNumber()) continue;
+				sql = "select id from " + table + 
+					" where eventid = ?" +
+					" and planetid = ?" +
+					" and planet2id = ?";
+				ps = Connector.getInstance().getConnection().prepareStatement(sql);
+				ps.setLong(1, event.getId());
+				ps.setLong(2, point.getId());
+				ps.setLong(3, point2.getId());
+				rs = ps.executeQuery();
+				long id = (rs.next()) ? rs.getLong("id") : 0;
+				ps.close();
+				
+				if (0 == id)
+					sql = "insert into " + table + " values(0,?,?,?,?)";
+				else
+					sql = "update " + table + 
+						" set eventid = ?,"
+						+ " planetid = ?,"
+						+ " aspectid = ?,"
+						+ " planet2id = ?" +
+						" where id = ?";
+				ps = Connector.getInstance().getConnection().prepareStatement(sql);
+				ps.setLong(1, event.getId());
+				ps.setLong(2, point.getId());
+				ps.setLong(3, aspect.getAspect().getId());
+				ps.setLong(4, point2.getId());
+				if (id != 0)
+					ps.setLong(5, id);
+				ps.executeUpdate();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (ps != null)	ps.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public List<Model> getList() throws DataAccessException {
+		return super.getList();
 	}
 }
