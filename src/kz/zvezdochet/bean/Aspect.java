@@ -103,4 +103,9 @@ public class Aspect extends Dictionary {
 	public DictionaryService getService() {
 		return new AspectService();
 	}
+
+	@Override
+	public String toString() {
+		return name + " " + value;
+	}
 }
