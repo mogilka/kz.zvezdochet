@@ -5,7 +5,6 @@ package kz.zvezdochet.bean;
  * @author Nataly Didenko
  */
 public class SkyPointAspect {
-
 	/**
 	 * Небесная точка 1
 	 */
@@ -28,6 +27,10 @@ public class SkyPointAspect {
 	 * Признак ретроградности
 	 */
 	private boolean retro = false;
+	/**
+	 * Условный возраст формирования аспекта
+	 */
+	private double age = 0.0;
 	
 	public boolean isRetro() {
 		return retro;
@@ -67,5 +70,13 @@ public class SkyPointAspect {
 
 	public void setScore(double score) {
 		this.score = score;
+	}
+
+	public double getAge() {
+		return age;
+	}
+
+	public void setAge(double age) {
+		this.age = age;
 	}
 }
