@@ -3,10 +3,13 @@ package kz.zvezdochet.service;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import kz.zvezdochet.bean.AspectType;
 import kz.zvezdochet.bean.Protraction;
+import kz.zvezdochet.core.bean.Dictionary;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.DictionaryService;
@@ -111,5 +114,19 @@ public class AspectTypeService extends DictionaryService {
 		if (null == list)
 			list = super.getList();
 		return list;
+	}
+
+	/**
+	 * Поиск главных типов аспектов
+	 * @return список аспектов
+	 * @throws DataAccessException
+	 */
+	public List<AspectType> getMainList() throws DataAccessException {
+		Map<String, String[]> types = AspectType.getHierarchy();
+		List<AspectType> main = new ArrayList<AspectType>();
+		for (Model model : getList())
+			if (types.containsKey(((Dictionary)model).getCode()))
+				main.add((AspectType)model);
+		return main;
 	}
 }
