@@ -1,11 +1,13 @@
 package kz.zvezdochet.bean;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.ModelService;
-import kz.zvezdochet.core.util.StringUtil;
+import kz.zvezdochet.core.util.DateUtil;
 import kz.zvezdochet.service.EventService;
 import kz.zvezdochet.service.PlaceService;
 import kz.zvezdochet.util.Configuration;
@@ -24,15 +26,11 @@ public class Event extends Model {
 		name = "";
 		birth = new Date();
 	}
-	
+
 	/**
 	 * Имя
 	 */
 	private String name;
-	/**
-	 * Фамилия
-	 */
-	private String surname;
 	/**
 	 * Пол
 	 */
@@ -97,7 +95,14 @@ public class Event extends Model {
 	 * Источник времени рождения
 	 */
 	private String accuracy;
+	/**
+	 * Признак живого существа
+	 */
+	private boolean human = true;
 	
+	public void setHuman(boolean human) {
+		this.human = human;
+	}
 	public String getDescription() {
 		return description;
 	}
@@ -123,12 +128,6 @@ public class Event extends Model {
 	}
 	public void setElement(String element) {
 		this.element = element;
-	}
-	public String getSurname() {
-		return surname != null ? surname : "";
-	}
-	public void setSurname(String surname) {
-		this.surname = surname;
 	}
 	public boolean isFemale() {
 		return female;
@@ -198,13 +197,6 @@ public class Event extends Model {
 	public void setImage(Image image) {
 		this.image = image;
 	}
-	/**
-	 * Определение полного имени клиента
-	 * @return полное имя
-	 */
-	public String getFullName() {
-		return StringUtil.safeString(getName()) + " " + StringUtil.safeString(surname);
-	}
 
 	public ModelService getService() {
 		return new EventService();
@@ -229,12 +221,15 @@ public class Event extends Model {
 //	                InputStream is = new ByteArrayInputStream((byte[])blob[1]);
 //					image = new Image(Display.getDefault(), is);
 //				}
+				if (blob[2] != null)
+					conversation = blob[2].toString();
 			}
 			
 			//конфигурация
 			configuration = new Configuration(birth);
 			service.initPlanets(this);
 			service.initHouses(this);
+//			service.initAspects(this); TODO
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
@@ -248,12 +243,61 @@ public class Event extends Model {
 	}
 
 	public boolean isHuman() {
-		return true;
+		return human;
 	}
 	public String getAccuracy() {
 		return accuracy;
 	}
 	public void setAccuracy(String accuracy) {
 		this.accuracy = accuracy;
+	}
+
+	/**
+	 * Журнал ректификации
+	 */
+	private String conversation;
+
+	public String getConversation() {
+		return conversation;
+	}
+	public void setConversation(String conversation) {
+		this.conversation = conversation;
+	}
+
+	/**
+	 * Определение возраста персоны
+	 * @return возраст
+	 */
+	public int getAge() {
+		int age = 0;
+		Calendar calendar = GregorianCalendar.getInstance();
+		calendar.setTime(birth);
+		Calendar calendar2 = GregorianCalendar.getInstance();
+		if (null == death)
+			age = calendar2.get(Calendar.YEAR) - calendar.get(Calendar.YEAR);
+		else {
+			calendar2.setTime(death);
+			age = calendar2.get(Calendar.YEAR) - calendar.get(Calendar.YEAR);
+		}
+		return age;
+	}
+
+	@Override
+	public String toString() {
+		return name + " " + DateUtil.sdf.format(birth);
+	}
+
+	public void calc() {
+		//new Configuration("12.12.2009", "23:11:16", "6.0", "43.15", "76.55");
+		try {
+			Configuration configuration = new Configuration(
+				birth,
+				Double.toString(zone),
+				Double.toString(place.getLatitude()),
+				Double.toString(place.getLongitude()));
+			setConfiguration(configuration);		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
