@@ -4,8 +4,10 @@
 package kz.zvezdochet.part;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -20,7 +22,6 @@ import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.ui.Tab;
 import kz.zvezdochet.core.ui.decoration.InfoDecoration;
 import kz.zvezdochet.core.ui.decoration.RequiredDecoration;
-import kz.zvezdochet.core.ui.listener.NumberInputListener;
 import kz.zvezdochet.core.ui.util.DialogUtil;
 import kz.zvezdochet.core.ui.util.GUIutil;
 import kz.zvezdochet.core.ui.view.ModelPart;
@@ -53,7 +54,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
@@ -69,31 +69,34 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
  * @author Nataly Didenko
  * @todo при любом изменении данных делать представление грязным
  */
-public class EventPart extends ModelPart {
-	
+public class EventPart extends ModelPart implements ICalculable {
+	/**
+	 * Режим синхронизации данных события,
+	 * при котором проверяются только расчётные показатели 
+	 */
 	public static int MODE_CALC = 1;
 
 	private Label lbGender;
 	private ComboViewer cvGender;
-	private Combo cmbGender;
 	private ComboViewer cvHand;
-	private Combo cmbHand;
 	private ComboViewer cvRectification;
-	private Combo cmbRectification;
 	private Label lbName;
 	private Text txName;
-	private Text txSurname;
 	private Text txPlace;
 	private Text txLatitude;
 	private Text txLongitude;
 	private Text txZone;
 	private Text txGreenwich;
 	private Text txComment;
-	private Text txBiography;
+	private Text txDescription;
 	private Label lbBirth;
 	private CDateTime dtBirth; 
 	private CDateTime dtDeath; 
 	private Button btCelebrity;
+	private Button btHuman;
+	private Text txAccuracy;
+	private Text txLog;
+
 	private CosmogramComposite cmpCosmogram;
 	private Group grPlanets;
 	private Group grHouses;
@@ -109,19 +112,13 @@ public class EventPart extends ModelPart {
 		lbName.setText(Messages.getString("PersonView.Name")); //$NON-NLS-1$
 		txName = new Text(secEvent, SWT.BORDER);
 
-		Label lb = new Label(secEvent, SWT.NONE);
-		lb.setText(Messages.getString("PersonView.Surname")); //$NON-NLS-1$
-		txSurname = new Text(secEvent, SWT.BORDER);
-		
 		lbGender = new Label(secEvent, SWT.CENTER);
 		lbGender.setText(Messages.getString("PersonView.Gender")); //$NON-NLS-1$
 		cvGender = new ComboViewer(secEvent, SWT.BORDER | SWT.READ_ONLY);
-		cmbGender = cvGender.getCombo();
 
-		lb = new Label(secEvent, SWT.CENTER);
+		Label lb = new Label(secEvent, SWT.CENTER);
 		lb.setText(Messages.getString("PersonView.Hand")); //$NON-NLS-1$
 		cvHand = new ComboViewer(secEvent, SWT.BORDER | SWT.READ_ONLY);
-		cmbHand = cvHand.getCombo();
 		
 		lbBirth = new Label(secEvent, SWT.NONE);
 		lbBirth.setText(Messages.getString("PersonView.BirthDate")); //$NON-NLS-1$
@@ -134,11 +131,20 @@ public class EventPart extends ModelPart {
 		dtDeath = new CDateTime(secEvent, CDT.BORDER | CDT.COMPACT | CDT.DROP_DOWN | CDT.DATE_LONG | CDT.TIME_MEDIUM);
 		dtDeath.setNullText(""); //$NON-NLS-1$
 		
+		lb = new Label(secEvent, SWT.NONE);
+		lb.setText("Живое существо");
+		btHuman = new Button(secEvent, SWT.BORDER | SWT.CHECK);
+		btHuman.setSelection(true);
+
 		lb = new Label(secEvent, SWT.CENTER);
 		lb.setText(Messages.getString("PersonView.Rectification")); //$NON-NLS-1$
 		cvRectification = new ComboViewer(secEvent, SWT.BORDER | SWT.READ_ONLY);
-		cmbRectification = cvRectification.getCombo();
-		
+
+		lb = new Label(secEvent, SWT.NONE);
+		lb.setText("Источник");
+		txAccuracy = new Text(secEvent, SWT.BORDER);
+		txAccuracy.setToolTipText("Источник времени рождения");
+
 		//////////////////////////////////////////////////
 		
 		Group secPlace = new Group(secEvent, SWT.NONE);
@@ -170,17 +176,32 @@ public class EventPart extends ModelPart {
 
 		//////////////////////////////////////////////////
 
-		Group secDescription = new Group(secEvent, SWT.NONE);
-		secDescription.setText(Messages.getString("PersonView.Biography")); //$NON-NLS-1$
-		secEvent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		txBiography = new Text(secDescription, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-
-		btCelebrity = new Button(secDescription, SWT.BORDER | SWT.CHECK);
-		txComment = new Text(secDescription, SWT.BORDER);
+		lb = new Label(secEvent, SWT.NONE);
+		lb.setText("Знаменитость");
+		btCelebrity = new Button(secEvent, SWT.BORDER | SWT.CHECK);
+		txComment = new Text(secEvent, SWT.BORDER);
 		txComment.setEditable(false);
+		
+//		secEvent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		CTabFolder fldr = new CTabFolder(secEvent, SWT.BORDER);
+		fldr.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		fldr.setSimple(false);
+		fldr.setUnselectedCloseVisible(false);
 
-		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(secDescription);
-		GridDataFactory.fillDefaults().span(4, 1).grab(true, true).applyTo(secDescription);
+		CTabItem item = new CTabItem(fldr, SWT.CLOSE);
+		item.setText(Messages.getString("PersonView.Biography"));
+		item.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/contact_enabled.gif").createImage());
+		txDescription = new Text(fldr, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		item.setControl(txDescription);
+
+		item = new CTabItem(fldr, SWT.CLOSE);
+		item.setText("Журнал");
+		item.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/contact_away.gif").createImage());
+		txLog = new Text(fldr, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		item.setControl(txLog);
+		fldr.pack();
+		fldr.setSelection(0);
+		GridDataFactory.fillDefaults().span(4, 1).grab(true, true).applyTo(fldr);
 		
 		GridLayoutFactory.swtDefaults().numColumns(4).applyTo(secEvent);
 		GridDataFactory.fillDefaults().hint(500, SWT.DEFAULT).grab(false, true).applyTo(secEvent);
@@ -197,7 +218,7 @@ public class EventPart extends ModelPart {
 		folder.setUnselectedCloseVisible(false);
 		Tab[] tabs = initTabs();
 		for (Tab tab : tabs) {
-			CTabItem item = new CTabItem(folder, SWT.CLOSE);
+			item = new CTabItem(folder, SWT.CLOSE);
 			item.setText(tab.name);
 			item.setImage(tab.image);
 			item.setControl(tab.control);
@@ -341,17 +362,19 @@ public class EventPart extends ModelPart {
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			span(3, 1).grab(true, false).applyTo(txName);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
-			span(3, 1).grab(true, false).applyTo(txSurname);
+			grab(true, false).applyTo(cvGender.getCombo());
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
-			grab(true, false).applyTo(cmbGender);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
-			grab(true, false).applyTo(cmbHand);
+			grab(true, false).applyTo(cvHand.getCombo());
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			span(3, 1).grab(true, false).applyTo(dtBirth);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			span(3, 1).grab(true, false).applyTo(dtDeath);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
-			span(3, 1).grab(true, false).applyTo(cmbRectification);
+			grab(true, false).applyTo(btHuman);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
+			grab(true, false).applyTo(cvRectification.getCombo());
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
+			span(3, 1).grab(true, false).applyTo(txAccuracy);
 
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			span(4, 1).grab(true, false).applyTo(txPlace);
@@ -365,9 +388,11 @@ public class EventPart extends ModelPart {
 			grab(true, false).applyTo(txGreenwich);
 
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).
-			span(2, 1).grab(true, true).applyTo(txBiography);
+			grab(true, true).applyTo(txDescription);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).
+			grab(true, true).applyTo(txLog);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
-			grab(true, false).applyTo(txComment);
+			span(2, 1).grab(true, false).applyTo(txComment);
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).
 			grab(false, false).applyTo(btCelebrity);
 
@@ -405,13 +430,13 @@ public class EventPart extends ModelPart {
 	 * Инициализация местности события
 	 * @param place местность
 	 */
-	private void setPlace(Place place) {
+	private void initPlace(Place place) {
 		if (null == place) return;
 		txPlace.setText(place.getName());
 		txLatitude.setText(CalcUtil.formatNumber("###.##", place.getLatitude())); //$NON-NLS-1$
 		txLongitude.setText(CalcUtil.formatNumber("###.##", place.getLongitude())); //$NON-NLS-1$
 		txGreenwich.setText(CalcUtil.formatNumber("###.##", place.getGreenwich())); //$NON-NLS-1$
-		txZone.setText(String.valueOf(Math.abs(place.getGreenwich())));
+		txZone.setText(String.valueOf(place.getGreenwich()));
 	}
 	
 	private String[] genders = {"",
@@ -435,7 +460,6 @@ public class EventPart extends ModelPart {
 		
 		cvRectification.setContentProvider(new ArrayContentProvider());
 		cvRectification.setInput(calcs);
-
 		setPlaces();
 	}
 
@@ -473,14 +497,15 @@ public class EventPart extends ModelPart {
 		Event event = (Event)model;
 		if (Handler.MODE_SAVE == mode) {
 			event.setName(txName.getText());
-			event.setSurname(txSurname.getText());
-			event.setFemale(2 == cmbGender.getSelectionIndex());
-			event.setRightHanded(2 == cmbHand.getSelectionIndex());
-			event.setRectification(cmbRectification.getSelectionIndex());
+			event.setFemale(2 == cvGender.getCombo().getSelectionIndex());
+			event.setRightHanded(2 == cvHand.getCombo().getSelectionIndex());
+			event.setRectification(cvRectification.getCombo().getSelectionIndex());
 			event.setDeath(dtDeath.getSelection());
-			event.setText(txBiography.getText());
+			event.setText(txDescription.getText());
 			event.setDescription(txComment.getText());
 			event.setCelebrity(btCelebrity.getSelection());
+			event.setAccuracy(txAccuracy.getText());
+			event.setConversation(txLog.getText());
 		}
 		if (null == event.getPlace()) { //TODO использовать модель из базы с айдишником
 			Place place = new Place();
@@ -489,21 +514,21 @@ public class EventPart extends ModelPart {
 			event.setPlace(place);
 		}
 		event.setBirth(dtBirth.getSelection());
-		double zone = (txZone.getText() != null) ? Double.parseDouble(txZone.getText()) : 0;
+		double zone = (txZone.getText() != null && txZone.getText().length() > 0) ? Double.parseDouble(txZone.getText()) : 0;
 		event.setZone(zone);
+		event.setHuman(btHuman.getSelection());
 	}
 	
+	@Override
 	protected void syncView() {
 		reset();
 		model = (null == model) ? new Event() : model;
 		Event event = (Event)model;
 		txName.setText(event.getName());
-		if (event.getSurname() != null)
-			txSurname.setText(event.getSurname());
-		cmbGender.setText(genders[event.isFemale() ? 2 : 1]);
-		cmbHand.setText(hands[event.isRightHanded() ? 0 : 1]);
+		cvGender.getCombo().setText(genders[event.isFemale() ? 2 : 1]);
+		cvHand.getCombo().setText(hands[event.isRightHanded() ? 0 : 1]);
 		if (event.getRectification() > 0)
-			cmbRectification.setText(calcs[event.getRectification()]);
+			cvRectification.getCombo().setText(calcs[event.getRectification()]);
 		if (event.getBirth() != null)
 			dtBirth.setSelection(event.getBirth());
 		if (event.getDeath() != null)
@@ -513,21 +538,26 @@ public class EventPart extends ModelPart {
 		if (event.getDescription() != null)
 			txComment.setText(event.getDescription());
 		if (event.getText() != null)
-			txBiography.setText(event.getText());
+			txDescription.setText(event.getText());
 		if (event.getPlace() != null)
-			setPlace(event.getPlace());
+			initPlace(event.getPlace());
 		txZone.setText(CalcUtil.formatNumber("###.##", event.getZone()));
+		btHuman.setSelection(event.isHuman());
+		if (event.getAccuracy() != null)
+			txAccuracy.setText(event.getAccuracy());
+		if (event.getConversation() != null)
+			txLog.setText(event.getConversation());
 	}
 	
+	@Override
 	public void reset() {
 		txName.setText(""); //$NON-NLS-1$
-		txSurname.setText(""); //$NON-NLS-1$
 		txPlace.setText(""); //$NON-NLS-1$
 		txLatitude.setText(""); //$NON-NLS-1$
 		txLongitude.setText(""); //$NON-NLS-1$
 		txZone.setText(""); //$NON-NLS-1$
 		txGreenwich.setText(""); //$NON-NLS-1$
-		txBiography.setText(""); //$NON-NLS-1$
+		txDescription.setText(""); //$NON-NLS-1$
 		txComment.setText(""); //$NON-NLS-1$
 		dtBirth.setSelection(new Date());
 		dtDeath.setSelection(null);
@@ -535,16 +565,17 @@ public class EventPart extends ModelPart {
 		cvHand.setSelection(null);
 		cvRectification.setSelection(null);
 		btCelebrity.setSelection(false);
+		btHuman.setSelection(false);
+		txAccuracy.setText(""); //$NON-NLS-1$
+		txLog.setText(""); //$NON-NLS-1$
 	}
 	
 	public Model addModel() {
 		return new Event();
 	}
 
-	/**
-	 * Обновление содержимого представления после расчёта
-	 */
-	public void onCalc() {
+	@Override
+	public void onCalc(Object obj) {
 		part.setDirty(true);
 		refreshCard();
 		refreshTabs();
@@ -633,40 +664,15 @@ public class EventPart extends ModelPart {
 	 */
 	private void refreshCard() {
 		List<String> params = new ArrayList<String>();
-		params.add("NEUTRAL");
+		Map<String, String[]> types = AspectType.getHierarchy();
 		for (Control control : grAspectType.getChildren()) {
 			Button button = (Button)control;
 			if (button.getSelection())
-				switch (button.getData("type").toString()) {
-				case "POSITIVE":
-					params.add("POSITIVE");
-					params.add("POSITIVE_HIDDEN");
-					break;
-				case "NEGATIVE":
-					params.add("NEGATIVE");
-					params.add("NEGATIVE_HIDDEN");
-					break;
-				case "CREATIVE":
-					params.add("CREATIVE");
-					break;
-				case "KARMIC":
-					params.add("KARMIC");
-					break;
-				case "SPIRITUAL":
-					params.add("SPIRITUAL");
-					params.add("ENSLAVEMENT");
-					params.add("DAO");
-					params.add("MAGIC");
-					break;
-				case "PROGRESSIVE":
-					params.add("PROGRESSIVE");
-					params.add("TEMPTATION");
-					break;
-				}
+				params.addAll(Arrays.asList(types.get(button.getData("type"))));
 		}
 		if (params.size() < 1) return;
 		Event event = (Event)model;
-		cmpCosmogram.paint(event.getConfiguration(), params);
+		cmpCosmogram.paint(event.getConfiguration(), null, params);
 	}
 
 	/**
@@ -674,7 +680,6 @@ public class EventPart extends ModelPart {
 	 */
 	private void setPlaces() {
 	    PlaceProposalProvider proposalProvider = new PlaceProposalProvider();
-	    proposalProvider.setFiltering(true);
 	    ContentProposalAdapter adapter = new ContentProposalAdapter(
 	        txPlace, new TextContentAdapter(),
 	        proposalProvider, KeyStroke.getInstance(SWT.CTRL, 32), new char[] {' '});
@@ -686,7 +691,7 @@ public class EventPart extends ModelPart {
 				Place place = (Place)((PlaceContentProposal)proposal).getObject();
 				if (place != null) {
 					((Event)model).setPlace(place);
-					setPlace(place);
+					initPlace(place);
 				}
 			}
 		});
@@ -698,7 +703,7 @@ public class EventPart extends ModelPart {
 			Event event = (Event)model;
 			if (model != null && event.getId() != null) {
 				event.init();
-				setTitle(event.getFullName());
+				setTitle(event.getName());
 			} else
 				setTitle(Messages.getString("PersonView.New")); //$NON-NLS-1$
 			try {
