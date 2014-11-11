@@ -10,6 +10,7 @@ Bundle-Activator: kz.zvezdochet.Activator
 Bundle-Vendor: Звездочёт
 Export-Package: kz.zvezdochet.bean,
  kz.zvezdochet.part,
+ kz.zvezdochet.provider,
  kz.zvezdochet.service,
  kz.zvezdochet.util
 Require-Bundle: org.eclipse.ui,

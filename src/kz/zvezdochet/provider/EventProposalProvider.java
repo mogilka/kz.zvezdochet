@@ -3,27 +3,32 @@ package kz.zvezdochet.provider;
 import java.util.ArrayList;
 import java.util.List;
 
-import kz.zvezdochet.bean.Place;
-import kz.zvezdochet.core.bean.Dictionary;
+import kz.zvezdochet.bean.Event;
+import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
-import kz.zvezdochet.service.PlaceService;
+import kz.zvezdochet.service.EventService;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 
 /**
- * Обработчик автозаполнения местностей
+ * Обработчик автозаполнения событий
  * @author Nataly Didenko
  *
  */
-public class PlaceProposalProvider implements IContentProposalProvider {
-	
+public class EventProposalProvider implements IContentProposalProvider {
+	private int humanFilter = 1;
+
+	public EventProposalProvider(boolean human) {
+		humanFilter = human ? 1 : 0;
+	}
+
 	@Override
 	public IContentProposal[] getProposals(String contents, int position) {
 		IContentProposal[] contentProposals = null;
-		List<Place> proposals = new ArrayList<Place>();
+		List<Model> proposals = new ArrayList<Model>();
 		try {
-			proposals = new PlaceService().findByName(contents);
+			proposals = new EventService().findByName(contents, humanFilter);
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
@@ -38,8 +43,8 @@ public class PlaceProposalProvider implements IContentProposalProvider {
 	 * @param proposal объект
 	 * @return описание найденного объекта
 	 */
-	private IContentProposal makeContentProposal(final Dictionary proposal) {
-		return new PlaceContentProposal(proposal);
+	private IContentProposal makeContentProposal(final Model proposal) {
+		return new EventContentProposal((Event)proposal);
 	}
 
 	/**
@@ -47,10 +52,10 @@ public class PlaceProposalProvider implements IContentProposalProvider {
 	 * @author Nataly Didenko
 	 *
 	 */
-	public class PlaceContentProposal implements IContentProposal {
-		private Dictionary dict;
+	public class EventContentProposal implements IContentProposal {
+		private Event dict;
 
-		public PlaceContentProposal(Dictionary dict) {
+		public EventContentProposal(Event dict) {
 			this.dict = dict;
 		}
 
@@ -66,7 +71,7 @@ public class PlaceProposalProvider implements IContentProposalProvider {
 
 		@Override
 		public String getLabel() {
-			return dict.getName();
+			return dict.toString();
 		}
 
 		@Override
@@ -78,7 +83,7 @@ public class PlaceProposalProvider implements IContentProposalProvider {
 		 * Возвращает найденный объект
 		 * @return объект справочника
 		 */
-		public Dictionary getObject() {
+		public Event getObject() {
 			return dict;
 		}
 	}
