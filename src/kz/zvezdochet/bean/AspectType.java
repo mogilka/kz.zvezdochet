@@ -1,5 +1,8 @@
 package kz.zvezdochet.bean;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import kz.zvezdochet.core.bean.DiagramObject;
 import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.service.AspectTypeService;
@@ -80,5 +83,21 @@ public class AspectType extends DiagramObject {
 
 	public void setImage(String image) {
 		this.image = image;
+	}
+
+	/**
+	 * Возвращает иерархию типов аспектов
+	 * @return карта типов
+	 */
+	public static Map<String, String[]> getHierarchy() {
+		Map<String, String[]> map = new HashMap<String, String[]>();
+		map.put("NEUTRAL", new String[] {"NEUTRAL"});
+		map.put("POSITIVE", new String[] {"POSITIVE", "POSITIVE_HIDDEN"});
+		map.put("NEGATIVE", new String[] {"NEGATIVE", "NEGATIVE_HIDDEN"});
+		map.put("CREATIVE", new String[] {"CREATIVE"});
+		map.put("KARMIC", new String[] {"KARMIC"});
+		map.put("SPIRITUAL", new String[] {"SPIRITUAL", "ENSLAVEMENT", "DAO", "MAGIC"});
+		map.put("PROGRESSIVE", new String[] {"PROGRESSIVE", "TEMPTATION"});
+		return map;
 	}
 }
