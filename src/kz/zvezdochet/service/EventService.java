@@ -266,6 +266,7 @@ public class EventService extends ModelService {
 		event.setHuman(s != null && s.equals("1") ? true : false);
 		if (rs.getString("accuracy") != null)
 			event.setAccuracy(rs.getString("accuracy"));
+		event.setUserid(rs.getLong("userid"));
 		return event;
 	}
 
