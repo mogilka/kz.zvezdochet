@@ -224,6 +224,7 @@ public class CosmogramComposite extends Composite {
 			Iterator<Model> j = planets.iterator();
 			while (j.hasNext()) {
 				Planet p2 = (Planet)j.next();
+				if (p.getNumber() > p2.getNumber()) continue;
 //				System.out.println();
 //				System.out.print(p + " " + p2 + " = ");
 				getAspect(Math.abs(p.getCoord()), Math.abs(p2.getCoord()), gc);
