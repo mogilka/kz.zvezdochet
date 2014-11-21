@@ -762,19 +762,29 @@ order by year(initialdate)
 	}
 
 	/**
-	 * Поиск события по знаку планеты
-	 * @param planet планета
-	 * @param planet2 планета
-	 * @param aspect астрологический аспект
+	 * Поиск событий по аспектам планет
+	 * @param planets массив планет
+	 * @param planets2 массив планет
+	 * @param aspects массив астрологических аспектов
 	 * @return список событий
 	 * @throws DataAccessException
-	 * @todo для аспектов тоже сделать отдельную таблицу
 	 */
-	public List<Model> findByPlanetAspect(Planet planet, Planet planet2, Aspect aspect) throws DataAccessException {
+	public List<Model> findByPlanetAspect(List<Planet> planets, List<Planet> planets2, List<Aspect> aspects) throws DataAccessException {
+		int count = planets.size();
+		if (0 == count) return null;
         List<Model> list = new ArrayList<Model>();
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
+			String where = "";
+			for (int i = 0; i < count; i++) {
+				if (i > 0)
+					where += " and ";
+				where += "(planetid = " + planets.get(i).getId() +
+					" and planet2id = " + planets2.get(i).getId() +
+					" and aspectid = " + aspects.get(i).getId() + ")";
+			}
+			
 			String sql = "select e.* from " + tableName + " e" + 
 				" inner join " + getAspectTable() + " ep on e.id = ep.eventid" +
 				" where planetid = ?" + 
@@ -799,6 +809,12 @@ order by year(initialdate)
 				e.printStackTrace(); 
 			}
 		}
+/*
+SELECT * FROM events e
+inner join eventaspects ep on e.id = ep.eventid
+where (planetid = 19 and planet2id = 20 and aspectid = 1)
+or (planetid = 20 and planet2id = 23 and aspectid = 1)
+ */
 		return list;
 	}
 

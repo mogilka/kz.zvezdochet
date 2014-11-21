@@ -1,6 +1,8 @@
 package kz.zvezdochet.part;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -9,6 +11,7 @@ import kz.zvezdochet.bean.Aspect;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.bean.Sign;
+import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.ui.Tab;
 import kz.zvezdochet.core.ui.provider.DictionaryLabelProvider;
@@ -39,7 +42,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -53,6 +58,9 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
  */
 public class SearchPart extends ModelListView {
 	private CTabFolder folder;
+	private List<Model> planetlist;
+	private List<Model> aspectlist;
+	private List<Model> houselist;
 	
 	@Inject
 	public SearchPart() {}
@@ -161,6 +169,8 @@ public class SearchPart extends ModelListView {
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(group);
 		tabs[1] = tab;
 		
+		//////////////////////////////////////////////////////////////
+		
 		tab = new Tab();
 		tab.name = "по домам";
 		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/home.gif").createImage();
@@ -206,6 +216,8 @@ public class SearchPart extends ModelListView {
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 
+		//////////////////////////////////////////////////////////
+		
 		tab.control = group;
 		GridLayoutFactory.swtDefaults().numColumns(5).applyTo(group);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(group);
@@ -214,67 +226,56 @@ public class SearchPart extends ModelListView {
 		tab = new Tab();
 		tab.name = "по аспектам";
 		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect.gif").createImage();
-		group = new Group(folder, SWT.NONE);
+		final Group groupAspect = new Group(folder, SWT.NONE);
 
-		lb = new Label(group, SWT.NONE);
-		lb.setText("Планета");
-		final ComboViewer cvPlaneta = new ComboViewer(group, SWT.BORDER | SWT.READ_ONLY);
-		try {
-			cvPlaneta.setContentProvider(new ArrayContentProvider());
-			cvPlaneta.setLabelProvider(new DictionaryLabelProvider());
-			cvPlaneta.setInput(new PlanetService().getList());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		lb = new Label(group, SWT.NONE);
-		lb.setText("Астрологический аспект");
-		final ComboViewer cvAspect = new ComboViewer(group, SWT.BORDER | SWT.READ_ONLY);
-		try {
-			cvAspect.setContentProvider(new ArrayContentProvider());
-			cvAspect.setLabelProvider(new DictionaryLabelProvider());
-			cvAspect.setInput(new AspectService().getList());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		lb = new Label(group, SWT.NONE);
-		lb.setText("Планета");
-		final ComboViewer cvPlaneta2 = new ComboViewer(group, SWT.BORDER | SWT.READ_ONLY);
-		try {
-			cvPlaneta2.setContentProvider(new ArrayContentProvider());
-			cvPlaneta2.setLabelProvider(new DictionaryLabelProvider());
-			cvPlaneta2.setInput(new PlanetService().getList());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		bt = new Button(group, SWT.NONE);
-		bt.setText("Искать");
+		bt = new Button(groupAspect, SWT.NONE);
+		bt.setText("+");
 		bt.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if ((cvPlaneta.getSelection().isEmpty()
-						|| cvAspect.getSelection().isEmpty()
-						|| cvPlaneta2.getSelection().isEmpty())
-							|| cvPlaneta.getSelection().equals(cvPlaneta2.getSelection()))
-					return;
-				IStructuredSelection selection = (IStructuredSelection)cvPlaneta.getSelection();
-				Planet planet = ((Planet)selection.getFirstElement());
-				selection = (IStructuredSelection)cvAspect.getSelection();
-				Aspect aspect = ((Aspect)selection.getFirstElement());
-				selection = (IStructuredSelection)cvPlaneta2.getSelection();
-				Planet planet2 = ((Planet)selection.getFirstElement());
-				findByPlanetAspect(planet, planet2, aspect);
+				addAspectSearch(groupAspect);
 			}
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 
-		tab.control = group;
-		GridLayoutFactory.swtDefaults().numColumns(7).applyTo(group);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(group);
+		bt = new Button(groupAspect, SWT.NONE);
+		bt.setText("Искать");
+		bt.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				List<Planet> planets = new ArrayList<Planet>();
+				List<Aspect> aspects = new ArrayList<Aspect>();
+				List<Planet> planets2 = new ArrayList<Planet>();
+				for (Control cont : groupAspect.getChildren()) {
+					if (cont instanceof Group) {
+						for (Control control : ((Group)cont).getChildren()) {
+							if (control instanceof Combo) {
+								int index = ((Combo)control).getSelectionIndex();
+								Object code = control.getData("code");
+								if (code.equals("aspectPlanet1") && index > -1)
+									planets.add((Planet)planetlist.get(index));
+								else if (code.equals("aspectPlanet2") && index > -1)
+									planets2.add((Planet)planetlist.get(index));
+								else if (code.equals("planetAspect") && index > -1)
+									aspects.add((Aspect)aspectlist.get(index));
+							}
+						}
+					}
+				}
+				if (planets.size() == planets2.size() && planets.size() == aspects.size())
+					findByPlanetAspect(planets, planets2, aspects);
+			}
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+
+		tab.control = groupAspect;
+		GridLayoutFactory.swtDefaults().numColumns(1).applyTo(groupAspect);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(groupAspect);
 		tabs[3] = tab;
+		
+		////////////////////////////////////////////////////////////
 
 		tab = new Tab();
 		tab.name = "по дате";
@@ -397,14 +398,14 @@ public class SearchPart extends ModelListView {
 	}
 
 	/**
-	 * Поиск по аспекту планет
-	 * @param planet планета
-	 * @param planet2 планета
-	 * @param aspect астрологический аспект
+	 * Поиск по аспектам планет
+	 * @param planets массив планет
+	 * @param planets2 массив планет
+	 * @param aspects массив астрологических аспектов
 	 */
-	private void findByPlanetAspect(Planet planet, Planet planet2, Aspect aspect) {
+	private void findByPlanetAspect(List<Planet> planets, List<Planet> planets2, List<Aspect> aspects) {
 		try {
-			setData(new EventService().findByPlanetAspect(planet, planet2, aspect));
+			setData(new EventService().findByPlanetAspect(planets, planets2, aspects));
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
@@ -421,5 +422,54 @@ public class SearchPart extends ModelListView {
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void addAspectSearch(Group container) {
+		try {
+			final Group group = new Group(container, SWT.NONE);
+			GridLayoutFactory.swtDefaults().numColumns(1).applyTo(group);
+			GridDataFactory.fillDefaults().grab(true, true).applyTo(group);
+
+			new Label(group, SWT.NONE).setText("Планета");
+			ComboViewer cvPlaneta = new ComboViewer(group, SWT.BORDER | SWT.READ_ONLY);
+			cvPlaneta.setContentProvider(new ArrayContentProvider());
+			cvPlaneta.setLabelProvider(new DictionaryLabelProvider());
+			cvPlaneta.setInput(planetlist);
+			cvPlaneta.getCombo().setData("code", "aspectPlanet1");
+
+			new Label(group, SWT.NONE).setText("Астрологический аспект");
+			ComboViewer cvAspect = new ComboViewer(group, SWT.BORDER | SWT.READ_ONLY);
+			cvAspect.setContentProvider(new ArrayContentProvider());
+			cvAspect.setLabelProvider(new DictionaryLabelProvider());
+			cvAspect.setInput(new AspectService().getList());
+			cvAspect.getCombo().setData("code", "planetAspect");
+
+			new Label(group, SWT.NONE).setText("Планета");
+			ComboViewer cvPlaneta2 = new ComboViewer(group, SWT.BORDER | SWT.READ_ONLY);
+			cvPlaneta2.setContentProvider(new ArrayContentProvider());
+			cvPlaneta2.setLabelProvider(new DictionaryLabelProvider());
+			cvPlaneta2.setInput(planetlist);
+			cvPlaneta2.getCombo().setData("code", "aspectPlanet2");
+
+			Button bt = new Button(group, SWT.NONE);
+			bt.setText("-");
+			bt.addSelectionListener(new SelectionListener() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					group.dispose();
+				}
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {}
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	protected void initControls() throws DataAccessException {
+		planetlist = new PlanetService().getList();
+		aspectlist = new AspectService().getList();
+		houselist = new HouseService().getList();
 	}
 }
