@@ -1,8 +1,12 @@
 package kz.zvezdochet.bean;
 
+import java.util.List;
 import java.util.Map;
 
 import kz.zvezdochet.core.bean.DiagramObject;
+import kz.zvezdochet.core.bean.Model;
+import kz.zvezdochet.core.service.DataAccessException;
+import kz.zvezdochet.service.SignService;
 import kz.zvezdochet.util.ISkyPoint;
 
 
@@ -56,5 +60,47 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
 	@Override
 	public String toString() {
 		return name + " " + coord;
+	}
+
+	/**
+	 * Определение знака, в котором находится объект
+	 * @param point координата объекта
+	 * @throws DataAccessException 
+	 */
+	public static Sign getSign(double point) throws DataAccessException {
+		List<Model> signs = new SignService().getList();
+		for (Model model : signs) {
+			Sign sign = (Sign)model;
+			if (point >= sign.getInitialPoint() && point < sign.getCoord()) 
+				return sign;
+		}
+		return null;
+	}
+
+	/**
+	 * Определение дома, в котором находится объект
+	 * @param house1 координата дома
+	 * @param house2 координата следующего дома
+	 * @param coord координата объекта
+	 */ 
+	public static boolean getHouse(double house1, double house2, double coord) {
+		//если границы находятся по разные стороны нуля
+		if (house1 > 200 & house2 < 160) {
+			//если градус планеты находится по другую сторону
+			//от нуля относительно второй границы,
+			//увеличиваем эту границу на 2*Pi
+			if (Math.abs(coord) > 200)
+				house2 = house2 + 360;
+			else if (Math.abs(coord) < 160) {
+				//если градус планеты меньше 160,
+				//увеличиваем его, а также вторую границу на 2*Pi
+		       coord = Math.abs(coord) + 360;
+		       house2 = house2 + 360;
+			}
+		}
+		//если же границы находятся по одну сторону от нуля,
+		//оставляем всё как есть
+		
+		return house1 <= coord && coord <= house2;
 	}
 }
