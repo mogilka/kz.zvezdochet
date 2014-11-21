@@ -19,7 +19,7 @@ public class AspectType extends DiagramObject {
 	/**
 	 * Начертание
 	 */
-	private Protraction protraction;
+	private String protraction;
 	/**
 	 * Родительский тип
 	 */
@@ -37,7 +37,7 @@ public class AspectType extends DiagramObject {
 	 */
 	private String image;
 	
-	public Protraction getProtraction() {
+	public String getProtraction() {
 		return protraction;
 	}
 
@@ -49,7 +49,7 @@ public class AspectType extends DiagramObject {
 		this.dimColor = dimColor;
 	}
 
-	public void setProtraction(Protraction protraction) {
+	public void setProtraction(String protraction) {
 		this.protraction = protraction;
 	}
 	

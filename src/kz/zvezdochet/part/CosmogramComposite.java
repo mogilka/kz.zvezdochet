@@ -260,9 +260,25 @@ public class CosmogramComposite extends Composite {
 			Aspect a = (Aspect)i.next();
 			if (params.contains(a.getType().getCode()) && a.isAspect(res)) {
 				drawAspect(a.getType().getColor(), 0f, one, two, gc, 
-						a.getType().getProtraction().getLineStyle());
+						getLineStyle(a.getType().getProtraction()));
 //				System.out.print(a.getName());
 			}
+		}
+	}
+
+	/**
+	 * Определяем стиля начертания аспекта
+	 * @param code код типа аспекта
+	 * @return стиль начертания линии
+	 */
+	private int getLineStyle(String code) {
+		switch (code) {
+			case "SOLID": return SWT.LINE_SOLID;
+			case "DASH": return SWT.LINE_DASH;
+			case "DOT": return SWT.LINE_DOT;
+			case "DASHDOT": return SWT.LINE_DASHDOT;
+			case "DASHDOTDOT": return SWT.LINE_DASHDOTDOT;
+			default: return SWT.LINE_SOLID;
 		}
 	}
 } 

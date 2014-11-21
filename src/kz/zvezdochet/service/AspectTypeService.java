@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import kz.zvezdochet.bean.AspectType;
-import kz.zvezdochet.bean.Protraction;
 import kz.zvezdochet.core.bean.Dictionary;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
@@ -40,7 +39,7 @@ public class AspectTypeService extends DictionaryService {
 			else
 				sql = "update " + tableName + " set " +
 					"parenttypeid = ?, " +
-					"protractionid = ?, " +
+					"protraction = ?, " +
 					"code = ?, " +
 					"name = ?, " +
 					"description = ?, " +
@@ -53,7 +52,7 @@ public class AspectTypeService extends DictionaryService {
 				ps.setLong(1, dict.getParentType().getId());
 			else
 				ps.setLong(1, java.sql.Types.NULL);
-			ps.setLong(2, dict.getProtraction().getId());
+			ps.setString(2, dict.getProtraction());
 			ps.setString(3, dict.getCode());
 			ps.setString(4, dict.getName());
 			ps.setString(5, dict.getDescription());
@@ -89,8 +88,7 @@ public class AspectTypeService extends DictionaryService {
 	public AspectType init(ResultSet rs, Model model) throws DataAccessException, SQLException {
 		AspectType type = (model != null) ? (AspectType)model : (AspectType)create();
 		super.init(rs, type);
-		type.setProtraction((Protraction)new ProtractionService().
-				find(rs.getLong("ProtractionID")));
+		type.setProtraction(rs.getString("Protraction"));
 		type.setColor(CoreUtil.rgbToColor(rs.getString("Color")));
 		type.setDimColor(CoreUtil.rgbToColor(rs.getString("DimColor")));
 		if (rs.getString("ParentTypeID") != null) {
