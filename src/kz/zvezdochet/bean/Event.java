@@ -229,7 +229,7 @@ public class Event extends Model {
 			configuration = new Configuration(birth);
 			service.initPlanets(this);
 			service.initHouses(this);
-//			service.initAspects(this); TODO
+			service.initAspects(this);
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}

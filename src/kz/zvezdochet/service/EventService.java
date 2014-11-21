@@ -6,9 +6,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import kz.zvezdochet.bean.Aspect;
+import kz.zvezdochet.bean.AspectType;
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Planet;
@@ -74,7 +77,7 @@ public class EventService extends ModelService {
 		try {
 			String sql;
 			if (null == model.getId()) 
-				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
 					"name = ?, " +
@@ -90,9 +93,10 @@ public class EventService extends ModelService {
 					"initialdate = ?, " +
 					"finaldate = ?, " +
 					"date = ?, " +
-					"accuracy = ?, " +
 					"human = ?," +
-					"userid = ? " +
+					"accuracy = ?, " +
+					"userid = ?," +
+					"calculated = ? " +
 					"where id = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setString(1, event.getName());
@@ -112,11 +116,12 @@ public class EventService extends ModelService {
 			ps.setString(11, birth);
 			ps.setString(12, event.getDeath() != null ? DateUtil.formatCustomDateTime(event.getDeath(), "yyyy-MM-dd HH:mm:ss") : null);
 			ps.setString(13, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
-			ps.setString(14, event.getAccuracy());
-			ps.setBoolean(15, event.isHuman());
+			ps.setInt(14, event.isHuman() ? 1 : 0);
+			ps.setString(15, event.getAccuracy());
 			ps.setLong(16, 0);
+			ps.setInt(17, 1);
 			if (model.getId() != null) 
-				ps.setLong(17, model.getId());
+				ps.setLong(18, model.getId());
 			System.out.println(ps);
 
 			result = ps.executeUpdate();
@@ -134,6 +139,7 @@ public class EventService extends ModelService {
 				}
 			}
 			savePlanets(event);
+			saveAspects(event);
 			savePlanetSigns(event);
 			saveBlob(event);
 			if (!birth.contains("00:00:00")) {
@@ -319,7 +325,7 @@ public class EventService extends ModelService {
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
-			String sql = "select * from eventhouses where eventid = ?";
+			String sql = "select * from " + getHouseTable() + " where eventid = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, event.getId());
 			rs = ps.executeQuery();
@@ -770,13 +776,15 @@ order by year(initialdate)
         ResultSet rs = null;
 		try {
 			String sql = "select e.* from " + tableName + " e" + 
-				" inner join " + getPlanetTable() + " ep on e.id = ep.eventid" +
-				" where " + aspect.getValue() + 
-					" between abs(" +
-					"abs(" + planet.getCode() + ") + " + aspect.getOrbis() +
-						"- abs(" + planet2.getCode() + ") + " + aspect.getOrbis() + ")" +
+				" inner join " + getAspectTable() + " ep on e.id = ep.eventid" +
+				" where planetid = ?" + 
+					" and planet2id = ?" +
+					" and aspectid = ?" +
 				" order by initialdate";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, planet.getId());
+			ps.setLong(2, planet2.getId());
+			ps.setLong(3, aspect.getId());
 			System.out.println(ps);
 			rs = ps.executeQuery();
 			while (rs.next())
@@ -869,5 +877,109 @@ order by year(initialdate)
 	@Override
 	public List<Model> getList() throws DataAccessException {
 		return super.getList();
+	}
+
+	/**
+	 * Инициализация аспектов события
+	 * @param event событие
+	 * @throws DataAccessException
+	 */
+	public void initAspects(Event event) throws DataAccessException {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			List<Model> aspectTypes = new AspectTypeService().getList();
+			for (Model model : event.getConfiguration().getPlanets()) {
+				Planet planet = (Planet)model;
+
+				//создаем карту статистики по аспектам планеты
+				Map<String, Integer> aspcountmap = new HashMap<String, Integer>();
+				Map<String, String> aspmap = new HashMap<String, String>();
+				for (Model asptype : aspectTypes)
+					aspcountmap.put(((AspectType)asptype).getCode(), 0);
+
+				//для каждой планеты ищем аспекты
+				String sql = "select * from " + getAspectTable() +
+					" where eventid = ?"
+						+ " and planetid = ?"
+						+ " and aspectid > 0";
+				ps = Connector.getInstance().getConnection().prepareStatement(sql);
+				ps.setLong(1, event.getId());
+				ps.setLong(2, planet.getId());
+				rs = ps.executeQuery();
+				while (rs.next()) {
+					Planet planet2 = (Planet)new PlanetService().find(rs.getLong("planet2id"));
+					Aspect aspect = (Aspect)new AspectService().find(rs.getLong("aspectid"));
+					SkyPointAspect spa = new SkyPointAspect();
+					spa.setSkyPoint1(planet);
+					spa.setSkyPoint2(planet2);
+					spa.setAspect(aspect);
+					event.getConfiguration().getAspects().add(spa);
+
+					//фиксируем аспекты планеты
+					aspmap.put(planet2.getCode(), aspect.getCode());
+					//суммируем аспекты каждого типа для планеты
+					String aspectTypeCode = aspect.getType().getCode();
+					int score = aspcountmap.get(aspectTypeCode);
+					//для людей считаем только аспекты главных планет
+					aspcountmap.put(aspectTypeCode, ++score);
+
+					//суммируем сильные аспекты
+					aspectTypeCode = "COMMON";
+					if (aspect.getType().getParentType() != null &&
+							aspect.getType().getParentType().getCode() != null &&
+							aspect.getType().getParentType().getCode().equals(aspectTypeCode)) {
+						score = aspcountmap.get(aspectTypeCode);
+						aspcountmap.put(aspectTypeCode, ++score);
+					}
+				}
+				planet.setAspectCountMap(aspcountmap);
+				planet.setAspectMap(aspmap);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
+	}
+
+	/**
+	 * Поиск событий по периоду
+	 * @param date начальная дата
+	 * @param date2 конечная дата
+	 * @return список событий
+	 * @throws DataAccessException
+	 */
+	public List<Model> findByDateRange(Date date, Date date2) throws DataAccessException {
+        List<Model> list = new ArrayList<Model>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String sql = "select * from " + tableName +  
+				" where initialdate between ? and ?" +
+				" order by initialdate";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setString(1, DateUtil.dbdtf.format(date));
+			ps.setString(2, DateUtil.dbdtf.format(date2));
+			System.out.println(ps);
+			rs = ps.executeQuery();
+			while (rs.next())
+				list.add(init(rs, null));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
+		return list;
 	}
 }

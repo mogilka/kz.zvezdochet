@@ -1,5 +1,7 @@
 package kz.zvezdochet.part;
 
+import java.util.Date;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -14,6 +16,7 @@ import kz.zvezdochet.core.ui.view.ModelLabelProvider;
 import kz.zvezdochet.core.ui.view.ModelListView;
 import kz.zvezdochet.core.ui.view.View;
 import kz.zvezdochet.core.util.DateUtil;
+import kz.zvezdochet.service.AspectService;
 import kz.zvezdochet.service.EventService;
 import kz.zvezdochet.service.HouseService;
 import kz.zvezdochet.service.PlanetService;
@@ -25,11 +28,14 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.nebula.widgets.cdatetime.CDT;
+import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -92,7 +98,7 @@ public class SearchPart extends ModelListView {
 		tab.name = "по имени";
 		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet.core", "icons/correction_linked_rename.gif").createImage();
 		final Text txSearch = new Text(folder, SWT.BORDER);
-		txSearch.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		txSearch.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		txSearch.setFocus();
 		txSearch.addListener(SWT.DefaultSelection, new Listener() {
 			@Override
@@ -227,7 +233,7 @@ public class SearchPart extends ModelListView {
 		try {
 			cvAspect.setContentProvider(new ArrayContentProvider());
 			cvAspect.setLabelProvider(new DictionaryLabelProvider());
-			cvAspect.setInput(new HouseService().getList());
+			cvAspect.setInput(new AspectService().getList());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -266,7 +272,7 @@ public class SearchPart extends ModelListView {
 		});
 
 		tab.control = group;
-		GridLayoutFactory.swtDefaults().numColumns(6).applyTo(group);
+		GridLayoutFactory.swtDefaults().numColumns(7).applyTo(group);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(group);
 		tabs[3] = tab;
 
@@ -274,9 +280,32 @@ public class SearchPart extends ModelListView {
 		tab.name = "по дате";
 		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/calendar_view_day.png").createImage();
 		group = new Group(folder, SWT.NONE);
-		//TODO интерфейс
+
+		lb = new Label(group, SWT.NONE);
+		lb.setText("Начало");
+		final CDateTime dt = new CDateTime(group, CDT.BORDER | CDT.COMPACT | CDT.DROP_DOWN | CDT.DATE_LONG | CDT.TIME_MEDIUM);
+		dt.setNullText(""); //$NON-NLS-1$
+
+		lb = new Label(group, SWT.NONE);
+		lb.setText("Конец");
+		final CDateTime dt2 = new CDateTime(group, CDT.BORDER | CDT.COMPACT | CDT.DROP_DOWN | CDT.DATE_LONG | CDT.TIME_MEDIUM);
+		dt2.setNullText(""); //$NON-NLS-1$
+
+		bt = new Button(group, SWT.NONE);
+		bt.setText("Искать");
+		bt.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (null == dt.getSelection() || null == dt2.getSelection())
+					return;
+				findByDateRange(dt.getSelection(), dt2.getSelection());
+			}
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+
 		tab.control = group;
-		GridLayoutFactory.swtDefaults().applyTo(group);
+		GridLayoutFactory.swtDefaults().numColumns(5).applyTo(group);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(group);
 		tabs[4] = tab;
 		return tabs;
@@ -297,6 +326,8 @@ public class SearchPart extends ModelListView {
 	@Override
 	protected String[] initTableColumns() {
 		String[] columns = {
+			"Пол",
+			"№",
 			"Имя",
 			"Дата",
 			"Знак Зодиака",
@@ -312,11 +343,22 @@ public class SearchPart extends ModelListView {
 			public String getColumnText(Object element, int columnIndex) {
 				kz.zvezdochet.bean.Event event = (kz.zvezdochet.bean.Event)element;
 				switch (columnIndex) {
-					case 0: return event.getName();
-					case 1: return DateUtil.formatDateTime(event.getBirth());
-					case 2: return event.getSign();
-					case 3: return event.getElement();
-					case 4: return event.getDescription();
+					case 1: return event.getId().toString();
+					case 2: return event.getName();
+					case 3: return DateUtil.formatDateTime(event.getBirth());
+					case 4: return event.getSign();
+					case 5: return event.getElement();
+					case 6: return event.getDescription();
+				}
+				return null;
+			}
+			
+			@Override
+			public Image getColumnImage(Object element, int columnIndex) {
+				kz.zvezdochet.bean.Event event = (kz.zvezdochet.bean.Event)element;
+				switch (columnIndex) {
+					case 0: String file = event.isFemale() ? "female.png" : "male.png";
+						return AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet.core", "icons/" + file).createImage();
 				}
 				return null;
 			}
@@ -363,6 +405,19 @@ public class SearchPart extends ModelListView {
 	private void findByPlanetAspect(Planet planet, Planet planet2, Aspect aspect) {
 		try {
 			setData(new EventService().findByPlanetAspect(planet, planet2, aspect));
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Поиск по периоду
+	 * @param date начальная дата
+	 * @param date2 конечная дата
+	 */
+	private void findByDateRange(Date date, Date date2) {
+		try {
+			setData(new EventService().findByDateRange(date, date2));
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}

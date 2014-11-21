@@ -13,6 +13,7 @@ import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.bean.PositionType;
 import kz.zvezdochet.bean.Sign;
+import kz.zvezdochet.bean.SkyPoint;
 import kz.zvezdochet.bean.SkyPointAspect;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
@@ -49,6 +50,7 @@ public class Configuration {
 	public Configuration(Date date) throws DataAccessException {
   	  	planetList = new PlanetService().getList();
   	  	houseList = new HouseService().getList();
+  	  	aspectList = new ArrayList<SkyPointAspect>();
   	  	this.date = date;
 	}
 
@@ -90,7 +92,8 @@ public class Configuration {
 	  	  	SwissEph sweph = new SwissEph();
 //	  	  	String path = "/home/nataly/workspacercp/kz.zvezdochet.sweph/lib/ephe";
 			String path = PlatformUtil.getPath(Activator.PLUGIN_ID, "/lib/ephe").getPath(); //$NON-NLS-1$
-	  		sweph.swe_set_ephe_path(path); //TODO вынести в конфиги
+			System.out.println(path); // /home/nataly/soft/eclipsercp/../../workspacercp/kz.zvezdochet.sweph/lib/ephe/
+	  		sweph.swe_set_ephe_path(path);
 	  		sweph.swe_set_sid_mode(SweConst.SE_SIDM_DJWHAL_KHUL, 0, 0);
 
 	  		//обрабатываем дату
@@ -350,7 +353,7 @@ public class Configuration {
 		if (isPlanetSigned()) return;
 		for (Model model : planetList) {
 			Planet planet = (Planet)model;
-			Sign sign = AstroUtil.getSkyPointSign(planet.getCoord());
+			Sign sign = SkyPoint.getSign(planet.getCoord());
 			planet.setSign(sign);
 		}
 	}
@@ -366,16 +369,17 @@ public class Configuration {
 	}
 
 	/**
-	 * Расчет аспектов планет.
+	 * Расчёт аспектов планет.
 	 * Параллельно выполняется составление статистики по каждой планете:
 	 * сколько у неё аспектов всех существующих типов
 	 * @throws DataAccessException 
 	 */
 	public void initPlanetAspects() throws DataAccessException {
 		try {
-			if (aspectList != null) return;
+			if (aspectList != null && aspectList.size() > 0) return;
 	  	  	aspectList = new ArrayList<SkyPointAspect>();
 			List<Model> aspects = new AspectService().getList();
+			List<Model> aspectTypes = new AspectTypeService().getList();
 			if (planetList != null) 
 				for (Model model : planetList) {
 					Planet p = (Planet)model;
@@ -383,16 +387,13 @@ public class Configuration {
 					//создаем карту статистики по аспектам планеты
 					Map<String, Integer> aspcountmap = new HashMap<String, Integer>();
 					Map<String, String> aspmap = new HashMap<String, String>();
-					List<Model> aspectTypes = new AspectTypeService().getList();
-					for (Model asptype : aspectTypes) 
+					for (Model asptype : aspectTypes)
 						aspcountmap.put(((AspectType)asptype).getCode(), 0);
 					
 					for (Model model2 : planetList) {
 						Planet p2 = (Planet)model2;
 						if (p.getCode().equals(p2.getCode())) continue;
-						if (((p.getCode().equals("Rakhu")) && (p2.getCode().equals("Kethu"))) ||
-								((p.getCode().equals("Kethu")) && (p2.getCode().equals("Rakhu")))) 
-							continue;
+//						if (p.getNumber() > p2.getNumber()) continue;
 						double res = CalcUtil.getDifference(p.getCoord(), p2.getCoord());
 						for (Model realasp : aspects) {
 							Aspect a = (Aspect)realasp;
@@ -566,7 +567,6 @@ public class Configuration {
 	
 	/**
 	 * Определяем ближайшие планеты к Солнцу
-	 * //TODO проверить что мы используем координаты градусов а не десятые
 	 */
 	private void initSunNeighbours() {
 		Planet sun = (Planet)planetList.get(0);
