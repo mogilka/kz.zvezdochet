@@ -1,5 +1,6 @@
 package kz.zvezdochet.service;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,6 +24,7 @@ import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.ModelService;
 import kz.zvezdochet.core.tool.Connector;
 import kz.zvezdochet.core.util.DateUtil;
+import kz.zvezdochet.core.util.Translit;
 import kz.zvezdochet.util.Configuration;
 
 /**
@@ -38,7 +40,7 @@ public class EventService extends ModelService {
 	/**
 	 * Поиск события по наименованию
 	 * @param text поисковое выражение
-	 * @param human -1|0|1 все|события|люди
+	 * @param human -1|0|1|2 все|события|живые существа|персонажи
 	 * @return список событий
 	 * @throws DataAccessException
 	 */
@@ -84,8 +86,6 @@ public class EventService extends ModelService {
 					"gender = ?, " +
 					"placeid = ?, " +
 					"zone = ?, " +
-					"sign = ?, " +
-					"element = ?, " +
 					"celebrity = ?, " +
 					"comment = ?, " +
 					"rectification = ?, " +
@@ -96,7 +96,9 @@ public class EventService extends ModelService {
 					"human = ?," +
 					"accuracy = ?, " +
 					"userid = ?," +
-					"calculated = ? " +
+					"calculated = ?, " +
+					"fancy = ?, " +
+					"dst = ? " +
 					"where id = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setString(1, event.getName());
@@ -106,21 +108,21 @@ public class EventService extends ModelService {
 			else
 				ps.setLong(3, java.sql.Types.NULL);
 			ps.setDouble(4, event.getZone());
-			ps.setString(5, event.getSign());
-			ps.setString(6, event.getElement());
-			ps.setBoolean(7, event.isCelebrity());
-			ps.setString(8, event.getDescription());
-			ps.setInt(9, event.getRectification());
-			ps.setBoolean(10, event.isRightHanded());
+			ps.setBoolean(5, event.isCelebrity());
+			ps.setString(6, event.getDescription());
+			ps.setInt(7, event.getRectification());
+			ps.setBoolean(8, event.isRightHanded());
 			String birth = DateUtil.formatCustomDateTime(event.getBirth(), "yyyy-MM-dd HH:mm:ss");
-			ps.setString(11, birth);
-			ps.setString(12, event.getDeath() != null ? DateUtil.formatCustomDateTime(event.getDeath(), "yyyy-MM-dd HH:mm:ss") : null);
-			ps.setString(13, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
-			ps.setInt(14, event.isHuman() ? 1 : 0);
-			ps.setString(15, event.getAccuracy());
-			ps.setLong(16, 0);
-			ps.setInt(17, 1);
-			if (model.getId() != null) 
+			ps.setString(9, birth);
+			ps.setString(10, event.getDeath() != null ? DateUtil.formatCustomDateTime(event.getDeath(), "yyyy-MM-dd HH:mm:ss") : null);
+			ps.setString(11, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
+			ps.setInt(12, event.getHuman());
+			ps.setString(13, event.getAccuracy());
+			ps.setLong(14, 0);
+			ps.setInt(15, 1);
+			ps.setString(16, Translit.convert(event.getName(), true));
+			ps.setDouble(17, event.getDst());
+			if (model.getId() != null)
 				ps.setLong(18, model.getId());
 			System.out.println(ps);
 
@@ -260,19 +262,15 @@ public class EventService extends ModelService {
 			event.setDescription(rs.getString("Comment"));
 		s = rs.getString("Gender");
 		event.setFemale(s.equals("1") ? true : false);
-		if (rs.getString("Sign") != null)
-			event.setSign(rs.getString("Sign"));
-		if (rs.getString("Element") != null)
-			event.setElement(rs.getString("Element"));
 		if (rs.getString("Placeid") != null)
 			event.setPlaceid(rs.getLong("Placeid"));
 		if (rs.getString("Zone") != null)
 			event.setZone(rs.getDouble("Zone"));
-		s = rs.getString("human");
-		event.setHuman(s != null && s.equals("1") ? true : false);
+		event.setHuman(rs.getInt("human"));
 		if (rs.getString("accuracy") != null)
 			event.setAccuracy(rs.getString("accuracy"));
 		event.setUserid(rs.getLong("userid"));
+		event.setDate(DateUtil.getDatabaseDateTime(rs.getString("date")));
 		return event;
 	}
 
@@ -762,29 +760,19 @@ order by year(initialdate)
 	}
 
 	/**
-	 * Поиск событий по аспектам планет
-	 * @param planets массив планет
-	 * @param planets2 массив планет
-	 * @param aspects массив астрологических аспектов
+	 * Поиск события по знаку планеты
+	 * @param planet планета
+	 * @param planet2 планета
+	 * @param aspect астрологический аспект
 	 * @return список событий
 	 * @throws DataAccessException
+	 * @todo для аспектов тоже сделать отдельную таблицу
 	 */
-	public List<Model> findByPlanetAspect(List<Planet> planets, List<Planet> planets2, List<Aspect> aspects) throws DataAccessException {
-		int count = planets.size();
-		if (0 == count) return null;
+	public List<Model> findByPlanetAspect(Planet planet, Planet planet2, Aspect aspect) throws DataAccessException {
         List<Model> list = new ArrayList<Model>();
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
-			String where = "";
-			for (int i = 0; i < count; i++) {
-				if (i > 0)
-					where += " and ";
-				where += "(planetid = " + planets.get(i).getId() +
-					" and planet2id = " + planets2.get(i).getId() +
-					" and aspectid = " + aspects.get(i).getId() + ")";
-			}
-			
 			String sql = "select e.* from " + tableName + " e" + 
 				" inner join " + getAspectTable() + " ep on e.id = ep.eventid" +
 				" where planetid = ?" + 
@@ -809,12 +797,6 @@ order by year(initialdate)
 				e.printStackTrace(); 
 			}
 		}
-/*
-SELECT * FROM events e
-inner join eventaspects ep on e.id = ep.eventid
-where (planetid = 19 and planet2id = 20 and aspectid = 1)
-or (planetid = 20 and planet2id = 23 and aspectid = 1)
- */
 		return list;
 	}
 
@@ -997,5 +979,125 @@ or (planetid = 20 and planet2id = 23 and aspectid = 1)
 			}
 		}
 		return list;
+	}
+
+	/**
+	 * Поиск недавно изменённых событий
+	 * @return список событий
+	 * @throws DataAccessException
+	 */
+	public List<Model> findRecent() throws DataAccessException {
+        List<Model> list = new ArrayList<Model>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String sql = "select * from " + tableName + " order by date desc limit 30";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			rs = ps.executeQuery();
+			while (rs.next())
+				list.add(init(rs, null));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * Поиск события по фрагменту биографии
+	 * @param text поисковое выражение
+	 * @return список событий
+	 * @throws DataAccessException
+	 */
+	public List<Model> findByText(String text) throws DataAccessException {
+        List<Model> list = new ArrayList<Model>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String sql = "select e.* from " + getBlobTable() + " b" +
+				" inner join " + tableName + " e on e.id = b.eventid" +
+				" where biography like ? " +
+				" order by initialdate";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setString(1, "%" + text + "%");
+			rs = ps.executeQuery();
+			while (rs.next())
+				list.add(init(rs, null));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * Поиск противоположных по характеру людей
+	 * @param event человек
+	 * @param celebrity true - поиск только знаменитостей
+	 * @return список людей
+	 * @throws DataAccessException
+	 */
+	public List<Model> findNonSimilar(Event event, int celebrity) throws DataAccessException {
+        List<Model> list = new ArrayList<Model>();
+		if (null == event.getConfiguration()) return list;
+		Configuration conf = event.getConfiguration();
+		conf.initPlanetSigns();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String sql = "select distinct e.* from " + getPlanetSignTable() + " es" + 
+					" inner join " + tableName + " e on es.eventid = e.id" +
+				" where sun = any(?) and mercury = any(?) and venus = any(?) and mars = any(?)" +
+					" and e.id <> ?";
+			if (celebrity >= 0)
+				sql += " and e.celebrity = " + celebrity;
+			sql += " order by year(initialdate)";
+
+			Connection conn = Connector.getInstance().getConnection();
+			ps = conn.prepareStatement(sql);
+			Object[] ids = Sign.getOpposite(((Planet)conf.getPlanets().get(0)).getSign().getId().intValue());
+			ps.setArray(1, conn.createArrayOf("text", ids));
+			ids = Sign.getOpposite(((Planet)conf.getPlanets().get(4)).getSign().getId().intValue());
+			ps.setArray(2, conn.createArrayOf("text", ids));
+			ids = Sign.getOpposite(((Planet)conf.getPlanets().get(5)).getSign().getId().intValue());
+			ps.setArray(3, conn.createArrayOf("text", ids));
+			ids = Sign.getOpposite(((Planet)conf.getPlanets().get(6)).getSign().getId().intValue());
+			ps.setArray(4, conn.createArrayOf("text", ids));
+			ps.setLong(5, event.getId());
+			System.out.println(ps);
+			rs = ps.executeQuery();
+			while (rs.next())
+				list.add(init(rs, null));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
+		return list;
+/*
+select distinct e.* from eventsigns es 
+inner join events e on es.eventid = e.id 
+where sun = 5 and mercury = 6 and venus = 6 and mars = 3
+and e.id <> 31
+and e.celebrity = 1 
+order by year(initialdate)
+ */
 	}
 }
