@@ -110,4 +110,28 @@ public class Sign extends SkyPoint {
 	public void setHorizontalalHalfSphereId(long horizontalalHalfSphereId) {
 		this.horizontalalHalfSphereId = horizontalalHalfSphereId;
 	}
+
+	/**
+	 * Поиск противоположного знака Зодиака
+	 * @param id идентификатор знака Зодиака
+	 * @return массив идентификаторов противоположных знаков Зодиака
+	 */
+	public static int[] getOpposite(int id) {
+		switch (id) {
+			case 1: return new int[] {8};
+			case 3: return new int[] {9,10};
+			case 4: return new int[] {11};
+			case 5: return new int[] {12};
+			case 6: return new int[] {13};
+			case 7: return new int[] {14};
+			case 8: return new int[] {1};
+			case 9: return new int[] {3};
+			case 10: return new int[] {3};
+			case 11: return new int[] {4};
+			case 12: return new int[] {5};
+			case 13: return new int[] {6};
+			case 14: return new int[] {7};
+		}
+		return null;
+	}
 }

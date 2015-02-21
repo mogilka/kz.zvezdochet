@@ -1,6 +1,5 @@
 package kz.zvezdochet.service;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import kz.zvezdochet.bean.Aspect;
 import kz.zvezdochet.bean.AspectType;
@@ -114,7 +114,7 @@ public class EventService extends ModelService {
 			ps.setBoolean(8, event.isRightHanded());
 			String birth = DateUtil.formatCustomDateTime(event.getBirth(), "yyyy-MM-dd HH:mm:ss");
 			ps.setString(9, birth);
-			ps.setString(10, event.getDeath() != null ? DateUtil.formatCustomDateTime(event.getDeath(), "yyyy-MM-dd HH:mm:ss") : null);
+			ps.setDate(10, event.getDeath() != null ? new java.sql.Date(event.getDeath().getTime()) : null);
 			ps.setString(11, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
 			ps.setInt(12, event.getHuman());
 			ps.setString(13, event.getAccuracy());
@@ -250,8 +250,9 @@ public class EventService extends ModelService {
 		if (rs.getString("name") != null)
 			event.setName(rs.getString("name"));
 		event.setBirth(DateUtil.getDatabaseDateTime(rs.getString("initialdate")));
-		if (rs.getString("finaldate") != null) 
-			event.setDeath(DateUtil.getDatabaseDateTime(rs.getString("finaldate")));
+		java.sql.Date finaldate = rs.getDate("finaldate");
+		if (finaldate != null) 
+			event.setDeath(rs.getTimestamp("finaldate"));
 		String s = rs.getString("RightHanded");
 		event.setRightHanded(s.equals("1") ? true : false);
 		if (rs.getString("Rectification") != null) 
@@ -991,7 +992,7 @@ order by year(initialdate)
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
-			String sql = "select * from " + tableName + " order by date desc limit 30";
+			String sql = "select * from " + tableName + " order by date desc limit 300";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			rs = ps.executeQuery();
 			while (rs.next())
@@ -1059,24 +1060,41 @@ order by year(initialdate)
 		try {
 			String sql = "select distinct e.* from " + getPlanetSignTable() + " es" + 
 					" inner join " + tableName + " e on es.eventid = e.id" +
-				" where sun = any(?) and mercury = any(?) and venus = any(?) and mars = any(?)" +
-					" and e.id <> ?";
+				" where";
+
+			Map<String, int[]> map = new HashMap<String, int[]>();
+			map.put("sun", Sign.getOpposite(((Planet)conf.getPlanets().get(0)).getSign().getId().intValue()));
+			map.put("mercury", Sign.getOpposite(((Planet)conf.getPlanets().get(4)).getSign().getId().intValue()));
+			map.put("venus", Sign.getOpposite(((Planet)conf.getPlanets().get(5)).getSign().getId().intValue()));
+			map.put("mars", Sign.getOpposite(((Planet)conf.getPlanets().get(6)).getSign().getId().intValue()));
+
+			int j = -1;
+			for (Entry<String, int[]> entry : map.entrySet()) {
+				if (++j > 0)
+					sql += " and";
+				sql += " " + entry.getKey() + " ";
+
+				int ids[] = entry.getValue();
+				if (1 == ids.length)
+					sql += "=" + ids[0];
+				else {
+					sql += "in(";
+					int k = -1;
+					for (int i : ids) {
+						if (++k > 0)
+							sql += ",";
+						sql += i;
+					}
+					sql += ")";
+				}
+			}
+			sql += " and e.id <> " + event.getId();
 			if (celebrity >= 0)
 				sql += " and e.celebrity = " + celebrity;
 			sql += " order by year(initialdate)";
+			System.out.println(sql);
 
-			Connection conn = Connector.getInstance().getConnection();
-			ps = conn.prepareStatement(sql);
-			Object[] ids = Sign.getOpposite(((Planet)conf.getPlanets().get(0)).getSign().getId().intValue());
-			ps.setArray(1, conn.createArrayOf("text", ids));
-			ids = Sign.getOpposite(((Planet)conf.getPlanets().get(4)).getSign().getId().intValue());
-			ps.setArray(2, conn.createArrayOf("text", ids));
-			ids = Sign.getOpposite(((Planet)conf.getPlanets().get(5)).getSign().getId().intValue());
-			ps.setArray(3, conn.createArrayOf("text", ids));
-			ids = Sign.getOpposite(((Planet)conf.getPlanets().get(6)).getSign().getId().intValue());
-			ps.setArray(4, conn.createArrayOf("text", ids));
-			ps.setLong(5, event.getId());
-			System.out.println(ps);
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			rs = ps.executeQuery();
 			while (rs.next())
 				list.add(init(rs, null));

@@ -16,12 +16,12 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 
 /**
- * Поиск людей, похожих по характеру
- * (совпадение знаков Солнца, Меркурия, Венеры, Марса)
+ * Поиск людей, противоположных по характеру
+ * (нахождение Солнца, Меркурия, Венеры, Марса в противоположных знаках Зодиака)
  * @author Nataly Didenko
  *
  */
-public class SimilarHandler extends Handler {
+public class NonSimilarHandler extends Handler {
 	@Inject
 	private EPartService partService;
 
@@ -32,7 +32,7 @@ public class SimilarHandler extends Handler {
 			Event event = (Event)eventPart.getModel(EventPart.MODE_CALC, true);
 			if (null == event || null == event.getConfiguration()) return;
 			updateStatus("Поиск", false);
-			Object data = new EventService().findSimilar(event, -1);
+			Object data = new EventService().findNonSimilar(event, -1);
 		
 			MPart part = partService.findPart("kz.zvezdochet.part.events");
 		    part.setVisible(true);
