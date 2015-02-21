@@ -86,6 +86,7 @@ public class EventPart extends ModelPart implements ICalculable {
 	private Text txLatitude;
 	private Text txLongitude;
 	private Text txZone;
+	private ComboViewer cvDST;
 	private Text txGreenwich;
 	private Text txComment;
 	private Text txDescription;
@@ -93,7 +94,7 @@ public class EventPart extends ModelPart implements ICalculable {
 	private CDateTime dtBirth; 
 	private CDateTime dtDeath; 
 	private Button btCelebrity;
-	private Button btHuman;
+	private ComboViewer cvHuman;
 	private Text txAccuracy;
 	private Text txLog;
 
@@ -132,9 +133,8 @@ public class EventPart extends ModelPart implements ICalculable {
 		dtDeath.setNullText(""); //$NON-NLS-1$
 		
 		lb = new Label(secEvent, SWT.NONE);
-		lb.setText("Живое существо");
-		btHuman = new Button(secEvent, SWT.BORDER | SWT.CHECK);
-		btHuman.setSelection(true);
+		lb.setText("Тип");
+		cvHuman = new ComboViewer(secEvent, SWT.BORDER | SWT.READ_ONLY);
 
 		lb = new Label(secEvent, SWT.CENTER);
 		lb.setText(Messages.getString("PersonView.Rectification")); //$NON-NLS-1$
@@ -170,6 +170,10 @@ public class EventPart extends ModelPart implements ICalculable {
 		lb = new Label(secPlace, SWT.NONE);
 		lb.setText(Messages.getString("PersonView.Zone")); //$NON-NLS-1$
 		txZone = new Text(secPlace, SWT.BORDER);
+
+		lb = new Label(secPlace, SWT.NONE);
+		lb.setText("DST"); //$NON-NLS-1$
+		cvDST = new ComboViewer(secPlace, SWT.BORDER | SWT.READ_ONLY);
 
 		GridLayoutFactory.swtDefaults().numColumns(4).applyTo(secPlace);
 		GridDataFactory.fillDefaults().span(4, 1).grab(true, false).applyTo(secPlace);
@@ -347,11 +351,12 @@ public class EventPart extends ModelPart implements ICalculable {
 	 * @throws DataAccessException 
 	 */
 	private void setDefaultEvent() throws DataAccessException {
-		model = new Event();
-		((Event)model).setZone(6.0); //TODO задавать через конфиг
+		Event event = new Event();
+		event.setHuman(1);
+		event.setZone(6.0); //TODO задавать через конфиг
 		Place place = (Place)new PlaceService().find(115L); //TODO задавать через конфиг
-		((Event)model).setPlace(place);
-		setModel(model, true);
+		event.setPlace(place);
+		setModel(event, true);
 	}
 
 	@Override
@@ -370,7 +375,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			span(3, 1).grab(true, false).applyTo(dtDeath);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
-			grab(true, false).applyTo(btHuman);
+			grab(true, false).applyTo(cvHuman.getCombo());
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			grab(true, false).applyTo(cvRectification.getCombo());
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
@@ -386,6 +391,8 @@ public class EventPart extends ModelPart implements ICalculable {
 			grab(true, false).applyTo(txZone);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			grab(true, false).applyTo(txGreenwich);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
+			grab(true, false).applyTo(cvDST.getCombo());
 
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).
 			grab(true, true).applyTo(txDescription);
@@ -449,6 +456,10 @@ public class EventPart extends ModelPart implements ICalculable {
 		Messages.getString("PersonView.Success"),
 		Messages.getString("PersonView.Fault"),
 		Messages.getString("PersonView.Undefined")};
+	private String[] humans = {"Событие",
+		"Живое существо",
+		"Персонаж"};
+	private String[] dst = {"+0", "+1", "+2", "+3"};
 
 	@Override
 	protected void initControls() {
@@ -457,9 +468,15 @@ public class EventPart extends ModelPart implements ICalculable {
 
 		cvHand.setContentProvider(new ArrayContentProvider());
 		cvHand.setInput(hands);
-		
+
+		cvHuman.setContentProvider(new ArrayContentProvider());
+		cvHuman.setInput(humans);
+
 		cvRectification.setContentProvider(new ArrayContentProvider());
 		cvRectification.setInput(calcs);
+
+		cvDST.setContentProvider(new ArrayContentProvider());
+		cvDST.setInput(dst);
 		setPlaces();
 	}
 
@@ -516,7 +533,8 @@ public class EventPart extends ModelPart implements ICalculable {
 		event.setBirth(dtBirth.getSelection());
 		double zone = (txZone.getText() != null && txZone.getText().length() > 0) ? Double.parseDouble(txZone.getText()) : 0;
 		event.setZone(zone);
-		event.setHuman(btHuman.getSelection());
+		event.setDst(cvDST.getCombo().getSelectionIndex());
+		event.setHuman(cvHuman.getCombo().getSelectionIndex());
 	}
 	
 	@Override
@@ -542,7 +560,8 @@ public class EventPart extends ModelPart implements ICalculable {
 		if (event.getPlace() != null)
 			initPlace(event.getPlace());
 		txZone.setText(CalcUtil.formatNumber("###.##", event.getZone()));
-		btHuman.setSelection(event.isHuman());
+		cvDST.getCombo().setText(dst[(int)event.getDst()]);
+		cvHuman.getCombo().setText(humans[event.getHuman()]);
 		if (event.getAccuracy() != null)
 			txAccuracy.setText(event.getAccuracy());
 		if (event.getConversation() != null)
@@ -556,6 +575,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		txLatitude.setText(""); //$NON-NLS-1$
 		txLongitude.setText(""); //$NON-NLS-1$
 		txZone.setText(""); //$NON-NLS-1$
+		cvDST.setSelection(null);
 		txGreenwich.setText(""); //$NON-NLS-1$
 		txDescription.setText(""); //$NON-NLS-1$
 		txComment.setText(""); //$NON-NLS-1$
@@ -565,7 +585,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		cvHand.setSelection(null);
 		cvRectification.setSelection(null);
 		btCelebrity.setSelection(false);
-		btHuman.setSelection(false);
+		cvHuman.getCombo().setText(humans[1]);
 		txAccuracy.setText(""); //$NON-NLS-1$
 		txLog.setText(""); //$NON-NLS-1$
 	}

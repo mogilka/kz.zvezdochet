@@ -1,9 +1,5 @@
 package kz.zvezdochet.part;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -42,9 +38,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -58,9 +52,6 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
  */
 public class SearchPart extends ModelListView {
 	private CTabFolder folder;
-	private List<Model> planetlist;
-	private List<Model> aspectlist;
-	private List<Model> houselist;
 	
 	@Inject
 	public SearchPart() {}
@@ -101,7 +92,7 @@ public class SearchPart extends ModelListView {
 	 * @return массив вкладок
 	 */
 	private Tab[] initTabs() {
-		Tab[] tabs = new Tab[5];
+		Tab[] tabs = new Tab[7];
 		Tab tab = new Tab();
 		tab.name = "по имени";
 		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet.core", "icons/correction_linked_rename.gif").createImage();
@@ -113,11 +104,17 @@ public class SearchPart extends ModelListView {
 			public void handleEvent(Event event) {
 				String text = txSearch.getText();
 				if (text.length() > 1)
-					findByName(text);
+					try {
+						setData(new EventService().findByName(text, -1));
+					} catch (DataAccessException e) {
+						e.printStackTrace();
+					}			
 			}
 		});
 		tab.control = txSearch;
 		tabs[0] = tab;
+		
+		///////////////////////////////////////////////////////////
 		
 		tab = new Tab();
 		tab.name = "по знакам Зодиака";
@@ -158,7 +155,11 @@ public class SearchPart extends ModelListView {
 				Planet planet = ((Planet)selection.getFirstElement());
 				selection = (IStructuredSelection)cvSign.getSelection();
 				Sign sign = ((Sign)selection.getFirstElement());
-				findByPlanetSign(planet, sign);
+				try {
+					setData(new EventService().findByPlanetSign(planet, sign));
+				} catch (DataAccessException e1) {
+					e1.printStackTrace();
+				}
 			}
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
@@ -210,72 +211,93 @@ public class SearchPart extends ModelListView {
 				Planet planet = ((Planet)selection.getFirstElement());
 				selection = (IStructuredSelection)cvHouse.getSelection();
 				House house = ((House)selection.getFirstElement());
-				findByPlanetSign(planet, house);
+				try {
+					setData(new EventService().findByPlanetHouse(planet, house));
+				} catch (DataAccessException e1) {
+					e1.printStackTrace();
+				}
 			}
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 
-		//////////////////////////////////////////////////////////
-		
 		tab.control = group;
 		GridLayoutFactory.swtDefaults().numColumns(5).applyTo(group);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(group);
 		tabs[2] = tab;
+		
+		////////////////////////////////////////////////////////////////
 
 		tab = new Tab();
 		tab.name = "по аспектам";
 		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect.gif").createImage();
-		final Group groupAspect = new Group(folder, SWT.NONE);
+		group = new Group(folder, SWT.NONE);
 
-		bt = new Button(groupAspect, SWT.NONE);
-		bt.setText("+");
-		bt.addSelectionListener(new SelectionListener() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				addAspectSearch(groupAspect);
-			}
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {}
-		});
+		lb = new Label(group, SWT.NONE);
+		lb.setText("Планета");
+		final ComboViewer cvPlaneta = new ComboViewer(group, SWT.BORDER | SWT.READ_ONLY);
+		try {
+			cvPlaneta.setContentProvider(new ArrayContentProvider());
+			cvPlaneta.setLabelProvider(new DictionaryLabelProvider());
+			cvPlaneta.setInput(new PlanetService().getList());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-		bt = new Button(groupAspect, SWT.NONE);
+		lb = new Label(group, SWT.NONE);
+		lb.setText("Астрологический аспект");
+		final ComboViewer cvAspect = new ComboViewer(group, SWT.BORDER | SWT.READ_ONLY);
+		try {
+			cvAspect.setContentProvider(new ArrayContentProvider());
+			cvAspect.setLabelProvider(new DictionaryLabelProvider());
+			cvAspect.setInput(new AspectService().getList());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		lb = new Label(group, SWT.NONE);
+		lb.setText("Планета");
+		final ComboViewer cvPlaneta2 = new ComboViewer(group, SWT.BORDER | SWT.READ_ONLY);
+		try {
+			cvPlaneta2.setContentProvider(new ArrayContentProvider());
+			cvPlaneta2.setLabelProvider(new DictionaryLabelProvider());
+			cvPlaneta2.setInput(new PlanetService().getList());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		bt = new Button(group, SWT.NONE);
 		bt.setText("Искать");
 		bt.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				List<Planet> planets = new ArrayList<Planet>();
-				List<Aspect> aspects = new ArrayList<Aspect>();
-				List<Planet> planets2 = new ArrayList<Planet>();
-				for (Control cont : groupAspect.getChildren()) {
-					if (cont instanceof Group) {
-						for (Control control : ((Group)cont).getChildren()) {
-							if (control instanceof Combo) {
-								int index = ((Combo)control).getSelectionIndex();
-								Object code = control.getData("code");
-								if (code.equals("aspectPlanet1") && index > -1)
-									planets.add((Planet)planetlist.get(index));
-								else if (code.equals("aspectPlanet2") && index > -1)
-									planets2.add((Planet)planetlist.get(index));
-								else if (code.equals("planetAspect") && index > -1)
-									aspects.add((Aspect)aspectlist.get(index));
-							}
-						}
-					}
+				if ((cvPlaneta.getSelection().isEmpty()
+						|| cvAspect.getSelection().isEmpty()
+						|| cvPlaneta2.getSelection().isEmpty())
+							|| cvPlaneta.getSelection().equals(cvPlaneta2.getSelection()))
+					return;
+				IStructuredSelection selection = (IStructuredSelection)cvPlaneta.getSelection();
+				Planet planet = ((Planet)selection.getFirstElement());
+				selection = (IStructuredSelection)cvAspect.getSelection();
+				Aspect aspect = ((Aspect)selection.getFirstElement());
+				selection = (IStructuredSelection)cvPlaneta2.getSelection();
+				Planet planet2 = ((Planet)selection.getFirstElement());
+				try {
+					setData(new EventService().findByPlanetAspect(planet, planet2, aspect));
+				} catch (DataAccessException e1) {
+					e1.printStackTrace();
 				}
-				if (planets.size() == planets2.size() && planets.size() == aspects.size())
-					findByPlanetAspect(planets, planets2, aspects);
 			}
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
 		});
 
-		tab.control = groupAspect;
-		GridLayoutFactory.swtDefaults().numColumns(1).applyTo(groupAspect);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(groupAspect);
+		tab.control = group;
+		GridLayoutFactory.swtDefaults().numColumns(7).applyTo(group);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(group);
 		tabs[3] = tab;
 		
-		////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
 		tab = new Tab();
 		tab.name = "по дате";
@@ -299,7 +321,11 @@ public class SearchPart extends ModelListView {
 			public void widgetSelected(SelectionEvent e) {
 				if (null == dt.getSelection() || null == dt2.getSelection())
 					return;
-				findByDateRange(dt.getSelection(), dt2.getSelection());
+				try {
+					setData(new EventService().findByDateRange(dt.getSelection(), dt2.getSelection()));
+				} catch (DataAccessException e1) {
+					e1.printStackTrace();
+				}
 			}
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {}
@@ -309,19 +335,55 @@ public class SearchPart extends ModelListView {
 		GridLayoutFactory.swtDefaults().numColumns(5).applyTo(group);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(group);
 		tabs[4] = tab;
-		return tabs;
-	}
+		
+		/////////////////////////////////////////////////////////////////////
+		
+		tab = new Tab();
+		tab.name = "по номеру";
+		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/keycolumn.gif").createImage();
+		final Text txNumber = new Text(folder, SWT.BORDER);
+		txNumber.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		txNumber.addListener(SWT.DefaultSelection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				String text = txNumber.getText();
+				if (text.length() > 1)
+					try {
+						Model model = new EventService().find(Long.valueOf(text));
+						if (model != null)
+							setData(new Model[] {model});
+					} catch (DataAccessException e) {
+						e.printStackTrace();
+					}
+			}
+		});
+		tab.control = txNumber;
+		tabs[5] = tab;
 
-	/**
-	 * Поиск по имени
-	 * @param text поисковое выражение
-	 */
-	private void findByName(String text) {
-		try {
-			setData(new EventService().findByName(text, -1));
-		} catch (DataAccessException e) {
-			e.printStackTrace();
-		}
+		/////////////////////////////////////////////////////////////////////
+
+		tab = new Tab();
+		tab.name = "по биографии";
+		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/document.gif").createImage();
+		final Text txText = new Text(folder, SWT.BORDER);
+		txText.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		txText.setFocus();
+		txText.addListener(SWT.DefaultSelection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				String text = txText.getText();
+				if (text.length() > 1)
+					try {
+						setData(new EventService().findByText(text));
+					} catch (DataAccessException e) {
+						e.printStackTrace();
+					}			
+			}
+		});
+		tab.control = txText;
+		tabs[6] = tab;
+
+		return tabs;
 	}
 
 	@Override
@@ -331,9 +393,8 @@ public class SearchPart extends ModelListView {
 			"№",
 			"Имя",
 			"Дата",
-			"Знак Зодиака",
-			"Стихия",
-			"Описание" };
+			"Описание",
+			"Дата изменения" };
 		return columns;
 	}
 
@@ -343,14 +404,14 @@ public class SearchPart extends ModelListView {
 			@Override
 			public String getColumnText(Object element, int columnIndex) {
 				kz.zvezdochet.bean.Event event = (kz.zvezdochet.bean.Event)element;
-				switch (columnIndex) {
-					case 1: return event.getId().toString();
-					case 2: return event.getName();
-					case 3: return DateUtil.formatDateTime(event.getBirth());
-					case 4: return event.getSign();
-					case 5: return event.getElement();
-					case 6: return event.getDescription();
-				}
+				if (event != null)
+					switch (columnIndex) {
+						case 1: return event.getId().toString();
+						case 2: return event.getName();
+						case 3: return DateUtil.formatDateTime(event.getBirth());
+						case 4: return event.getDescription();
+						case 5: return DateUtil.formatDateTime(event.getDate());
+					}
 				return null;
 			}
 			
@@ -369,107 +430,5 @@ public class SearchPart extends ModelListView {
 	@Override
 	public boolean check(int mode) throws Exception {
 		return false;
-	}
-
-	/**
-	 * Поиск по знаку Зодиака планеты
-	 * @param planet планета
-	 * @param sign знак Зодиака
-	 */
-	private void findByPlanetSign(Planet planet, Sign sign) {
-		try {
-			setData(new EventService().findByPlanetSign(planet, sign));
-		} catch (DataAccessException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Поиск по астрологическому дому планеты
-	 * @param planet планета
-	 * @param house астрологический дом
-	 */
-	private void findByPlanetSign(Planet planet, House house) {
-		try {
-			setData(new EventService().findByPlanetHouse(planet, house));
-		} catch (DataAccessException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Поиск по аспектам планет
-	 * @param planets массив планет
-	 * @param planets2 массив планет
-	 * @param aspects массив астрологических аспектов
-	 */
-	private void findByPlanetAspect(List<Planet> planets, List<Planet> planets2, List<Aspect> aspects) {
-		try {
-			setData(new EventService().findByPlanetAspect(planets, planets2, aspects));
-		} catch (DataAccessException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Поиск по периоду
-	 * @param date начальная дата
-	 * @param date2 конечная дата
-	 */
-	private void findByDateRange(Date date, Date date2) {
-		try {
-			setData(new EventService().findByDateRange(date, date2));
-		} catch (DataAccessException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void addAspectSearch(Group container) {
-		try {
-			final Group group = new Group(container, SWT.NONE);
-			GridLayoutFactory.swtDefaults().numColumns(1).applyTo(group);
-			GridDataFactory.fillDefaults().grab(true, true).applyTo(group);
-
-			new Label(group, SWT.NONE).setText("Планета");
-			ComboViewer cvPlaneta = new ComboViewer(group, SWT.BORDER | SWT.READ_ONLY);
-			cvPlaneta.setContentProvider(new ArrayContentProvider());
-			cvPlaneta.setLabelProvider(new DictionaryLabelProvider());
-			cvPlaneta.setInput(planetlist);
-			cvPlaneta.getCombo().setData("code", "aspectPlanet1");
-
-			new Label(group, SWT.NONE).setText("Астрологический аспект");
-			ComboViewer cvAspect = new ComboViewer(group, SWT.BORDER | SWT.READ_ONLY);
-			cvAspect.setContentProvider(new ArrayContentProvider());
-			cvAspect.setLabelProvider(new DictionaryLabelProvider());
-			cvAspect.setInput(new AspectService().getList());
-			cvAspect.getCombo().setData("code", "planetAspect");
-
-			new Label(group, SWT.NONE).setText("Планета");
-			ComboViewer cvPlaneta2 = new ComboViewer(group, SWT.BORDER | SWT.READ_ONLY);
-			cvPlaneta2.setContentProvider(new ArrayContentProvider());
-			cvPlaneta2.setLabelProvider(new DictionaryLabelProvider());
-			cvPlaneta2.setInput(planetlist);
-			cvPlaneta2.getCombo().setData("code", "aspectPlanet2");
-
-			Button bt = new Button(group, SWT.NONE);
-			bt.setText("-");
-			bt.addSelectionListener(new SelectionListener() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					group.dispose();
-				}
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {}
-			});
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	protected void initControls() throws DataAccessException {
-		planetlist = new PlanetService().getList();
-		aspectlist = new AspectService().getList();
-		houselist = new HouseService().getList();
 	}
 }

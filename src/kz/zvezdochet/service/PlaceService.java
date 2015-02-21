@@ -102,7 +102,6 @@ public class PlaceService extends DictionaryService {
 			String sql = "select * from " + tableName + " where name like ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setString(1, "%" + name + "%");
-			System.out.println(ps);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				Place type = init(rs, null);

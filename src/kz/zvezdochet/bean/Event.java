@@ -68,17 +68,13 @@ public class Event extends Model {
 	 */
 	private Place place;
 	/**
-	 * Реальная временная разница с Гринвичем
+	 * Часовой пояс
 	 */
 	private double zone;
 	/**
-	 * Знак Зодиака
+	 * Поправка летнего времени
 	 */
-	private String sign;
-	/**
-	 * Стихия
-	 */
-	private String element;
+	private double dst;
 	/**
 	 * Расчетная конфигурация события
 	 */
@@ -97,10 +93,31 @@ public class Event extends Model {
 	private String accuracy;
 	/**
 	 * Признак живого существа
+	 * 0|1|2 = событие|живое существо|персонаж
 	 */
-	private boolean human = true;
-	
-	public void setHuman(boolean human) {
+	private int human = 0;
+	/**
+	 * Дата изменения
+	 */
+	private Date date;
+	/**
+	 * Имя в транслите для SEO-адаптированных URL
+	 */
+	private String fancy;
+
+	public String getFancy() {
+		return fancy;
+	}
+	public void setFancy(String fancy) {
+		this.fancy = fancy;
+	}
+	public Date getDate() {
+		return date;
+	}
+	public void setDate(Date date) {
+		this.date = date;
+	}
+	public void setHuman(int human) {
 		this.human = human;
 	}
 	public String getDescription() {
@@ -116,18 +133,6 @@ public class Event extends Model {
 
 	public void setText(String text) {
 		this.text = text;
-	}
-	public String getSign() {
-		return sign;
-	}
-	public void setSign(String sign) {
-		this.sign = sign;
-	}
-	public String getElement() {
-		return element;
-	}
-	public void setElement(String element) {
-		this.element = element;
 	}
 	public boolean isFemale() {
 		return female;
@@ -242,7 +247,7 @@ public class Event extends Model {
 		this.placeid = placeid;
 	}
 
-	public boolean isHuman() {
+	public int getHuman() {
 		return human;
 	}
 	public String getAccuracy() {
@@ -292,7 +297,7 @@ public class Event extends Model {
 		try {
 			Configuration configuration = new Configuration(
 				birth,
-				Double.toString(zone),
+				Double.toString(zone + dst),
 				Double.toString(place.getLatitude()),
 				Double.toString(place.getLongitude()));
 			setConfiguration(configuration);		
@@ -311,5 +316,11 @@ public class Event extends Model {
 	}
 	public void setUserid(long userid) {
 		this.userid = userid;
+	}
+	public double getDst() {
+		return dst;
+	}
+	public void setDst(double dst) {
+		this.dst = dst;
 	}
 }

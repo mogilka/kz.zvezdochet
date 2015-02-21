@@ -19,8 +19,8 @@ import org.eclipse.jface.fieldassist.IContentProposalProvider;
 public class EventProposalProvider implements IContentProposalProvider {
 	private int humanFilter = 1;
 
-	public EventProposalProvider(boolean human) {
-		humanFilter = human ? 1 : 0;
+	public EventProposalProvider(int human) {
+		humanFilter = human;
 	}
 
 	@Override
