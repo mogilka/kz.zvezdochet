@@ -1,5 +1,7 @@
 package kz.zvezdochet.bean;
 
+import java.util.Date;
+
 import kz.zvezdochet.core.bean.Dictionary;
 import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.service.PlaceService;
@@ -42,8 +44,18 @@ public class Place extends Dictionary {
 	public void setGreenwich(double greenwich) {
 		this.greenwich = greenwich;
 	}
-	
+	/**
+	 * Дата изменения
+	 */
+	private Date date;
+
 	public DictionaryService getService() {
 		return new PlaceService();
+	}
+	public Date getDate() {
+		return date;
+	}
+	public void setDate(Date date) {
+		this.date = date;
 	}
 }

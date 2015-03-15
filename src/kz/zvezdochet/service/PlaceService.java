@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import kz.zvezdochet.bean.Place;
@@ -11,6 +12,7 @@ import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.core.tool.Connector;
+import kz.zvezdochet.core.util.DateUtil;
 
 /**
  * Сервис местностей
@@ -31,7 +33,7 @@ public class PlaceService extends DictionaryService {
 			String sql;
 			if (null == model.getId()) 
 				sql = "insert into " + tableName + 
-					"(latitude, longitude, code, name, description, greenwich) values(?,?,?,?,?,?)";
+					"(latitude, longitude, code, name, description, greenwich) values(?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
 					"latitude = ?, " +
@@ -39,7 +41,8 @@ public class PlaceService extends DictionaryService {
 					"code = ?, " +
 					"name = ?, " +
 					"description = ?, " +
-					"greenwich = ? " +
+					"greenwich = ?, " +
+					"date = ? " +
 					"where id = " + dict.getId();
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setDouble(1, dict.getLatitude());
@@ -48,6 +51,7 @@ public class PlaceService extends DictionaryService {
 			ps.setString(4, dict.getName());
 			ps.setString(5, dict.getDescription());
 			ps.setDouble(6, dict.getGreenwich());
+			ps.setString(7, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
 			result = ps.executeUpdate();
 			if (result == 1) {
 				if (null == model.getId()) { 
@@ -80,6 +84,7 @@ public class PlaceService extends DictionaryService {
 		place.setLatitude(rs.getDouble("Latitude"));
 		place.setLongitude(rs.getDouble("Longitude"));
 		place.setGreenwich(rs.getDouble("Greenwich"));
+		place.setDate(DateUtil.getDatabaseDateTime(rs.getString("date")));
 		return place;
 	}
 
