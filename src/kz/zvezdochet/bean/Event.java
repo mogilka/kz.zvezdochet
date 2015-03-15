@@ -60,13 +60,21 @@ public class Event extends Model {
 	 */
 	private Image image;
 	/**
-	 * Идентификатор места
+	 * Идентификатор места рождения
 	 */
 	private long placeid;
 	/**
-	 * Место
+	 * Идентификатор места смерти
+	 */
+	private long finalplaceid;
+	/**
+	 * Место рождения
 	 */
 	private Place place;
+	/**
+	 * Место смерти
+	 */
+	private Place finalplace;
 	/**
 	 * Часовой пояс
 	 */
@@ -322,5 +330,17 @@ public class Event extends Model {
 	}
 	public void setDst(double dst) {
 		this.dst = dst;
+	}
+	public long getFinalplaceid() {
+		return finalplaceid;
+	}
+	public void setFinalPlaceid(long finalplaceid) {
+		this.finalplaceid = finalplaceid;
+	}
+	public Place getFinalPlace() {
+		return finalplace;
+	}
+	public void setFinalplace(Place finalplace) {
+		this.finalplace = finalplace;
 	}
 }

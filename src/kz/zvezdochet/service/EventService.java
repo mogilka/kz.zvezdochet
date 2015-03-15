@@ -79,7 +79,7 @@ public class EventService extends ModelService {
 		try {
 			String sql;
 			if (null == model.getId()) 
-				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
 					"name = ?, " +
@@ -98,7 +98,8 @@ public class EventService extends ModelService {
 					"userid = ?," +
 					"calculated = ?, " +
 					"fancy = ?, " +
-					"dst = ? " +
+					"dst = ?, " +
+					"finalplaceid = ? " +
 					"where id = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setString(1, event.getName());
@@ -118,12 +119,16 @@ public class EventService extends ModelService {
 			ps.setString(11, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
 			ps.setInt(12, event.getHuman());
 			ps.setString(13, event.getAccuracy());
-			ps.setLong(14, 0);
+			ps.setLong(14, java.sql.Types.NULL);
 			ps.setInt(15, 1);
 			ps.setString(16, Translit.convert(event.getName(), true));
 			ps.setDouble(17, event.getDst());
+			if (event.getFinalPlace() != null && event.getFinalPlace().getId() != null)
+				ps.setLong(18, event.getFinalPlace().getId());
+			else
+				ps.setLong(18, java.sql.Types.NULL);
 			if (model.getId() != null)
-				ps.setLong(18, model.getId());
+				ps.setLong(19, model.getId());
 			System.out.println(ps);
 
 			result = ps.executeUpdate();
@@ -265,6 +270,8 @@ public class EventService extends ModelService {
 		event.setFemale(s.equals("1") ? true : false);
 		if (rs.getString("Placeid") != null)
 			event.setPlaceid(rs.getLong("Placeid"));
+		if (rs.getString("finalplaceid") != null)
+			event.setFinalPlaceid(rs.getLong("finalplaceid"));
 		if (rs.getString("Zone") != null)
 			event.setZone(rs.getDouble("Zone"));
 		event.setHuman(rs.getInt("human"));
