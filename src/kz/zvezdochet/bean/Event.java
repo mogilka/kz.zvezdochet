@@ -103,7 +103,7 @@ public class Event extends Model {
 	 * Признак живого существа
 	 * 0|1|2 = событие|живое существо|персонаж
 	 */
-	private int human = 0;
+	private int human = 1;
 	/**
 	 * Дата изменения
 	 */
@@ -303,12 +303,20 @@ public class Event extends Model {
 	public void calc() {
 		//new Configuration("12.12.2009", "23:11:16", "6.0", "43.15", "76.55");
 		try {
+			Place calcplace;
+			if (null == place) {
+				calcplace = new Place();
+				calcplace.setLatitude(51.48);
+				calcplace.setLongitude(0);
+			} else
+				calcplace = place;
 			Configuration configuration = new Configuration(
 				birth,
 				Double.toString(zone + dst),
-				Double.toString(place.getLatitude()),
-				Double.toString(place.getLongitude()));
-			setConfiguration(configuration);		
+				Double.toString(calcplace.getLatitude()),
+				Double.toString(calcplace.getLongitude()));
+			setConfiguration(configuration);
+			setNeedSaveCalc(true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -342,5 +350,27 @@ public class Event extends Model {
 	}
 	public void setFinalplace(Place finalplace) {
 		this.finalplace = finalplace;
+	}
+
+	/**
+	 * Признак необходимости сохранить расчётные данные в БД
+	 */
+	private boolean needSaveCalc = false;
+	/**
+	 * Признак необходимости сохранить медиа-данные в БД
+	 */
+	private boolean needSaveBlob = false;
+
+	public boolean isNeedSaveCalc() {
+		return needSaveCalc;
+	}
+	public void setNeedSaveCalc(boolean needRecalc) {
+		this.needSaveCalc = needRecalc;
+	}
+	public boolean isNeedSaveBlob() {
+		return needSaveBlob;
+	}
+	public void setNeedSaveBlob(boolean needReblob) {
+		this.needSaveBlob = needReblob;
 	}
 }

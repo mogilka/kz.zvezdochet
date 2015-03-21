@@ -104,10 +104,10 @@ public class EventService extends ModelService {
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setString(1, event.getName());
 			ps.setBoolean(2, event.isFemale());
-			if (event.getPlace() != null && event.getPlace().getId() != null)
+			if (event.getPlace() != null && event.getPlace().getId() > 0)
 				ps.setLong(3, event.getPlace().getId());
 			else
-				ps.setLong(3, java.sql.Types.NULL);
+				ps.setNull(3, java.sql.Types.NULL);
 			ps.setDouble(4, event.getZone());
 			ps.setBoolean(5, event.isCelebrity());
 			ps.setString(6, event.getDescription());
@@ -119,14 +119,14 @@ public class EventService extends ModelService {
 			ps.setString(11, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
 			ps.setInt(12, event.getHuman());
 			ps.setString(13, event.getAccuracy());
-			ps.setLong(14, java.sql.Types.NULL);
+			ps.setNull(14, java.sql.Types.NULL);
 			ps.setInt(15, 1);
 			ps.setString(16, Translit.convert(event.getName(), true));
 			ps.setDouble(17, event.getDst());
-			if (event.getFinalPlace() != null && event.getFinalPlace().getId() != null)
+			if (event.getFinalPlace() != null && event.getFinalPlace().getId() > 0)
 				ps.setLong(18, event.getFinalPlace().getId());
 			else
-				ps.setLong(18, java.sql.Types.NULL);
+				ps.setNull(18, java.sql.Types.NULL);
 			if (model.getId() != null)
 				ps.setLong(19, model.getId());
 			System.out.println(ps);
@@ -145,14 +145,17 @@ public class EventService extends ModelService {
 						rsid.close();
 				}
 			}
-			savePlanets(event);
-			saveAspects(event);
-			savePlanetSigns(event);
-			saveBlob(event);
-			if (!birth.contains("00:00:00")) {
-				saveHouses(event);
-				savePlanetHouses(event);
+			if (event.isNeedSaveCalc()) {
+				savePlanets(event);
+				saveAspects(event);
+				savePlanetSigns(event);
+				if (!birth.contains("00:00:00")) {
+					saveHouses(event);
+					savePlanetHouses(event);
+				}
 			}
+			if (event.isNeedSaveBlob())
+				saveBlob(event);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -714,7 +717,7 @@ order by year(initialdate)
 				" where " + planet.getCode() + " = ?" +
 				" order by initialdate";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			ps.setInt(1, sign.getNumber());
+			ps.setLong(1, sign.getId());
 			System.out.println(ps);
 			rs = ps.executeQuery();
 			while (rs.next())

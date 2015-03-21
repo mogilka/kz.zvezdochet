@@ -31,7 +31,6 @@ import kz.zvezdochet.core.util.DateUtil;
 import kz.zvezdochet.provider.PlaceProposalProvider;
 import kz.zvezdochet.provider.PlaceProposalProvider.PlaceContentProposal;
 import kz.zvezdochet.service.AspectTypeService;
-import kz.zvezdochet.service.PlaceService;
 import kz.zvezdochet.util.Configuration;
 
 import org.eclipse.jface.bindings.keys.KeyStroke;
@@ -48,6 +47,8 @@ import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
@@ -232,11 +233,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(grCosmogram);
 		
 		super.create(parent);
-		try {
-			setDefaultEvent();
-		} catch (DataAccessException e) {
-			e.printStackTrace();
-		}
+		setModel(new Event(), true);
 		return null;
 	}
 	
@@ -346,19 +343,6 @@ public class EventPart extends ModelPart implements ICalculable {
 		return tabs;
 	}
 
-	/**
-	 * Инициализация события по умолчанию
-	 * @throws DataAccessException 
-	 */
-	private void setDefaultEvent() throws DataAccessException {
-		Event event = new Event();
-		event.setHuman(1);
-		event.setZone(6.0); //TODO задавать через конфиг
-		Place place = (Place)new PlaceService().find(115L); //TODO задавать через конфиг
-		event.setPlace(place);
-		setModel(event, true);
-	}
-
 	@Override
 	protected void init(Composite parent) {
 		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(parent);
@@ -405,8 +389,17 @@ public class EventPart extends ModelPart implements ICalculable {
 
 		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.FILL).
 			hint(514, 514).span(3, 1).grab(true, false).applyTo(cmpCosmogram);
+		
+		ModifyListener blobListener = new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				((Event)model).setNeedSaveBlob(true);
+			}
+		};
+		txDescription.addModifyListener(blobListener);
+		txDescription.addModifyListener(blobListener);
 
-//		StateChangedListener listener = new StateChangedListener();
+//		StateChangedListener listener = new StateChangedListener(); TODO
 //		dtBirth.addSelectionListener(listener);
 //		dtDeath.addSelectionListener(listener);
 //		cvGender.addSelectionChangedListener(listener);
@@ -523,12 +516,6 @@ public class EventPart extends ModelPart implements ICalculable {
 			event.setCelebrity(btCelebrity.getSelection());
 			event.setAccuracy(txAccuracy.getText());
 			event.setConversation(txLog.getText());
-		}
-		if (null == event.getPlace()) { //TODO использовать модель из базы с айдишником
-			Place place = new Place();
-			place.setLatitude(51.48);
-			place.setLongitude(0);
-			event.setPlace(place);
 		}
 		event.setBirth(dtBirth.getSelection());
 		double zone = (txZone.getText() != null && txZone.getText().length() > 0) ? Double.parseDouble(txZone.getText()) : 0;
