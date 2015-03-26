@@ -715,7 +715,7 @@ public class EventPart extends ModelPart implements ICalculable {
 				setTitle(Messages.getString("PersonView.New")); //$NON-NLS-1$
 			try {
 				if (event.getConfiguration() != null)
-					event.getConfiguration().initPlanetStatistics();
+					event.getConfiguration().initPlanetStatistics(event);
 			} catch (DataAccessException e) {
 				e.printStackTrace();
 			}

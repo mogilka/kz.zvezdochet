@@ -65,14 +65,26 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
 	/**
 	 * Определение знака, в котором находится объект
 	 * @param point координата объекта
+	 * @param year год
 	 * @throws DataAccessException 
 	 */
-	public static Sign getSign(double point) throws DataAccessException {
+	public static Sign getSign(double point, int year) throws DataAccessException {
 		List<Model> signs = new SignService().getList();
 		for (Model model : signs) {
 			Sign sign = (Sign)model;
-			if (point >= sign.getInitialPoint() && point < sign.getCoord()) 
-				return sign;
+			if (year < 1000) {
+				if (point >= sign.getI0() && point < sign.getF0()) 
+					return sign;
+			} else if (year < 2000) {
+				if (point >= sign.getI1000() && point < sign.getF1000()) 
+					return sign;
+			} else if (year < 3000) {
+				if (point >= sign.getI2000() && point < sign.getF2000()) 
+					return sign;
+			} else if (year < 4000) {
+				if (point >= sign.getI3000() && point < sign.getF3000()) 
+					return sign;
+			}
 		}
 		return null;
 	}

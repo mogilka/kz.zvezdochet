@@ -98,7 +98,7 @@ public class Planet extends SkyPoint {
 		return score > 1;
 	}
 
-	public Sign getSign() {
+	public Sign getSign() {  
 		return sign;
 	}
 

@@ -95,7 +95,7 @@ public class Signs1977 {
             //миллисекунды -> секунды -> часы -> сутки
             difference = (((finalDate.getTime() - initialDate.getTime()) 
             					/ 1000) / 3600) / 24;
-    		System.out.print("days = " + difference + "; ");
+    		System.out.print("days = " + difference);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

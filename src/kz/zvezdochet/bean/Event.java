@@ -311,6 +311,7 @@ public class Event extends Model {
 			} else
 				calcplace = place;
 			Configuration configuration = new Configuration(
+				this,
 				birth,
 				Double.toString(zone + dst),
 				Double.toString(calcplace.getLatitude()),
@@ -372,5 +373,15 @@ public class Event extends Model {
 	}
 	public void setNeedSaveBlob(boolean needReblob) {
 		this.needSaveBlob = needReblob;
+	}
+
+	/**
+	 * Возвращает год события
+	 * @return год события
+	 */
+	public int getBirthYear() {
+		Calendar cal = Calendar.getInstance();
+	    cal.setTime(birth);
+		return cal.get(Calendar.YEAR);
 	}
 }

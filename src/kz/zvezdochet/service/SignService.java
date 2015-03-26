@@ -31,7 +31,7 @@ public class SignService extends DictionaryService {
 	        ResultSet rs = null;
 			String sql;
 			try {
-				sql = "select * from " + tableName + " order by finalpoint";
+				sql = "select * from " + tableName + " order by ordinalnumber";
 				ps = Connector.getInstance().getConnection().prepareStatement(sql);
 				rs = ps.executeQuery();
 				while (rs.next()) {
@@ -60,29 +60,56 @@ public class SignService extends DictionaryService {
 		try {
 			String sql;
 			if (null == model.getId()) 
-				sql = "insert into " + tableName + 
-					"(ordinalnumber, color, code, name, description, initialpoint, finalpoint, diagram) " +
-					"values(?,?,?,?,?,?,?,?)";
+				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
-					"ordinalnumber = ?, " +
-					"color = ?, " +
 					"code = ?, " +
 					"name = ?, " +
 					"description = ?, " +
-					"initialpoint = ?, " +
-					"finalpoint = ?, " +
-					"diagram = ? " +
+					"ordinalnumber = ?, " +
+					"i0 = ?, " +
+					"f0 = ?, " +
+					"i1000 = ?, " +
+					"f1000 = ?, " +
+					"i2000 = ?, " +
+					"f2000 = ?, " +
+					"i3000 = ?, " +
+					"f3000 = ?, " +
+					"color = ?, " +
+					"diagram = ?, " +
+					"elementid = ?, " +
+					"yingyangid = ?, " +
+					"crossid = ?, " +
+					"squareid = ?, " +
+					"zoneid = ?, " +
+					"halfspherevid = ?, " +
+					"halfspherehid = ? " +
 					"where id = " + dict.getId();
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			ps.setInt(1, dict.getNumber());
-			ps.setString(2, CoreUtil.colorToRGB(dict.getColor()));
-			ps.setString(3, dict.getCode());
-			ps.setString(4, dict.getName());
-			ps.setString(5, dict.getDescription());
-			ps.setDouble(6, dict.getInitialPoint());
-			ps.setDouble(7, dict.getCoord());
-			ps.setString(8, dict.getDiaName());
+			ps.setString(1, dict.getCode());
+			ps.setString(2, dict.getName());
+			ps.setString(3, dict.getDescription());
+			ps.setInt(4, dict.getNumber());
+			ps.setDouble(5, dict.getI0());
+			ps.setDouble(6, dict.getF0());
+			ps.setDouble(7, dict.getI1000());
+			ps.setDouble(8, dict.getF1000());
+			ps.setDouble(9, dict.getI2000());
+			ps.setDouble(10, dict.getF2000());
+			ps.setDouble(11, dict.getI3000());
+			ps.setDouble(12, dict.getF3000());
+			ps.setString(13, CoreUtil.colorToRGB(dict.getColor()));
+			ps.setString(14, dict.getDiaName());
+			ps.setLong(15, dict.getElementId());
+			ps.setLong(16, dict.getYinyangId());
+			ps.setLong(17, dict.getCrossId());
+			ps.setLong(18, dict.getSquareId());
+			ps.setLong(19, dict.getZoneId());
+			ps.setLong(20, dict.getVerticalHalfSphereId());
+			ps.setLong(21, dict.getHorizontalalHalfSphereId());
+			if (model.getId() != null)
+				ps.setLong(22, model.getId());
+
 			result = ps.executeUpdate();
 			if (result == 1) {
 				if (null == model.getId()) { 
@@ -113,8 +140,14 @@ public class SignService extends DictionaryService {
 	public Sign init(ResultSet rs, Model model) throws DataAccessException, SQLException {
 		Sign sign = (model != null) ? (Sign)model : (Sign)create();
 		super.init(rs, sign);
-		sign.setCoord(rs.getDouble("FinalPoint"));
-		sign.setInitialPoint(rs.getDouble("InitialPoint"));
+		sign.setI0(rs.getDouble("i0"));
+		sign.setF0(rs.getDouble("f0"));
+		sign.setI1000(rs.getDouble("i1000"));
+		sign.setF1000(rs.getDouble("f1000"));
+		sign.setI2000(rs.getDouble("i2000"));
+		sign.setF2000(rs.getDouble("f2000"));
+		sign.setI3000(rs.getDouble("i3000"));
+		sign.setF3000(rs.getDouble("f3000"));
 		sign.setNumber(rs.getInt("OrdinalNumber"));
 		sign.setColor(CoreUtil.rgbToColor(rs.getString("Color")));
 		sign.setDiaName(rs.getString("Diagram"));

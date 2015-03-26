@@ -563,7 +563,7 @@ public class EventService extends ModelService {
 	 */
 	private void savePlanetSigns(Event event) throws DataAccessException {
 		if (null == event.getConfiguration()) return;
-		event.getConfiguration().initPlanetSigns();
+		event.getConfiguration().initPlanetSigns(event);
         PreparedStatement ps = null;
         ResultSet rs = null;
         String table = getPlanetSignTable();
@@ -618,7 +618,7 @@ public class EventService extends ModelService {
         List<Model> list = new ArrayList<Model>();
 		if (null == event.getConfiguration()) return list;
 		Configuration conf = event.getConfiguration();
-		conf.initPlanetSigns();
+		conf.initPlanetSigns(event);
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
@@ -1064,7 +1064,7 @@ order by year(initialdate)
         List<Model> list = new ArrayList<Model>();
 		if (null == event.getConfiguration()) return list;
 		Configuration conf = event.getConfiguration();
-		conf.initPlanetSigns();
+		conf.initPlanetSigns(event);
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
