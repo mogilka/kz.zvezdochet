@@ -9,6 +9,7 @@ import java.util.Map;
 
 import kz.zvezdochet.bean.Aspect;
 import kz.zvezdochet.bean.AspectType;
+import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.bean.PositionType;
@@ -56,6 +57,7 @@ public class Configuration {
 
 	/**
 	 * Создание расчетной конфигурации для заданного момента времени и места
+	 * @param event событие
 	 * @param date строковое значение даты
 	 * @param time строковое значение времени
 	 * @param zone строковое значение часового пояса
@@ -63,14 +65,14 @@ public class Configuration {
 	 * @param longitude строковое значение долготы местности
 	 * @throws DataAccessException 
 	 */
-	public Configuration(Date eventdate, String zone, String latitude, String longitude) throws DataAccessException {
+	public Configuration(Event event, Date eventdate, String zone, String latitude, String longitude) throws DataAccessException {
   	  	planetList = new PlanetService().getList();
   	  	houseList = new HouseService().getList();
   	  	this.date = eventdate;
   	  	String date = DateUtil.formatCustomDateTime(eventdate, DateUtil.sdf.toPattern());
   	  	String time = DateUtil.formatCustomDateTime(eventdate, DateUtil.stf.toPattern());
 		calculate(date, time, zone, latitude, longitude);
-		initPlanetStatistics();
+		initPlanetStatistics(event);
 	}
 
 	/**
@@ -87,9 +89,21 @@ public class Configuration {
   			szone + " lat " + slat + " lon " + slon);
   		
 		try {
-	  		long iflag = SweConst.SEFLG_SIDEREAL | SweConst.SEFLG_SPEED;
-	  		int iyear, imonth, iday, ihour = 0, imin = 0, isec = 0;
+	  		//обрабатываем координаты места
+	  		double lat = (slat != null && slat.length() > 0) ? Double.parseDouble(slat) : 51.48;
+	  		double lon = (slon != null && slon.length() > 0) ? Double.parseDouble(slon) : 0;
+	  		int ilondeg, ilonmin, ilonsec, ilatdeg, ilatmin, ilatsec;
+	  		ilondeg = CalcUtil.trunc(Math.abs(lon)); //TODO знак точно убираем???
+	  		ilonmin = CalcUtil.trunc(Math.abs(lon) - ilondeg) * 100;
+	  		ilonsec = 0;
+	  		ilatdeg = CalcUtil.trunc(Math.abs(lat));
+	  		ilatmin = CalcUtil.trunc(Math.abs(lat) - ilatdeg) * 100;
+	  		ilatsec = 0;
+
 	  	  	SwissEph sweph = new SwissEph();
+			sweph.swe_set_topo(lon, lat, 0);
+	  		long iflag = SweConst.SEFLG_SIDEREAL | SweConst.SEFLG_SPEED | SweConst.SEFLG_TRUEPOS | SweConst.SEFLG_TOPOCTR;
+	  		int iyear, imonth, iday, ihour = 0, imin = 0, isec = 0;
 //	  	  	String path = "/home/nataly/workspacercp/kz.zvezdochet.sweph/lib/ephe";
 			String path = PlatformUtil.getPath(Activator.PLUGIN_ID, "/lib/ephe").getPath(); //$NON-NLS-1$
 			System.out.println(path); // /home/nataly/soft/eclipsercp/../../workspacercp/kz.zvezdochet.sweph/lib/ephe/
@@ -118,17 +132,7 @@ public class Configuration {
 	  		imin = Integer.parseInt(NumberUtil.trimLeadZero(stime.substring(3,5)));
 	  		isec = Integer.parseInt(NumberUtil.trimLeadZero(stime.substring(6,8)));
 	
-	  		//обрабатываем координаты места
-	  		double lat = (slat != null && slat.length() > 0) ? Double.parseDouble(slat) : 43.15;
-	  		double lon = (slon != null && slon.length() > 0) ? Double.parseDouble(slon) : 76.55;
-	  		int ilondeg, ilonmin, ilonsec, ilatdeg, ilatmin, ilatsec;
-	  		ilondeg = CalcUtil.trunc(Math.abs(lon));
-	  		ilonmin = CalcUtil.trunc(Math.abs(lon) - ilondeg) * 100;
-	  		ilonsec = 0;
-	  		ilatdeg = CalcUtil.trunc(Math.abs(lat));
-	  		ilatmin = CalcUtil.trunc(Math.abs(lat) - ilatdeg) * 100;
-	  		ilatsec = 0;
-	  		
+	  		//обрабатываем время
 	  		@SuppressWarnings("unused")
 			double tjd, tjdet, tjdut, tsid, armc, dhour, deltat;
 	  		@SuppressWarnings("unused")
@@ -348,12 +352,13 @@ public class Configuration {
 
 	/**
 	 * Определение позиций планет в знаках
+	 * @param event событие
 	 */
-	public void initPlanetSigns() throws DataAccessException {
+	public void initPlanetSigns(Event event) throws DataAccessException {
 		if (isPlanetSigned()) return;
 		for (Model model : planetList) {
 			Planet planet = (Planet)model;
-			Sign sign = SkyPoint.getSign(planet.getCoord());
+			Sign sign = SkyPoint.getSign(planet.getCoord(), event.getBirthYear());
 			planet.setSign(sign);
 		}
 	}
@@ -434,41 +439,43 @@ public class Configuration {
 	/**
 	 * Расчет статистики по каждой планете.
 	 * Учитываются следующие факторы:<br>
-	 * - позиция планеты на угловых точках
-	 * - является ли планета управителем домов
-	 * - является ли планета управителем угловых домов
-	 * - является ли планета одновременно управителем и хозяином дома
-	 * - насколько планета приближена к Солнцу
-	 * - позиции планеты (обитель, экзальтация, изгнание, падение)
-	 * - аспектированность планеты (шахта, пораженность, непораженность)
-	 * - ретроградность планеты
-	 * - заполненность знака и дома, хозяином которых является планета
-	 * - благоприятная связь (хороший или нейтральный аспект планеты с Раху и Селеной)
-	 * - неблагоприятная связь (плохой или нейтральный аспект планеты с Кету и Лилит)
-	 * - нахождение планеты в градусе
+	 * - позиция планеты на угловых точках<br>
+	 * - является ли планета управителем домов<br>
+	 * - является ли планета управителем угловых домов<br>
+	 * - является ли планета одновременно управителем и хозяином дома<br>
+	 * - насколько планета приближена к Солнцу<br>
+	 * - позиции планеты (обитель, экзальтация, изгнание, падение)<br>
+	 * - аспектированность планеты (шахта, пораженность, непораженность)<br>
+	 * - ретроградность планеты<br>
+	 * - заполненность знака и дома, хозяином которых является планета<br>
+	 * - благоприятная связь (хороший или нейтральный аспект планеты с Раху и Селеной)<br>
+	 * - неблагоприятная связь (плохой или нейтральный аспект планеты с Кету и Лилит)<br>
+	 * - нахождение планеты в градусе<br>
 	 * //TODO расчитать все важные позиции планет
-	 * определяем позиции планет в целом (обитель изгнание экзальтация падение)
-	 * определяем пустые знаки
-	 * определяем пустые дома а также включенные и какие там ещё есть
+	 * определяем позиции планет в целом (обитель изгнание экзальтация падение)<br>
+	 * определяем пустые знаки<br>
+	 * определяем пустые дома а также включенные и какие там ещё есть<br>
 	 * //определяем управителей домов
 		//определяем знак, где находится куспид дома,
 		//и определяем планету знака
+	 * @param event событие
 	 */
-	public void initPlanetStatistics() throws DataAccessException {
+	public void initPlanetStatistics(Event event) throws DataAccessException {
 		initPlanetAspects();
 		initDamagedPlanets();
 		initBrokenPlanets();
 		initAngularPlanets();
 		initSunNeighbours();
-		initPlanetPositions();
+		initPlanetPositions(event);
 	}
 
 	/**
 	 * Инициализация позиций планет
+	 * @param event событие
 	 */
-	private void initPlanetPositions() {
+	private void initPlanetPositions(Event event) {
 		try {
-			initPlanetSigns();
+			initPlanetSigns(event);
 			initPlanetHouses();
 
 			PlanetService service = new PlanetService();
