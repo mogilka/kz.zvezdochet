@@ -42,6 +42,15 @@ public class Configuration {
 	private	List<Model> houseList;
 	private	List<SkyPointAspect> aspectList;
 	private Date date;
+	private Event event;
+
+	public Event getEvent() {
+		return event;
+	}
+
+	public void setEvent(Event event) {
+		this.event = event;
+	}
 
 	/**
 	 * Создание пустой расчетной конфигурации
@@ -66,13 +75,14 @@ public class Configuration {
 	 * @throws DataAccessException 
 	 */
 	public Configuration(Event event, Date eventdate, String zone, String latitude, String longitude) throws DataAccessException {
+		setEvent(event);
   	  	planetList = new PlanetService().getList();
   	  	houseList = new HouseService().getList();
   	  	this.date = eventdate;
   	  	String date = DateUtil.formatCustomDateTime(eventdate, DateUtil.sdf.toPattern());
   	  	String time = DateUtil.formatCustomDateTime(eventdate, DateUtil.stf.toPattern());
 		calculate(date, time, zone, latitude, longitude);
-		initPlanetStatistics(event);
+		initPlanetStatistics();
 	}
 
 	/**
@@ -352,9 +362,8 @@ public class Configuration {
 
 	/**
 	 * Определение позиций планет в знаках
-	 * @param event событие
 	 */
-	public void initPlanetSigns(Event event) throws DataAccessException {
+	public void initPlanetSigns() throws DataAccessException {
 		if (isPlanetSigned()) return;
 		for (Model model : planetList) {
 			Planet planet = (Planet)model;
@@ -458,24 +467,22 @@ public class Configuration {
 	 * //определяем управителей домов
 		//определяем знак, где находится куспид дома,
 		//и определяем планету знака
-	 * @param event событие
 	 */
-	public void initPlanetStatistics(Event event) throws DataAccessException {
+	public void initPlanetStatistics() throws DataAccessException {
 		initPlanetAspects();
 		initDamagedPlanets();
 		initBrokenPlanets();
 		initAngularPlanets();
 		initSunNeighbours();
-		initPlanetPositions(event);
+		initPlanetPositions();
 	}
 
 	/**
 	 * Инициализация позиций планет
-	 * @param event событие
 	 */
-	private void initPlanetPositions(Event event) {
+	private void initPlanetPositions() {
 		try {
-			initPlanetSigns(event);
+			initPlanetSigns();
 			initPlanetHouses();
 
 			PlanetService service = new PlanetService();
