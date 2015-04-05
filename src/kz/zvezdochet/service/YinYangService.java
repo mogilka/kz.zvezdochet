@@ -5,13 +5,13 @@ import java.util.List;
 import kz.zvezdochet.bean.YinYang;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
-import kz.zvezdochet.core.service.GenderTextDiagramService;
+import kz.zvezdochet.core.service.TextGenderDiagramService;
 
 /**
  * Сервис Инь-Ян
  * @author Nataly Didenko
  */
-public class YinYangService extends GenderTextDiagramService {
+public class YinYangService extends TextGenderDiagramService {
 
 	public YinYangService() {
 		tableName = "yinyang";

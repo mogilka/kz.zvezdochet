@@ -5,13 +5,13 @@ import java.util.List;
 import kz.zvezdochet.bean.Halfsphere;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
-import kz.zvezdochet.core.service.GenderTextDiagramService;
+import kz.zvezdochet.core.service.TextGenderDiagramService;
 
 /**
  * Сервис полусфер
  * @author Nataly Didenko
  */
-public class HalfsphereService extends GenderTextDiagramService {
+public class HalfsphereService extends TextGenderDiagramService {
 
 	public HalfsphereService() {
 		tableName = "halfspheres";

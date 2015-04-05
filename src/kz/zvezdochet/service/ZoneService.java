@@ -5,13 +5,13 @@ import java.util.List;
 import kz.zvezdochet.bean.Zone;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
-import kz.zvezdochet.core.service.GenderTextDiagramService;
+import kz.zvezdochet.core.service.TextGenderDiagramService;
 
 /**
  * Сервис зон
  * @author Nataly Didenko
  */
-public class ZoneService extends GenderTextDiagramService {
+public class ZoneService extends TextGenderDiagramService {
 
 	public ZoneService() {
 		tableName = "zones";

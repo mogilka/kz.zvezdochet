@@ -5,13 +5,13 @@ import java.util.List;
 import kz.zvezdochet.bean.Square;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
-import kz.zvezdochet.core.service.GenderTextDiagramService;
+import kz.zvezdochet.core.service.TextGenderDiagramService;
 
 /**
  * Сервис крестов
  * @author Nataly Didenko
  */
-public class SquareService extends GenderTextDiagramService {
+public class SquareService extends TextGenderDiagramService {
 
 	public SquareService() {
 		tableName = "squares";

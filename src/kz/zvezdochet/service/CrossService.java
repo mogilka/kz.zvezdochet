@@ -5,13 +5,13 @@ import java.util.List;
 import kz.zvezdochet.bean.Cross;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
-import kz.zvezdochet.core.service.GenderTextDiagramService;
+import kz.zvezdochet.core.service.TextGenderDiagramService;
 
 /**
  * Сервис крестов
  * @author Nataly Didenko
  */
-public class CrossService extends GenderTextDiagramService {
+public class CrossService extends TextGenderDiagramService {
 
 	public CrossService() {
 		tableName = "crosses";

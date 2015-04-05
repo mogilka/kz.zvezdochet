@@ -7,14 +7,14 @@ import java.util.List;
 import kz.zvezdochet.bean.Element;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
-import kz.zvezdochet.core.service.GenderTextDiagramService;
+import kz.zvezdochet.core.service.TextGenderDiagramService;
 import kz.zvezdochet.core.util.CoreUtil;
 
 /**
  * Сервис стихий
  * @author Nataly Didenko
  */
-public class ElementService extends GenderTextDiagramService {
+public class ElementService extends TextGenderDiagramService {
 
 	public ElementService() {
 		tableName = "elements";
