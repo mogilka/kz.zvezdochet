@@ -1,6 +1,8 @@
 package kz.zvezdochet.bean;
 
 import kz.zvezdochet.core.bean.DiagramDictionary;
+import kz.zvezdochet.core.service.ModelService;
+import kz.zvezdochet.service.ElementService;
 
 /**
  * Стихия
@@ -20,5 +22,10 @@ public class Element extends DiagramDictionary {
 
 	public void setTemperament(String temperament) {
 		this.temperament = temperament;
+	}
+
+	@Override
+	public ModelService getService() {
+		return new ElementService();
 	}
 }
