@@ -240,6 +240,7 @@ public class Event extends Model {
 			
 			//конфигурация
 			configuration = new Configuration(birth);
+			configuration.setEvent(this);
 			service.initPlanets(this);
 			service.initHouses(this);
 			service.initAspects(this);
@@ -276,6 +277,9 @@ public class Event extends Model {
 	public void setConversation(String conversation) {
 		this.conversation = conversation;
 	}
+
+	public int MAX_CHILD_AGE = 10;
+	public int MAX_TEEN_AGE = 17;
 
 	/**
 	 * Определение возраста персоны
