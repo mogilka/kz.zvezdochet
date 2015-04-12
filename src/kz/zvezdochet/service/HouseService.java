@@ -30,7 +30,7 @@ public class HouseService extends DictionaryService {
         ResultSet rs = null;
 		String sql;
 		try {
-			sql = "select * from " + tableName + " order by id";
+			sql = "select * from " + tableName + " order by ordinalnumber";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			rs = ps.executeQuery();
 			while (rs.next()) {
