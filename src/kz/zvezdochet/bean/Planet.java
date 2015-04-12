@@ -120,7 +120,7 @@ public class Planet extends SkyPoint {
      */
 	public boolean inMine() {
 		return (aspectCountMap != null) ?
-				0 == getAspectCountMap().get("COMMON") : false;
+			0 == aspectCountMap.get("COMMON") : false;
 	}
 
 	public boolean isDamaged() {
