@@ -35,17 +35,20 @@ public class Cosmogram {
 	
 	private Configuration conf;
 	private Configuration conf2;
-	
+	private List<String> params;
+
 	/**
 	 * Прорисовка космограммы
 	 * @param conf расчётная конфигурация события
 	 * @param conf2 расчётная конфигурация связанного события
 	 * @param params массив параметров
+	 * @param gc графический контекст
 	 * @todo если параметры не заданы, брать все по умолчанию
 	 */
-	public Cosmogram(Configuration conf, Configuration conf2, GC gc) {
+	public Cosmogram(Configuration conf, Configuration conf2, List<String> params, GC gc) {
 		this.conf = conf;
 		this.conf2 = conf2;
+		this.params = params;
 		paintCard(gc);
 	}
 
@@ -234,9 +237,12 @@ public class Cosmogram {
 		Iterator<Model> i = aspects.iterator();
 		while (i.hasNext()) {
 			Aspect a = (Aspect)i.next();
-			if (a.isAspect(res))
+			if (a.isAspect(res)) {
+				if (params != null && params.size() > 0 && !params.contains(a.getType().getCode()))
+					continue;
 				drawAspect(a.getType().getColor(), 0f, one, two, gc, 
 						getLineStyle(a.getType().getProtraction()));
+			}
 		}
 	}
 
