@@ -362,9 +362,10 @@ public class Configuration {
 
 	/**
 	 * Определение позиций планет в знаках
+	 * @param main признак вычисления только минорных планет
 	 */
-	public void initPlanetSigns() throws DataAccessException {
-		if (isPlanetSigned()) return;
+	public void initPlanetSigns(boolean main) throws DataAccessException {
+		if (!main && isPlanetSigned()) return;
 		for (Model model : planetList) {
 			Planet planet = (Planet)model;
 			Sign sign = SkyPoint.getSign(planet.getCoord(), event.getBirthYear());
@@ -482,7 +483,7 @@ public class Configuration {
 	 */
 	private void initPlanetPositions() {
 		try {
-			initPlanetSigns();
+			initPlanetSigns(false);
 			initPlanetHouses();
 
 			PlanetService service = new PlanetService();
