@@ -165,4 +165,35 @@ public class SignService extends DictionaryService {
 	public Model create() {
 		return new Sign();
 	}
+
+	/**
+	 * Поиск знаков Зодиака категории
+	 * @param id идентификатор категории
+	 * @return список знаков Зодиака
+	 * @throws DataAccessException
+	 */
+	public List<Model> findByCross(long id) throws DataAccessException {
+        List<Model> list = new ArrayList<Model>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String sql = "select * from " + tableName + " where crossignid = " + id;
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				Model type = init(rs, create());
+				list.add(type);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
+		return list;
+	}
 }
