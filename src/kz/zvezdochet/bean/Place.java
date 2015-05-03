@@ -3,6 +3,7 @@ package kz.zvezdochet.bean;
 import java.util.Date;
 
 import kz.zvezdochet.core.bean.Dictionary;
+import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.service.PlaceService;
 
@@ -57,5 +58,18 @@ public class Place extends Dictionary {
 	}
 	public void setDate(Date date) {
 		this.date = date;
+	}
+
+	/**
+	 * Поиск места по умолчанию
+	 * @return Гринвич
+	 */
+	public Place getDefault() {
+		try {
+			return (Place)getService().find(7095L);
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }
