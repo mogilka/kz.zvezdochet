@@ -72,9 +72,10 @@ public class Configuration {
 	 * @param zone строковое значение часового пояса
 	 * @param latitude строковое значение широты местности
 	 * @param longitude строковое значение долготы местности
+	 * @param boolean признак расчёта статистики планет
 	 * @throws DataAccessException 
 	 */
-	public Configuration(Event event, Date eventdate, String zone, String latitude, String longitude) throws DataAccessException {
+	public Configuration(Event event, Date eventdate, String zone, String latitude, String longitude, boolean initstat) throws DataAccessException {
 		setEvent(event);
   	  	planetList = new PlanetService().getList();
   	  	houseList = new HouseService().getList();
@@ -82,7 +83,8 @@ public class Configuration {
   	  	String date = DateUtil.formatCustomDateTime(eventdate, DateUtil.sdf.toPattern());
   	  	String time = DateUtil.formatCustomDateTime(eventdate, DateUtil.stf.toPattern());
 		calculate(date, time, zone, latitude, longitude);
-		initPlanetStatistics();
+		if (initstat)
+			initPlanetStatistics();
 	}
 
 	/**
@@ -95,8 +97,8 @@ public class Configuration {
 	 */
   	private void calculate(String sdate, String stime, String szone, 
   							String slat, String slon) {
-		System.out.println("calculate " + sdate + " " + stime + "\n" +
-  			szone + " lat " + slat + " lon " + slon);
+//		System.out.println("calculate " + sdate + " " + stime + "\n" +
+//  			szone + " lat " + slat + " lon " + slon);
   		
 		try {
 	  		//обрабатываем координаты места
@@ -114,9 +116,9 @@ public class Configuration {
 			sweph.swe_set_topo(lon, lat, 0);
 	  		long iflag = SweConst.SEFLG_SIDEREAL | SweConst.SEFLG_SPEED | SweConst.SEFLG_TRUEPOS | SweConst.SEFLG_TOPOCTR;
 	  		int iyear, imonth, iday, ihour = 0, imin = 0, isec = 0;
-//	  	  	String path = "/home/nataly/workspacercp/kz.zvezdochet.sweph/lib/ephe";
-			String path = PlatformUtil.getPath(Activator.PLUGIN_ID, "/lib/ephe").getPath(); //$NON-NLS-1$
-			System.out.println(path); // /home/nataly/soft/eclipsercp/../../workspacercp/kz.zvezdochet.sweph/lib/ephe/
+	  	  	String path = "/home/nataly/workspacercp/kz.zvezdochet.sweph/lib/ephe";
+//			String path = PlatformUtil.getPath(Activator.PLUGIN_ID, "/lib/ephe").getPath(); //$NON-NLS-1$
+//			System.out.println(path); // /home/nataly/soft/eclipsercp/../../workspacercp/kz.zvezdochet.sweph/lib/ephe/
 	  		sweph.swe_set_ephe_path(path);
 	  		sweph.swe_set_sid_mode(SweConst.SE_SIDM_DJWHAL_KHUL, 0, 0);
 
@@ -179,32 +181,31 @@ public class Configuration {
 	  			p.setCoord(planets[10] - 180);
 	  		else
 	  			p.setCoord(planets[10] + 180);
-	  		for (int i = 0; i < planets.length; i++) {
-	  			System.out.println(((Planet)planetList.get(constToPlanet(i))).getCode() + " " + planets[i]);
-	  		}
+//	  		for (int i = 0; i < planets.length; i++)
+//	  			System.out.println(((Planet)planetList.get(constToPlanet(i))).getCode() + " " + planets[i]);
 	
 	  		//расчёт куспидов домов
 	  		//{ for houses: ecliptic obliquity and nutation }
-	  		rflag = sweph.swe_calc(tjdet, SweConst.SE_ECL_NUT, 0, xx, sb);
-	  		eps_true = xx[0];
-	  		nut_long = xx[2];
-	  		//{ geographic position }
-	  		glon = ilondeg + ilonmin/60.0 + ilonsec/3600.0;
-	  		if (lon < 0) glon = -glon;
-	  		glat = ilatdeg + ilatmin/60.0 + ilatsec/3600.0;
-	  		if (lat < 0) glat = -glat;
-	  		//{ sidereal time }
-	  		tsid = new SwissLib().swe_sidtime(tjdut);
-	  		tsid = tsid + glon / 15;
-	  		armc = tsid * 15;
-	  		//{ house method }
-	  		double[] ascmc = new double[10];
-	  		double[] hcusps = new double[13];
-	  		//используем систему Плацидуса
-	  		sweph.swe_houses(tjdut, SweConst.SEFLG_SIDEREAL, glat, glon, 'P', hcusps, ascmc);
-	  		calcHouseParts(hcusps);
-	  		for (int i = 1; i < hcusps.length; i++) 
-	  			System.out.println("house " + i + " = " + hcusps[i]);
+//	  		rflag = sweph.swe_calc(tjdet, SweConst.SE_ECL_NUT, 0, xx, sb);
+//	  		eps_true = xx[0];
+//	  		nut_long = xx[2];
+//	  		//{ geographic position }
+//	  		glon = ilondeg + ilonmin/60.0 + ilonsec/3600.0;
+//	  		if (lon < 0) glon = -glon;
+//	  		glat = ilatdeg + ilatmin/60.0 + ilatsec/3600.0;
+//	  		if (lat < 0) glat = -glat;
+//	  		//{ sidereal time }
+//	  		tsid = new SwissLib().swe_sidtime(tjdut);
+//	  		tsid = tsid + glon / 15;
+//	  		armc = tsid * 15;
+//	  		//{ house method }
+//	  		double[] ascmc = new double[10];
+//	  		double[] hcusps = new double[13];
+//	  		//используем систему Плацидуса
+//	  		sweph.swe_houses(tjdut, SweConst.SEFLG_SIDEREAL, glat, glon, 'P', hcusps, ascmc);
+//	  		calcHouseParts(hcusps);
+//	  		for (int i = 1; i < hcusps.length; i++)
+//	  			System.out.println("house " + i + " = " + hcusps[i]);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
