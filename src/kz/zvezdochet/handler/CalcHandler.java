@@ -22,7 +22,7 @@ public class CalcHandler extends Handler {
 			Event event = (Event)eventPart.getModel(EventPart.MODE_CALC, true);
 			if (null == event) return;
 			updateStatus("Расчет конфигурации", false);
-			event.calc();
+			event.calc(true);
 			eventPart.setModel(event, false);
 			eventPart.onCalc(null);
 			updateStatus("Расчетная конфигурация создана", false);

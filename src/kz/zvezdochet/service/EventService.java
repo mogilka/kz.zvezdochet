@@ -78,7 +78,7 @@ public class EventService extends ModelService {
         PreparedStatement ps = null;
 		try {
 			String sql;
-			if (null == model.getId()) 
+			if (null == model.getId())
 				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
@@ -561,7 +561,7 @@ public class EventService extends ModelService {
 	 * @param event событие
 	 * @throws DataAccessException
 	 */
-	private void savePlanetSigns(Event event) throws DataAccessException {
+	public void savePlanetSigns(Event event) throws DataAccessException {
 		if (null == event.getConfiguration()) return;
 		event.getConfiguration().initPlanetSigns(false);
         PreparedStatement ps = null;

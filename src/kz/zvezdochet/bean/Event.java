@@ -78,11 +78,11 @@ public class Event extends Model {
 	/**
 	 * Часовой пояс
 	 */
-	private double zone;
+	private double zone = 0.0;
 	/**
 	 * Поправка летнего времени
 	 */
-	private double dst;
+	private double dst = 0.0;
 	/**
 	 * Расчетная конфигурация события
 	 */
@@ -304,22 +304,22 @@ public class Event extends Model {
 		return name + " " + DateUtil.sdf.format(birth);
 	}
 
-	public void calc() {
+	/**
+	 * Расчёт положения планет и астрологических домов
+	 * @param boolean признак расчёта статистики планет
+	 */
+	public void calc(boolean initstat) {
 		//new Configuration("12.12.2009", "23:11:16", "6.0", "43.15", "76.55");
 		try {
 			Place calcplace;
-			if (null == place) {
-				calcplace = new Place();
-				calcplace.setLatitude(51.48);
-				calcplace.setLongitude(0);
-			} else
-				calcplace = place;
+			calcplace = (null == place) ? new Place().getDefault() : place;
 			Configuration configuration = new Configuration(
 				this,
 				birth,
 				Double.toString(zone + dst),
 				Double.toString(calcplace.getLatitude()),
-				Double.toString(calcplace.getLongitude()));
+				Double.toString(calcplace.getLongitude()),
+				initstat);
 			setConfiguration(configuration);
 			setNeedSaveCalc(true);
 		} catch (Exception e) {
