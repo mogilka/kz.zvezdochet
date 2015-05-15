@@ -186,26 +186,27 @@ public class Configuration {
 	
 	  		//расчёт куспидов домов
 	  		//{ for houses: ecliptic obliquity and nutation }
-//	  		rflag = sweph.swe_calc(tjdet, SweConst.SE_ECL_NUT, 0, xx, sb);
-//	  		eps_true = xx[0];
-//	  		nut_long = xx[2];
-//	  		//{ geographic position }
-//	  		glon = ilondeg + ilonmin/60.0 + ilonsec/3600.0;
-//	  		if (lon < 0) glon = -glon;
-//	  		glat = ilatdeg + ilatmin/60.0 + ilatsec/3600.0;
-//	  		if (lat < 0) glat = -glat;
-//	  		//{ sidereal time }
-//	  		tsid = new SwissLib().swe_sidtime(tjdut);
-//	  		tsid = tsid + glon / 15;
-//	  		armc = tsid * 15;
-//	  		//{ house method }
-//	  		double[] ascmc = new double[10];
-//	  		double[] hcusps = new double[13];
-//	  		//используем систему Плацидуса
-//	  		sweph.swe_houses(tjdut, SweConst.SEFLG_SIDEREAL, glat, glon, 'P', hcusps, ascmc);
-//	  		calcHouseParts(hcusps);
-//	  		for (int i = 1; i < hcusps.length; i++)
+	  		rflag = sweph.swe_calc(tjdet, SweConst.SE_ECL_NUT, 0, xx, sb);
+	  		eps_true = xx[0];
+	  		nut_long = xx[2];
+	  		//{ geographic position }
+	  		glon = ilondeg + ilonmin/60.0 + ilonsec/3600.0;
+	  		if (lon < 0) glon = -glon;
+	  		glat = ilatdeg + ilatmin/60.0 + ilatsec/3600.0;
+	  		if (lat < 0) glat = -glat;
+	  		//{ sidereal time }
+	  		tsid = new SwissLib().swe_sidtime(tjdut);
+	  		tsid = tsid + glon / 15;
+	  		armc = tsid * 15;
+	  		//{ house method }
+	  		double[] ascmc = new double[10];
+	  		double[] hcusps = new double[13];
+	  		//используем систему Плацидуса
+	  		sweph.swe_houses(tjdut, SweConst.SEFLG_SIDEREAL, glat, glon, 'P', hcusps, ascmc);
+	  		calcHouseParts(hcusps);
+//	  		for (int i = 1; i < hcusps.length; i++) 
 //	  			System.out.println("house " + i + " = " + hcusps[i]);
+	  		sweph.swe_close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
