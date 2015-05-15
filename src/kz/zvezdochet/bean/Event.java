@@ -388,4 +388,12 @@ public class Event extends Model {
 	    cal.setTime(birth);
 		return cal.get(Calendar.YEAR);
 	}
+
+	/**
+	 * Возвращает URL события на сайте
+	 * @return URL события
+	 */
+	public String getUrl() {
+		return "http://zvezdochet.guru/event/" + id + "/" + fancy;
+	}
 }
