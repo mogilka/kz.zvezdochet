@@ -311,8 +311,7 @@ public class Event extends Model {
 	public void calc(boolean initstat) {
 		//new Configuration("12.12.2009", "23:11:16", "6.0", "43.15", "76.55");
 		try {
-			Place calcplace;
-			calcplace = (null == place) ? new Place().getDefault() : place;
+			Place calcplace = (null == place) ? new Place().getDefault() : place;
 			Configuration configuration = new Configuration(
 				this,
 				birth,
