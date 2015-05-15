@@ -282,6 +282,7 @@ public class EventService extends ModelService {
 			event.setAccuracy(rs.getString("accuracy"));
 		event.setUserid(rs.getLong("userid"));
 		event.setDate(DateUtil.getDatabaseDateTime(rs.getString("date")));
+		event.setFancy(rs.getString("fancy"));
 		return event;
 	}
 
