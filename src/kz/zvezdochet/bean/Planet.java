@@ -36,12 +36,12 @@ public class Planet extends SkyPoint {
     private House house;
 
     /**
-     * Признак пораженности
+     * Признак поражённости
      */
     private boolean damaged = false;
     
     /**
-     * Признак непораженности
+     * Признак непоражённости
      */
     private boolean perfect = false;
     
@@ -49,11 +49,16 @@ public class Planet extends SkyPoint {
      * Признак ослабленности
      */
     private boolean broken = false;
-    
+
+    /**
+     * Признак силы
+     */
+    private boolean strong = false;
+
     /**
      * Признак фиктивной планеты
      */
-    private boolean fictitious = false;
+    private boolean fictious = false;
     
 	/**
 	 * Карта аспектов планеты
@@ -69,11 +74,11 @@ public class Planet extends SkyPoint {
 	}
 
 	public boolean isFictitious() {
-		return fictitious;
+		return fictious;
 	}
 
 	public void setFictitious(boolean fictitious) {
-		this.fictitious = fictitious;
+		this.fictious = fictitious;
 	}
 
 	public Planet(String name) {
@@ -319,5 +324,13 @@ public class Planet extends SkyPoint {
 
 	public void setHouseDeclined(boolean houseDeclined) {
 		this.houseDeclined = houseDeclined;
+	}
+
+	public boolean isStrong() {
+		return strong;
+	}
+
+	public void setStrong(boolean strong) {
+		this.strong = strong;
 	}
 }
