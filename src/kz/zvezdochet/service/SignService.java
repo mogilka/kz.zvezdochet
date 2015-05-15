@@ -158,6 +158,7 @@ public class SignService extends DictionaryService {
 		sign.setZoneId(rs.getInt("zoneid"));
 		sign.setVerticalHalfSphereId(rs.getInt("halfspherevid"));
 		sign.setHorizontalalHalfSphereId(rs.getInt("halfspherehid"));
+		sign.setSymbol(rs.getString("symbol"));
 		return sign;
 	}
 

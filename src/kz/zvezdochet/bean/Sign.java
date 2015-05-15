@@ -229,4 +229,17 @@ public class Sign extends DiagramObject {
 	public void setF3000(double f3000) {
 		this.f3000 = f3000;
 	}
+
+	/**
+	 * HTML-символ знака Зодиака
+	 */
+	private String symbol;
+
+	public String getSymbol() {
+		return symbol;
+	}
+
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
+	}
 }
