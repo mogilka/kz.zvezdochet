@@ -88,6 +88,28 @@ public class Configuration {
 	}
 
 	/**
+	 * Система домов
+	 * P	Placidus
+	 * K	Koch
+	 * O	Porphyrius
+	 * R	Regiomontanus
+	 * C	Campanus
+	 * A E	Equal (cusp 1 is Ascendant)
+	 * V	Vehlow equal (Asc. in middle of house 1)
+	 * W	Whole sign
+	 * X	axial rotation system / meridian system / zariel
+	 * H	azimuthal or horizontal system
+	 * T	Polich/Page (“topocentric” system)
+	 * B	Alcabitus
+	 * M	Morinus
+	 * U	Krusinski-Pisa
+	 * G	Gauquelin sector
+	 * Y	APC houses
+	 */
+	private char hsys = 'P';
+
+	 
+	/**
 	 * Расчет конфигурации гороскопа
 	 * @param sdate строковое значение даты
 	 * @param stime строковое значение времени
@@ -116,8 +138,8 @@ public class Configuration {
 			sweph.swe_set_topo(lon, lat, 0);
 	  		long iflag = SweConst.SEFLG_SIDEREAL | SweConst.SEFLG_SPEED | SweConst.SEFLG_TRUEPOS | SweConst.SEFLG_TOPOCTR;
 	  		int iyear, imonth, iday, ihour = 0, imin = 0, isec = 0;
-	  	  	String path = "/home/nataly/workspacercp/kz.zvezdochet.sweph/lib/ephe";
-//			String path = PlatformUtil.getPath(Activator.PLUGIN_ID, "/lib/ephe").getPath(); //$NON-NLS-1$
+//	  	  	String path = "/home/nataly/workspacercp/kz.zvezdochet.sweph/lib/ephe";
+			String path = PlatformUtil.getPath(Activator.PLUGIN_ID, "/lib/ephe").getPath(); //$NON-NLS-1$
 //			System.out.println(path); // /home/nataly/soft/eclipsercp/../../workspacercp/kz.zvezdochet.sweph/lib/ephe/
 	  		sweph.swe_set_ephe_path(path);
 	  		sweph.swe_set_sid_mode(SweConst.SE_SIDM_DJWHAL_KHUL, 0, 0);
@@ -202,7 +224,7 @@ public class Configuration {
 	  		double[] ascmc = new double[10];
 	  		double[] hcusps = new double[13];
 	  		//используем систему Плацидуса
-	  		sweph.swe_houses(tjdut, SweConst.SEFLG_SIDEREAL, glat, glon, 'P', hcusps, ascmc);
+	  		sweph.swe_houses(tjdut, SweConst.SEFLG_SIDEREAL, glat, glon, hsys, hcusps, ascmc);
 	  		calcHouseParts(hcusps);
 //	  		for (int i = 1; i < hcusps.length; i++) 
 //	  			System.out.println("house " + i + " = " + hcusps[i]);
