@@ -50,8 +50,8 @@ public class AspectPart extends ListView {
 	@Override
 	protected void addColumns() {
 		if (conf != null) {
+			table.removeAll();
 			TableColumn tableColumn = new TableColumn(table, SWT.NONE);
-			tableColumn.setText("");		
 			for (int i = 0; i < conf.getPlanets().size(); i++) {
 				Planet planet = (Planet)conf.getPlanets().get(i);
 				tableColumn = new TableColumn(table, SWT.NONE);
