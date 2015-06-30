@@ -30,7 +30,7 @@ public class Cosmogram {
 	private int ycenter = 0;
 	private final double INNER_CIRCLE = 120.0;
 	
-	private final Color HOUSE_COLOR = new Color(Display.getDefault(),  new RGB(153, 0, 0));
+	private final Color HOUSE_COLOR = new Color(Display.getDefault(), new RGB(153, 0, 0));
 	private final Color HOUSEPART_COLOR = Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY);
 	
 	private Configuration conf;

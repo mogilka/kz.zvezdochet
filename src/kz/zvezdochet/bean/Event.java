@@ -395,4 +395,16 @@ public class Event extends Model {
 	public String getUrl() {
 		return "http://zvezdochet.guru/event/" + id + "/" + fancy;
 	}
+
+	/**
+	 * Идентификатор обратной совместимости для импорта знаменитостей с сайта
+	 */
+	private long backid;
+
+	public long getBackid() {
+		return backid;
+	}
+	public void setBackid(long backid) {
+		this.backid = backid;
+	}
 }

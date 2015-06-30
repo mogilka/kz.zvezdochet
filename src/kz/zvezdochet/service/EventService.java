@@ -79,7 +79,7 @@ public class EventService extends ModelService {
 		try {
 			String sql;
 			if (null == model.getId())
-				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
 					"name = ?, " +
@@ -99,12 +99,13 @@ public class EventService extends ModelService {
 					"calculated = ?, " +
 					"fancy = ?, " +
 					"dst = ?, " +
-					"finalplaceid = ? " +
+					"finalplaceid = ?, " +
+					"backid = ? " +
 					"where id = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setString(1, event.getName());
 			ps.setBoolean(2, event.isFemale());
-			if (event.getPlace() != null && event.getPlace().getId() > 0)
+			if (event.getPlace() != null && event.getPlace().getId() != null && event.getPlace().getId() > 0)
 				ps.setLong(3, event.getPlace().getId());
 			else
 				ps.setNull(3, java.sql.Types.NULL);
@@ -127,8 +128,9 @@ public class EventService extends ModelService {
 				ps.setLong(18, event.getFinalPlace().getId());
 			else
 				ps.setNull(18, java.sql.Types.NULL);
+			ps.setLong(19, event.getBackid());
 			if (model.getId() != null)
-				ps.setLong(19, model.getId());
+				ps.setLong(20, model.getId());
 			System.out.println(ps);
 
 			result = ps.executeUpdate();
@@ -199,6 +201,7 @@ public class EventService extends ModelService {
 			ps.setString(3, event.getConversation()); //TODO сохранять изображение в папку
 			if (id != 0)
 				ps.setLong(4, id);
+			System.out.println(ps);
 			ps.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -283,6 +286,7 @@ public class EventService extends ModelService {
 		event.setUserid(rs.getLong("userid"));
 		event.setDate(DateUtil.getDatabaseDateTime(rs.getString("date")));
 		event.setFancy(rs.getString("fancy"));
+		event.setBackid(rs.getLong("backid"));
 		return event;
 	}
 
