@@ -119,8 +119,7 @@ public class Configuration {
 	 */
   	private void calculate(String sdate, String stime, String szone, 
   							String slat, String slon) {
-//		System.out.println("calculate " + sdate + " " + stime + "\n" +
-//  			szone + " lat " + slat + " lon " + slon);
+		//System.out.println("calculate " + sdate + " " + stime + " zone:" + szone + " lat " + slat + " lon " + slon);
   		
 		try {
 	  		//обрабатываем координаты места
