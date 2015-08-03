@@ -5,7 +5,5 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/kz.zvezdochet.sweph"/>
 	<classpathentry kind="lib" path="/kz.zvezdochet.sweph/lib/swisseph.jar"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.nebula.cwt_0.9.0.HEAD.jar"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.nebula.widgets.cdatetime_0.14.0.HEAD.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
