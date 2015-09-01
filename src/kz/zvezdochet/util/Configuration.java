@@ -72,7 +72,7 @@ public class Configuration {
 	 * @param zone строковое значение часового пояса
 	 * @param latitude строковое значение широты местности
 	 * @param longitude строковое значение долготы местности
-	 * @param boolean признак расчёта статистики планет
+	 * @param initstat признак расчёта статистики планет
 	 * @throws DataAccessException 
 	 */
 	public Configuration(Event event, Date eventdate, String zone, String latitude, String longitude, boolean initstat) throws DataAccessException {

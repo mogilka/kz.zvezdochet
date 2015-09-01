@@ -239,11 +239,15 @@ public class Event extends Model {
 			}
 			
 			//конфигурация
-			configuration = new Configuration(birth);
-			configuration.setEvent(this);
-			service.initPlanets(this);
-			service.initHouses(this);
-			service.initAspects(this);
+			if (null == id)
+				calc(false);
+			else {
+				configuration = new Configuration(birth);
+				configuration.setEvent(this);
+				service.initPlanets(this);
+				service.initHouses(this);
+				service.initAspects(this);
+			}
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
