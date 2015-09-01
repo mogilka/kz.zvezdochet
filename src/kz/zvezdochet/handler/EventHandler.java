@@ -79,7 +79,7 @@ public class EventHandler {
 			String[] ids = eventids.split(",");
 			List<String> list = new ArrayList<String>(Arrays.asList(ids));
 			if (Constants.PREF_RECENT_MAX == list.size())
-				list.remove(Constants.PREF_RECENT_MAX);
+				list.remove(Constants.PREF_RECENT_MAX - 1);
 			if (list.contains(event.getId()))
 				list.remove(list.indexOf(event.getId()));
 			list.add(0, event.getId().toString());
