@@ -87,6 +87,13 @@ public class Planet extends SkyPoint {
 
 	public Planet() {}
 
+	public Planet(Planet planet) {
+		id = planet.id;
+		name = planet.name;
+		code = planet.code;
+		coord = planet.coord;		
+	}
+
 	public double getScore() {
 		return score;
 	}
