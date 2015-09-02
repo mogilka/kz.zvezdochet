@@ -40,8 +40,13 @@ public class RecentEventsHandler extends Handler {
 				List<Event> events = new ArrayList<Event>();
 				EventService service = new EventService();
 				for (String string : ids) {
-					Event event = (Event)service.find(Long.valueOf(string));
-					events.add(event);
+					try {
+						Event event = (Event)service.find(Long.valueOf(string));
+						if (event != null)
+							events.add(event);
+					} catch (Exception e) {
+						System.out.println(string + " is not ID");
+					}
 				}
 				MPart part = partService.findPart("kz.zvezdochet.part.events");
 			    part.setVisible(true);

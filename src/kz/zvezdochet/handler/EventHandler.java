@@ -1,8 +1,8 @@
 package kz.zvezdochet.handler;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -72,18 +72,21 @@ public class EventHandler {
 	 */
 	private void persistEvent(Model event) {
 		try {
-			if (null == event.getId()) return;
+			String id = event.getId().toString();
+			if (null == id) return;
 			Preferences preferences = InstanceScope.INSTANCE.getNode("kz.zvezdochet");
 			Preferences recent = preferences.node(Constants.PREF_RECENT);
 			String eventids = recent.get(Constants.PREF_RECENT_EVENT, "");
 			String[] ids = eventids.split(",");
-			List<String> list = new ArrayList<String>(Arrays.asList(ids));
+			Set<String> list = new HashSet<String>();
+			list.addAll(Arrays.asList(ids));
+			if (list.contains(id))
+				list.remove(id);
 			if (Constants.PREF_RECENT_MAX == list.size())
 				list.remove(Constants.PREF_RECENT_MAX - 1);
-			if (list.contains(event.getId()))
-				list.remove(list.indexOf(event.getId()));
-			list.add(0, event.getId().toString());
-			ids = list.toArray(ids);
+			list.add(id.toString());
+			ids = new String[list.size()];
+			list.toArray(ids);
 			eventids = "";
 			for (int i = 0; i < ids.length; i++) {
 				if (i > 0)
