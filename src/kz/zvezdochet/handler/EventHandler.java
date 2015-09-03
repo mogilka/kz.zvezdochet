@@ -72,8 +72,8 @@ public class EventHandler {
 	 */
 	private void persistEvent(Model event) {
 		try {
+			if (null == event.getId()) return;
 			String id = event.getId().toString();
-			if (null == id) return;
 			Preferences preferences = InstanceScope.INSTANCE.getNode("kz.zvezdochet");
 			Preferences recent = preferences.node(Constants.PREF_RECENT);
 			String eventids = recent.get(Constants.PREF_RECENT_EVENT, "");
