@@ -191,21 +191,23 @@ public class Cosmogram {
 	}
 
 	/**
-	 * Прорисовка аспектов планет
+	 * Прорисовка аспектов планет.
+	 * Если строится одиночная карта, используем аспекты самого события;
+	 * в противном случае отображаются аспкты планет двух событий друг к другу
 	 * @param gc графическая система
 	 * @throws DataAccessException
 	 */
 	private void drawAspects(GC gc) throws DataAccessException {
 		if (null == conf || null == conf.getPlanets()) return;
 		Iterator<Model> i = conf.getPlanets().iterator();
-		List<Model> planets = (null == conf2 || null == conf2.getPlanets())
-				? conf.getPlanets() : conf2.getPlanets();
+		boolean single = (null == conf2 || null == conf2.getPlanets());
+		List<Model> planets = single ? conf.getPlanets() : conf2.getPlanets();
 		while (i.hasNext()) {
 			Planet p = (Planet)i.next();
 			Iterator<Model> j = planets.iterator();
 			while (j.hasNext()) {
 				Planet p2 = (Planet)j.next();
-				if (p.getNumber() > p2.getNumber()) continue;
+				if (single && p.getNumber() > p2.getNumber()) continue;
 				getAspect(Math.abs(p.getCoord()), Math.abs(p2.getCoord()), gc);
 			}
 		}
