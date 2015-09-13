@@ -1,6 +1,5 @@
 package kz.zvezdochet.test;
 
-import kz.zvezdochet.core.util.CalcUtil;
 import swisseph.SweConst;
 import swisseph.SweDate;
 import swisseph.SwissEph;
@@ -9,7 +8,7 @@ import swisseph.SwissLib;
 public class Swetest {
 
   	public static void main(String[] argv) {
-//  		argv = new String[] {"27.11.1980", "08:30:00", "5", "42.28", "59.39"};
+  		argv = new String[] {"22.05.2015", "06:00:00", "0", "43.15", "76.55"};
 //  		argv = new String[] {"29.01.1954", "23:44:52", "-6", "33.03", "-89.35"};
   		new Swetest().calculate(argv);
   		/*
@@ -98,18 +97,16 @@ public class Swetest {
   		double lat = Double.parseDouble(argv[3]);
   		double lon = Double.parseDouble(argv[4]);
   		int ilondeg, ilonmin, ilonsec, ilatdeg, ilatmin, ilatsec;
-  		ilondeg = CalcUtil.trunc(Math.abs(lon));
-  		ilonmin = CalcUtil.trunc(Math.abs(lon) - ilondeg) * 100;
+  		ilondeg = (int)lon;
+  		ilonmin = (int)Math.round((Math.abs(lon) - Math.abs(ilondeg)) * 100);
   		ilonsec = 0;
-  		ilatdeg = CalcUtil.trunc(Math.abs(lat));
-  		ilatmin = CalcUtil.trunc(Math.abs(lat) - ilatdeg) * 100;
+  		ilatdeg = (int)lat;
+  		ilatmin = (int)Math.round((Math.abs(lat) - Math.abs(ilatdeg)) * 100);
   		ilatsec = 0;
 
   	  	SwissEph sweph = new SwissEph();
 		sweph.swe_set_topo(lon, lat, 0);
 		long iflag = SweConst.SEFLG_SWIEPH | SweConst.SEFLG_SIDEREAL | SweConst.SEFLG_SPEED | SweConst.SEFLG_TRUEPOS | SweConst.SEFLG_TOPOCTR;
-  		int iyear, imonth, iday, ihour = 0, imin = 0, isec = 0;
-  		
   		sweph.swe_set_ephe_path("/home/nataly/workspace/kz.zvezdochet.sweph/lib/ephe");
   		sweph.swe_set_sid_mode(SweConst.SE_SIDM_DJWHAL_KHUL, 0, 0);
 
@@ -145,6 +142,7 @@ public class Swetest {
 //SE_SIDM_J2000					243.46		134.86		356.68
 
   		//обрабатываем дату
+  		int iyear, imonth, iday, ihour = 0, imin = 0, isec = 0;
   		String sdate = argv[0];
   		iday = Integer.parseInt(sdate.substring(0, 2));
   		imonth = Integer.parseInt(sdate.substring(3, 5));
@@ -152,25 +150,25 @@ public class Swetest {
   		
   		//обрабатываем время
   		String stime = argv[1];
-  		double timing = Double.parseDouble(trimLeadZero(stime.substring(0,2)));
-  		double zone = Double.parseDouble(argv[2]);
-  		if (zone < 0) {
-  			timing = timing - zone; //TODO не учтено то что зона мб не целым числом!
-  		} else {
-  			if (timing >= zone) {
-  				timing = timing - zone;
-  			} else {
+  		double timing = Double.parseDouble(trimLeadZero(stime.substring(0,2))); //час
+  		double zone = Double.parseDouble(argv[2]); //зона
+  		if (zone < 0)
+  			timing -= zone;
+  		else {
+  			if (timing >= zone)
+  				timing -= zone;
+  			else
   				timing = timing + 24 - zone;
-  	  		}
   		}
-  		if (timing >= 24) timing -= 24;
-  		ihour = (int)Math.round(timing / 1);
+  		if (timing >= 24)
+  			timing -= 24;
+  		ihour = (int)timing;
   		imin = Integer.parseInt(trimLeadZero(stime.substring(3,5)));
   		isec = Integer.parseInt(trimLeadZero(stime.substring(6,8)));
 
   		double tjd, tjdet, tjdut, tsid, armc, dhour, deltat;
   		double eps_true, nut_long, glon, glat;
-  		dhour = ihour + imin/60.0 + isec/3600.0;
+  		dhour = ihour + imin/60 + isec/3600;
   		tjd = SweDate.getJulDay(iyear, imonth, iday, dhour, true);
   		deltat = SweDate.getDeltaT(tjd);
   		//Universal Time
@@ -192,9 +190,8 @@ public class Swetest {
   		    	planets[i] *= -1;
   		    pnames[i] = sweph.swe_get_planet_name(list[i]);
   		}
-  		for (int i = 0; i < planets.length; i++) {
+  		for (int i = 0; i < planets.length; i++)
   			System.out.println(i + " " + pnames[i] + " = " + planets[i]);
-  		}
 
   		//расчёт куспидов домов
   		//{ for houses: ecliptic obliquity and nutation }
@@ -202,11 +199,13 @@ public class Swetest {
   		eps_true = xx[0];
   		nut_long = xx[2];
   		//{ geographic position }
-  		glon = ilondeg + ilonmin/60.0 + ilonsec/3600.0;
-  		if (lon < 0) glon = -glon;
+  		glon = ilondeg + ilonmin/60 + ilonsec/3600;
+  		if (lon < 0)
+  			glon = -glon;
   		//if (combo_EW.ItemIndex > 0) then glon := -glon;
-  		glat = ilatdeg + ilatmin/60.0 + ilatsec/3600.0;
-  		if (lat < 0) glat = -glat;
+  		glat = ilatdeg + ilatmin/60 + ilatsec/3600;
+  		if (lat < 0)
+  			glat = -glat;
   		//if (combo_NS.ItemIndex > 0) then glat := -glat;
   		//{ sidereal time }
   		tsid = new SwissLib().swe_sidtime(tjdut);
@@ -219,13 +218,11 @@ public class Swetest {
   		sweph.swe_houses(tjdut, SweConst.SEFLG_SIDEREAL, glat, glon, 'P', hcusps, ascmc);
   		
   		System.out.println("\n");
-  		for (int i = 1; i < hcusps.length; i++) {
+  		for (int i = 1; i < hcusps.length; i++)
   			System.out.println("house " + i + " = " + hcusps[i]);
-  		}
   		System.out.println("\n");
-  		for (int i = 0; i < ascmc.length; i++) {
+  		for (int i = 0; i < ascmc.length; i++)
   			System.out.println("ascmc " + i + " " + ascmc[i]);
-  		}
   	}
   	
   	private String trimLeadZero(String s) {
