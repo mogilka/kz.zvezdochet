@@ -9,7 +9,8 @@ import swisseph.SwissLib;
 public class Swetest {
 
   	public static void main(String[] argv) {
-  		argv = new String[] {"08.12.2007", "08:08:08", "6", "43.15", "76.55"};
+//  		argv = new String[] {"27.11.1980", "08:30:00", "5", "42.28", "59.39"};
+//  		argv = new String[] {"29.01.1954", "23:44:52", "-6", "33.03", "-89.35"};
   		new Swetest().calculate(argv);
   		/*
   		 * argv = ["08.12.2007", "08:08:08", "6", "43.15", "76.55"]
@@ -92,13 +93,56 @@ public class Swetest {
 //	  	final long SEFLG_RADIANS =       (8*1024);   // coordinates are wanted in radians, not degrees 
 //	  	final long SEFLG_BARYCTR =       (16*1024);  // barycentric positions 
 //	  	final long SEFLG_TOPOCTR =       (32*1024);  // topocentric positions 
-  		
-		long iflag = SweConst.SEFLG_SIDEREAL | SweConst.SEFLG_SPEED;
+
+  		//обрабатываем координаты места
+  		double lat = Double.parseDouble(argv[3]);
+  		double lon = Double.parseDouble(argv[4]);
+  		int ilondeg, ilonmin, ilonsec, ilatdeg, ilatmin, ilatsec;
+  		ilondeg = CalcUtil.trunc(Math.abs(lon));
+  		ilonmin = CalcUtil.trunc(Math.abs(lon) - ilondeg) * 100;
+  		ilonsec = 0;
+  		ilatdeg = CalcUtil.trunc(Math.abs(lat));
+  		ilatmin = CalcUtil.trunc(Math.abs(lat) - ilatdeg) * 100;
+  		ilatsec = 0;
+
+  	  	SwissEph sweph = new SwissEph();
+		sweph.swe_set_topo(lon, lat, 0);
+		long iflag = SweConst.SEFLG_SWIEPH | SweConst.SEFLG_SIDEREAL | SweConst.SEFLG_SPEED | SweConst.SEFLG_TRUEPOS | SweConst.SEFLG_TOPOCTR;
   		int iyear, imonth, iday, ihour = 0, imin = 0, isec = 0;
   		
-  	  	SwissEph sweph = new SwissEph();
   		sweph.swe_set_ephe_path("/home/nataly/workspace/kz.zvezdochet.sweph/lib/ephe");
   		sweph.swe_set_sid_mode(SweConst.SE_SIDM_DJWHAL_KHUL, 0, 0);
+
+//SE_SIDM_DJWHAL_KHUL			215.10		106.50		328.32
+//SE_SIDM_DELUCE				215.65		107.05		328.87
+//SE_SIDM_GALCENT_0SAG			216.61		108.00		329.83
+//SE_SIDM_BABYL_KUGLER1			217.63		109.02		330.85
+//SE_SIDM_ALDEBARAN_15TAU		218.70		110.10		331.92
+//SE_SIDM_FAGAN_BRADLEY			218.72		110.12		331.94
+//SE_SIDM_BABYL_HUBER			218.83		110.22		332.05
+//SE_SIDM_BABYL_ETPSC			218.94		110.34		332.16
+//SE_SIDM_BABYL_KUGLER2			219.03		110.42		332.25
+//SE_SIDM_LAHIRI				219.61		111.00		332.82
+//SE_SIDM_TRUE_CITRA			219.62		111.02		332.84
+//SE_SIDM_KRISHNAMURTI			219.70		111.10		332.92
+//SE_SIDM_BABYL_KUGLER3			219.88		111.27		333.10
+//SE_SIDM_SS_CITRA				220.46		111.85		333.67
+//SE_SIDM_JN_BHASIN				220.70		112.10		333.92
+//SE_SIDM_YUKTESHWAR			220.98		112.38		334.20
+//SE_SIDM_RAMAN					221.05		112.45		334.27
+//SE_SIDM_SURYASIDDHANTA		222.57		113.96		335.78
+//SE_SIDM_ARYABHATA				222.57		113.96		335.78
+//SE_SIDM_SURYASIDDHANTA_MSUN	222.78		114.18		336.00
+//SE_SIDM_ARYABHATA_MSUN		222.81		114.20		336.02
+//SE_SIDM_HIPPARCHOS			223.22		114.61		336.43
+//SE_SIDM_SS_REVATI				223.36		114.75		336.58
+//SE_SIDM_USHASHASHI			223.41		114.80		336.62
+//SE_SIDM_SASSANIAN				223.47		114.86		336.69
+//SE_SIDM_TRUE_REVATI			223.59		114.98		336.80
+//SE_SIDM_TRUE_PUSHYA			?
+//SE_SIDM_J1900					242.07		133.46		355.28
+//SE_SIDM_B1950					242.76		134.16		355.98
+//SE_SIDM_J2000					243.46		134.86		356.68
 
   		//обрабатываем дату
   		String sdate = argv[0];
@@ -124,17 +168,6 @@ public class Swetest {
   		imin = Integer.parseInt(trimLeadZero(stime.substring(3,5)));
   		isec = Integer.parseInt(trimLeadZero(stime.substring(6,8)));
 
-  		//обрабатываем координаты места
-  		double lat = Double.parseDouble(argv[3]);
-  		double lon = Double.parseDouble(argv[4]);
-  		int ilondeg, ilonmin, ilonsec, ilatdeg, ilatmin, ilatsec;
-  		ilondeg = CalcUtil.trunc(Math.abs(lon));
-  		ilonmin = CalcUtil.trunc(Math.abs(lon) - ilondeg) * 100;
-  		ilonsec = 0;
-  		ilatdeg = CalcUtil.trunc(Math.abs(lat));
-  		ilatmin = CalcUtil.trunc(Math.abs(lat) - ilatdeg) * 100;
-  		ilatsec = 0;
-  		
   		double tjd, tjdet, tjdut, tsid, armc, dhour, deltat;
   		double eps_true, nut_long, glon, glat;
   		dhour = ihour + imin/60.0 + isec/3600.0;
