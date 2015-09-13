@@ -1,5 +1,8 @@
 package kz.zvezdochet.test;
 
+import java.util.Arrays;
+
+import kz.zvezdochet.core.util.DateUtil;
 import swisseph.SweConst;
 import swisseph.SweDate;
 import swisseph.SwissEph;
@@ -8,7 +11,7 @@ import swisseph.SwissLib;
 public class Swetest {
 
   	public static void main(String[] argv) {
-  		argv = new String[] {"22.05.2015", "06:00:00", "0", "43.15", "76.55"};
+  		argv = new String[] {"22.05.2015", "05:00:00", "6", "43.15", "76.55"};
 //  		argv = new String[] {"29.01.1954", "23:44:52", "-6", "33.03", "-89.35"};
   		new Swetest().calculate(argv);
   		/*
@@ -150,25 +153,48 @@ public class Swetest {
   		
   		//обрабатываем время
   		String stime = argv[1];
-  		double timing = Double.parseDouble(trimLeadZero(stime.substring(0,2))); //час
+  		double timing = Double.parseDouble(trimLeadZero(stime.substring(0,2))); //час по местному времени
   		double zone = Double.parseDouble(argv[2]); //зона
   		if (zone < 0)
   			timing -= zone;
   		else {
   			if (timing >= zone)
   				timing -= zone;
-  			else
+  			else {
+  				/*
+  				 * Если час меньше зоны, значит по Гринвичу будет предыдущий день,
+  				 * поэтому нужно уменьшить указанную дату на 1 день
+  				 */
   				timing = timing + 24 - zone;
+  				if (iday > 1)
+  					--iday;
+  				else {
+  					if (1 == imonth) {
+  						--iyear;
+  						imonth = 12;
+  						iday = 31;
+  					} else if (3 == imonth) {
+  						imonth = 2;
+  						iday = DateUtil.isLeapYear(iyear) ? 29 : 28;
+  					} else if (Arrays.asList(new Integer[] {2,4,6,8,9,11}).contains(imonth)) {
+  						--imonth;
+  						iday = 31;
+  					} else if (Arrays.asList(new Integer[] {5,7,10,12}).contains(imonth)) {
+  						--imonth;
+  						iday = 30;
+  					}
+  				}
+  			}
   		}
   		if (timing >= 24)
   			timing -= 24;
-  		ihour = (int)timing;
+  		ihour = (int)timing; //гринвичский час
   		imin = Integer.parseInt(trimLeadZero(stime.substring(3,5)));
   		isec = Integer.parseInt(trimLeadZero(stime.substring(6,8)));
 
   		double tjd, tjdet, tjdut, tsid, armc, dhour, deltat;
   		double eps_true, nut_long, glon, glat;
-  		dhour = ihour + imin/60 + isec/3600;
+  		dhour = ihour + imin/60.0 + isec/3600.0;
   		tjd = SweDate.getJulDay(iyear, imonth, iday, dhour, true);
   		deltat = SweDate.getDeltaT(tjd);
   		//Universal Time
@@ -199,11 +225,11 @@ public class Swetest {
   		eps_true = xx[0];
   		nut_long = xx[2];
   		//{ geographic position }
-  		glon = ilondeg + ilonmin/60 + ilonsec/3600;
+  		glon = ilondeg + ilonmin/60.0 + ilonsec/3600.0;
   		if (lon < 0)
   			glon = -glon;
   		//if (combo_EW.ItemIndex > 0) then glon := -glon;
-  		glat = ilatdeg + ilatmin/60 + ilatsec/3600;
+  		glat = ilatdeg + ilatmin/60.0 + ilatsec/3600.0;
   		if (lat < 0)
   			glat = -glat;
   		//if (combo_NS.ItemIndex > 0) then glat := -glat;

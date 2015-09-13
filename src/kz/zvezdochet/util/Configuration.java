@@ -1,6 +1,7 @@
 package kz.zvezdochet.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -119,49 +120,71 @@ public class Configuration {
 	 */
   	private void calculate(String sdate, String stime, String szone, 
   							String slat, String slon) {
-		//System.out.println("calculate " + sdate + " " + stime + " zone:" + szone + " lat " + slat + " lon " + slon);
+		//System.out.println("calculate\t" + sdate + "\t" + stime + "\tzone:\t" + szone + "\tlat\t" + slat + "\tlon\t" + slon);
   		
 		try {
 	  		//обрабатываем координаты места
 	  		double lat = (slat != null && slat.length() > 0) ? Double.parseDouble(slat) : 51.48;
 	  		double lon = (slon != null && slon.length() > 0) ? Double.parseDouble(slon) : 0;
 	  		int ilondeg, ilonmin, ilonsec, ilatdeg, ilatmin, ilatsec;
-	  		ilondeg = CalcUtil.trunc(Math.abs(lon)); //TODO знак точно убираем???
-	  		ilonmin = CalcUtil.trunc(Math.abs(lon) - ilondeg) * 100;
+	  		ilondeg = (int)lon;
+	  		ilonmin = (int)Math.round((Math.abs(lon) - Math.abs(ilondeg)) * 100);
 	  		ilonsec = 0;
-	  		ilatdeg = CalcUtil.trunc(Math.abs(lat));
-	  		ilatmin = CalcUtil.trunc(Math.abs(lat) - ilatdeg) * 100;
+	  		ilatdeg = (int)lat;
+	  		ilatmin = (int)Math.round((Math.abs(lat) - Math.abs(ilatdeg)) * 100);
 	  		ilatsec = 0;
 
 	  	  	SwissEph sweph = new SwissEph();
 			sweph.swe_set_topo(lon, lat, 0);
-	  		long iflag = SweConst.SEFLG_SIDEREAL | SweConst.SEFLG_SPEED | SweConst.SEFLG_TRUEPOS | SweConst.SEFLG_TOPOCTR;
-	  		int iyear, imonth, iday, ihour = 0, imin = 0, isec = 0;
-//	  	  	String path = "/home/nataly/workspacercp/kz.zvezdochet.sweph/lib/ephe";
+	  		long iflag = SweConst.SEFLG_SWIEPH | SweConst.SEFLG_SIDEREAL | SweConst.SEFLG_SPEED | SweConst.SEFLG_TRUEPOS | SweConst.SEFLG_TOPOCTR;
+//	  	  	String path = "/home/nataly/workspace/kz.zvezdochet.sweph/lib/ephe";
 			String path = PlatformUtil.getPath(Activator.PLUGIN_ID, "/lib/ephe").getPath(); //$NON-NLS-1$
-//			System.out.println(path); // /home/nataly/soft/eclipsercp/../../workspacercp/kz.zvezdochet.sweph/lib/ephe/
 	  		sweph.swe_set_ephe_path(path);
 	  		sweph.swe_set_sid_mode(SweConst.SE_SIDM_DJWHAL_KHUL, 0, 0);
 
 	  		//обрабатываем дату
+	  		int iyear, imonth, iday, ihour = 0, imin = 0, isec = 0;
 	  		iday = Integer.parseInt(sdate.substring(0, 2));
 	  		imonth = Integer.parseInt(sdate.substring(3, 5));
 	  		iyear = Integer.parseInt(sdate.substring(6, 10));
 	  		
 	  		//обрабатываем время
-	  		double timing = Double.parseDouble(NumberUtil.trimLeadZero(stime.substring(0, 2)));
-	  		double zone = Double.parseDouble(szone);
-	  		if (zone < 0) {
-	  			timing = timing - zone;
-	  		} else {
-	  			if (timing >= zone) {
-	  				timing = timing - zone;
-	  			} else {
+	  		double timing = Double.parseDouble(NumberUtil.trimLeadZero(stime.substring(0, 2))); //час по местному времени
+	  		double zone = Double.parseDouble(szone); //зона
+	  		if (zone < 0)
+	  			timing -= zone;
+	  		else {
+	  			if (timing >= zone)
+	  				timing -= zone;
+	  			else {
+	  				/*
+	  				 * Если час меньше зоны, значит по Гринвичу будет предыдущий день,
+	  				 * поэтому нужно уменьшить указанную дату на 1 день
+	  				 */
 	  				timing = timing + 24 - zone;
-	  	  		}
+	  				if (iday > 1)
+	  					--iday;
+	  				else {
+	  					if (1 == imonth) {
+	  						--iyear;
+	  						imonth = 12;
+	  						iday = 31;
+	  					} else if (3 == imonth) {
+	  						imonth = 2;
+	  						iday = DateUtil.isLeapYear(iyear) ? 29 : 28;
+	  					} else if (Arrays.asList(new Integer[] {2,4,6,8,9,11}).contains(imonth)) {
+	  						--imonth;
+	  						iday = 31;
+	  					} else if (Arrays.asList(new Integer[] {5,7,10,12}).contains(imonth)) {
+	  						--imonth;
+	  						iday = 30;
+	  					}
+	  				}
+	  			}
 	  		}
-	  		if (timing >= 24) timing -= 24;
-	  		ihour = (int)Math.round(timing / 1);
+	  		if (timing >= 24)
+	  			timing -= 24;
+	  		ihour = (int)timing; //гринвичский час
 	  		imin = Integer.parseInt(NumberUtil.trimLeadZero(stime.substring(3,5)));
 	  		isec = Integer.parseInt(NumberUtil.trimLeadZero(stime.substring(6,8)));
 	
@@ -202,8 +225,6 @@ public class Configuration {
 	  			p.setCoord(planets[10] - 180);
 	  		else
 	  			p.setCoord(planets[10] + 180);
-//	  		for (int i = 0; i < planets.length; i++)
-//	  			System.out.println(((Planet)planetList.get(constToPlanet(i))).getCode() + " " + planets[i]);
 	
 	  		//расчёт куспидов домов
 	  		//{ for houses: ecliptic obliquity and nutation }
@@ -212,9 +233,11 @@ public class Configuration {
 	  		nut_long = xx[2];
 	  		//{ geographic position }
 	  		glon = ilondeg + ilonmin/60.0 + ilonsec/3600.0;
-	  		if (lon < 0) glon = -glon;
+	  		if (lon < 0)
+	  			glon = -glon;
 	  		glat = ilatdeg + ilatmin/60.0 + ilatsec/3600.0;
-	  		if (lat < 0) glat = -glat;
+	  		if (lat < 0)
+	  			glat = -glat;
 	  		//{ sidereal time }
 	  		tsid = new SwissLib().swe_sidtime(tjdut);
 	  		tsid = tsid + glon / 15;
@@ -225,8 +248,6 @@ public class Configuration {
 	  		//используем систему Плацидуса
 	  		sweph.swe_houses(tjdut, SweConst.SEFLG_SIDEREAL, glat, glon, hsys, hcusps, ascmc);
 	  		calcHouseParts(hcusps);
-//	  		for (int i = 1; i < hcusps.length; i++) 
-//	  			System.out.println("house " + i + " = " + hcusps[i]);
 	  		sweph.swe_close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -484,7 +505,6 @@ public class Configuration {
 	 * - благоприятная связь (хороший или нейтральный аспект планеты с Раху и Селеной)<br>
 	 * - неблагоприятная связь (плохой или нейтральный аспект планеты с Кету и Лилит)<br>
 	 * - нахождение планеты в градусе<br>
-	 * //TODO расчитать все важные позиции планет
 	 * определяем позиции планет в целом (обитель изгнание экзальтация падение)<br>
 	 * определяем пустые знаки<br>
 	 * определяем пустые дома а также включенные и какие там ещё есть<br>
