@@ -194,4 +194,13 @@ public class House extends SkyPoint {
 	public void setHorizontalalHalfSphereId(long horizontalalHalfSphereId) {
 		this.horizontalalHalfSphereId = horizontalalHalfSphereId;
 	}
+
+	public House(House house) {
+		id = house.id;
+		name = house.name;
+		code = house.code;
+		coord = house.coord;
+		number = house.number;
+		designation = house.designation;
+	}
 }

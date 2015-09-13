@@ -1,6 +1,3 @@
-/**
- * 
- */
 package kz.zvezdochet.part;
 
 import java.util.ArrayList;
@@ -427,7 +424,7 @@ public class EventPart extends ModelPart implements ICalculable {
 	}
 
 	/**
-	 * Инициализация местности события
+	 * Инициализация представления местности события
 	 * @param place местность
 	 */
 	private void initPlace(Place place) {
