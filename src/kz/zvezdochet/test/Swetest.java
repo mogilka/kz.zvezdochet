@@ -11,8 +11,8 @@ import swisseph.SwissLib;
 public class Swetest {
 
   	public static void main(String[] argv) {
-  		argv = new String[] {"22.05.2015", "05:00:00", "6", "43.15", "76.55"};
-//  		argv = new String[] {"29.01.1954", "23:44:52", "-6", "33.03", "-89.35"};
+//  		argv = new String[] {"22.05.2015", "05:00:00", "6", "43.15", "76.55"};
+  		argv = new String[] {"29.01.1954", "23:44:52", "-6", "33.03", "-89.35"};
   		new Swetest().calculate(argv);
   		/*
   		 * argv = ["08.12.2007", "08:08:08", "6", "43.15", "76.55"]
@@ -155,9 +155,46 @@ public class Swetest {
   		String stime = argv[1];
   		double timing = Double.parseDouble(trimLeadZero(stime.substring(0,2))); //час по местному времени
   		double zone = Double.parseDouble(argv[2]); //зона
-  		if (zone < 0)
-  			timing -= zone;
-  		else {
+  		if (zone < 0) {
+  			if (timing < (24 + zone))
+  				timing -= zone;
+  			else {
+  				/*
+  				 * Если час больше разности 24 часов и зоны, значит по Гринвичу будет следующий день,
+  				 * поэтому нужно увеличить указанную дату на 1 день
+  				 */
+  				timing = timing - zone - 24;
+  				if (iday < 28)
+  					++iday;
+  				else if (31 == iday) {
+  					iday = 1;  							
+  					if (12 == imonth) {
+  	  					++iyear;
+  	  					imonth = 1;
+  					} else
+  						++imonth;
+  				} else if (30 == iday) {
+  					if (Arrays.asList(new Integer[] {4,6,9,11}).contains(imonth)) {
+  						++imonth;
+  						iday = 1;
+  					} else
+  						iday = 31;
+  				} else if (2 == imonth) {
+  					if (29 == iday) {
+  	  					imonth = 3;
+  	  					iday = 1;
+  					} else if (28 == iday) {
+  						if (DateUtil.isLeapYear(iyear))
+  							iday = 29;
+  						else {
+  							imonth = 3;
+  							iday = 1;
+  						}
+  					}
+  				} else //28 и 29 числа месяцев кроме февраля
+  					++iday;
+  			}
+  		} else {
   			if (timing >= zone)
   				timing -= zone;
   			else {

@@ -151,9 +151,46 @@ public class Configuration {
 	  		//обрабатываем время
 	  		double timing = Double.parseDouble(NumberUtil.trimLeadZero(stime.substring(0, 2))); //час по местному времени
 	  		double zone = Double.parseDouble(szone); //зона
-	  		if (zone < 0)
-	  			timing -= zone;
-	  		else {
+	  		if (zone < 0) {
+	  			if (timing < (24 + zone))
+	  				timing -= zone;
+	  			else {
+	  				/*
+	  				 * Если час больше разности 24 часов и зоны, значит по Гринвичу будет следующий день,
+	  				 * поэтому нужно увеличить указанную дату на 1 день
+	  				 */
+	  				timing = timing - zone - 24;
+	  				if (iday < 28)
+	  					++iday;
+	  				else if (31 == iday) {
+	  					iday = 1;  							
+	  					if (12 == imonth) {
+	  	  					++iyear;
+	  	  					imonth = 1;
+	  					} else
+	  						++imonth;
+	  				} else if (30 == iday) {
+	  					if (Arrays.asList(new Integer[] {4,6,9,11}).contains(imonth)) {
+	  						++imonth;
+	  						iday = 1;
+	  					} else
+	  						iday = 31;
+	  				} else if (2 == imonth) {
+	  					if (29 == iday) {
+	  	  					imonth = 3;
+	  	  					iday = 1;
+	  					} else if (28 == iday) {
+	  						if (DateUtil.isLeapYear(iyear))
+	  							iday = 29;
+	  						else {
+	  							imonth = 3;
+	  							iday = 1;
+	  						}
+	  					}
+	  				} else //28 и 29 числа месяцев кроме февраля
+	  					++iday;
+	  			}
+	  		} else {
 	  			if (timing >= zone)
 	  				timing -= zone;
 	  			else {
