@@ -613,28 +613,34 @@ public class Configuration {
 			Planet planet = (Planet)model;
 			
 			//сравнение количества хороших и плохих аспектов
-			int good = planet.getAspectCountMap().get("POSITIVE") +
-					planet.getAspectCountMap().get("POSITIVE_HIDDEN");
-			int bad = planet.getAspectCountMap().get("NEGATIVE") +
-					planet.getAspectCountMap().get("NEGATIVE_HIDDEN");
-			if (0 == good && bad > 2) {
+			Map<String, Integer> map = planet.getAspectCountMap(); 
+			int good = map.get("POSITIVE");
+			int goodh =	map.get("POSITIVE_HIDDEN");
+			int bad = map.get("NEGATIVE");
+			int badh = map.get("NEGATIVE_HIDDEN");
+			if (0 == good + goodh && (bad > 1 || (1 == bad && badh > 1))) {
 				planet.setDamaged(true);
 				System.out.println(planet.getCode() + " is damaged");
 				continue;
-			} else if (0 == bad && good > 0) {
+			} else if (0 == bad + badh && good > 1) {
 				planet.setPerfect(true); 
 				System.out.println(planet.getCode() + " is perfect");
 				continue;
 			}
-			final String LILITH = "Lilith";
-			for (SkyPointAspect aspect : aspectList) {
-				if (aspect.getAspect().getCode().equals("CONJUNCTION") &&
-						aspect.getSkyPoint1().getCode().equals(LILITH) &&
-						!aspect.getSkyPoint2().getCode().equals(LILITH) &&
-						aspect.getSkyPoint2().getCode().equals(planet.getCode())) {
-					planet.setDamaged(true); 
-					System.out.println(planet.getCode() + " is damaged");
-					continue;
+			if (!planet.isDamaged()) {
+				final String LILITH = "Lilith";
+				for (SkyPointAspect aspect : aspectList) {
+					if (aspect.getAspect().getCode().equals("CONJUNCTION") &&
+							aspect.getSkyPoint1().getCode().equals(LILITH) &&
+							!aspect.getSkyPoint2().getCode().equals(LILITH) &&
+							aspect.getSkyPoint2().getCode().equals(planet.getCode())) {
+						if (0 == good + goodh)
+							planet.setDamaged(true);
+						else if (planet.isPerfect())
+							planet.setPerfect(false);
+						System.out.println(planet.getCode() + " is damaged");
+						continue;
+					}
 				}
 			}
 		}
