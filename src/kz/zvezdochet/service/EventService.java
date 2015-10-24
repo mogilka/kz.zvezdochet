@@ -120,7 +120,7 @@ public class EventService extends ModelService {
 			ps.setString(11, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
 			ps.setInt(12, event.getHuman());
 			ps.setString(13, event.getAccuracy());
-			ps.setNull(14, java.sql.Types.NULL);
+			ps.setNull(14, 3);
 			ps.setInt(15, 1);
 			ps.setString(16, Translit.convert(event.getName(), true));
 			ps.setDouble(17, event.getDst());
