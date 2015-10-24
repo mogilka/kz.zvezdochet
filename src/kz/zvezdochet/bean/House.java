@@ -96,14 +96,21 @@ public class House extends SkyPoint {
 	}
 
 	/**
+	 * Признак куспида
+	 */
+	private boolean main = false;
+
+	public void setMain(boolean main) {
+		this.main = main;
+	}
+
+	/**
 	 * Проверка, является ли дом основным
-	 * @return <i>true</i> - если дом относится к главным куспидам
+	 * @return <i>true</i> - если дом относится к главным куспидам,
+	 * <i>false</i> - если дом относится к триплицетам
 	 */
 	public boolean isMain() {
-  		int[] hmain = {1,4,7,10,13,16,19,22,25,28,31,34};
-  		for (int i : hmain)
-  			if (getNumber() == i) return true;
-  		return false;
+  		return main;
 	}
 
 	public DictionaryService getService() {
@@ -202,5 +209,18 @@ public class House extends SkyPoint {
 		coord = house.coord;
 		number = house.number;
 		designation = house.designation;
+	}
+
+	/**
+	 * Признак дома, позиция которого в знаке Зодиака учитывается при экспорте гороскопа
+	 */
+	private boolean exportOnSign = false;
+
+	public boolean isExportOnSign() {
+		return exportOnSign;
+	}
+
+	public void setExportOnSign(boolean exportOnSign) {
+		this.exportOnSign = exportOnSign;
 	}
 }

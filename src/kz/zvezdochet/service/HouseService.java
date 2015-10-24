@@ -131,6 +131,8 @@ public class HouseService extends DictionaryService {
 		house.setZoneId(rs.getInt("zoneid"));
 		house.setVerticalHalfSphereId(rs.getInt("halfspherevid"));
 		house.setHorizontalalHalfSphereId(rs.getInt("halfspherehid"));
+		house.setMain(rs.getBoolean("main"));
+		house.setExportOnSign(rs.getBoolean("exportonsign"));
 		return house;
 	}
 
