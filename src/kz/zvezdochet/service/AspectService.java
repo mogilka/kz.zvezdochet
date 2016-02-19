@@ -81,6 +81,7 @@ public class AspectService extends DictionaryService {
 		aspect.setOrbis(rs.getDouble("Orbis"));
 		Long typeId = rs.getLong("TypeID");
 		aspect.setType((AspectType)new AspectTypeService().find(typeId));
+		aspect.setMain(rs.getBoolean("main"));
 		return aspect;
 	}
 

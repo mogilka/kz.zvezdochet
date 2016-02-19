@@ -91,6 +91,7 @@ public class AspectTypeService extends DictionaryService {
 		type.setProtraction(rs.getString("Protraction"));
 		type.setColor(CoreUtil.rgbToColor(rs.getString("Color")));
 		type.setDimColor(CoreUtil.rgbToColor(rs.getString("DimColor")));
+		type.setFontColor(rs.getString("fontcolor"));
 		if (rs.getString("ParentTypeID") != null) {
 			Long typeId = rs.getLong("ParentTypeID");
 			type.setParentType((AspectType)new AspectTypeService().find(typeId));

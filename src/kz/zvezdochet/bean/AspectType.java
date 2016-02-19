@@ -29,6 +29,19 @@ public class AspectType extends DiagramObject {
 	 */
 	private Color dimColor;
 	/**
+	 * Цвет шрифта (для пользовательских прогнозов)
+	 */
+	private String fontColor;
+
+	public String getFontColor() {
+		return fontColor;
+	}
+
+	public void setFontColor(String fontColor) {
+		this.fontColor = fontColor;
+	}
+
+	/**
 	 * Символ, обозначающий тип аспекта
 	 */
 	private char symbol;

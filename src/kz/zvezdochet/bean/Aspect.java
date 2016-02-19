@@ -21,12 +21,25 @@ public class Aspect extends Dictionary {
 	 * Орбис
 	 */
 	private double orbis = 0.0;
-	
+
 	/**
 	 * Тип аспекта
 	 */
 	private AspectType type;
 	
+	/**
+	 * Признак основного аспекта в своей категории
+	 */
+	private boolean main;
+
+	public boolean isMain() {
+		return main;
+	}
+
+	public void setMain(boolean main) {
+		this.main = main;
+	}
+
 	public Aspect() {
 		super();
 	}
