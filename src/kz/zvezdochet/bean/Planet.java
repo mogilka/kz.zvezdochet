@@ -59,7 +59,20 @@ public class Planet extends SkyPoint {
      * Признак фиктивной планеты
      */
     private boolean fictious = false;
-    
+
+    /**
+     * Краткое описание
+     */
+    private String shortName;
+
+	public String getShortName() {
+		return shortName;
+	}
+
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
+	}
+
 	/**
 	 * Карта аспектов планеты
 	 */

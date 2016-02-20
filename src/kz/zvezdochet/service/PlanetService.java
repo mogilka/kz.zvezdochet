@@ -145,6 +145,7 @@ public class PlanetService extends DictionaryService {
 //		planet.setRetroText(rs.getString("Retro"));
 		planet.setColor(CoreUtil.rgbToColor(rs.getString("Color")));
 		planet.setNumber(rs.getInt("OrdinalNumber"));
+		planet.setShortName(rs.getString("shortname"));
 //		Image img = Toolkit.getDefaultToolkit().createImage(rs.getBytes("Image")); TODO
 //      planet.setImage(img);
 		String s = rs.getString("Fictitious");
