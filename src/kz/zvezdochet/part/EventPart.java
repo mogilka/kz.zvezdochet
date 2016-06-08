@@ -89,7 +89,7 @@ public class EventPart extends ModelPart implements ICalculable {
 	private Text txComment;
 	private Text txDescription;
 	private Label lbBirth;
-	private CDateTime dtBirth; 
+	private CDateTime dtBirth;
 	private CDateTime dtDeath; 
 	private Button btCelebrity;
 	private ComboViewer cvHuman;
