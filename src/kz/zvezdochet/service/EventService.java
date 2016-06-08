@@ -1135,4 +1135,35 @@ and e.celebrity = 1
 order by year(initialdate)
  */
 	}
+
+	/**
+	 * Поиск связанного события для импорта
+	 * @param id идентификатор серверного события
+	 * @return событие
+	 * @throws DataAccessException
+	 */
+	public Model findBack(Long id) throws DataAccessException {
+		if (null == id) return null;
+		Model model = create();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String sql = "select * from " + tableName + " where backid = ?";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, id);
+			rs = ps.executeQuery();
+			if (rs.next()) 
+				model = init(rs, model);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
+		return model;
+	}
 }

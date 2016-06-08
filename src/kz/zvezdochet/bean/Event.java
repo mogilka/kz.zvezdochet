@@ -1,5 +1,6 @@
 package kz.zvezdochet.bean;
 
+import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -13,6 +14,7 @@ import kz.zvezdochet.service.PlaceService;
 import kz.zvezdochet.util.Configuration;
 
 import org.eclipse.swt.graphics.Image;
+import org.json.JSONObject;
 
 /**
  * Событие или персона
@@ -410,5 +412,61 @@ public class Event extends Model {
 	}
 	public void setBackid(long backid) {
 		this.backid = backid;
+	}
+
+	/**
+	 * Конвертация параметров JSON в объект события
+	 * @param json объект JSON
+	 */
+	public Event(JSONObject json) {
+		super();
+		setId(json.getLong("ID"));
+		setName(json.getString("name"));
+		setBirth(DateUtil.getDatabaseDateTime(json.getString("InitialDate")));
+		Object value =json.get("FinalDate");
+		if (value != JSONObject.NULL)
+			setDeath(DateUtil.getDatabaseDateTime(value.toString()));
+		value = json.getInt("RightHanded");
+		setRightHanded(1 == (int)value ? true : false);
+		setRectification(json.getInt("Rectification"));
+		value = json.getInt("Celebrity");
+		setCelebrity(1 == (int)value ? true : false);
+		setDescription(json.get("Comment").toString());
+		value = json.getInt("Gender");
+		setFemale(1 == (int)value ? true : false);
+		value = json.get("Placeid");
+		if (value != JSONObject.NULL)
+			setPlaceid(json.getLong("Placeid"));
+		value = json.get("finalplaceid");
+		if (value != JSONObject.NULL)
+			setFinalPlaceid((int)value);
+		value = json.get("Zone");
+		if (value != JSONObject.NULL)
+			setZone(json.getDouble("Zone"));
+		setHuman(json.getInt("human"));
+		setAccuracy(json.get("accuracy").toString());
+		setUserid(1);
+		setDate(DateUtil.getDatabaseDateTime(json.getString("date")));
+		setFancy(json.getString("fancy"));
+		value = json.get("backid");
+		if (value != JSONObject.NULL)
+			setBackid(json.getLong("backid"));
+		setDst(json.getDouble("dst"));
+	}
+
+	/**
+	 * Маршализация события для лога
+	 * @return строка параметров события
+	 */
+	public String toLog() {
+		String res = "";
+		try {
+			Field[] fields = getClass().getDeclaredFields();
+			for (int i = 0; i < fields.length; i++)
+				res += fields[i].getName() + ":" + fields[i].get(this) + ", ";
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "[" + res + "]";
 	}
 }
