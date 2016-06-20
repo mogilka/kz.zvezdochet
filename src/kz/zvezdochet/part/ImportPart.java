@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.ui.view.ModelLabelProvider;
 import kz.zvezdochet.core.ui.view.ModelListView;
 import kz.zvezdochet.core.ui.view.View;
@@ -102,5 +103,10 @@ public class ImportPart extends ModelListView {
 	 */
 	public Date getDate() {
 		return dtDate.getSelection();
+	}
+
+	@Override
+	public Model createModel() {
+		return null;
 	}
 }

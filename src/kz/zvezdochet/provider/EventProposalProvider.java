@@ -12,14 +12,14 @@ import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 
 /**
- * Обработчик автозаполнения событий
+ * Обработчик автопоиска событий
  * @author Nataly Didenko
  *
  */
 public class EventProposalProvider implements IContentProposalProvider {
-	private int humanFilter = 1;
+	private Object[] humanFilter = new Object[] {0,1,2};
 
-	public EventProposalProvider(int human) {
+	public EventProposalProvider(Object[] human) {
 		humanFilter = human;
 	}
 

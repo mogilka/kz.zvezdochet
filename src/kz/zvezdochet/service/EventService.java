@@ -40,21 +40,27 @@ public class EventService extends ModelService {
 	/**
 	 * Поиск события по наименованию
 	 * @param text поисковое выражение
-	 * @param human -1|0|1|2 все|события|живые существа|персонажи
+	 * @param human null|0|1|2 все|события|живые существа|сообщества
 	 * @return список событий
 	 * @throws DataAccessException
 	 */
-	public List<Model> findByName(String text, int human) throws DataAccessException {
+	public List<Model> findByName(String text, Object[] human) throws DataAccessException {
         List<Model> list = new ArrayList<Model>();
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
-			String wherehuman = (human > -1) ? "and human = " + human : "";
+			String wherehuman = "";
+			if (null == human)
+				human = new Object[] {0,1,2};
+			String arr = this.arrayToString(human);
+			wherehuman = "and human in (" + arr + ")";
+
 			String sql = "select * from " + tableName + 
 				" where name like ? " + wherehuman +
 				" order by initialdate";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setString(1, "%" + text + "%");
+//			System.out.println(ps);
 			rs = ps.executeQuery();
 			while (rs.next())
 				list.add(init(rs, null));
@@ -965,7 +971,7 @@ order by year(initialdate)
 	}
 
 	/**
-	 * Поиск событий по периоду
+	 * Поиск событий за период
 	 * @param date начальная дата
 	 * @param date2 конечная дата
 	 * @return список событий

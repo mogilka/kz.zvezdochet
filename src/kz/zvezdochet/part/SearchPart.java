@@ -105,7 +105,7 @@ public class SearchPart extends ModelListView {
 				String text = txSearch.getText();
 				if (text.length() > 1)
 					try {
-						setData(new EventService().findByName(text, -1));
+						setData(new EventService().findByName(text, null));
 					} catch (DataAccessException e) {
 						e.printStackTrace();
 					}			
@@ -430,5 +430,10 @@ public class SearchPart extends ModelListView {
 	@Override
 	public boolean check(int mode) throws Exception {
 		return false;
+	}
+
+	@Override
+	public Model createModel() {
+		return null;
 	}
 }

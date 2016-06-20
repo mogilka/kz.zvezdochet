@@ -494,7 +494,8 @@ public class EventPart extends ModelPart implements ICalculable {
 		if (msgBody.length() > 0) {
 			DialogUtil.alertWarning(GUIutil.SOME_FIELDS_NOT_FILLED + msgBody);
 			return false;
-		} else return true;
+		} else
+			return true;
 	}
 
 	@Override

@@ -59,7 +59,7 @@ public class ImportRunHandler extends Handler {
 							++updated;
 							log.append("Старый обновлён: " + event.toLog() + "\n");
 						} else {
-							log.append("Новый не соответствует: " + event.toLog());
+							log.append("Новый не соответствует: " + event.toLog() + "\n\t");
 							log.append("Старому: " + back.toLog() + "\n");
 							++canceled;
 						}

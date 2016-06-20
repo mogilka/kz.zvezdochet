@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
@@ -38,7 +39,7 @@ public class Event extends Model {
 	 */
 	private boolean female = true;
 	/**
-	 * Приоритет полушарий (левое, правое)
+	 * Доминантное полушарие при рождении (левое, правое)
 	 */
 	private boolean rightHanded = true;
 	/**
@@ -468,5 +469,20 @@ public class Event extends Model {
 			e.printStackTrace();
 		}
 		return "[" + res + "]";
+	}
+
+	/**
+	 * Участники сообщества
+	 */
+	private List<Event> members;
+
+	public List<Event> getMembers() {
+		if (2 == human)
+			return members;
+		else
+			return null;
+	}
+	public void setMembers(List<Event> members) {
+		this.members = members;
 	}
 }

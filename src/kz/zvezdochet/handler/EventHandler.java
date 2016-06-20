@@ -54,7 +54,7 @@ public class EventHandler {
 	 * @param part представление
 	 * @param model событие
 	 */
-	private void openEvent(MPart part, Model model) {
+	private void openModel(MPart part, Model model) {
 		if (model != null)
 			((EventPart)part.getObject()).setModel(model, true);
 	    part.setVisible(true);
@@ -109,12 +109,12 @@ public class EventHandler {
 		MPart part = partService.findPart("kz.zvezdochet.part.event");
 	    if (part.isDirty()) {
 			if (DialogUtil.alertConfirm(
-					"Открытое ранее событие не сохранено\n"
-					+ "и утратит все внесённые изменения,\n"
-					+ "если Вы откроете новое событие. Продолжить?")) {
-				openEvent(part, model);
+					"Открытый ранее объект не сохранён\n"
+							+ "и утратит все внесённые изменения,\n"
+							+ "если вы откроете новый. Продолжить?")) {
+				openModel(part, model);
 			}
 	    } else
-	    	openEvent(part, model);
+	    	openModel(part, model);
 	}
 }
