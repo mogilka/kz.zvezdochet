@@ -11,8 +11,7 @@ import swisseph.SwissLib;
 public class Swetest {
 
   	public static void main(String[] argv) {
-//  		argv = new String[] {"22.05.2015", "05:00:00", "6", "43.15", "76.55"};
-  		argv = new String[] {"29.01.1954", "23:44:52", "-6", "33.03", "-89.35"};
+  		argv = new String[] {"22.02.1732", "10:00:00", "-5", "38.11", "-76.80"};
   		new Swetest().calculate(argv);
   		/*
   		 * argv = ["08.12.2007", "08:08:08", "6", "43.15", "76.55"]
@@ -262,11 +261,11 @@ public class Swetest {
   		eps_true = xx[0];
   		nut_long = xx[2];
   		//{ geographic position }
-  		glon = ilondeg + ilonmin/60.0 + ilonsec/3600.0;
+  		glon = Math.abs(ilondeg) + ilonmin/60.0 + ilonsec/3600.0;
   		if (lon < 0)
   			glon = -glon;
   		//if (combo_EW.ItemIndex > 0) then glon := -glon;
-  		glat = ilatdeg + ilatmin/60.0 + ilatsec/3600.0;
+  		glat = Math.abs(ilatdeg) + ilatmin/60.0 + ilatsec/3600.0;
   		if (lat < 0)
   			glat = -glat;
   		//if (combo_NS.ItemIndex > 0) then glat := -glat;
