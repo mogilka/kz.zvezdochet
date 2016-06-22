@@ -127,7 +127,7 @@ public class EventService extends ModelService {
 			ps.setInt(12, event.getHuman());
 			ps.setString(13, event.getAccuracy());
 			ps.setNull(14, 3);
-			ps.setInt(15, 1);
+			ps.setInt(15, event.isCalculated() ? 1 : 0);
 			ps.setString(16, Translit.convert(event.getName(), true));
 			ps.setDouble(17, event.getDst());
 			if (event.getFinalPlace() != null && event.getFinalPlace().getId() > 0)
@@ -294,6 +294,8 @@ public class EventService extends ModelService {
 		event.setFancy(rs.getString("fancy"));
 		event.setBackid(rs.getLong("backid"));
 		event.setDst(rs.getDouble("dst"));
+		s = rs.getString("calculated");
+		event.setCalculated(s.equals("1") ? true : false);
 		return event;
 	}
 

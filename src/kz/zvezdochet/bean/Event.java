@@ -485,4 +485,16 @@ public class Event extends Model {
 	public void setMembers(List<Event> members) {
 		this.members = members;
 	}
+
+	/**
+	 * Признак того, что расчётная конфигурация события создана
+	 */
+	boolean calculated = false;
+
+	public boolean isCalculated() {
+		return calculated;
+	}
+	public void setCalculated(boolean calculated) {
+		this.calculated = calculated;
+	}
 }
