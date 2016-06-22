@@ -3,6 +3,7 @@ package kz.zvezdochet.service;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import kz.zvezdochet.bean.Aspect;
@@ -80,6 +81,7 @@ public class AspectService extends DictionaryService {
 		aspect.setValue(rs.getDouble("Value"));
 		aspect.setOrbis(rs.getDouble("Orbis"));
 		Long typeId = rs.getLong("TypeID");
+		aspect.setTypeid(typeId);
 		aspect.setType((AspectType)new AspectTypeService().find(typeId));
 		aspect.setMain(rs.getBoolean("main"));
 		return aspect;
@@ -94,6 +96,36 @@ public class AspectService extends DictionaryService {
 	public List<Model> getList() throws DataAccessException {
 		if (null == list)
 			list = super.getList();
+		return list;
+	}
+
+	/**
+	 * Поиск сильных аспектов
+	 * @return список аспектов
+	 * @throws DataAccessException
+	 */
+	public List<Model> getMajorList() throws DataAccessException {
+        List<Model> list = new ArrayList<Model>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String sql = "select * from " + tableName + " where typeid < 4";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				Model type = init(rs, create());
+				list.add(type);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
 		return list;
 	}
 }

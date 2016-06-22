@@ -16,17 +16,19 @@ public class Aspect extends Dictionary {
 	 * Значение
 	 */
 	private double value = 0.0;
-	
+
 	/**
 	 * Орбис
 	 */
 	private double orbis = 0.0;
-
+	/**
+	 * Идентификатор типа аспекта
+	 */
+	private long typeid;
 	/**
 	 * Тип аспекта
 	 */
 	private AspectType type;
-	
 	/**
 	 * Признак основного аспекта в своей категории
 	 */
@@ -120,5 +122,13 @@ public class Aspect extends Dictionary {
 	@Override
 	public String toString() {
 		return name + " " + value;
+	}
+
+	public long getTypeid() {
+		return typeid;
+	}
+
+	public void setTypeid(long typeid) {
+		this.typeid = typeid;
 	}
 }

@@ -435,20 +435,20 @@ public class EventPart extends ModelPart implements ICalculable {
 		txGreenwich.setText(CalcUtil.formatNumber("###.##", place.getGreenwich())); //$NON-NLS-1$
 		txZone.setText(String.valueOf(place.getGreenwich()));
 	}
-	
+
 	private String[] genders = {"",
 		Messages.getString("PersonView.Male"),
 		Messages.getString("PersonView.Female")};
 	private String[] hands = {"",
 		Messages.getString("PersonView.Right-handed"),
 		Messages.getString("PersonView.Left-handed")};
-	private String[] calcs = {"",
+	private String[] calcs = {Messages.getString("PersonView.Fault"),
 		Messages.getString("PersonView.Success"),
-		Messages.getString("PersonView.Fault"),
-		Messages.getString("PersonView.Undefined")};
+		Messages.getString("PersonView.Undefined"),
+		"Недостаточно данных"};
 	private String[] humans = {"Событие",
 		"Живое существо",
-		"Персонаж"};
+		"Сообщество людей"};
 	private String[] dst = {"+0", "+1", "+2", "+3"};
 
 	@Override

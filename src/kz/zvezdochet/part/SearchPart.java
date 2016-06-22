@@ -434,6 +434,6 @@ public class SearchPart extends ModelListView {
 
 	@Override
 	public Model createModel() {
-		return null;
+		return new kz.zvezdochet.bean.Event();
 	}
 }
