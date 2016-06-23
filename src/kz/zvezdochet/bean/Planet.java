@@ -353,4 +353,8 @@ public class Planet extends SkyPoint {
 	public void setStrong(boolean strong) {
 		this.strong = strong;
 	}
+
+	public static Long[] getSportSet() {
+		return new Long[] {19L,21L,22L,23L,25L,26L,27L,28L,29L,31L,34L};
+	}
 }

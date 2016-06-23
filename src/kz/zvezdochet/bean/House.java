@@ -223,4 +223,8 @@ public class House extends SkyPoint {
 	public void setExportOnSign(boolean exportOnSign) {
 		this.exportOnSign = exportOnSign;
 	}
+
+	public static Long[] getSportSet() {
+		return new Long[] {142L,143L,144L,147L,148L,158L,161L,162L,163L,169L,176L};
+	}
 }
