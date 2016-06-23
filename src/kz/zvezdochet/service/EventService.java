@@ -113,6 +113,8 @@ public class EventService extends ModelService {
 			ps.setBoolean(2, event.isFemale());
 			if (event.getPlace() != null && event.getPlace().getId() != null && event.getPlace().getId() > 0)
 				ps.setLong(3, event.getPlace().getId());
+			else if (event.getPlaceid() > 0)
+				ps.setLong(3, event.getPlaceid());
 			else
 				ps.setNull(3, java.sql.Types.NULL);
 			ps.setDouble(4, event.getZone());
