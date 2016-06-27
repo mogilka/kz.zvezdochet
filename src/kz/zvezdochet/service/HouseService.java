@@ -107,7 +107,7 @@ public class HouseService extends DictionaryService {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			update();
+			afterSave();
 		}
 		return dict;
 	}

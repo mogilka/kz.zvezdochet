@@ -131,7 +131,7 @@ public class SignService extends DictionaryService {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			update();
+			afterSave();
 		}
 		return dict;
 	}

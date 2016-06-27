@@ -123,7 +123,7 @@ public class PlanetService extends DictionaryService {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			update();
+			afterSave();
 		}
 		return dict;
 	}
