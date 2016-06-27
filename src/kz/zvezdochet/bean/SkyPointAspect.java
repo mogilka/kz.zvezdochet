@@ -79,4 +79,11 @@ public class SkyPointAspect {
 	public void setAge(double age) {
 		this.age = age;
 	}
+
+	@Override
+	public String toString() {
+		return skyPoint1.getName() + " " + 
+			aspect.getType().getSymbol() + " " + 
+			skyPoint2.getName();
+	}
 }
