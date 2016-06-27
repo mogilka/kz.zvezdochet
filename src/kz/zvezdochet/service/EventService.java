@@ -268,11 +268,15 @@ public class EventService extends ModelService {
 		event.setId(Long.parseLong(rs.getString("ID")));
 		if (rs.getString("name") != null)
 			event.setName(rs.getString("name"));
-		event.setBirth(DateUtil.getDatabaseDateTime(rs.getString("initialdate")));
+		String s = rs.getString("initialdate");
+		if (s.equals("0000-00-00 00:00:00"))
+			event.setBirth(null);
+		else
+			event.setBirth(DateUtil.getDatabaseDateTime(s));
 		java.sql.Date finaldate = rs.getDate("finaldate");
 		if (finaldate != null) 
 			event.setDeath(rs.getTimestamp("finaldate"));
-		String s = rs.getString("RightHanded");
+		s = rs.getString("RightHanded");
 		event.setRightHanded(s.equals("1") ? true : false);
 		if (rs.getString("Rectification") != null) 
 			event.setRectification(rs.getInt("Rectification"));
@@ -1019,7 +1023,7 @@ order by year(initialdate)
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
-			String sql = "select * from " + tableName + " order by date desc limit 300";
+			String sql = "select * from " + tableName + " order by date desc limit 30";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			rs = ps.executeQuery();
 			while (rs.next())
