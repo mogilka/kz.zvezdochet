@@ -456,22 +456,6 @@ public class Event extends Model {
 	}
 
 	/**
-	 * Маршализация события для лога
-	 * @return строка параметров события
-	 */
-	public String toLog() {
-		String res = "";
-		try {
-			Field[] fields = getClass().getDeclaredFields();
-			for (int i = 0; i < fields.length; i++)
-				res += fields[i].getName() + ":" + fields[i].get(this) + ", ";
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return "[" + res + "]";
-	}
-
-	/**
 	 * Участники сообщества
 	 */
 	private List<Event> members;
@@ -496,5 +480,21 @@ public class Event extends Model {
 	}
 	public void setCalculated(boolean calculated) {
 		this.calculated = calculated;
+	}
+
+	/**
+	 * Маршализация модели для лога
+	 * @return строка параметров модели
+	 */
+	public String toLog() {
+		String res = "";
+		try {
+			Field[] fields = getClass().getDeclaredFields();
+			for (int i = 0; i < fields.length; i++)
+				res += fields[i].getName() + ":" + fields[i].get(this) + ", ";
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "[" + res + "]";
 	}
 }

@@ -33,7 +33,7 @@ public class PlaceService extends DictionaryService {
 			String sql;
 			if (null == model.getId()) 
 				sql = "insert into " + tableName + 
-					"(latitude, longitude, code, name, description, greenwich) values(?,?,?,?,?,?,?)";
+					"(latitude, longitude, code, name, description, greenwich, parentid, type, date) values(?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
 					"latitude = ?, " +
@@ -42,8 +42,10 @@ public class PlaceService extends DictionaryService {
 					"name = ?, " +
 					"description = ?, " +
 					"greenwich = ?, " +
+					"parentid = ?, " +
+					"type = ?, " +
 					"date = ? " +
-					"where id = " + dict.getId();
+				"where id = " + dict.getId();
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setDouble(1, dict.getLatitude());
 			ps.setDouble(2, dict.getLongitude());
@@ -51,7 +53,13 @@ public class PlaceService extends DictionaryService {
 			ps.setString(4, dict.getName());
 			ps.setString(5, dict.getDescription());
 			ps.setDouble(6, dict.getGreenwich());
-			ps.setString(7, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
+			if (dict.getParentid() > 0)
+				ps.setLong(7, dict.getParentid());
+			else
+				ps.setNull(7, java.sql.Types.NULL);
+			ps.setString(8, dict.getType());
+			ps.setString(9, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
+			System.out.println(ps);
 			result = ps.executeUpdate();
 			if (result == 1) {
 				if (null == model.getId()) { 
@@ -84,6 +92,8 @@ public class PlaceService extends DictionaryService {
 		place.setLatitude(rs.getDouble("Latitude"));
 		place.setLongitude(rs.getDouble("Longitude"));
 		place.setGreenwich(rs.getDouble("Greenwich"));
+		place.setParentid(rs.getLong("parentid"));
+		place.setType(rs.getString("type"));
 		place.setDate(DateUtil.getDatabaseDateTime(rs.getString("date")));
 		return place;
 	}
@@ -123,5 +133,51 @@ public class PlaceService extends DictionaryService {
 			}
 		}
 		return list;
+	}
+
+	public Model create(Model model) throws DataAccessException {
+		Place dict = (Place)model;
+		int result = -1;
+        PreparedStatement ps = null;
+		try {
+			String sql = "insert into " + tableName + " values(?,?,?,?,?,?,?,?,?,?)";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, dict.getId());
+			ps.setDouble(2, dict.getLatitude());
+			ps.setDouble(3, dict.getLongitude());
+			ps.setString(4, dict.getName());
+			ps.setDouble(5, dict.getGreenwich());
+			ps.setString(6, dict.getDescription());
+			ps.setString(7, dict.getCode());
+			ps.setString(8, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
+			if (dict.getParentid() > 0)
+				ps.setLong(9, dict.getParentid());
+			else
+				ps.setNull(9, java.sql.Types.NULL);
+			ps.setString(10, dict.getType());
+			System.out.println(ps);
+			result = ps.executeUpdate();
+			if (result == 1) {
+				if (null == model.getId()) { 
+					Long autoIncKeyFromApi = -1L;
+					ResultSet rsid = ps.getGeneratedKeys();
+					if (rsid.next()) {
+				        autoIncKeyFromApi = rsid.getLong(1);
+				        model.setId(autoIncKeyFromApi);
+					}
+					if (rsid != null) rsid.close();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (ps != null)	ps.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			afterSave();
+		}
+		return dict;
 	}
 }

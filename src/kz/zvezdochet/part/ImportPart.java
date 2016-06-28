@@ -39,7 +39,7 @@ public class ImportPart extends ModelListView {
 		return null;
 	}
 
-	private CDateTime dtDate;
+	protected CDateTime dtDate;
 
 	@Override
 	public void initFilter() {
