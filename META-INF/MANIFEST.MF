@@ -3,9 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Zvezdochet
 Bundle-SymbolicName: kz.zvezdochet;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-ClassPath: lib/org.eclipse.nebula.cwt_0.9.0.HEAD.jar,
- lib/org.eclipse.nebula.widgets.cdatetime_0.14.0.HEAD.jar,
- .
+Bundle-ClassPath: .
 Bundle-Activator: kz.zvezdochet.Activator
 Bundle-Vendor: Звездочёт
 Export-Package: kz.zvezdochet.bean,
