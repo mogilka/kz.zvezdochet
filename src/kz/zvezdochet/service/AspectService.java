@@ -84,6 +84,7 @@ public class AspectService extends DictionaryService {
 		aspect.setTypeid(typeId);
 		aspect.setType((AspectType)new AspectTypeService().find(typeId));
 		aspect.setMain(rs.getBoolean("main"));
+		aspect.setPlanetid(rs.getLong("planetid"));
 		return aspect;
 	}
 

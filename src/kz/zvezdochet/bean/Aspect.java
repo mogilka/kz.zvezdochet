@@ -131,4 +131,17 @@ public class Aspect extends Dictionary {
 	public void setTypeid(long typeid) {
 		this.typeid = typeid;
 	}
+
+	/**
+	 * Планета, для которой предназначен аспект
+	 */
+	private long planetid;
+
+	public long getPlanetid() {
+		return planetid;
+	}
+
+	public void setPlanetid(long planetid) {
+		this.planetid = planetid;
+	}
 }
