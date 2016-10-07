@@ -646,7 +646,8 @@ public class EventService extends ModelService {
 			String sql = "select distinct e.* from " + getPlanetSignTable() + " es" + 
 					" inner join " + tableName + " e on es.eventid = e.id" +
 				" where sun = ? and mercury = ? and venus = ? and mars = ?" +
-					" and e.id <> ?";
+					" and e.id <> ? "
+					+ "and e.human = 1";
 			if (celebrity >= 0)
 				sql += " and e.celebrity = " + celebrity;
 			sql += " order by year(initialdate)";
@@ -700,6 +701,7 @@ order by year(initialdate)
 			String sql = 
 				"select * from " + tableName +
 				" where celebrity = 1 " +
+					"and human = 1 " +
 					"and cast(initialDate as char) like ?" + 
 				" order by initialDate";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
