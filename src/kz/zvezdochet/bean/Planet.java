@@ -61,6 +61,19 @@ public class Planet extends SkyPoint {
     private boolean fictious = false;
 
     /**
+     * Признак соединения с Лилит
+     */
+    private boolean lilithed = false;
+
+    public boolean isLilithed() {
+		return lilithed;
+	}
+
+	public void setLilithed(boolean lilithed) {
+		this.lilithed = lilithed;
+	}
+
+	/**
      * Краткое описание
      */
     private String shortName;
@@ -144,8 +157,7 @@ public class Planet extends SkyPoint {
      * @return <i>true</i> если планета не имеет сильных аспектов
      */
 	public boolean inMine() {
-		return (aspectCountMap != null) ?
-			0 == aspectCountMap.get("COMMON") : false;
+		return aspectCountMap != null && 0 == aspectCountMap.get("COMMON");
 	}
 
 	public boolean isDamaged() {

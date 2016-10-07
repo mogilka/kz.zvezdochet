@@ -267,7 +267,8 @@ public class EventPart extends ModelPart implements ICalculable {
 			"",
 			"",
 			"Знаки",
-			"Дома"
+			"Дома",
+			""
 		};
 		Table table = new Table(grPlanets, SWT.BORDER | SWT.V_SCROLL);
 		table.setLinesVisible(true);
@@ -642,6 +643,9 @@ public class EventPart extends ModelPart implements ICalculable {
 					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/next_nav.gif").createImage();
 				if (image != null)
 					item.setImage(11, image);
+
+				item.setImage(12, planet.isLilithed() ?
+					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Lilith.png").createImage() : null);
 			}
 			for (int i = 0; i < table.getColumnCount(); i++)
 				table.getColumn(i).pack();

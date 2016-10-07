@@ -493,6 +493,9 @@ public class Configuration {
 						double res = CalcUtil.getDifference(p.getCoord(), p2.getCoord());
 						for (Model realasp : aspects) {
 							Aspect a = (Aspect)realasp;
+							long asplanetid = a.getPlanetid();
+							if (asplanetid > 0 && asplanetid != p.getId())
+								continue;
 							if (a.isAspect(res)) {
 								SkyPointAspect aspect = new SkyPointAspect();
 								aspect.setSkyPoint1(p);
@@ -511,7 +514,6 @@ public class Configuration {
 								//суммируем сильные аспекты
 								aspectTypeCode = "COMMON";
 								if (a.getType().getParentType() != null &&
-										a.getType().getParentType().getCode() != null &&
 										a.getType().getParentType().getCode().equals(aspectTypeCode)) {
 									score = aspcountmap.get(aspectTypeCode);
 									aspcountmap.put(aspectTypeCode, ++score);
@@ -553,7 +555,7 @@ public class Configuration {
 		initPlanetAspects();
 		initDamagedPlanets();
 		initBrokenPlanets();
-		initAngularPlanets();
+//		initAngularPlanets();
 		initSunNeighbours();
 		initPlanetPositions();
 	}
@@ -618,7 +620,7 @@ public class Configuration {
 			int goodh =	map.get("POSITIVE_HIDDEN");
 			int bad = map.get("NEGATIVE");
 			int badh = map.get("NEGATIVE_HIDDEN");
-			if (0 == good + goodh && (bad > 1 || (1 == bad && badh > 1))) {
+			if (0 == good + goodh && bad > 1) {
 				planet.setDamaged(true);
 				System.out.println(planet.getCode() + " is damaged");
 				continue;
@@ -627,20 +629,20 @@ public class Configuration {
 				System.out.println(planet.getCode() + " is perfect");
 				continue;
 			}
-			if (!planet.isDamaged()) {
-				final String LILITH = "Lilith";
-				for (SkyPointAspect aspect : aspectList) {
-					if (aspect.getAspect().getCode().equals("CONJUNCTION") &&
-							aspect.getSkyPoint1().getCode().equals(LILITH) &&
-							!aspect.getSkyPoint2().getCode().equals(LILITH) &&
-							aspect.getSkyPoint2().getCode().equals(planet.getCode())) {
-						if (0 == good + goodh)
-							planet.setDamaged(true);
-						else if (planet.isPerfect())
-							planet.setPerfect(false);
-						System.out.println(planet.getCode() + " is damaged");
-						continue;
-					}
+
+			final String LILITH = "Lilith";
+			if (planet.getCode().equals(LILITH))
+				continue;
+			for (SkyPointAspect aspect : aspectList) {
+				if (!aspect.getSkyPoint1().getCode().equals(planet.getCode())
+						&& !aspect.getSkyPoint2().getCode().equals(planet.getCode()))
+					continue;
+				if (aspect.getAspect().getCode().equals("CONJUNCTION") &&
+						aspect.getSkyPoint2().getCode().equals(LILITH)) {
+					planet.setLilithed(true);
+					planet.setPerfect(false);
+					System.out.println(planet.getCode() + " is lilithed");
+					continue;
 				}
 			}
 		}
@@ -654,10 +656,12 @@ public class Configuration {
 			Planet planet = (Planet)model;
 			final String KETHU = "Kethu";
 			for (SkyPointAspect aspect : aspectList) {
+				if (!aspect.getSkyPoint1().getCode().equals(planet.getCode())
+						|| !aspect.getSkyPoint2().getCode().equals(planet.getCode()))
+					continue;
 				if (aspect.getAspect().getCode().equals("CONJUNCTION") &&
-						aspect.getSkyPoint1().getCode().equals(KETHU) &&
-						!aspect.getSkyPoint2().getCode().equals(KETHU) &&
-						aspect.getSkyPoint2().getCode().equals(planet.getCode())) {
+						(aspect.getSkyPoint1().getCode().equals(KETHU)
+							||aspect.getSkyPoint2().getCode().equals(KETHU))) {
 					planet.setBroken(true); 
 					System.out.println(planet.getCode() + " is broken");
 					continue;
