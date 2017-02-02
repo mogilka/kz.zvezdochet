@@ -400,7 +400,7 @@ public class Event extends Model {
 	 * @return URL события
 	 */
 	public String getUrl() {
-		return "http://zvezdochet.guru/event/" + id + "/" + fancy;
+		return "https://zvezdochet.guru/event/" + id + "/" + fancy;
 	}
 
 	/**

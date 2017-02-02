@@ -497,6 +497,10 @@ public class Configuration {
 							if (asplanetid > 0 && asplanetid != p.getId())
 								continue;
 							if (a.isAspect(res)) {
+								String aspectTypeCode = a.getType().getCode();
+								if (aspectTypeCode.equals("NEUTRAL") && p.getCode().equals("Sun") && res <= 3)
+									continue;
+
 								SkyPointAspect aspect = new SkyPointAspect();
 								aspect.setSkyPoint1(p);
 								aspect.setSkyPoint2(p2);
@@ -506,7 +510,6 @@ public class Configuration {
 								//фиксируем аспекты планеты
 								aspmap.put(p2.getCode(), a.getCode());
 								//суммируем аспекты каждого типа для планеты
-								String aspectTypeCode = a.getType().getCode();
 								int score = aspcountmap.get(aspectTypeCode);
 								//для людей считаем только аспекты главных планет
 								aspcountmap.put(aspectTypeCode, ++score);
