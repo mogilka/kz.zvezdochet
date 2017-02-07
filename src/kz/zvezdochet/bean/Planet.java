@@ -5,6 +5,7 @@ import java.util.Map;
 import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.service.PlanetService;
 
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
@@ -65,7 +66,32 @@ public class Planet extends SkyPoint {
      */
     private boolean lilithed = false;
 
-    public boolean isLilithed() {
+    /**
+     * Символ
+     */
+    private String symbol;
+    /**
+     * Цвет
+     */
+    private Color color;
+
+    public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
+	}
+
+	public String getSymbol() {
+		return symbol;
+	}
+
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
+	}
+
+	public boolean isLilithed() {
 		return lilithed;
 	}
 

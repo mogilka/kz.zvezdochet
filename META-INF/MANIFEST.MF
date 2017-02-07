@@ -6,7 +6,8 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: kz.zvezdochet.Activator
 Bundle-Vendor: Звездочёт
-Export-Package: kz.zvezdochet.bean,
+Export-Package: kz.zvezdochet,
+ kz.zvezdochet.bean,
  kz.zvezdochet.part,
  kz.zvezdochet.provider,
  kz.zvezdochet.service,
