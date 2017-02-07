@@ -5,12 +5,6 @@ import java.util.Date;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import kz.zvezdochet.core.bean.Model;
-import kz.zvezdochet.core.ui.view.ModelLabelProvider;
-import kz.zvezdochet.core.ui.view.ModelListView;
-import kz.zvezdochet.core.ui.view.View;
-import kz.zvezdochet.core.util.DateUtil;
-
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
@@ -21,6 +15,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+
+import kz.zvezdochet.core.bean.Model;
+import kz.zvezdochet.core.ui.view.ModelLabelProvider;
+import kz.zvezdochet.core.ui.view.ModelListView;
+import kz.zvezdochet.core.ui.view.View;
+import kz.zvezdochet.core.util.DateUtil;
 
 /**
  * Импорт событий

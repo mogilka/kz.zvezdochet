@@ -3,14 +3,6 @@ package kz.zvezdochet.util;
 import java.util.Iterator;
 import java.util.List;
 
-import kz.zvezdochet.bean.Aspect;
-import kz.zvezdochet.bean.House;
-import kz.zvezdochet.bean.Planet;
-import kz.zvezdochet.core.bean.Model;
-import kz.zvezdochet.core.service.DataAccessException;
-import kz.zvezdochet.core.util.CalcUtil;
-import kz.zvezdochet.service.AspectService;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
@@ -18,6 +10,14 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+
+import kz.zvezdochet.bean.Aspect;
+import kz.zvezdochet.bean.House;
+import kz.zvezdochet.bean.Planet;
+import kz.zvezdochet.core.bean.Model;
+import kz.zvezdochet.core.service.DataAccessException;
+import kz.zvezdochet.core.util.CalcUtil;
+import kz.zvezdochet.service.AspectService;
 
 /**
  * Космограмма

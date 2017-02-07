@@ -8,6 +8,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
+
 import kz.zvezdochet.Activator;
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.core.handler.Handler;
@@ -16,10 +20,6 @@ import kz.zvezdochet.core.util.DateUtil;
 import kz.zvezdochet.core.util.PlatformUtil;
 import kz.zvezdochet.part.ImportPart;
 import kz.zvezdochet.service.EventService;
-
-import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
 
 public class ImportRunHandler extends Handler {
 	@Inject

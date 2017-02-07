@@ -2,14 +2,14 @@ package kz.zvezdochet.part;
 
 import java.util.List;
 
-import kz.zvezdochet.util.Configuration;
-import kz.zvezdochet.util.Cosmogram;
-
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+
+import kz.zvezdochet.util.Configuration;
+import kz.zvezdochet.util.Cosmogram;
 
 /**
  * Виджет космограммы

@@ -6,13 +6,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import kz.zvezdochet.bean.Event;
-import kz.zvezdochet.core.bean.Model;
-import kz.zvezdochet.core.ui.util.DialogUtil;
-import kz.zvezdochet.part.EventPart;
-import kz.zvezdochet.part.SearchPart;
-import kz.zvezdochet.util.Constants;
-
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.contexts.Active;
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -22,6 +15,13 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
+
+import kz.zvezdochet.bean.Event;
+import kz.zvezdochet.core.bean.Model;
+import kz.zvezdochet.core.ui.util.DialogUtil;
+import kz.zvezdochet.part.EventPart;
+import kz.zvezdochet.part.SearchPart;
+import kz.zvezdochet.util.Constants;
 
 /**
  * Обработчик открытия события

@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.eclipse.swt.graphics.Image;
+import org.json.JSONObject;
+
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.ModelService;
@@ -13,9 +16,6 @@ import kz.zvezdochet.core.util.DateUtil;
 import kz.zvezdochet.service.EventService;
 import kz.zvezdochet.service.PlaceService;
 import kz.zvezdochet.util.Configuration;
-
-import org.eclipse.swt.graphics.Image;
-import org.json.JSONObject;
 
 /**
  * Событие или персона

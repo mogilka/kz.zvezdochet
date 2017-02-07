@@ -8,28 +8,6 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import kz.zvezdochet.bean.AspectType;
-import kz.zvezdochet.bean.Event;
-import kz.zvezdochet.bean.House;
-import kz.zvezdochet.bean.Place;
-import kz.zvezdochet.bean.Planet;
-import kz.zvezdochet.core.bean.Model;
-import kz.zvezdochet.core.handler.Handler;
-import kz.zvezdochet.core.service.DataAccessException;
-import kz.zvezdochet.core.ui.Tab;
-import kz.zvezdochet.core.ui.decoration.InfoDecoration;
-import kz.zvezdochet.core.ui.decoration.RequiredDecoration;
-import kz.zvezdochet.core.ui.util.DialogUtil;
-import kz.zvezdochet.core.ui.util.GUIutil;
-import kz.zvezdochet.core.ui.view.ModelPart;
-import kz.zvezdochet.core.ui.view.View;
-import kz.zvezdochet.core.util.CalcUtil;
-import kz.zvezdochet.core.util.DateUtil;
-import kz.zvezdochet.provider.PlaceProposalProvider;
-import kz.zvezdochet.provider.PlaceProposalProvider.PlaceContentProposal;
-import kz.zvezdochet.service.AspectTypeService;
-import kz.zvezdochet.util.Configuration;
-
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.IContentProposal;
@@ -61,6 +39,28 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+
+import kz.zvezdochet.bean.AspectType;
+import kz.zvezdochet.bean.Event;
+import kz.zvezdochet.bean.House;
+import kz.zvezdochet.bean.Place;
+import kz.zvezdochet.bean.Planet;
+import kz.zvezdochet.core.bean.Model;
+import kz.zvezdochet.core.handler.Handler;
+import kz.zvezdochet.core.service.DataAccessException;
+import kz.zvezdochet.core.ui.Tab;
+import kz.zvezdochet.core.ui.decoration.InfoDecoration;
+import kz.zvezdochet.core.ui.decoration.RequiredDecoration;
+import kz.zvezdochet.core.ui.util.DialogUtil;
+import kz.zvezdochet.core.ui.util.GUIutil;
+import kz.zvezdochet.core.ui.view.ModelPart;
+import kz.zvezdochet.core.ui.view.View;
+import kz.zvezdochet.core.util.CalcUtil;
+import kz.zvezdochet.core.util.DateUtil;
+import kz.zvezdochet.provider.PlaceProposalProvider;
+import kz.zvezdochet.provider.PlaceProposalProvider.PlaceContentProposal;
+import kz.zvezdochet.service.AspectTypeService;
+import kz.zvezdochet.util.Configuration;
 
 /**
  * Представление события

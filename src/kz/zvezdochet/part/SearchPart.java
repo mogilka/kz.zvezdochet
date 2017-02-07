@@ -3,24 +3,6 @@ package kz.zvezdochet.part;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import kz.zvezdochet.bean.Aspect;
-import kz.zvezdochet.bean.House;
-import kz.zvezdochet.bean.Planet;
-import kz.zvezdochet.bean.Sign;
-import kz.zvezdochet.core.bean.Model;
-import kz.zvezdochet.core.service.DataAccessException;
-import kz.zvezdochet.core.ui.Tab;
-import kz.zvezdochet.core.ui.provider.DictionaryLabelProvider;
-import kz.zvezdochet.core.ui.view.ModelLabelProvider;
-import kz.zvezdochet.core.ui.view.ModelListView;
-import kz.zvezdochet.core.ui.view.View;
-import kz.zvezdochet.core.util.DateUtil;
-import kz.zvezdochet.service.AspectService;
-import kz.zvezdochet.service.EventService;
-import kz.zvezdochet.service.HouseService;
-import kz.zvezdochet.service.PlanetService;
-import kz.zvezdochet.service.SignService;
-
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -45,6 +27,24 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+
+import kz.zvezdochet.bean.Aspect;
+import kz.zvezdochet.bean.House;
+import kz.zvezdochet.bean.Planet;
+import kz.zvezdochet.bean.Sign;
+import kz.zvezdochet.core.bean.Model;
+import kz.zvezdochet.core.service.DataAccessException;
+import kz.zvezdochet.core.ui.Tab;
+import kz.zvezdochet.core.ui.provider.DictionaryLabelProvider;
+import kz.zvezdochet.core.ui.view.ModelLabelProvider;
+import kz.zvezdochet.core.ui.view.ModelListView;
+import kz.zvezdochet.core.ui.view.View;
+import kz.zvezdochet.core.util.DateUtil;
+import kz.zvezdochet.service.AspectService;
+import kz.zvezdochet.service.EventService;
+import kz.zvezdochet.service.HouseService;
+import kz.zvezdochet.service.PlanetService;
+import kz.zvezdochet.service.SignService;
 
 /**
  * Поиск событий

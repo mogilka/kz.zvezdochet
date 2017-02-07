@@ -3,13 +3,13 @@ package kz.zvezdochet.provider;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
+
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.service.EventService;
-
-import org.eclipse.jface.fieldassist.IContentProposal;
-import org.eclipse.jface.fieldassist.IContentProposalProvider;
 
 /**
  * Обработчик автопоиска событий

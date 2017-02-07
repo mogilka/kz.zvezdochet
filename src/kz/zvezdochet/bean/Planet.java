@@ -2,12 +2,12 @@ package kz.zvezdochet.bean;
 
 import java.util.Map;
 
-import kz.zvezdochet.core.service.DictionaryService;
-import kz.zvezdochet.service.PlanetService;
-
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+
+import kz.zvezdochet.core.service.DictionaryService;
+import kz.zvezdochet.service.PlanetService;
 
 /**
  * Планета

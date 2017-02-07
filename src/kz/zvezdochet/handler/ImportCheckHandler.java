@@ -7,6 +7,12 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.Place;
 import kz.zvezdochet.core.bean.Model;
@@ -14,12 +20,6 @@ import kz.zvezdochet.core.handler.Handler;
 import kz.zvezdochet.core.ui.util.DialogUtil;
 import kz.zvezdochet.core.util.IOUtil;
 import kz.zvezdochet.part.ImportPart;
-
-import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  * Обработчик поиска событий для импорта с сервера

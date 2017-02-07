@@ -3,11 +3,11 @@ package kz.zvezdochet.bean;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.swt.graphics.Color;
+
 import kz.zvezdochet.core.bean.DiagramObject;
 import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.service.AspectTypeService;
-
-import org.eclipse.swt.graphics.Color;
 
 /**
  * Тип аспекта

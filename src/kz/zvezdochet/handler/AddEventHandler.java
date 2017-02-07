@@ -1,9 +1,9 @@
 package kz.zvezdochet.handler;
 
-import kz.zvezdochet.bean.Event;
-
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+
+import kz.zvezdochet.bean.Event;
 
 /**
  * Обработчик добавления события
