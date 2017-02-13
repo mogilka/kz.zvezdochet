@@ -62,8 +62,7 @@ public class PlanetService extends DictionaryService {
 			String sql;
 			if (null == model.getId()) 
 				sql = "insert into " + tableName + 
-					"(ordinalnumber, color, code, name, description, score, sword, shield, belt, kernel, " +
-						"mine, strong, weak, retro, damaged, perfect, fictitious) " +
+					"(ordinalnumber, color, code, name, description, score, fictitious) " +
 					"values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
@@ -73,16 +72,6 @@ public class PlanetService extends DictionaryService {
 					"name = ?, " +
 					"description = ?, " +
 					"score = ?, " +
-					"sword = ?, " +
-					"shield = ?, " +
-					"belt = ?, " +
-					"kernel = ?, " +
-					"mine = ?, " +
-					"strong = ?, " +
-					"weak = ?, " +
-					"retro = ?, " +
-					"damaged = ?, " +
-					"perfect = ?, " +
 					"fictitious = ? " +
 					"where id = " + dict.getId();
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
@@ -92,17 +81,7 @@ public class PlanetService extends DictionaryService {
 			ps.setString(4, dict.getName());
 			ps.setString(5, dict.getDescription());
 			ps.setDouble(6, dict.getScore());
-//			ps.setString(7, dict.getSwordText());
-//			ps.setString(8, dict.getShieldText());
-//			ps.setString(9, dict.getBeltText());
-//			ps.setString(10, dict.getKernelText());
-//			ps.setString(11, dict.getMineText());
-//			ps.setString(12, dict.getStrongText());
-//			ps.setString(13, dict.getWeakText());
-//			ps.setString(14, dict.getRetroText());
-//			ps.setString(15, dict.getDamagedText());
-//			ps.setString(16, dict.getPerfectText());
-			ps.setBoolean(17, dict.isFictitious());
+			ps.setBoolean(7, dict.isFictitious());
 			result = ps.executeUpdate();
 			if (result == 1) {
 				if (null == model.getId()) { 
@@ -133,16 +112,6 @@ public class PlanetService extends DictionaryService {
 		Planet planet = (model != null) ? (Planet)model : (Planet)create();
 		super.init(rs, planet);
 		planet.setScore(rs.getDouble("Score"));
-//		planet.setSwordText(rs.getString("Sword"));
-//		planet.setShieldText(rs.getString("Shield"));
-//		planet.setBeltText(rs.getString("Belt"));
-//		planet.setKernelText(rs.getString("Kernel"));
-//		planet.setMineText(rs.getString("Mine"));
-//		planet.setStrongText(rs.getString("Strong"));
-//		planet.setWeakText(rs.getString("Weak"));
-//		planet.setDamagedText(rs.getString("Damaged"));
-//		planet.setPerfectText(rs.getString("Perfect"));
-//		planet.setRetroText(rs.getString("Retro"));
 		planet.setColor(CoreUtil.rgbToColor(rs.getString("Color")));
 		planet.setNumber(rs.getInt("OrdinalNumber"));
 		planet.setShortName(rs.getString("shortname"));
@@ -240,6 +209,43 @@ public class PlanetService extends DictionaryService {
 			if (rs.next()) {
 				Long id = rs.getLong(1);
 				return (House)new HouseService().find(id);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Поиск управителя знака
+	 * @param sign знак Зодиака
+	 * @param daily true|false - дневное|ночное рождение
+	 * @return планета
+	 * @throws DataAccessException
+	 */
+	public Planet getRuler(Sign sign, boolean daily) throws DataAccessException {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		String sql;
+		try {
+			sql = "select p.planetid from " + getSignPositionTable() + " p " +
+				"inner join " + new PositionTypeService().getTableName() + " t on p.typeid = t.id " +
+				"where p.signid = ? " +
+					"and t.code like ?";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, sign.getId());
+			ps.setString(2, "HOME");
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				Long id = rs.getLong(1);
+				return (Planet)find(id);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
