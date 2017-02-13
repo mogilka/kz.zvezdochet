@@ -1,5 +1,7 @@
 package kz.zvezdochet.service;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import kz.zvezdochet.bean.Cross;
@@ -27,5 +29,16 @@ public class CrossService extends TextGenderDiagramService {
 		if (null == list)
 			list = super.getList();
 		return list;
+	}
+
+	@Override
+	public Cross init(ResultSet rs, Model model) throws DataAccessException, SQLException {
+		if (null == model)
+			model = create();
+		super.init(rs, model);
+		Cross cross = (Cross)model;
+		cross.setConfiguration(rs.getString("configuration"));
+		cross.setTau(rs.getString("tau"));
+		return cross;
 	}
 }
