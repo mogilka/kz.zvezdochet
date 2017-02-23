@@ -557,7 +557,6 @@ public class Configuration {
 	public void initPlanetStatistics() throws DataAccessException {
 		initPlanetAspects();
 		initDamagedPlanets();
-		initBrokenPlanets();
 //		initAngularPlanets();
 		initSunNeighbours();
 		initPlanetPositions();
@@ -623,7 +622,7 @@ public class Configuration {
 			int goodh =	map.get("POSITIVE_HIDDEN");
 			int bad = map.get("NEGATIVE");
 			int badh = map.get("NEGATIVE_HIDDEN");
-			if (0 == good + goodh && bad > 1) {
+			if (0 == good + goodh && bad + badh > 0) {
 				planet.setDamaged(true);
 				System.out.println(planet.getCode() + " is damaged");
 				continue;
@@ -651,28 +650,6 @@ public class Configuration {
 		}
 	}
 
-	/**
-	 * Поиск ослабленных планет
-	 */
-	private void initBrokenPlanets() {
-		for (Model model : planetList) {
-			Planet planet = (Planet)model;
-			final String KETHU = "Kethu";
-			for (SkyPointAspect aspect : aspectList) {
-				if (!aspect.getSkyPoint1().getCode().equals(planet.getCode())
-						|| !aspect.getSkyPoint2().getCode().equals(planet.getCode()))
-					continue;
-				if (aspect.getAspect().getCode().equals("CONJUNCTION") &&
-						(aspect.getSkyPoint1().getCode().equals(KETHU)
-							||aspect.getSkyPoint2().getCode().equals(KETHU))) {
-					planet.setBroken(true); 
-					System.out.println(planet.getCode() + " is broken");
-					continue;
-				}
-			}
-		}
-	}
-	
 	/**
 	 * Определяем ближайшие планеты к Солнцу
 	 */
