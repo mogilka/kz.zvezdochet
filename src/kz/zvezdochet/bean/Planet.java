@@ -1,11 +1,14 @@
 package kz.zvezdochet.bean;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
+import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.service.PlanetService;
 
@@ -394,5 +397,38 @@ public class Planet extends SkyPoint {
 
 	public static Long[] getSportSet() {
 		return new Long[] {19L,21L,22L,23L,25L,26L,27L,28L,29L,30L,31L,32L,33L,34L};
+	}
+
+	public List<Object> isIngressed(Event prev, Event next) {
+		List<Object> list = new ArrayList<>();
+		try {
+			List<Model> planets = prev.getConfiguration().getPlanets();
+			for (Model model : planets) {
+				Planet planet = (Planet)model;
+				if (planet.getCode().equals(this.code)) {
+					if (Math.abs(this.coord) == Math.abs(planet.coord)) //планета осталась в той же координате
+						list.add("S");
+					else if (planet.retrograde && !this.retrograde) //планета перешла в директное движение
+						list.add("D");
+					else if (this.retrograde && !planet.retrograde) //планета перешла в обратное движение
+						list.add("R");
+
+					//изменился ли знак Зодиака планеты?
+					Sign sign = this.sign;
+					if (null == sign)
+						sign = SkyPoint.getSign(this.coord, next.getBirthYear());
+
+					Sign sign2 = planet.sign;
+					if (null == sign2)
+						sign2 = SkyPoint.getSign(planet.coord, prev.getBirthYear());
+
+					if (sign.getId() != sign2.getId())
+						list.add("M");
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
 	}
 }
