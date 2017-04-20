@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import kz.zvezdochet.bean.Element;
 import kz.zvezdochet.bean.Sign;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
@@ -159,6 +160,8 @@ public class SignService extends DictionaryService {
 		sign.setVerticalHalfSphereId(rs.getInt("halfspherevid"));
 		sign.setHorizontalalHalfSphereId(rs.getInt("halfspherehid"));
 		sign.setSymbol(rs.getString("symbol"));
+		sign.setElement((Element)new ElementService().find(rs.getLong("elementid")));
+		sign.setShortname(rs.getString("shortname"));
 		return sign;
 	}
 

@@ -26,6 +26,7 @@ public class ElementService extends TextGenderDiagramService {
 		super.init(rs, model);
 		element.setTemperament(rs.getString("temperament"));
 		element.setColor(CoreUtil.rgbToColor(rs.getString("Color")));
+		element.setDimColor(CoreUtil.rgbToColor(rs.getString("dimcolor")));
 		element.setDiaName(rs.getString("Diagram"));
 		return element;
 	}

@@ -1,5 +1,7 @@
 package kz.zvezdochet.bean;
 
+import org.eclipse.swt.graphics.Color;
+
 import kz.zvezdochet.core.bean.DiagramDictionary;
 import kz.zvezdochet.core.service.ModelService;
 import kz.zvezdochet.service.ElementService;
@@ -27,5 +29,18 @@ public class Element extends DiagramDictionary {
 	@Override
 	public ModelService getService() {
 		return new ElementService();
+	}
+
+	/**
+	 * Тёмный цвет
+	 */
+	private Color dimcolor;
+	
+	public Color getDimColor() {
+		return dimcolor;
+	}
+	
+	public void setDimColor(Color color) {
+		this.dimcolor = color;
 	}
 }

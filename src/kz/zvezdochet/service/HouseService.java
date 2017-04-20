@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import kz.zvezdochet.bean.Element;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
@@ -133,6 +134,7 @@ public class HouseService extends DictionaryService {
 		house.setHorizontalalHalfSphereId(rs.getInt("halfspherehid"));
 		house.setMain(rs.getBoolean("main"));
 		house.setExportOnSign(rs.getBoolean("exportonsign"));
+		house.setElement((Element)new ElementService().find(rs.getLong("elementid")));
 		return house;
 	}
 

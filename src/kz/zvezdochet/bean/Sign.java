@@ -242,4 +242,30 @@ public class Sign extends DiagramObject {
 	public void setSymbol(String symbol) {
 		this.symbol = symbol;
 	}
+
+	/**
+	 * Стихия знака
+	 */
+	private Element element;
+
+	public Element getElement() {
+		return element;
+	}
+
+	public void setElement(Element element) {
+		this.element = element;
+	}
+
+	/**
+	 * Краткое описание
+	 */
+	private String shortname;
+
+	public String getShortname() {
+		return shortname;
+	}
+
+	public void setShortname(String shortname) {
+		this.shortname = shortname;
+	}
 }

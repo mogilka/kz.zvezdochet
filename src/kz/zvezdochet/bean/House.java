@@ -227,4 +227,17 @@ public class House extends SkyPoint {
 	public static Long[] getSportSet() {
 		return new Long[] {142L,143L,144L,147L,148L,158L,161L,162L,163L,169L,176L};
 	}
+
+	/**
+	 * Стихия дома
+	 */
+	private Element element;
+
+	public Element getElement() {
+		return element;
+	}
+
+	public void setElement(Element element) {
+		this.element = element;
+	}
 }
