@@ -113,4 +113,17 @@ public class AspectType extends DiagramObject {
 		map.put("PROGRESSIVE", new String[] {"PROGRESSIVE", "TEMPTATION"});
 		return map;
 	}
+
+	/**
+	 * Текст
+	 */
+	private String text;
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
+	}
 }

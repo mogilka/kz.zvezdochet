@@ -399,7 +399,7 @@ public class Configuration {
 				Double hmargin = (j == houseList.size() - 1) ?
 					((House)houseList.get(0)).getCoord() : 
 					((House)houseList.get(j + 1)).getCoord();
-				double[] res = checkMarginalValues(house.getCoord(), hmargin, pcoord);
+				double[] res = CalcUtil.checkMarginalValues(house.getCoord(), hmargin, pcoord);
 				hmargin = res[0];
 				pcoord = res[1];
 				//если градус планеты находится в пределах куспидов
@@ -410,35 +410,6 @@ public class Configuration {
 					planet.setHouse(house);
 			}
 		}
-	}
-
-	/**
-	 * Корректировка координат для определения
-	 * местонахождения объекта на участке космограммы
-	 * (используется для домов)
-	 * @param margin1 начальный градус сектора
-	 * @param margin2 конечный градус сектора
-	 * @param point координата точки
-	 * @return массив модифицированных значений точки и верхней границы сектора
-	 */ 
-	private double[] checkMarginalValues(double margin1, double margin2, double point) {
-		//если границы сектора находятся по разные стороны нуля
-		if (margin1 > 200 & margin2 < 160) {
-			//если координата точки находится по другую сторону
-			//от нуля относительно второй границы,
-			//увеличиваем эту границу на 2*Pi
-			if (Math.abs(point) > 200)
-				margin2 += 360;
-			else if (Math.abs(point) < 160) {
-				//если градус планеты меньше 160,
-				//увеличиваем его, а также вторую границу на 2*Pi
-		       point = Math.abs(point) + 360;
-		       margin2 += 360;
-			}
-		}
-		//если же границы находятся по одну сторону от нуля,
-		//оставляем координаты как есть
-		return new double[] {margin2, point};
 	}
 
 	/**
@@ -521,6 +492,12 @@ public class Configuration {
 								aspect.setSkyPoint2(p2);
 								aspect.setAspect(a);
 								aspectList.add(aspect);
+
+								if (a.isMain()) {
+									double points = a.getPoints();
+									p.addPoints(points);
+									p2.addPoints(points);
+								}
 							}
 						}
 					}
@@ -560,6 +537,7 @@ public class Configuration {
 //		initAngularPlanets();
 		initSunNeighbours();
 		initPlanetPositions();
+		initPlanetRank();
 	}
 
 	/**
@@ -571,9 +549,11 @@ public class Configuration {
 			initPlanetHouses();
 
 			PlanetService service = new PlanetService();
+			List<Model> positions = new PositionTypeService().getList();
 			for (Model model : planetList) {
 				Planet planet = (Planet)model;
-				for (Model type : new PositionTypeService().getList()) {
+				
+				for (Model type : positions) {
 					PositionType pType = (PositionType)type;
 					String pCode = pType.getCode();
 					boolean daily = true;
@@ -584,10 +564,10 @@ public class Configuration {
 					Sign sign = service.getSignPosition(planet, pCode, daily);
 					if (sign != null && sign.getId() == planet.getSign().getId()) {
 						switch (pCode) {
-						case "HOME": planet.setSignHome(true); break;
-						case "EXALTATION": planet.setSignExaltated(true); break;
-						case "EXILE": planet.setSignExile(true); break;
-						case "DECLINE": planet.setSignDeclined(true); break;
+							case "HOME": planet.setSignHome(true); break;
+							case "EXALTATION": planet.setSignExaltated(true); break;
+							case "EXILE": planet.setSignExile(true); break;
+							case "DECLINE": planet.setSignDeclined(true); break;
 						}
 					}
 
@@ -596,10 +576,10 @@ public class Configuration {
 					int hnumber = CalcUtil.trunc((planet.getHouse().getNumber() + 2) / 3);
 					if (house != null && CalcUtil.trunc((house.getNumber() + 2) / 3) == hnumber) {
 						switch (pCode) {
-						case "HOME": planet.setHouseHome(true); break;
-						case "EXALTATION": planet.setHouseExaltated(true); break;
-						case "EXILE": planet.setHouseExile(true); break;
-						case "DECLINE": planet.setHouseDeclined(true); break;
+							case "HOME": planet.setHouseHome(true); break;
+							case "EXALTATION": planet.setHouseExaltated(true); break;
+							case "EXILE": planet.setHouseExile(true); break;
+							case "DECLINE": planet.setHouseDeclined(true); break;
 						}
 					}
 				}
@@ -624,27 +604,28 @@ public class Configuration {
 			int badh = map.get("NEGATIVE_HIDDEN");
 			if (0 == good + goodh && bad + badh > 0) {
 				planet.setDamaged(true);
-				System.out.println(planet.getCode() + " is damaged");
 				continue;
 			} else if (0 == bad + badh && good > 1) {
 				planet.setPerfect(true); 
-				System.out.println(planet.getCode() + " is perfect");
 				continue;
 			}
 
 			final String LILITH = "Lilith";
-			if (planet.getCode().equals(LILITH))
+			final String KETHU = "Kethu";
+			if (planet.getCode().equals(LILITH) || planet.getCode().equals(KETHU))
 				continue;
 			for (SkyPointAspect aspect : aspectList) {
 				if (!aspect.getSkyPoint1().getCode().equals(planet.getCode())
 						&& !aspect.getSkyPoint2().getCode().equals(planet.getCode()))
 					continue;
-				if (aspect.getAspect().getCode().equals("CONJUNCTION") &&
-						aspect.getSkyPoint2().getCode().equals(LILITH)) {
-					planet.setLilithed(true);
-					planet.setPerfect(false);
-					System.out.println(planet.getCode() + " is lilithed");
-					continue;
+				if (aspect.getAspect().getCode().equals("CONJUNCTION")) {
+					if (aspect.getSkyPoint2().getCode().equals(LILITH)) {
+						planet.setLilithed(true);
+						planet.setPerfect(false);
+					} else if (aspect.getSkyPoint2().getCode().equals(KETHU)) {
+						planet.setBroken(true);
+						planet.setPerfect(false);
+					}
 				}
 			}
 		}
@@ -677,12 +658,14 @@ public class Configuration {
 		int isword = (sunindex == planets.size() - 1) ? 0 : sunindex + 1;
 		Planet sword = planets.get(isword);
 		int pindex = planetList.indexOf(sword);
-		((Planet)planetList.get(pindex)).setSword(true);
+		Planet planet = (Planet)planetList.get(pindex);
+		planet.setSword(true);
 
 		int ishield = (0 == sunindex) ? planets.size() - 1 : sunindex - 1;
 		Planet shield = planets.get(ishield);
 		pindex = planetList.indexOf(shield);
-		((Planet)planetList.get(pindex)).setShield(true);
+		planet = (Planet)planetList.get(pindex);
+		planet.setShield(true);
 	}
 
 	public void setPlanets(List<Model> planets) {
@@ -711,7 +694,7 @@ public class Configuration {
 
 			for (Model pmodel : planetList) {
 				Planet planet = (Planet)pmodel;
-				double[] res = checkMarginalValues(phouse, nhouse, planet.getCoord());
+				double[] res = CalcUtil.checkMarginalValues(phouse, nhouse, planet.getCoord());
 				if (Math.abs(res[1]) < res[0] & 
 						Math.abs(res[1]) >= nhouse) {
 					switch (house.getNumber()) {
@@ -723,5 +706,30 @@ public class Configuration {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Расчёт силы планет
+	 */
+	private void initPlanetRank() {
+		Planet minp = new Planet();
+		minp.setPoints(100);
+		Planet maxp = new Planet();
+		for (Model model : planetList) {
+    		Planet planet = (Planet)model;
+	    	double rank = planet.getPoints();
+			if (rank > maxp.getPoints())
+				maxp = planet;
+			else if (rank < minp.getPoints())
+				minp = planet;
+	    }
+		for (Model model : planetList) {
+    		Planet planet = (Planet)model;
+	    	double rank = planet.getPoints();
+			if (rank == maxp.getPoints())
+				maxp.setStrong(true);
+			if (rank == minp.getPoints())
+				minp.setBroken(true);
+	    }
 	}
 }

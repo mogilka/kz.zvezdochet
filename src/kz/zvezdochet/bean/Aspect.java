@@ -16,7 +16,6 @@ public class Aspect extends Dictionary {
 	 * Значение
 	 */
 	private double value = 0.0;
-
 	/**
 	 * Орбис
 	 */
@@ -144,4 +143,30 @@ public class Aspect extends Dictionary {
 	public void setPlanetid(long planetid) {
 		this.planetid = planetid;
 	}
+
+	/**
+	 * Очки
+	 */
+	private double points = 0.0;
+
+	public double getPoints() {
+		return points;
+	}
+
+	public void setPoints(double points) {
+		this.points = points;
+	}
+
+	/**
+	 * Символ
+	 */
+	private String symbol;
+
+	public String getSymbol() {
+		return symbol;
+	}
+
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
+	}	
 }
