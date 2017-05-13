@@ -60,7 +60,7 @@ public class HouseService extends DictionaryService {
 			String sql;
 			if (null == model.getId()) 
 				sql = "insert into " + tableName + 
-					"(ordinalnumber, color, code, name, description, combination, short, designation, diagram, header, linkname) " +
+					"(ordinalnumber, color, code, name, description, designation, diagram, linkname) " +
 					"values(?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
@@ -69,11 +69,8 @@ public class HouseService extends DictionaryService {
 					"code = ?, " +
 					"name = ?, " +
 					"description = ?, " +
-					"combination = ?, " +
-					"short = ?, " +
 					"designation = ?, " +
 					"diagram = ?, " +
-					"header = ?, " +
 					"linkname = ? " +
 					"where id = " + dict.getId();
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
@@ -82,11 +79,8 @@ public class HouseService extends DictionaryService {
 			ps.setString(3, dict.getCode());
 			ps.setString(4, dict.getName());
 			ps.setString(5, dict.getDescription());
-			ps.setString(6, dict.getCombination());
-			ps.setString(7, dict.getShortName());
 			ps.setString(8, dict.getDesignation());
 			ps.setString(9, dict.getDiaName());
-			ps.setString(10, dict.getHeaderName());
 			ps.setString(11, dict.getLinkName());
 			result = ps.executeUpdate();
 			if (result == 1) {
@@ -118,11 +112,8 @@ public class HouseService extends DictionaryService {
 		House house = (model != null) ? (House)model : (House)create();
 		super.init(rs, house);
 		house.setNumber(rs.getInt("OrdinalNumber"));
-		house.setCombination(rs.getString("Combination"));
-		house.setShortName(rs.getString("Short"));
 		house.setDesignation(rs.getString("Designation"));
 		house.setDiaName(rs.getString("Diagram"));
-		house.setHeaderName(rs.getString("Header"));
 		house.setLinkName(rs.getString("LinkName"));
 		house.setColor(CoreUtil.rgbToColor(rs.getString("Color")));
 		house.setElementId(rs.getInt("elementid"));
@@ -135,6 +126,7 @@ public class HouseService extends DictionaryService {
 		house.setMain(rs.getBoolean("main"));
 		house.setExportOnSign(rs.getBoolean("exportonsign"));
 		house.setElement((Element)new ElementService().find(rs.getLong("elementid")));
+		house.setStage(rs.getString("stage"));
 		return house;
 	}
 

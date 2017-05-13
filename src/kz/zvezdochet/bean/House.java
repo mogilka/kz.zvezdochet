@@ -17,35 +17,21 @@ public class House extends SkyPoint {
     private Sign sign;
     
     /**
-     * Словосочетание, используемое для объекта,
-     * который расположен в доме
+     * Наименование
      */
-    private String combination;
-    
-    /**
-     * Краткое наименование
-     */
-    private String shortName;
+    private String name;
     
     /**
      * Обозначение
      */
     private String designation;
     
-    public String getCombination() {
-		return combination;
+	public String getName() {
+		return name;
 	}
 
-	public void setCombination(String combination) {
-		this.combination = combination;
-	}
-
-	public String getShortName() {
-		return shortName;
-	}
-
-	public void setShortName(String shortName) {
-		this.shortName = shortName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getDesignation() {
@@ -54,14 +40,6 @@ public class House extends SkyPoint {
 
 	public void setDesignation(String designation) {
 		this.designation = designation;
-	}
-
-	public String getHeaderName() {
-		return headerName;
-	}
-
-	public void setHeaderName(String headerName) {
-		this.headerName = headerName;
 	}
 
 	public String getLinkName() {
@@ -73,11 +51,6 @@ public class House extends SkyPoint {
 	}
 
 	/**
-     * Краткое наименование, используемое в html-странице
-     */
-    private String headerName;
-    
-    /**
      * Обозначение, используемое в html-ссылке
      */
     private String linkName;
@@ -239,5 +212,18 @@ public class House extends SkyPoint {
 
 	public void setElement(Element element) {
 		this.element = element;
+	}
+
+	/**
+	 * Описание для этапа жизни
+	 */
+	private String stage;
+
+	public String getStage() {
+		return stage;
+	}
+
+	public void setStage(String stage) {
+		this.stage = stage;
 	}
 }
