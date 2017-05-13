@@ -158,6 +158,7 @@ public class EventService extends ModelService {
 			if (event.isNeedSaveCalc()) {
 				savePlanets(event);
 				saveAspects(event);
+//				saveAspectsh(event);
 				savePlanetSigns(event);
 				if (!birth.contains("00:00:00")) {
 					saveHouses(event);
@@ -843,6 +844,14 @@ order by year(initialdate)
 	}
 
 	/**
+	 * Возвращает имя таблицы, хранящей аспекты домов конфигурации события
+	 * @return имя ТБД
+	 */
+	public String getAspectHouseTable() {
+		return "eventaspectsh";
+	}
+
+	/**
 	 * Сохранение аспектов планет конфигурации события
 	 * @param event событие
 	 * @throws DataAccessException
@@ -1181,5 +1190,68 @@ order by year(initialdate)
 			}
 		}
 		return model;
+	}
+
+	/**
+	 * Сохранение аспектов домов конфигурации события
+	 * @param event событие
+	 * @throws DataAccessException
+	 */
+	public void saveAspectsh(Event event) throws DataAccessException {
+		if (null == event.getConfiguration()) return;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String table = getAspectHouseTable();
+		try {
+			String sql = "update " + table + " set aspectid = null where eventid = ?";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, event.getId());
+			ps.executeUpdate();
+			ps.close();
+
+			List<SkyPointAspect> aspects = event.getConfiguration().getAspectsh();
+			for (SkyPointAspect aspect : aspects) {
+				SkyPoint point = aspect.getSkyPoint1();
+				SkyPoint point2 = aspect.getSkyPoint2();
+				sql = "select id from " + table + 
+					" where eventid = ?" +
+					" and planetid = ?" +
+					" and houseid = ?";
+				ps = Connector.getInstance().getConnection().prepareStatement(sql);
+				ps.setLong(1, event.getId());
+				ps.setLong(2, point.getId());
+				ps.setLong(3, point2.getId());
+				rs = ps.executeQuery();
+				long id = (rs.next()) ? rs.getLong("id") : 0;
+				ps.close();
+				
+				if (0 == id)
+					sql = "insert into " + table + " values(0,?,?,?,?)";
+				else
+					sql = "update " + table + 
+						" set eventid = ?,"
+						+ " planetid = ?,"
+						+ " aspectid = ?,"
+						+ " houseid = ?" +
+						" where id = ?";
+				ps = Connector.getInstance().getConnection().prepareStatement(sql);
+				ps.setLong(1, event.getId());
+				ps.setLong(2, point.getId());
+				ps.setLong(3, aspect.getAspect().getId());
+				ps.setLong(4, point2.getId());
+				if (id != 0)
+					ps.setLong(5, id);
+				ps.executeUpdate();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (ps != null)	ps.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

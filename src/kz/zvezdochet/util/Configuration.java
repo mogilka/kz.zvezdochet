@@ -42,6 +42,7 @@ public class Configuration {
 	private List<Model> planetList;
 	private	List<Model> houseList;
 	private	List<SkyPointAspect> aspectList;
+	private	List<SkyPointAspect> aspecthList;
 	private Date date;
 	private Event event;
 
@@ -376,6 +377,10 @@ public class Configuration {
 		return aspectList;
 	}
 
+	public List<SkyPointAspect> getAspectsh() {
+		return aspecthList;
+	}
+
 	/**
 	 * Проверка инициализации домов планет
 	 * @return true - для планет определены дома,<br>
@@ -538,6 +543,7 @@ public class Configuration {
 		initSunNeighbours();
 		initPlanetPositions();
 		initPlanetRank();
+//		initHouseAspects();
 	}
 
 	/**
@@ -602,13 +608,10 @@ public class Configuration {
 			int goodh =	map.get("POSITIVE_HIDDEN");
 			int bad = map.get("NEGATIVE");
 			int badh = map.get("NEGATIVE_HIDDEN");
-			if (0 == good + goodh && bad + badh > 0) {
+			if (0 == good + goodh && bad + badh > 0)
 				planet.setDamaged(true);
-				continue;
-			} else if (0 == bad + badh && good > 1) {
+			else if (0 == bad + badh && good > 1)
 				planet.setPerfect(true); 
-				continue;
-			}
 
 			final String LILITH = "Lilith";
 			final String KETHU = "Kethu";
@@ -625,6 +628,7 @@ public class Configuration {
 					} else if (aspect.getSkyPoint2().getCode().equals(KETHU)) {
 						planet.setBroken(true);
 						planet.setPerfect(false);
+						planet.setDamaged(false);
 					}
 				}
 			}
@@ -731,5 +735,42 @@ public class Configuration {
 			if (rank == minp.getPoints())
 				minp.setBroken(true);
 	    }
+	}
+
+	/**
+	 * Расчёт аспектов домов
+	 * @throws DataAccessException 
+	 */
+	public void initHouseAspects() throws DataAccessException {
+		try {
+			if (aspecthList != null && aspecthList.size() > 0) return;
+	  	  	aspecthList = new ArrayList<SkyPointAspect>();
+			List<Model> aspects = new AspectService().getList();
+			if (planetList != null) 
+				for (Model model : planetList) {
+					Planet p = (Planet)model;
+					
+					for (Model model2 : houseList) {
+						House h = (House)model2;
+						double res = CalcUtil.getDifference(p.getCoord(), h.getCoord());
+						for (Model realasp : aspects) {
+							Aspect a = (Aspect)realasp;
+							if (a.isAspect(res)) {
+								String aspectTypeCode = a.getType().getCode();
+
+								if (aspectTypeCode.equals("NEUTRAL") && p.getCode().equals("Sun") && res <= 3)
+									continue;
+								SkyPointAspect aspect = new SkyPointAspect();
+								aspect.setSkyPoint1(p);
+								aspect.setSkyPoint2(h);
+								aspect.setAspect(a);
+								aspecthList.add(aspect);
+							}
+						}
+					}
+				}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
