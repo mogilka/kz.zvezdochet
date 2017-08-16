@@ -268,4 +268,158 @@ public class Sign extends DiagramObject {
 	public void setShortname(String shortname) {
 		this.shortname = shortname;
 	}
+
+	/**
+	 * Счастливые числа
+	 */
+	private String numbers;
+
+	public String getNumbers() {
+		return numbers;
+	}
+
+	public void setNumbers(String numbers) {
+		this.numbers = numbers;
+	}
+
+	/**
+	 * Критичный возраст
+	 */
+	private String years;
+
+	public String getYears() {
+		return years;
+	}
+
+	public void setYears(String years) {
+		this.years = years;
+	}
+
+	/**
+	 * Благоприятные цвета
+	 */
+	private String colors;
+	/**
+	 * Неблагоприятные цвета
+	 */
+	private String anticolors;
+
+	public String getColors() {
+		return colors;
+	}
+
+	public void setColors(String colors) {
+		this.colors = colors;
+	}
+
+	public String getAnticolors() {
+		return anticolors;
+	}
+
+	public void setAnticolors(String anticolors) {
+		this.anticolors = anticolors;
+	}
+
+	/**
+	 * Благоприятные дни недели
+	 */
+	private String weekdays;
+
+	public String getWeekdays() {
+		return weekdays;
+	}
+
+	public void setWeekdays(String weekdays) {
+		this.weekdays = weekdays;
+	}
+
+	/**
+	 * Девиз
+	 */
+	private String slogan;
+
+	public String getSlogan() {
+		return slogan;
+	}
+
+	public void setSlogan(String slogan) {
+		this.slogan = slogan;
+	}
+
+	/**
+	 * Талисман
+	 */
+	private String talisman;
+	/**
+	 * Амулет
+	 */
+	private String amulet;
+	/**
+	 * Благоприятные камни
+	 */
+	private String jewel;
+	/**
+	 * Благоприятные минералы
+	 */
+	private String mineral;
+	/**
+	 * Благоприятные металлы
+	 */
+	private String metal;
+	/**
+	 * Благоприятные растения
+	 */
+	private String flowers;
+
+	public String getTalisman() {
+		return talisman;
+	}
+
+	public void setTalisman(String talisman) {
+		this.talisman = talisman;
+	}
+
+	public String getAmulet() {
+		return amulet;
+	}
+
+	public void setAmulet(String amulet) {
+		this.amulet = amulet;
+	}
+
+	public String getJewel() {
+		return jewel;
+	}
+
+	public void setJewel(String jewel) {
+		this.jewel = jewel;
+	}
+
+	public String getMineral() {
+		return mineral;
+	}
+
+	public void setMineral(String mineral) {
+		this.mineral = mineral;
+	}
+
+	public String getMetal() {
+		return metal;
+	}
+
+	public void setMetal(String metal) {
+		this.metal = metal;
+	}
+
+	public String getFlowers() {
+		return flowers;
+	}
+
+	public void setFlowers(String flowers) {
+		this.flowers = flowers;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 }

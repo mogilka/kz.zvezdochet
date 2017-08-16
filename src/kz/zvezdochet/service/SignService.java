@@ -162,6 +162,18 @@ public class SignService extends DictionaryService {
 		sign.setSymbol(rs.getString("symbol"));
 		sign.setElement((Element)new ElementService().find(rs.getLong("elementid")));
 		sign.setShortname(rs.getString("shortname"));
+		sign.setNumbers(rs.getString("number"));
+		sign.setYears(rs.getString("years"));
+		sign.setColors(rs.getString("colors"));
+		sign.setAnticolors(rs.getString("anticolors"));
+		sign.setWeekdays(rs.getString("day"));
+		sign.setSlogan(rs.getString("slogan"));
+		sign.setTalisman(rs.getString("talisman"));
+		sign.setAmulet(rs.getString("amulet"));
+		sign.setJewel(rs.getString("jewel"));
+		sign.setMineral(rs.getString("mineral"));
+		sign.setMetal(rs.getString("metal"));
+		sign.setFlowers(rs.getString("flowers"));
 		return sign;
 	}
 
