@@ -238,10 +238,12 @@ public class PlanetService extends DictionaryService {
 			sql = "select p.planetid from " + getSignPositionTable() + " p " +
 				"inner join " + new PositionTypeService().getTableName() + " t on p.typeid = t.id " +
 				"where p.signid = ? " +
-					"and t.code like ?";
+					"and t.code like ? " +
+					"and day = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, sign.getId());
 			ps.setString(2, "HOME");
+			ps.setBoolean(3, daily);
 			rs = ps.executeQuery();
 			if (rs.next()) {
 				Long id = rs.getLong(1);
