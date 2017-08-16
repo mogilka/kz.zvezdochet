@@ -72,6 +72,8 @@ public class AspectHandler extends Handler {
 						Aspect a = (Aspect)realasp;
 						if (a.isAspect(res)) {
 							aspect.setAspect(a);
+							aspect.setExact(a.isExact(res));
+							aspect.setApplication(a.isApplication(res));
 							continue;
 						}
 					}
@@ -105,6 +107,8 @@ public class AspectHandler extends Handler {
 						Aspect a = (Aspect)realasp;
 						if (a.isAspect(res)) {
 							aspect.setAspect(a);
+							aspect.setExact(a.isExact(res));
+							aspect.setApplication(a.isApplication(res));
 							continue;
 						}
 					}

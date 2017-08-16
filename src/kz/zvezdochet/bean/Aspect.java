@@ -3,6 +3,7 @@ package kz.zvezdochet.bean;
 import kz.zvezdochet.core.bean.Dictionary;
 import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.core.util.CalcUtil;
+import kz.zvezdochet.core.util.NumberUtil;
 import kz.zvezdochet.service.AspectService;
 
 /**
@@ -72,12 +73,15 @@ public class Aspect extends Dictionary {
 	}
 
 	/**
-	 * Проверка, эквивалентно ли указанное значение целой части аспекта без учета орбисов
+	 * Проверка, эквивалентно ли значение аспекту без учета орбисов.
+	 * Если аспект не дробный, то сравниваем только целые части
 	 * @param d значение
-	 * @return true - значение эквивалентно целому значению аспекта
+	 * @return true - значение эквивалентно значению аспекта
 	 */
-	public boolean isExactTruncAspect(double d) {
-		return value == CalcUtil.trunc(d); 
+	public boolean isExact(double d) {
+        return (this.exact)
+        	? this.value == NumberUtil.round(d, 2)
+            : value == CalcUtil.trunc(d);
 	}
 
 	public double getValue() {
@@ -169,4 +173,26 @@ public class Aspect extends Dictionary {
 	public void setSymbol(String symbol) {
 		this.symbol = symbol;
 	}	
+
+	/**
+	 * Признак аспекта, транзиты которого должны рассматриваться без орбиса
+	 */
+	private boolean exact = false;
+
+	public boolean isExact() {
+		return exact;
+	}
+
+	public void setExact(boolean exact) {
+		this.exact = exact;
+	}
+
+	/**
+	 * Проверка, является ли аспект аппликацией
+	 * @param val значение реального аспекта между объектами
+	 * @return true|false аппликация|сепарация
+	 */
+	public boolean isApplication(double val) {
+	    return val <= value && getFloor() <= val;
+	}
 }

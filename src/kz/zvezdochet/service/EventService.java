@@ -330,7 +330,8 @@ public class EventService extends ModelService {
 					if (rs.getString(planet.getCode()) != null) {
 						double coord = rs.getDouble(planet.getCode());
 						planet.setCoord(Math.abs(coord));
-						planet.setRetrograde(coord < 0);
+						if (coord < 0)
+							planet.setRetrograde();
 					}
 				}
 			}
@@ -886,21 +887,25 @@ order by year(initialdate)
 				ps.close();
 				
 				if (0 == id)
-					sql = "insert into " + table + " values(0,?,?,?,?)";
+					sql = "insert into " + table + " values(0,?,?,?,?,?,?)";
 				else
 					sql = "update " + table + 
 						" set eventid = ?,"
 						+ " planetid = ?,"
 						+ " aspectid = ?,"
-						+ " planet2id = ?" +
+						+ " planet2id = ?,"
+						+ " exact = ?,"
+						+ " application = ?" +
 						" where id = ?";
 				ps = Connector.getInstance().getConnection().prepareStatement(sql);
 				ps.setLong(1, event.getId());
 				ps.setLong(2, point.getId());
 				ps.setLong(3, aspect.getAspect().getId());
 				ps.setLong(4, point2.getId());
+				ps.setInt(5, aspect.isExact() ? 1 : 0);
+				ps.setInt(6, aspect.isApplication() ? 1 : 0);
 				if (id != 0)
-					ps.setLong(5, id);
+					ps.setLong(7, id);
 				ps.executeUpdate();
 			}
 		} catch (Exception e) {
@@ -955,6 +960,8 @@ order by year(initialdate)
 					spa.setSkyPoint1(planet);
 					spa.setSkyPoint2(planet2);
 					spa.setAspect(aspect);
+					spa.setExact(rs.getBoolean("exact"));
+					spa.setApplication(rs.getBoolean("application"));
 					event.getConfiguration().getAspects().add(spa);
 
 					//фиксируем аспекты планеты

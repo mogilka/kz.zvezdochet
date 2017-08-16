@@ -32,7 +32,7 @@ public class AspectService extends DictionaryService {
 			String sql;
 			if (null == model.getId()) 
 				sql = "insert into " + tableName + 
-					"(value, orbis, code, name, description, typeid) values(?,?,?,?,?,?)";
+					"(value, orbis, code, name, description, typeid) values(?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
 					"value = ?, " +
@@ -40,7 +40,8 @@ public class AspectService extends DictionaryService {
 					"code = ?, " +
 					"name = ?, " +
 					"description = ?, " +
-					"typeid = ? " +
+					"typeid = ?, " +
+					"exact = ? " +
 					"where id = " + dict.getId();
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setDouble(1, dict.getValue());
@@ -49,6 +50,7 @@ public class AspectService extends DictionaryService {
 			ps.setString(4, dict.getName());
 			ps.setString(5, dict.getDescription());
 			ps.setLong(6, dict.getType().getId());
+			ps.setInt(7, dict.isExact() ? 1 : 0);
 			result = ps.executeUpdate();
 			if (result == 1) {
 				if (null == model.getId()) { 
@@ -87,6 +89,7 @@ public class AspectService extends DictionaryService {
 		aspect.setPlanetid(rs.getLong("planetid"));
 		aspect.setPoints(rs.getDouble("points"));
 		aspect.setSymbol(rs.getString("symbol"));
+		aspect.setExact(rs.getBoolean("exact"));
 		return aspect;
 	}
 

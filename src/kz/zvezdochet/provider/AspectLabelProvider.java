@@ -18,9 +18,17 @@ public class AspectLabelProvider extends ArrayLabelProvider {
 		Object val = array[columnIndex];
 		if (null == val)
 			return null;
-		return (val instanceof SkyPointAspect)
-			? String.valueOf(((SkyPointAspect)val).getScore())
-			: val.toString();
+		String text = "";
+		if (val instanceof SkyPointAspect) {
+			SkyPointAspect aspect = (SkyPointAspect)val;
+			if (aspect.isExact())
+				text += "•";
+			if (aspect.isApplication())
+				text += "⇥";
+			text += aspect.getScore();
+		} else
+			text = val.toString();
+		return text;
 	}
 	@Override
 	public Color getBackground(Object element, int columnIndex) {

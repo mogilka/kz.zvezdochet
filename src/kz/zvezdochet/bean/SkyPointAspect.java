@@ -86,4 +86,29 @@ public class SkyPointAspect {
 			aspect.getType().getSymbol() + " " + 
 			skyPoint2.getName();
 	}
+
+	/**
+	 * Признак точного аспекта
+	 */
+	private boolean exact = false;
+	/**
+	 * Признак аппликации
+	 */
+	private boolean application = false;
+
+	public boolean isExact() {
+		return exact;
+	}
+
+	public void setExact(boolean exact) {
+		this.exact = exact;
+	}
+
+	public boolean isApplication() {
+		return application;
+	}
+
+	public void setApplication(boolean application) {
+		this.application = application;
+	}
 }
