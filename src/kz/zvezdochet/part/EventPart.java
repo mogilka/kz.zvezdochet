@@ -75,6 +75,7 @@ public class EventPart extends ModelPart implements ICalculable {
 	public static int MODE_CALC = 1;
 
 	private Label lbGender;
+	private Label lbID;
 	private ComboViewer cvGender;
 	private ComboViewer cvHand;
 	private ComboViewer cvRectification;
@@ -107,6 +108,10 @@ public class EventPart extends ModelPart implements ICalculable {
 		Group secEvent = new Group(parent, SWT.NONE);
 		secEvent.setText(Messages.getString("PersonView.Options")); //$NON-NLS-1$
 
+		Label lb = new Label(secEvent, SWT.NONE);
+		lb.setText("ID");
+		lbID = new Label(secEvent, SWT.NONE);
+
 		lbName = new Label(secEvent, SWT.NONE);
 		lbName.setText(Messages.getString("PersonView.Name")); //$NON-NLS-1$
 		txName = new Text(secEvent, SWT.BORDER);
@@ -115,7 +120,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		lbGender.setText(Messages.getString("PersonView.Gender")); //$NON-NLS-1$
 		cvGender = new ComboViewer(secEvent, SWT.BORDER | SWT.READ_ONLY);
 
-		Label lb = new Label(secEvent, SWT.CENTER);
+		lb = new Label(secEvent, SWT.CENTER);
 		lb.setText(Messages.getString("PersonView.Hand")); //$NON-NLS-1$
 		cvHand = new ComboViewer(secEvent, SWT.BORDER | SWT.READ_ONLY);
 		
@@ -347,6 +352,8 @@ public class EventPart extends ModelPart implements ICalculable {
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(parent);
 
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
+			span(3, 1).grab(true, false).applyTo(lbID);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			span(3, 1).grab(true, false).applyTo(txName);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			grab(true, false).applyTo(cvGender.getCombo());
@@ -528,6 +535,8 @@ public class EventPart extends ModelPart implements ICalculable {
 		reset();
 		model = (null == model) ? new Event() : model;
 		Event event = (Event)model;
+//		if (event.getId() > 0)
+//			lbID.setText(event.getId().toString());
 		txName.setText(event.getName());
 		cvGender.getCombo().setText(genders[event.isFemale() ? 2 : 1]);
 		cvHand.getCombo().setText(hands[event.isRightHanded() ? 0 : 1]);
