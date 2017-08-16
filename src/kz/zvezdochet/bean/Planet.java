@@ -49,13 +49,21 @@ public class Planet extends SkyPoint {
      */
     private boolean perfect = false;
     /**
-     * Признак ослабленности
+     * Признак соединения с Кету
      */
     private boolean broken = false;
     /**
-     * Признак силы
+     * Признак ослабленности
      */
-    private boolean strong = false;
+    private boolean kethued = false;
+    /**
+     * Признак владыки
+     */
+    private boolean lord = false;
+    /**
+     * Признак силы (соединение с Раху)
+     */
+    private boolean rakhued = false;
 
     /**
      * Признак фиктивной планеты
@@ -96,9 +104,10 @@ public class Planet extends SkyPoint {
 		return lilithed;
 	}
 
-	public void setLilithed(boolean lilithed) {
-		this.lilithed = lilithed;
-		this.addPoints(-1);
+	public void setLilithed() {
+		lilithed = true;
+		setPerfect(false);
+		addPoints(-1);
 		System.out.println(this.getCode() + " is lilithed");
 	}
 
@@ -198,7 +207,10 @@ public class Planet extends SkyPoint {
 
 	public void setDamaged(boolean damaged) {
 		this.damaged = damaged;
-		this.addPoints(-1);
+		if (damaged) {
+			setPerfect(false);
+			addPoints(-1);
+		}
 		System.out.println(this.getCode() + " is damaged");
 	}
 
@@ -208,24 +220,27 @@ public class Planet extends SkyPoint {
 
 	public void setPerfect(boolean perfect) {
 		this.perfect = perfect;
-		this.addPoints(perfect ? 1 : -1);
-		if (perfect)
+		if (perfect) {
+			addPoints(1);
 			System.out.println(this.getCode() + " is perfect");
+		}
 	}
 
 	public Image getImage() {
 		return AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/" + 
 			getCode() + ".png").createImage();
-
 	}
 
 	public boolean isBroken() {
 		return broken;
 	}
 
-	public void setBroken(boolean broken) {
-		this.broken = broken;
-		this.addPoints(-1);
+	public void setBroken() {
+		broken = true;
+		setPerfect(false);
+		setLord(false);
+		setDamaged(false);
+		addPoints(-1);
 		System.out.println(this.getCode() + " is broken");
 	}
 
@@ -233,9 +248,9 @@ public class Planet extends SkyPoint {
 		return retrograde;
 	}
 
-	public void setRetrograde(boolean retrograde) {
-		this.retrograde = retrograde;
-		this.addPoints(-1);
+	public void setRetrograde() {
+		retrograde = true;
+		addPoints(-1);
 		System.out.println(this.getCode() + " is retro");
 	}
 
@@ -294,8 +309,9 @@ public class Planet extends SkyPoint {
 		return kernel;
 	}
 
-	public void setKernel(boolean kernel) {
-		this.kernel = kernel;
+	public void setKernel() {
+		kernel = true;
+		addPoints(1);
 		System.out.println(this.getCode() + " is kernel");
 	}
 
@@ -303,8 +319,10 @@ public class Planet extends SkyPoint {
 		return belt;
 	}
 
-	public void setBelt(boolean belt) {
-		this.belt = belt;
+	public void setBelt() {
+		belt = true;
+		setPerfect(false);
+		addPoints(-1);
 		System.out.println(this.getCode() + " is belt");
 	}
 
@@ -312,9 +330,9 @@ public class Planet extends SkyPoint {
 		return shield;
 	}
 
-	public void setShield(boolean shield) {
-		this.shield = shield;
-		this.addPoints(1);
+	public void setShield() {
+		shield = true;
+		addPoints(1);
 		System.out.println(this.getCode() + " is shield");
 	}
 
@@ -322,9 +340,9 @@ public class Planet extends SkyPoint {
 		return sword;
 	}
 
-	public void setSword(boolean sword) {
-		this.sword = sword;
-		this.addPoints(1);
+	public void setSword() {
+		sword = true;
+		addPoints(1);
 		System.out.println(this.getCode() + " is sword");
 	}
 
@@ -345,9 +363,9 @@ public class Planet extends SkyPoint {
 		return signHome;
 	}
 
-	public void setSignHome(boolean signHome) {
-		this.signHome = signHome;
-		this.addPoints(1);
+	public void setSignHome() {
+		signHome = true;
+		addPoints(1);
 		System.out.println(this.getCode() + " is in home sign");
 	}
 
@@ -355,9 +373,9 @@ public class Planet extends SkyPoint {
 		return signExaltated;
 	}
 
-	public void setSignExaltated(boolean signExaltated) {
-		this.signExaltated = signExaltated;
-		this.addPoints(1);
+	public void setSignExaltated() {
+		signExaltated = true;
+		addPoints(1);
 		System.out.println(this.getCode() + " is in exalt sign");
 	}
 
@@ -365,9 +383,9 @@ public class Planet extends SkyPoint {
 		return signExile;
 	}
 
-	public void setSignExile(boolean signExile) {
-		this.signExile = signExile;
-		this.addPoints(-1);
+	public void setSignExile() {
+		signExile = true;
+		addPoints(-1);
 		System.out.println(this.getCode() + " is in exile sign");
 	}
 
@@ -375,9 +393,9 @@ public class Planet extends SkyPoint {
 		return signDeclined;
 	}
 
-	public void setSignDeclined(boolean signDeclined) {
-		this.signDeclined = signDeclined;
-		this.addPoints(-1);
+	public void setSignDeclined() {
+		signDeclined = true;
+		addPoints(-1);
 		System.out.println(this.getCode() + " is in decline sign");
 	}
 
@@ -385,9 +403,9 @@ public class Planet extends SkyPoint {
 		return houseHome;
 	}
 
-	public void setHouseHome(boolean houseHome) {
-		this.houseHome = houseHome;
-		this.addPoints(1);
+	public void setHouseHome() {
+		houseHome = true;
+		addPoints(1);
 		System.out.println(this.getCode() + " is in home house");
 	}
 
@@ -395,9 +413,9 @@ public class Planet extends SkyPoint {
 		return houseExaltated;
 	}
 
-	public void setHouseExaltated(boolean houseExaltated) {
-		this.houseExaltated = houseExaltated;
-		this.addPoints(1);
+	public void setHouseExaltated() {
+		houseExaltated = true;
+		addPoints(1);
 		System.out.println(this.getCode() + " is in exalt house");
 	}
 
@@ -405,9 +423,9 @@ public class Planet extends SkyPoint {
 		return houseExile;
 	}
 
-	public void setHouseExile(boolean houseExile) {
-		this.houseExile = houseExile;
-		this.addPoints(-1);
+	public void setHouseExile() {
+		houseExile = true;
+		addPoints(-1);
 		System.out.println(this.getCode() + " is in exile house");
 	}
 
@@ -415,18 +433,29 @@ public class Planet extends SkyPoint {
 		return houseDeclined;
 	}
 
-	public void setHouseDeclined(boolean houseDeclined) {
-		this.houseDeclined = houseDeclined;
-		this.addPoints(-1);
+	public void setHouseDeclined() {
+		houseDeclined = true;
+		addPoints(-1);
 		System.out.println(this.getCode() + " is in decline house");
 	}
 
-	public boolean isStrong() {
-		return strong;
+	public boolean isLord() {
+		return lord;
 	}
 
-	public void setStrong(boolean strong) {
-		this.strong = strong;
+	public void setLord(boolean lord) {
+		this.lord = lord;
+		if (lord)
+			System.out.println(this.getCode() + " is Lord");
+	}
+
+	public boolean isRakhued() {
+		return rakhued;
+	}
+
+	public void setRakhued() {
+		this.rakhued = true;
+		addPoints(1);
 		System.out.println(this.getCode() + " is strong");
 	}
 
@@ -495,7 +524,7 @@ public class Planet extends SkyPoint {
 					res = "изг ";
 			}
 		}
-		if (isStrong())
+		if (isLord())
 			res += "влд ";
 		if (isBelt() || isDamaged() || isLilithed() || isBroken() || inMine())
 			res += "\u2193";
@@ -528,7 +557,7 @@ public class Planet extends SkyPoint {
 	}
 
 	public boolean isPositive() {
-		return isStrong() || isKernel() || isPerfect()
+		return isLord() || isKernel() || isPerfect()
 				|| isHouseExaltated() || isHouseHome() || isSignExaltated() || isSignHome()				
 			&& (!inMine() && !isBelt() && !isBroken() && !isDamaged() && !isRetrograde() && !isLilithed()
 				&& !isHouseDeclined() && !isHouseExile() && !isSignDeclined() && !isSignExile());
@@ -537,7 +566,22 @@ public class Planet extends SkyPoint {
 	public boolean isNegative() {
 		return inMine() || isBelt() || isBroken() || isDamaged() || isRetrograde() || isLilithed()
 				|| isHouseDeclined() || isHouseExile() || isSignDeclined() || isSignExile()
-			&& (!isStrong() && !isKernel() && !isPerfect()
+			&& (!isLord() && !isKernel() && !isPerfect()
 				 && !isHouseExaltated() && !isHouseHome() && !isSignExaltated() && !isSignHome());				
+	}
+
+	public void setSelened() {
+		addPoints(1);
+		System.out.println(this.getCode() + " is selened");
+	}
+
+	public boolean isKethued() {
+		return kethued;
+	}
+
+	public void setKethued() {
+		kethued = true;
+		setPerfect(false);
+		System.out.println(this.getCode() + " is weak");
 	}
 }
