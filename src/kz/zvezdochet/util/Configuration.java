@@ -254,7 +254,8 @@ public class Configuration {
 	  		    if (n >= 0) {
 	  		    	p = (Planet)planetList.get(n);
 	  	  			p.setCoord(xx[0]);
-	  	  			p.setRetrograde(xx[3] < 0);
+	  	  			if (xx[3] < 0)
+	  	  				p.setRetrograde();
 	  		    }
 	  		}
 	  		//рассчитываем координату Кету по значению Раху
@@ -496,6 +497,8 @@ public class Configuration {
 								aspect.setSkyPoint1(p);
 								aspect.setSkyPoint2(p2);
 								aspect.setAspect(a);
+								aspect.setExact(a.isExact(res));
+								aspect.setApplication(a.isApplication(res));
 								aspectList.add(aspect);
 
 								if (a.isMain()) {
@@ -570,10 +573,10 @@ public class Configuration {
 					Sign sign = service.getSignPosition(planet, pCode, daily);
 					if (sign != null && sign.getId() == planet.getSign().getId()) {
 						switch (pCode) {
-							case "HOME": planet.setSignHome(true); break;
-							case "EXALTATION": planet.setSignExaltated(true); break;
-							case "EXILE": planet.setSignExile(true); break;
-							case "DECLINE": planet.setSignDeclined(true); break;
+							case "HOME": planet.setSignHome(); break;
+							case "EXALTATION": planet.setSignExaltated(); break;
+							case "EXILE": planet.setSignExile(); break;
+							case "DECLINE": planet.setSignDeclined(); break;
 						}
 					}
 
@@ -582,10 +585,10 @@ public class Configuration {
 					int hnumber = CalcUtil.trunc((planet.getHouse().getNumber() + 2) / 3);
 					if (house != null && CalcUtil.trunc((house.getNumber() + 2) / 3) == hnumber) {
 						switch (pCode) {
-							case "HOME": planet.setHouseHome(true); break;
-							case "EXALTATION": planet.setHouseExaltated(true); break;
-							case "EXILE": planet.setHouseExile(true); break;
-							case "DECLINE": planet.setHouseDeclined(true); break;
+							case "HOME": planet.setHouseHome(); break;
+							case "EXALTATION": planet.setHouseExaltated(); break;
+							case "EXILE": planet.setHouseExile(); break;
+							case "DECLINE": planet.setHouseDeclined(); break;
 						}
 					}
 				}
@@ -604,10 +607,11 @@ public class Configuration {
 			
 			//сравнение количества хороших и плохих аспектов
 			Map<String, Integer> map = planet.getAspectCountMap(); 
-			int good = map.get("POSITIVE");
+			int good = map.get("POSITIVE") + map.get("NEUTRAL") + map.get("NEUTRAL_KERNEL");
 			int goodh =	map.get("POSITIVE_HIDDEN");
-			int bad = map.get("NEGATIVE");
+			int bad = map.get("NEGATIVE") + map.get("NEGATIVE_BELT");
 			int badh = map.get("NEGATIVE_HIDDEN");
+
 			if (0 == good + goodh && bad + badh > 0)
 				planet.setDamaged(true);
 			else if (0 == bad + badh && good > 1)
@@ -615,21 +619,24 @@ public class Configuration {
 
 			final String LILITH = "Lilith";
 			final String KETHU = "Kethu";
-			if (planet.getCode().equals(LILITH) || planet.getCode().equals(KETHU))
+			final String SELENA = "Selena";
+			final String RAKHU = "Rakhu";
+			if (planet.getCode().equals(LILITH) || planet.getCode().equals(KETHU)
+					|| planet.getCode().equals(SELENA) || planet.getCode().equals(RAKHU))
 				continue;
 			for (SkyPointAspect aspect : aspectList) {
 				if (!aspect.getSkyPoint1().getCode().equals(planet.getCode())
 						&& !aspect.getSkyPoint2().getCode().equals(planet.getCode()))
 					continue;
 				if (aspect.getAspect().getCode().equals("CONJUNCTION")) {
-					if (aspect.getSkyPoint2().getCode().equals(LILITH)) {
-						planet.setLilithed(true);
-						planet.setPerfect(false);
-					} else if (aspect.getSkyPoint2().getCode().equals(KETHU)) {
-						planet.setBroken(true);
-						planet.setPerfect(false);
-						planet.setDamaged(false);
-					}
+					if (aspect.getSkyPoint2().getCode().equals(LILITH))
+						planet.setLilithed();
+					if (aspect.getSkyPoint2().getCode().equals(KETHU))
+						planet.setBroken();
+					if (aspect.getSkyPoint2().getCode().equals(SELENA))
+						planet.setSelened();
+					if (aspect.getSkyPoint2().getCode().equals(RAKHU))
+						planet.setRakhued();
 				}
 			}
 		}
@@ -647,9 +654,9 @@ public class Configuration {
 			Planet planet = (Planet)planetList.get(i);
 			double res = Math.abs(CalcUtil.getDifference(sun.getCoord(), planet.getCoord()));
 			if (res < 0.18)
-				planet.setKernel(true);
+				planet.setKernel();
 			else if (res <= 3)
-				planet.setBelt(true);
+				planet.setBelt();
 			else
 				planets.add(planet);
 		}
@@ -663,13 +670,13 @@ public class Configuration {
 		Planet sword = planets.get(isword);
 		int pindex = planetList.indexOf(sword);
 		Planet planet = (Planet)planetList.get(pindex);
-		planet.setSword(true);
+		planet.setSword();
 
 		int ishield = (0 == sunindex) ? planets.size() - 1 : sunindex - 1;
 		Planet shield = planets.get(ishield);
 		pindex = planetList.indexOf(shield);
 		planet = (Planet)planetList.get(pindex);
-		planet.setShield(true);
+		planet.setShield();
 	}
 
 	public void setPlanets(List<Model> planets) {
@@ -682,6 +689,7 @@ public class Configuration {
 	/**
 	 * Поиск угловых планет, расположенных на ASC, IC, DSC, MC
 	 */
+	@SuppressWarnings("unused")
 	private void initAngularPlanets() {
 		Model[] hangular = {
 			houseList.get(0),
@@ -731,9 +739,9 @@ public class Configuration {
     		Planet planet = (Planet)model;
 	    	double rank = planet.getPoints();
 			if (rank == maxp.getPoints())
-				maxp.setStrong(true);
+				maxp.setLord(true);
 			if (rank == minp.getPoints())
-				minp.setBroken(true);
+				minp.setKethued();
 	    }
 	}
 
