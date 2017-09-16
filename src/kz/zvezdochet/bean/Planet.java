@@ -524,12 +524,15 @@ public class Planet extends SkyPoint {
 					res = "изг ";
 			}
 		}
-		if (isLord())
-			res += "влд ";
 		if (isBelt() || isDamaged() || isLilithed() || isBroken() || inMine())
 			res += "\u2193";
 		else if (isKernel() || isPerfect())
 			res += "\u2191";
+
+		if (isLord())
+			res += "влд ";
+		if (isKing())
+			res += "крл ";
 		if (isRetrograde())
 			res += "R";
 		return res;
@@ -583,5 +586,31 @@ public class Planet extends SkyPoint {
 		kethued = true;
 		setPerfect(false);
 		System.out.println(this.getCode() + " is weak");
+	}
+
+	/**
+	 * Король аспектов (планета с наибольшим количеством позитивных аспектов)
+	 */
+	private boolean king;
+
+	public boolean isKing() {
+		return king;
+	}
+
+	public void setKing() {
+		this.king = true;
+	}
+
+	/**
+	 * Описание для синастрии
+	 */
+	private String synastry;
+
+	public String getSynastry() {
+		return synastry;
+	}
+
+	public void setSynastry(String synastry) {
+		this.synastry = synastry;
 	}
 }
