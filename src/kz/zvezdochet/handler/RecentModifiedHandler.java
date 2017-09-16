@@ -29,7 +29,7 @@ public class RecentModifiedHandler extends Handler {
 		    part.setVisible(true);
 		    partService.showPart(part, PartState.VISIBLE);
 		    SearchPart searchPart = (SearchPart)part.getObject();
-		    searchPart.setData(new EventService().findRecent());
+		    searchPart.setData(new EventService().findRecent(false));
 			updateStatus("Поиск завершён", false);
 		} catch (Exception e) {
 			DialogUtil.alertError(e.getMessage());

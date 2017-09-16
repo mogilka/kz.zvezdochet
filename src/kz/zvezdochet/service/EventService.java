@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -533,7 +534,7 @@ public class EventService extends ModelService {
 	 */
 	public void savePlanetHouses(Event event) throws DataAccessException {
 		if (null == event.getConfiguration()) return;
-		event.getConfiguration().initPlanetHouses();
+		event.getConfiguration().initHouses();
         PreparedStatement ps = null;
         ResultSet rs = null;
         String table = getPlanetHouseTable();
@@ -873,7 +874,8 @@ order by year(initialdate)
 			for (SkyPointAspect aspect : aspects) {
 				SkyPoint point = aspect.getSkyPoint1();
 				SkyPoint point2 = aspect.getSkyPoint2();
-				if (point.getNumber() > point2.getNumber()) continue;
+				if (point.getNumber() > point2.getNumber())
+					continue;
 				sql = "select id from " + table + 
 					" where eventid = ?" +
 					" and planetid = ?" +
@@ -904,7 +906,7 @@ order by year(initialdate)
 				ps.setLong(4, point2.getId());
 				ps.setInt(5, aspect.isExact() ? 1 : 0);
 				ps.setInt(6, aspect.isApplication() ? 1 : 0);
-				if (id != 0)
+				if (id > 0)
 					ps.setLong(7, id);
 				ps.executeUpdate();
 			}
@@ -1036,13 +1038,16 @@ order by year(initialdate)
 	 * @return список событий
 	 * @throws DataAccessException
 	 */
-	public List<Model> findRecent() throws DataAccessException {
+	public List<Model> findRecent(boolean celebrity) throws DataAccessException {
         List<Model> list = new ArrayList<Model>();
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
-			String sql = "select * from " + tableName + " order by date desc limit 30";
+			String sql = "select * from " + tableName + 
+				" where celebrity = ? " +
+				"order by date desc limit 30";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setInt(1, celebrity ? 1 : 0);
 			rs = ps.executeQuery();
 			while (rs.next())
 				list.add(init(rs, null));
@@ -1260,5 +1265,111 @@ order by year(initialdate)
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * Поиск подходящих по совместимости партнёров
+	 * @param event человек
+	 * @param celebrity true - поиск только знаменитостей
+	 * @return список людей
+	 * @throws DataAccessException
+	 */
+	public List<Model> findAkin(Event event, int celebrity) throws DataAccessException {
+		if (null == event.getId())
+			return null;
+		if (event.getHuman() != 1)
+			return null;
+
+        List<Model> list = new ArrayList<Model>();
+		if (null == event.getConfiguration())
+			return list;
+		Configuration conf = event.getConfiguration();
+		conf.initPlanetSigns(false);
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String sql = "select e.* from " + getPlanetSignTable() + " es" + 
+				" inner join " + tableName + " e on es.eventid = e.id" +
+				" where gender <> ? " +
+					"and e.id <> ? " +
+					"and e.human = 1";
+			if (celebrity >= 0)
+				sql += " and e.celebrity = " + celebrity;
+
+			initPlanets(event);
+			String codes[] = {
+				"Sun", "Mercury", "Venus", "Mars"
+			};
+			int year = event.getBirthYear();
+			Sign sunSign, merSign, venSign, marSign;
+			Map<String, int[]> map = new HashMap<>();
+			for (String code : codes) {
+				for (Model model : event.getConfiguration().getPlanets()) {
+					Planet planet = (Planet)model;
+					if (!planet.getCode().equals(code))
+						continue;
+
+					if (code.equals("Sun")) {
+						sunSign = SkyPoint.getSign(planet.getCoord(), year);
+						map.put(code, Sign.getByElement(sunSign.getId().intValue()));
+					} else if (code.equals("Mercury")) {
+						merSign = SkyPoint.getSign(planet.getCoord(), year);
+						map.put(code, Sign.getByElement(merSign.getId().intValue()));
+					} else if (code.equals("Venus")) {
+						venSign = SkyPoint.getSign(planet.getCoord(), year);
+						map.put(code, Sign.getByElement(venSign.getId().intValue()));
+					} else if (code.equals("Mars")) {
+						marSign = SkyPoint.getSign(planet.getCoord(), year);
+						map.put(code, Sign.getByElement(marSign.getId().intValue()));
+					}
+				}
+			}
+
+			Iterator<Map.Entry<String, int[]>> iterator = map.entrySet().iterator();
+		    while (iterator.hasNext()) {
+		    	Entry<String, int[]> entry = iterator.next();
+		    	String k = entry.getKey();
+		    	int v[] = entry.getValue();
+				sql += " and " + k + " ";
+				if (1 == v.length)
+					sql += "=" + v[0];
+				else {
+					sql += "in(";
+					int l = -1;
+					for (int i : v) {
+						if (++l > 0)
+							sql += ",";
+						sql += i;
+					}
+					sql += ")";
+				}
+		    }
+			sql += " order by year(initialdate)";
+			
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setInt(1, event.isFemale() ? 1 : 0);
+			ps.setLong(2, event.getId());
+			rs = ps.executeQuery();
+			while (rs.next())
+				list.add(init(rs, null));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
+		return list;
+/*
+SELECT * FROM `eventsigns` 
+WHERE sun in (9,14) 
+and mercury in (1,10,11) 
+and venus in (1,10,11) 
+and mars in (7,12)
+and celebrity = 1
+*/
 	}
 }
