@@ -43,4 +43,56 @@ public class Element extends DiagramDictionary {
 	public void setDimColor(Color color) {
 		this.dimcolor = color;
 	}
+
+	/**
+	 * Человекопонятное описание
+	 */
+	private String shortname;
+
+	public String getShortName() {
+		return shortname;
+	}
+
+	public void setShortName(String shortname) {
+		this.shortname = shortname;
+	}
+
+	/**
+	 * Начало
+	 */
+	private YinYang yinyang;
+
+	public YinYang getYinYang() {
+		return yinyang;
+	}
+
+	public void setYinYang(YinYang yinyang) {
+		this.yinyang = yinyang;
+	}
+
+	/**
+	 * Светлый цвет
+	 */
+	private Color lightcolor;
+
+	public Color getLightColor() {
+		return lightcolor;
+	}
+
+	public void setLightColor(Color lightcolor) {
+		this.lightcolor = lightcolor;
+	}
+
+	/**
+	 * Толкование синастрии
+	 */
+	private String synastry;
+
+	public String getSynastry() {
+		return synastry;
+	}
+
+	public void setSynastry(String synastry) {
+		this.synastry = synastry;
+	}
 }

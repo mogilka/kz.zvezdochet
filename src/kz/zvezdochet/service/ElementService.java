@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import kz.zvezdochet.bean.Element;
+import kz.zvezdochet.bean.YinYang;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.TextGenderDiagramService;
@@ -27,7 +28,12 @@ public class ElementService extends TextGenderDiagramService {
 		element.setTemperament(rs.getString("temperament"));
 		element.setColor(CoreUtil.rgbToColor(rs.getString("Color")));
 		element.setDimColor(CoreUtil.rgbToColor(rs.getString("dimcolor")));
+		element.setLightColor(CoreUtil.rgbToColor(rs.getString("lightcolor")));
 		element.setDiaName(rs.getString("Diagram"));
+		element.setShortName(rs.getString("shortname"));
+		YinYangService service = new YinYangService();
+		element.setYinYang((YinYang)service.find(rs.getLong("yinyangid")));
+		element.setSynastry(rs.getString("synastry"));
 		return element;
 	}
 
