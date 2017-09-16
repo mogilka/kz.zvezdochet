@@ -1,5 +1,7 @@
 package kz.zvezdochet.bean;
 
+import java.util.List;
+
 import kz.zvezdochet.core.bean.DiagramObject;
 import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.service.SignService;
@@ -421,5 +423,29 @@ public class Sign extends DiagramObject {
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+
+	/**
+	 * Поиск знаков Зодиака родственной стихии
+	 * @param integer $id идентификатор знака Зодиака
+	 * @return array массив идентификаторов родственных знаков Зодиака
+	 */
+	public static int[] getByElement(int id) {
+		switch (id) {
+			case 1: return new int[] {6,10,11};
+			case 3: return new int[] {7,12};
+			case 4: return new int[] {8,13};
+			case 5: return new int[] {9,14};
+			case 6: return new int[] {1,10,11};
+			case 7: return new int[] {3,12};
+			case 8: return new int[] {4,13};
+			case 9: return new int[] {5,14};
+			case 10: return new int[] {1,6,11};
+			case 11: return new int[] {1,6,11};
+			case 12: return new int[] {3,7};
+			case 13: return new int[] {4,8};
+			case 14: return new int[] {5,9};
+		}
+		return null;
 	}
 }
