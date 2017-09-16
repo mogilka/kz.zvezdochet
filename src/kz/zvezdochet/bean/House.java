@@ -17,23 +17,10 @@ public class House extends SkyPoint {
     private Sign sign;
     
     /**
-     * Наименование
-     */
-    private String name;
-    
-    /**
      * Обозначение
      */
     private String designation;
     
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public String getDesignation() {
 		return designation;
 	}
@@ -198,7 +185,7 @@ public class House extends SkyPoint {
 	}
 
 	public static Long[] getSportSet() {
-		return new Long[] {142L,143L,144L,147L,148L,158L,161L,162L,163L,169L,176L};
+		return new Long[] {142L,143L,144L,147L,148L,153L,154L,158L,161L,162L,163L,164L,166L,169L,170L,171L,176L,177L};
 	}
 
 	/**
