@@ -121,6 +121,7 @@ public class PlanetService extends DictionaryService {
 		String s = rs.getString("Fictitious");
 		boolean f = s.equals("1") ? true : false;
 		planet.setFictitious(f);
+		planet.setSynastry(rs.getString("synastry"));
 		return planet;
 	}
 
