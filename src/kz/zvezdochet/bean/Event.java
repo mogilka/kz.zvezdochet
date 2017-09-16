@@ -221,7 +221,7 @@ public class Event extends Model {
 	/**
 	 * Инициализация полных данных о событии
 	 */
-	public void init() {
+	public void init(boolean initstat) {
 		try {
 			//местонахождение
 			if (null == place)
@@ -250,6 +250,8 @@ public class Event extends Model {
 				service.initPlanets(this);
 				service.initHouses(this);
 				service.initAspects(this);
+				if (initstat)
+					configuration.initPlanetStatistics();
 			}
 		} catch (DataAccessException e) {
 			e.printStackTrace();
@@ -496,5 +498,13 @@ public class Event extends Model {
 			e.printStackTrace();
 		}
 		return "[" + res + "]";
+	}
+
+	/**
+	 * Проверка, является ли человек ребёнком
+	 * @return
+	 */
+	public boolean isChild() {
+		return getAge() < MAX_TEEN_AGE;
 	}
 }
