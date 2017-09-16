@@ -395,12 +395,12 @@ public class Configuration {
 	/**
 	 * Определение позиций планет в домах
 	 */
-	public void initPlanetHouses() {
+	public void initHouses() {
 		if (isPlanetHoused()) return;
 		for (Model model : planetList) {
 			Planet planet = (Planet)model;
-			for (int j = 0; j < houseList.size(); j++) { 
-				House house = ((House)houseList.get(j));
+			for (int j = 0; j < houseList.size(); j++) {
+				House house = (House)houseList.get(j);
 				double pcoord = planet.getCoord();
 				Double hmargin = (j == houseList.size() - 1) ?
 					((House)houseList.get(0)).getCoord() : 
@@ -449,7 +449,6 @@ public class Configuration {
 	 */
 	public void initPlanetAspects() throws DataAccessException {
 		try {
-			if (aspectList != null && aspectList.size() > 0) return;
 	  	  	aspectList = new ArrayList<SkyPointAspect>();
 			List<Model> aspects = new AspectService().getList();
 			List<Model> aspectTypes = new AspectTypeService().getList();
@@ -465,7 +464,8 @@ public class Configuration {
 					
 					for (Model model2 : planetList) {
 						Planet p2 = (Planet)model2;
-						if (p.getCode().equals(p2.getCode())) continue;
+						if (p.getCode().equals(p2.getCode()))
+							continue;
 //						if (p.getNumber() > p2.getNumber()) continue;
 						double res = CalcUtil.getDifference(p.getCoord(), p2.getCoord());
 						for (Model realasp : aspects) {
@@ -555,7 +555,7 @@ public class Configuration {
 	private void initPlanetPositions() {
 		try {
 			initPlanetSigns(false);
-			initPlanetHouses();
+			initHouses();
 
 			PlanetService service = new PlanetService();
 			List<Model> positions = new PositionTypeService().getList();
@@ -607,35 +607,41 @@ public class Configuration {
 			
 			//сравнение количества хороших и плохих аспектов
 			Map<String, Integer> map = planet.getAspectCountMap(); 
-			int good = map.get("POSITIVE") + map.get("NEUTRAL") + map.get("NEUTRAL_KERNEL");
+			int good = map.get("POSITIVE");
 			int goodh =	map.get("POSITIVE_HIDDEN");
-			int bad = map.get("NEGATIVE") + map.get("NEGATIVE_BELT");
+			int bad = map.get("NEGATIVE");
 			int badh = map.get("NEGATIVE_HIDDEN");
+			int neutral = map.get("NEUTRAL") + map.get("NEUTRAL_KERNEL") + map.get("NEGATIVE_BELT");
 
-			if (0 == good + goodh && bad + badh > 0)
+			if (0 == good + goodh && 0 == neutral && bad > 0)
 				planet.setDamaged(true);
-			else if (0 == bad + badh && good > 1)
+			else if (0 == bad + badh && good > 0)
 				planet.setPerfect(true); 
 
 			final String LILITH = "Lilith";
 			final String KETHU = "Kethu";
 			final String SELENA = "Selena";
 			final String RAKHU = "Rakhu";
-			if (planet.getCode().equals(LILITH) || planet.getCode().equals(KETHU)
-					|| planet.getCode().equals(SELENA) || planet.getCode().equals(RAKHU))
+
+			String pcode = planet.getCode();
+			if (pcode.equals(LILITH) || pcode.equals(KETHU)
+					|| pcode.equals(SELENA) || pcode.equals(RAKHU))
 				continue;
 			for (SkyPointAspect aspect : aspectList) {
-				if (!aspect.getSkyPoint1().getCode().equals(planet.getCode())
-						&& !aspect.getSkyPoint2().getCode().equals(planet.getCode()))
+				String pcode2 = aspect.getSkyPoint2().getCode();
+				if (!aspect.getSkyPoint1().getCode().equals(pcode)
+						&& !pcode2.equals(pcode))
 					continue;
-				if (aspect.getAspect().getCode().equals("CONJUNCTION")) {
-					if (aspect.getSkyPoint2().getCode().equals(LILITH))
+
+				String acode = aspect.getAspect().getCode();
+				if (acode.equals("CONJUNCTION") || acode.equals("BELT") || acode.equals("KERNEL")) {
+					if (pcode2.equals(LILITH))
 						planet.setLilithed();
-					if (aspect.getSkyPoint2().getCode().equals(KETHU))
-						planet.setBroken();
-					if (aspect.getSkyPoint2().getCode().equals(SELENA))
+					else if (pcode2.equals(KETHU))
+						planet.setKethued();
+					else if (pcode2.equals(SELENA))
 						planet.setSelened();
-					if (aspect.getSkyPoint2().getCode().equals(RAKHU))
+					else if (pcode2.equals(RAKHU))
 						planet.setRakhued();
 				}
 			}
@@ -727,6 +733,7 @@ public class Configuration {
 		Planet minp = new Planet();
 		minp.setPoints(100);
 		Planet maxp = new Planet();
+		int good = 0;
 		for (Model model : planetList) {
     		Planet planet = (Planet)model;
 	    	double rank = planet.getPoints();
@@ -734,15 +741,28 @@ public class Configuration {
 				maxp = planet;
 			else if (rank < minp.getPoints())
 				minp = planet;
+
+			Map<String, Integer> map = planet.getAspectCountMap(); 
+			int pgood = map.get("POSITIVE");
+			if (pgood > good)
+				good = pgood;
 	    }
+		List<Planet> planets = new ArrayList<>();
 		for (Model model : planetList) {
     		Planet planet = (Planet)model;
 	    	double rank = planet.getPoints();
 			if (rank == maxp.getPoints())
 				maxp.setLord(true);
 			if (rank == minp.getPoints())
-				minp.setKethued();
+				minp.setBroken();
+
+			Map<String, Integer> map = planet.getAspectCountMap(); 
+			int pgood = map.get("POSITIVE");
+			if (pgood == good)
+				planets.add(planet);
 	    }
+		if (planets.size() < 2)
+			planets.get(0).setKing();
 	}
 
 	/**
