@@ -3,6 +3,7 @@ package kz.zvezdochet.part;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -273,6 +274,8 @@ public class EventPart extends ModelPart implements ICalculable {
 			"",
 			"Знаки",
 			"Дома",
+			"",
+			"",
 			""
 		};
 		Table table = new Table(grPlanets, SWT.BORDER | SWT.V_SCROLL);
@@ -457,7 +460,7 @@ public class EventPart extends ModelPart implements ICalculable {
 	private String[] humans = {"Событие",
 		"Живое существо",
 		"Сообщество людей"};
-	private String[] dst = {"+0", "+1", "+2", "+3"};
+	private Map<Integer, String> dst = new HashMap<Integer, String>();
 
 	@Override
 	protected void initControls() {
@@ -474,7 +477,14 @@ public class EventPart extends ModelPart implements ICalculable {
 		cvRectification.setInput(calcs);
 
 		cvDST.setContentProvider(new ArrayContentProvider());
-		cvDST.setInput(dst);
+		dst.put(-3, "-3");
+		dst.put(-2, "-2");
+		dst.put(-1, "-1");
+		dst.put(0, "0");
+		dst.put(1, "+1");
+		dst.put(2, "+2");
+		dst.put(3, "+3");
+		cvDST.setInput(dst.values());
 		setPlaces();
 	}
 
@@ -555,7 +565,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		if (event.getPlace() != null)
 			initPlace(event.getPlace());
 		txZone.setText(CalcUtil.formatNumber("###.##", event.getZone()));
-		cvDST.getCombo().setText(dst[(int)event.getDst()]);
+		cvDST.getCombo().setText(dst.get((int)event.getDst()));
 		cvHuman.getCombo().setText(humans[event.getHuman()]);
 		if (event.getAccuracy() != null)
 			txAccuracy.setText(event.getAccuracy());
@@ -655,6 +665,12 @@ public class EventPart extends ModelPart implements ICalculable {
 
 				item.setImage(12, planet.isLilithed() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Lilith.png").createImage() : null);
+
+				item.setImage(13, planet.isKing() ?
+					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/crown.png").createImage() : null);
+
+				item.setImage(14, planet.isLord() ?
+						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/throne.png").createImage() : null);
 			}
 			for (int i = 0; i < table.getColumnCount(); i++)
 				table.getColumn(i).pack();
@@ -720,17 +736,10 @@ public class EventPart extends ModelPart implements ICalculable {
 		if (sync) {
 			Event event = (Event)model;
 			if (model != null && event.getId() != null) {
-				event.init();
+				event.init(true);
 				setTitle(event.getName());
 			} else
 				setTitle(Messages.getString("PersonView.New")); //$NON-NLS-1$
-			try {
-				Configuration conf = event.getConfiguration();
-				if (conf != null)
-					conf.initPlanetStatistics();
-			} catch (DataAccessException e) {
-				e.printStackTrace();
-			}
 		}
 		super.setModel(model, sync);
 		if (sync) {
