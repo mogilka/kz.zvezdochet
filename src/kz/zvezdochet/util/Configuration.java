@@ -541,7 +541,7 @@ public class Configuration {
 	 */
 	public void initPlanetStatistics() throws DataAccessException {
 		initPlanetAspects();
-		initDamagedPlanets();
+		initPlanetDamaged();
 //		initAngularPlanets();
 		initSunNeighbours();
 		initPlanetPositions();
@@ -601,10 +601,38 @@ public class Configuration {
 	/**
 	 * Поиск поражённых и непоражённых планет
 	 */
-	private void initDamagedPlanets() {
+	private void initPlanetDamaged() {
 		for (Model model : planetList) {
 			Planet planet = (Planet)model;
-			
+
+			final String LILITH = "Lilith";
+			final String KETHU = "Kethu";
+			final String SELENA = "Selena";
+			final String RAKHU = "Rakhu";
+
+			String pcode = planet.getCode();
+			if (!pcode.equals(LILITH) && !pcode.equals(KETHU)
+					&& !pcode.equals(SELENA) && !pcode.equals(RAKHU)) {
+				for (SkyPointAspect aspect : aspectList) {
+					String pcode2 = aspect.getSkyPoint2().getCode();
+					if (!aspect.getSkyPoint1().getCode().equals(pcode)
+							&& !pcode2.equals(pcode))
+						continue;
+	
+					String acode = aspect.getAspect().getCode();
+					if (acode.equals("CONJUNCTION") || acode.equals("BELT") || acode.equals("KERNEL")) {
+						if (pcode2.equals(LILITH))
+							planet.setLilithed();
+						else if (pcode2.equals(KETHU))
+							planet.setKethued();
+						else if (pcode2.equals(SELENA))
+							planet.setSelened();
+						else if (pcode2.equals(RAKHU))
+							planet.setRakhued();
+					}
+				}
+			}
+
 			//сравнение количества хороших и плохих аспектов
 			Map<String, Integer> map = planet.getAspectCountMap(); 
 			int good = map.get("POSITIVE");
@@ -613,38 +641,10 @@ public class Configuration {
 			int badh = map.get("NEGATIVE_HIDDEN");
 			int neutral = map.get("NEUTRAL") + map.get("NEUTRAL_KERNEL") + map.get("NEGATIVE_BELT");
 
-			if (0 == good + goodh && 0 == neutral && bad > 0)
+			if (0 == good + goodh && bad > 0 && (0 == neutral || planet.isKethued() || planet.isLilithed()))
 				planet.setDamaged(true);
-			else if (0 == bad + badh && good > 0)
-				planet.setPerfect(true); 
-
-			final String LILITH = "Lilith";
-			final String KETHU = "Kethu";
-			final String SELENA = "Selena";
-			final String RAKHU = "Rakhu";
-
-			String pcode = planet.getCode();
-			if (pcode.equals(LILITH) || pcode.equals(KETHU)
-					|| pcode.equals(SELENA) || pcode.equals(RAKHU))
-				continue;
-			for (SkyPointAspect aspect : aspectList) {
-				String pcode2 = aspect.getSkyPoint2().getCode();
-				if (!aspect.getSkyPoint1().getCode().equals(pcode)
-						&& !pcode2.equals(pcode))
-					continue;
-
-				String acode = aspect.getAspect().getCode();
-				if (acode.equals("CONJUNCTION") || acode.equals("BELT") || acode.equals("KERNEL")) {
-					if (pcode2.equals(LILITH))
-						planet.setLilithed();
-					else if (pcode2.equals(KETHU))
-						planet.setKethued();
-					else if (pcode2.equals(SELENA))
-						planet.setSelened();
-					else if (pcode2.equals(RAKHU))
-						planet.setRakhued();
-				}
-			}
+			else if (0 == bad + badh && good > 0 && !planet.isKethued() && !planet.isLilithed())
+				planet.setPerfect(true);
 		}
 	}
 
