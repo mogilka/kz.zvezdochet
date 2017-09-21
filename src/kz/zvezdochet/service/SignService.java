@@ -174,6 +174,7 @@ public class SignService extends DictionaryService {
 		sign.setMineral(rs.getString("mineral"));
 		sign.setMetal(rs.getString("metal"));
 		sign.setFlowers(rs.getString("flowers"));
+		sign.setKeyword(rs.getString("keyword"));
 		return sign;
 	}
 

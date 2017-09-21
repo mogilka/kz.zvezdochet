@@ -1,7 +1,5 @@
 package kz.zvezdochet.bean;
 
-import java.util.List;
-
 import kz.zvezdochet.core.bean.DiagramObject;
 import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.service.SignService;
@@ -447,5 +445,18 @@ public class Sign extends DiagramObject {
 			case 14: return new int[] {5,9};
 		}
 		return null;
+	}
+
+	/**
+	 * Ключевые слова
+	 */
+	private String keyword;
+
+	public String getKeyword() {
+		return keyword;
+	}
+
+	public void setKeyword(String keyword) {
+		this.keyword = keyword;
 	}
 }
