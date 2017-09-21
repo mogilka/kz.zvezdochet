@@ -3,9 +3,9 @@ package kz.zvezdochet.part;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
 
@@ -460,7 +460,7 @@ public class EventPart extends ModelPart implements ICalculable {
 	private String[] humans = {"Событие",
 		"Живое существо",
 		"Сообщество людей"};
-	private Map<Integer, String> dst = new HashMap<Integer, String>();
+	private Map<Integer, String> dst = new TreeMap<Integer, String>();
 
 	@Override
 	protected void initControls() {
@@ -536,45 +536,50 @@ public class EventPart extends ModelPart implements ICalculable {
 		event.setBirth(dtBirth.getSelection());
 		double zone = (txZone.getText() != null && txZone.getText().length() > 0) ? Double.parseDouble(txZone.getText()) : 0;
 		event.setZone(zone);
-		event.setDst(cvDST.getCombo().getSelectionIndex());
+		event.setDst(cvDST.getCombo().getSelectionIndex() - 3);
 		event.setHuman(cvHuman.getCombo().getSelectionIndex());
 	}
 	
 	@Override
 	protected void syncView() {
-		reset();
-		model = (null == model) ? new Event() : model;
-		Event event = (Event)model;
-//		if (event.getId() > 0)
-//			lbID.setText(event.getId().toString());
-		txName.setText(event.getName());
-		cvGender.getCombo().setText(genders[event.isFemale() ? 2 : 1]);
-		cvHand.getCombo().setText(hands[event.isRightHanded() ? 0 : 1]);
-		if (event.getRectification() > 0)
-			cvRectification.getCombo().setText(calcs[event.getRectification()]);
-		if (event.getBirth() != null)
-			dtBirth.setSelection(event.getBirth());
-		if (event.getDeath() != null)
-			dtDeath.setSelection(event.getDeath());
-		btCelebrity.setSelection(event.isCelebrity());
-		txComment.setEditable(btCelebrity.getSelection());
-		if (event.getDescription() != null)
-			txComment.setText(event.getDescription());
-		if (event.getText() != null)
-			txDescription.setText(event.getText());
-		if (event.getPlace() != null)
-			initPlace(event.getPlace());
-		txZone.setText(CalcUtil.formatNumber("###.##", event.getZone()));
-		cvDST.getCombo().setText(dst.get((int)event.getDst()));
-		cvHuman.getCombo().setText(humans[event.getHuman()]);
-		if (event.getAccuracy() != null)
-			txAccuracy.setText(event.getAccuracy());
-		if (event.getConversation() != null)
-			txLog.setText(event.getConversation());
+		try {
+			reset();
+			model = (null == model) ? new Event() : model;
+			Event event = (Event)model;
+			if (event.getId() != null && event.getId() > 0)
+				lbID.setText(event.getId().toString());
+			txName.setText(event.getName());
+			cvGender.getCombo().setText(genders[event.isFemale() ? 2 : 1]);
+			cvHand.getCombo().setText(hands[event.isRightHanded() ? 0 : 1]);
+			if (event.getRectification() > 0)
+				cvRectification.getCombo().setText(calcs[event.getRectification()]);
+			if (event.getBirth() != null)
+				dtBirth.setSelection(event.getBirth());
+			if (event.getDeath() != null)
+				dtDeath.setSelection(event.getDeath());
+			btCelebrity.setSelection(event.isCelebrity());
+			txComment.setEditable(btCelebrity.getSelection());
+			if (event.getDescription() != null)
+				txComment.setText(event.getDescription());
+			if (event.getText() != null)
+				txDescription.setText(event.getText());
+			if (event.getPlace() != null)
+				initPlace(event.getPlace());
+			txZone.setText(CalcUtil.formatNumber("###.##", event.getZone()));
+			cvDST.getCombo().setText(dst.get((int)event.getDst()));
+			cvHuman.getCombo().setText(humans[event.getHuman()]);
+			if (event.getAccuracy() != null)
+				txAccuracy.setText(event.getAccuracy());
+			if (event.getConversation() != null)
+				txLog.setText(event.getConversation());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
 	public void reset() {
+		lbID.setText("");
 		txName.setText(""); //$NON-NLS-1$
 		txPlace.setText(""); //$NON-NLS-1$
 		txLatitude.setText(""); //$NON-NLS-1$
