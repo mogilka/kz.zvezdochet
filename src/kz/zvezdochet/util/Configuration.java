@@ -341,9 +341,12 @@ public class Configuration {
 	  		for (int j = 1; j < 37; j++) {
 	  			House h = (House)houseList.get(j - 1);
 	  			int i = CalcUtil.trunc((j + 2) / 3);
-	  			if (h.isMain())
-	  	  			h.setCoord(houses[i]);
-	  			else {
+	  			if (h.isMain()) {
+	  				double val = houses[i];
+	  	  			h.setCoord(val);
+	  				Sign sign = SkyPoint.getSign(val, event.getBirthYear());
+	  				h.setSign(sign);
+	  			} else {
 	  				double one = houses[i];
 	  				if (12 == i) i = 0;
 	  				double two = houses[i + 1];
@@ -359,6 +362,8 @@ public class Configuration {
 	  				if (res > 360) 
 	  					res = res - 360; 
 	  	  			h.setCoord(res);
+	  				Sign sign = SkyPoint.getSign(res, event.getBirthYear());
+	  				h.setSign(sign);
 	  			}
 	  		}
 		} catch (Exception e) {
@@ -618,7 +623,7 @@ public class Configuration {
 					if (!aspect.getSkyPoint1().getCode().equals(pcode)
 							&& !pcode2.equals(pcode))
 						continue;
-	
+
 					String acode = aspect.getAspect().getCode();
 					if (acode.equals("CONJUNCTION") || acode.equals("BELT") || acode.equals("KERNEL")) {
 						if (pcode2.equals(LILITH))

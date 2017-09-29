@@ -46,6 +46,8 @@ import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Place;
 import kz.zvezdochet.bean.Planet;
+import kz.zvezdochet.bean.Sign;
+import kz.zvezdochet.bean.SkyPoint;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.handler.Handler;
 import kz.zvezdochet.core.service.DataAccessException;
@@ -276,6 +278,9 @@ public class EventPart extends ModelPart implements ICalculable {
 			"Дома",
 			"",
 			"",
+			"",
+			"",
+			"",
 			""
 		};
 		Table table = new Table(grPlanets, SWT.BORDER | SWT.V_SCROLL);
@@ -297,7 +302,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		tab.name = "Дома";
 		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/home.gif").createImage();
 		grHouses = new Group(folder, SWT.NONE);
-		String[] titles2 = {"Дом", "Координата"};
+		String[] titles2 = {"Дом", "Координата", "Знак"};
 		table = new Table(grHouses, SWT.BORDER | SWT.V_SCROLL);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
@@ -644,6 +649,8 @@ public class EventPart extends ModelPart implements ICalculable {
 				item.setImage(9, planet.isBelt() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/belt.png").createImage() : null);
 
+				Sign sign = planet.getSign();
+				item.setText(10, null == sign ? "" : sign.getName());
 				Image image = null;
 				if (planet.isSignHome())
 					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/home.gif").createImage();
@@ -656,6 +663,8 @@ public class EventPart extends ModelPart implements ICalculable {
 				if (image != null)
 					item.setImage(10, image);
 
+				House house = planet.getHouse();
+				item.setText(11, null == house ? "" : house.getCode());
 				image = null;
 				if (planet.isHouseHome())
 					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/home.gif").createImage();
@@ -671,11 +680,23 @@ public class EventPart extends ModelPart implements ICalculable {
 				item.setImage(12, planet.isLilithed() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Lilith.png").createImage() : null);
 
-				item.setImage(13, planet.isKing() ?
+				item.setImage(13, planet.isSelened() ?
+						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Selena.png").createImage() : null);
+
+				item.setImage(14, planet.isRakhued() ?
+						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Rakhu.png").createImage() : null);
+
+				item.setImage(15, planet.isKethued() ?
+						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Kethu.png").createImage() : null);
+
+				item.setImage(16, planet.isKing() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/crown.png").createImage() : null);
 
-				item.setImage(14, planet.isLord() ?
+				item.setImage(17, planet.isLord() ?
 						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/throne.png").createImage() : null);
+
+				item.setImage(18, planet.isBroken() ?
+						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/ilow_obj.gif").createImage() : null);
 			}
 			for (int i = 0; i < table.getColumnCount(); i++)
 				table.getColumn(i).pack();
@@ -692,6 +713,15 @@ public class EventPart extends ModelPart implements ICalculable {
 				TableItem item = new TableItem(table, SWT.NONE);
 				item.setText(0, house.getName());		
 				item.setText(1, String.valueOf(house.getCoord()));
+
+  				Sign sign;
+				try {
+					sign = SkyPoint.getSign(house.getCoord(), event.getBirthYear());
+//  				house.setSign(sign);
+					item.setText(2, null == sign ? "" : sign.getName());
+				} catch (DataAccessException e) {
+					e.printStackTrace();
+				}
 			}
 			for (int i = 0; i < table.getColumnCount(); i++)
 				table.getColumn(i).pack();

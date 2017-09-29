@@ -49,11 +49,11 @@ public class Planet extends SkyPoint {
      */
     private boolean perfect = false;
     /**
-     * Признак соединения с Кету
+     * Признак слабой планеты (по очкам)
      */
     private boolean broken = false;
     /**
-     * Признак ослабленности
+     * Признак соединения с Кету
      */
     private boolean kethued = false;
     /**
@@ -574,6 +574,7 @@ public class Planet extends SkyPoint {
 	}
 
 	public void setSelened() {
+		selened = true;
 		addPoints(1);
 		System.out.println(this.getCode() + " is selened");
 	}
@@ -612,5 +613,14 @@ public class Planet extends SkyPoint {
 
 	public void setSynastry(String synastry) {
 		this.synastry = synastry;
+	}
+
+	/**
+	 * Признак соединения с Селеной
+	 */
+	private boolean selened;
+
+	public boolean isSelened() {
+		return selened;
 	}
 }
