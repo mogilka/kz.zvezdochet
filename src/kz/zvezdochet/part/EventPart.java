@@ -21,6 +21,7 @@ import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
@@ -99,6 +100,8 @@ public class EventPart extends ModelPart implements ICalculable {
 	private ComboViewer cvHuman;
 	private Text txAccuracy;
 	private Text txLog;
+	private Browser browser;
+	private CTabFolder tabfolder;
 
 	private CosmogramComposite cmpCosmogram;
 	private Group grPlanets;
@@ -193,25 +196,32 @@ public class EventPart extends ModelPart implements ICalculable {
 		txComment.setEditable(false);
 		
 //		secEvent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		CTabFolder fldr = new CTabFolder(secEvent, SWT.BORDER);
-		fldr.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		fldr.setSimple(false);
-		fldr.setUnselectedCloseVisible(false);
+		tabfolder = new CTabFolder(secEvent, SWT.BORDER);
+		tabfolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		tabfolder.setSimple(false);
+		tabfolder.setUnselectedCloseVisible(false);
 
-		CTabItem item = new CTabItem(fldr, SWT.CLOSE);
+		CTabItem item = new CTabItem(tabfolder, SWT.CLOSE);
 		item.setText(Messages.getString("PersonView.Biography"));
 		item.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/contact_enabled.gif").createImage());
-		txDescription = new Text(fldr, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		txDescription = new Text(tabfolder, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		item.setControl(txDescription);
 
-		item = new CTabItem(fldr, SWT.CLOSE);
+		item = new CTabItem(tabfolder, SWT.CLOSE);
 		item.setText("Журнал");
 		item.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/contact_away.gif").createImage());
-		txLog = new Text(fldr, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		txLog = new Text(tabfolder, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		item.setControl(txLog);
-		fldr.pack();
-		fldr.setSelection(0);
-		GridDataFactory.fillDefaults().span(4, 1).grab(true, true).applyTo(fldr);
+
+		item = new CTabItem(tabfolder, SWT.CLOSE);
+		item.setText("HTML");
+		item.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet.core", "icons/discovery.gif").createImage());
+		browser = new Browser(tabfolder, SWT.BORDER);
+		item.setControl(browser);
+
+		tabfolder.pack();
+		tabfolder.setSelection(0);
+		GridDataFactory.fillDefaults().span(4, 1).grab(true, true).applyTo(tabfolder);
 		
 		GridLayoutFactory.swtDefaults().numColumns(4).applyTo(secEvent);
 		GridDataFactory.fillDefaults().hint(500, SWT.DEFAULT).grab(false, true).applyTo(secEvent);
@@ -781,5 +791,14 @@ public class EventPart extends ModelPart implements ICalculable {
 			refreshCard();
 			refreshTabs();
 		}
+	}
+
+	/**
+	 * Обновление html-отчёта
+	 * @param html текст для веб-страницы
+	 */
+	public void onReport(String html) {
+		browser.setText(html);
+		tabfolder.setSelection(2);
 	}
 }
