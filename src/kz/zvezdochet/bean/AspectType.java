@@ -126,4 +126,17 @@ public class AspectType extends DiagramObject {
 	public void setText(String text) {
 		this.text = text;
 	}
+
+	/**
+	 * Очки
+	 */
+	private int points;
+
+	public int getPoints() {
+		return points;
+	}
+
+	public void setPoints(int points) {
+		this.points = points;
+	}
 }

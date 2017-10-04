@@ -102,6 +102,7 @@ public class AspectTypeService extends DictionaryService {
 			type.setImage(rs.getString("image"));
 		if (rs.getString("text") != null)
 			type.setText(rs.getString("text"));
+		type.setPoints(rs.getInt("points"));
 		return type;
 	}
 
