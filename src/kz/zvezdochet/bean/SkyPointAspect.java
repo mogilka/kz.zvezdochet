@@ -1,5 +1,9 @@
 package kz.zvezdochet.bean;
 
+import java.util.Arrays;
+
+import kz.zvezdochet.service.AspectTypeService;
+
 /**
  * Аспект между объектами гороскопа
  * @author Nataly Didenko
@@ -110,5 +114,40 @@ public class SkyPointAspect {
 
 	public void setApplication(boolean application) {
 		this.application = application;
+	}
+
+	/**
+	 * Корректировка типа аспекта для толкования
+	 * @param state true - проверять соединение планеты с Лилит и Кету
+	 * @return тип аспекта
+	 */
+	public AspectType checkType(boolean state) {
+		AspectType type = aspect.getType();
+		Planet planet1 = (Planet)skyPoint1;
+		Planet planet2 = (Planet)skyPoint2;
+		String pcode1 = planet1.getCode();
+		String pcode2 = planet2.getCode();
+		AspectTypeService service = new AspectTypeService();
+
+		String negative[] = {"Lilith", "Kethu"};
+		String positive[] = {"Selena", "Sun", "Moon", "Rakhu", "Mercury", "Venus", "Jupiter", "Proserpina"};
+
+		try {
+			if (type.getCode().equals("NEUTRAL")) {
+				boolean baded = state ? (planet1.isLilithed() || planet2.isLilithed()
+					|| planet1.isKethued() || planet2.isKethued()) : false;
+
+				if (Arrays.asList(negative).contains(pcode1) ||
+						Arrays.asList(negative).contains(pcode2) || baded)
+					type = (AspectType)service.find("NEGATIVE");
+
+				else if (Arrays.asList(positive).contains(pcode1) ||
+						Arrays.asList(positive).contains(pcode2))
+					type = (AspectType)service.find("POSITIVE");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return type;
 	}
 }
