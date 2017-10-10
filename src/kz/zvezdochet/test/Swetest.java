@@ -241,12 +241,12 @@ public class Swetest {
   		long rflag;
   		double[] planets = new double[15];
   		String[] pnames = new String[15];
-  		double[] xx = new double[6];
+  		double[] xx = new double[6]; //array of 6 doubles for longitude, latitude, distance, speed in long., speed in lat., and speed in dist.
   		char[] serr = new char[256];
   		StringBuffer sb = new StringBuffer(new String(serr));
   		int[] list = getPlanetList();
   		for (int i = 0; i < list.length; i++) {
-  		    rflag = sweph.swe_calc(tjdet, list[i], (int)iflag, xx, sb);
+  		    rflag = sweph.swe_calc_ut(tjdut, list[i], (int)iflag, xx, sb);
   		    planets[i] = xx[0];
   		    if (xx[3] < 0)
   		    	planets[i] *= -1;
@@ -257,7 +257,7 @@ public class Swetest {
 
   		//расчёт куспидов домов
   		//{ for houses: ecliptic obliquity and nutation }
-  		rflag = sweph.swe_calc(tjdet, SweConst.SE_ECL_NUT, 0, xx, sb);
+  		rflag = sweph.swe_calc_ut(tjdut, SweConst.SE_ECL_NUT, 0, xx, sb);
   		eps_true = xx[0];
   		nut_long = xx[2];
   		//{ geographic position }

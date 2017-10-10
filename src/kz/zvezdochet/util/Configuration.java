@@ -248,7 +248,7 @@ public class Configuration {
 	  		int[] list = getPlanetList();
 	  		Planet p;
 	  		for (int i = 0; i < list.length; i++) {
-	  		    rflag = sweph.swe_calc(tjdet, list[i], (int)iflag, xx, sb);
+	  		    rflag = sweph.swe_calc_ut(tjdut, list[i], (int)iflag, xx, sb);
 	  		    planets[i] = xx[0];
 	  		    int n = constToPlanet(i);
 	  		    if (n >= 0) {
@@ -267,7 +267,7 @@ public class Configuration {
 	
 	  		//расчёт куспидов домов
 	  		//{ for houses: ecliptic obliquity and nutation }
-	  		rflag = sweph.swe_calc(tjdet, SweConst.SE_ECL_NUT, 0, xx, sb);
+	  		rflag = sweph.swe_calc_ut(tjdut, SweConst.SE_ECL_NUT, 0, xx, sb);
 	  		eps_true = xx[0];
 	  		nut_long = xx[2];
 	  		//{ geographic position }
