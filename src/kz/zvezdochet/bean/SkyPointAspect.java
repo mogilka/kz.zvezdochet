@@ -134,16 +134,17 @@ public class SkyPointAspect {
 
 		try {
 			if (type.getCode().equals("NEUTRAL")) {
-				boolean baded = state ? (planet1.isLilithed() || planet2.isLilithed()
-					|| planet1.isKethued() || planet2.isKethued()) : false;
+				boolean baded = false;
+//				baded = state ? (planet1.isLilithed() || planet2.isLilithed()
+//					|| planet1.isKethued() || planet2.isKethued()) : false;
 
 				if (Arrays.asList(negative).contains(pcode1) ||
 						Arrays.asList(negative).contains(pcode2) || baded)
 					type = (AspectType)service.find("NEGATIVE");
 
-				else if (Arrays.asList(positive).contains(pcode1) ||
-						Arrays.asList(positive).contains(pcode2))
-					type = (AspectType)service.find("POSITIVE");
+//				else if (Arrays.asList(positive).contains(pcode1) ||
+//						Arrays.asList(positive).contains(pcode2))
+//					type = (AspectType)service.find("POSITIVE");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
