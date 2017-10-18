@@ -448,7 +448,7 @@ public class Configuration {
 
 	/**
 	 * Расчёт аспектов планет.
-	 * Параллельно выполняется составление статистики по каждой планете:
+	 * Параллельно собираем статистику по каждой планете:
 	 * сколько у неё аспектов всех существующих типов
 	 * @throws DataAccessException 
 	 */
@@ -460,7 +460,7 @@ public class Configuration {
 			if (planetList != null) 
 				for (Model model : planetList) {
 					Planet p = (Planet)model;
-					
+
 					//создаем карту статистики по аспектам планеты
 					Map<String, Integer> aspcountmap = new HashMap<String, Integer>();
 					Map<String, String> aspmap = new HashMap<String, String>();
@@ -487,7 +487,7 @@ public class Configuration {
 								int score = aspcountmap.get(aspectTypeCode);
 								//для людей считаем только аспекты главных планет
 								aspcountmap.put(aspectTypeCode, ++score);
-
+	
 								//суммируем сильные аспекты
 								String common = "COMMON";
 								if (a.getType().getParentType() != null &&
