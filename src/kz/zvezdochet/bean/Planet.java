@@ -1,5 +1,7 @@
 package kz.zvezdochet.bean;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +12,8 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DictionaryService;
+import kz.zvezdochet.core.tool.Connector;
+import kz.zvezdochet.service.EventService;
 import kz.zvezdochet.service.PlanetService;
 
 /**
@@ -57,7 +61,7 @@ public class Planet extends SkyPoint {
      */
     private boolean kethued = false;
     /**
-     * Признак владыки
+     * Признак владыки гороскопа (планета, у которой больше всего сильных аспектов)
      */
     private boolean lord = false;
     /**
@@ -467,6 +471,8 @@ public class Planet extends SkyPoint {
 		List<Object> list = new ArrayList<>();
 		try {
 			List<Model> planets = prev.getConfiguration().getPlanets();
+			List<Model> planets2 = next.getConfiguration().getPlanets();
+			EventService service = new EventService();
 			for (Model model : planets) {
 				Planet planet = (Planet)model;
 				if (planet.getCode().equals(this.code)) {
@@ -477,7 +483,7 @@ public class Planet extends SkyPoint {
 					else if (this.retrograde && !planet.retrograde) //планета перешла в обратное движение
 						list.add("R");
 
-					//изменился ли знак Зодиака планеты?
+					//изменился ли знак Зодиака планеты
 					Sign sign = this.sign;
 					if (null == sign)
 						sign = SkyPoint.getSign(this.coord, next.getBirthYear());
@@ -488,6 +494,50 @@ public class Planet extends SkyPoint {
 
 					if (sign.getId() != sign2.getId())
 						list.add("M");
+
+					//изменились ли аспекты
+					for (Model model2 : planets2) {
+						String sql = "select * from " + service.getAspectTable() +
+							" where eventid in (?,?)"
+								+ " and planetid = ?"
+								+ " and planet2id = ?";
+						PreparedStatement ps = Connector.getInstance().getConnection().prepareStatement(sql);
+						ps.setLong(1, prev.getId());
+						ps.setLong(2, next.getId());
+						ps.setLong(3, planet.getId());
+						ps.setLong(4, model2.getId());
+						ResultSet rs = ps.executeQuery();
+						int cnt = rs.getFetchSize();
+						if (0 == cnt)
+							continue;
+						else if (1 == cnt) {
+							list.add("A");
+							break;
+						} else {
+							Object aspect = null;
+							Object aspect2 = null;
+							int i = -1;
+							while (rs.next()) {
+								long aspid = rs.getLong("aspectid");
+								if (++i > 0)
+									aspect2 = aspid;
+								else
+									aspect = aspid;
+							}
+							if (aspect != aspect2) {
+								list.add("A");
+								break;
+							}
+						}
+					}
+/*
+SELECT * FROM stargazer.eventaspects
+where eventid in (47457,47456)
+and planetid = 19
+and planet2id = 26
+order by planetid, planet2id
+limit 500
+*/
 				}
 			}
 		} catch (Exception e) {
