@@ -108,7 +108,7 @@ public class Planet extends SkyPoint {
 		lilithed = true;
 		setPerfect(false);
 		addPoints(-1);
-		System.out.println(this.getCode() + " is lilithed");
+//		System.out.println(this.getCode() + " is lilithed");
 	}
 
 	/**
@@ -211,7 +211,7 @@ public class Planet extends SkyPoint {
 			setPerfect(false);
 			addPoints(-1);
 		}
-		System.out.println(this.getCode() + " is damaged");
+//		System.out.println(this.getCode() + " is damaged");
 	}
 
 	public boolean isPerfect() {
@@ -222,7 +222,7 @@ public class Planet extends SkyPoint {
 		this.perfect = perfect;
 		if (perfect) {
 			addPoints(1);
-			System.out.println(this.getCode() + " is perfect");
+//			System.out.println(this.getCode() + " is perfect");
 		}
 	}
 
@@ -241,7 +241,7 @@ public class Planet extends SkyPoint {
 		setLord(false);
 		setDamaged(false);
 		addPoints(-1);
-		System.out.println(this.getCode() + " is broken");
+//		System.out.println(this.getCode() + " is broken");
 	}
 
 	public boolean isRetrograde() {
@@ -251,7 +251,7 @@ public class Planet extends SkyPoint {
 	public void setRetrograde() {
 		retrograde = true;
 		addPoints(-1);
-		System.out.println(this.getCode() + " is retro");
+//		System.out.println(this.getCode() + " is retro");
 	}
 
 	public DictionaryService getService() {
@@ -312,7 +312,7 @@ public class Planet extends SkyPoint {
 	public void setKernel() {
 		kernel = true;
 		addPoints(1);
-		System.out.println(this.getCode() + " is kernel");
+//		System.out.println(this.getCode() + " is kernel");
 	}
 
 	public boolean isBelt() {
@@ -323,7 +323,7 @@ public class Planet extends SkyPoint {
 		belt = true;
 		setPerfect(false);
 		addPoints(-1);
-		System.out.println(this.getCode() + " is belt");
+//		System.out.println(this.getCode() + " is belt");
 	}
 
 	public boolean isShield() {
@@ -333,7 +333,7 @@ public class Planet extends SkyPoint {
 	public void setShield() {
 		shield = true;
 		addPoints(1);
-		System.out.println(this.getCode() + " is shield");
+//		System.out.println(this.getCode() + " is shield");
 	}
 
 	public boolean isSword() {
@@ -343,7 +343,7 @@ public class Planet extends SkyPoint {
 	public void setSword() {
 		sword = true;
 		addPoints(1);
-		System.out.println(this.getCode() + " is sword");
+//		System.out.println(this.getCode() + " is sword");
 	}
 
 	/**
@@ -366,7 +366,7 @@ public class Planet extends SkyPoint {
 	public void setSignHome() {
 		signHome = true;
 		addPoints(1);
-		System.out.println(this.getCode() + " is in home sign");
+//		System.out.println(this.getCode() + " is in home sign");
 	}
 
 	public boolean isSignExaltated() {
@@ -376,7 +376,7 @@ public class Planet extends SkyPoint {
 	public void setSignExaltated() {
 		signExaltated = true;
 		addPoints(1);
-		System.out.println(this.getCode() + " is in exalt sign");
+//		System.out.println(this.getCode() + " is in exalt sign");
 	}
 
 	public boolean isSignExile() {
@@ -386,7 +386,7 @@ public class Planet extends SkyPoint {
 	public void setSignExile() {
 		signExile = true;
 		addPoints(-1);
-		System.out.println(this.getCode() + " is in exile sign");
+//		System.out.println(this.getCode() + " is in exile sign");
 	}
 
 	public boolean isSignDeclined() {
@@ -396,7 +396,7 @@ public class Planet extends SkyPoint {
 	public void setSignDeclined() {
 		signDeclined = true;
 		addPoints(-1);
-		System.out.println(this.getCode() + " is in decline sign");
+//		System.out.println(this.getCode() + " is in decline sign");
 	}
 
 	public boolean isHouseHome() {
@@ -406,7 +406,7 @@ public class Planet extends SkyPoint {
 	public void setHouseHome() {
 		houseHome = true;
 		addPoints(1);
-		System.out.println(this.getCode() + " is in home house");
+//		System.out.println(this.getCode() + " is in home house");
 	}
 
 	public boolean isHouseExaltated() {
@@ -416,7 +416,7 @@ public class Planet extends SkyPoint {
 	public void setHouseExaltated() {
 		houseExaltated = true;
 		addPoints(1);
-		System.out.println(this.getCode() + " is in exalt house");
+//		System.out.println(this.getCode() + " is in exalt house");
 	}
 
 	public boolean isHouseExile() {
@@ -426,7 +426,7 @@ public class Planet extends SkyPoint {
 	public void setHouseExile() {
 		houseExile = true;
 		addPoints(-1);
-		System.out.println(this.getCode() + " is in exile house");
+//		System.out.println(this.getCode() + " is in exile house");
 	}
 
 	public boolean isHouseDeclined() {
@@ -436,7 +436,7 @@ public class Planet extends SkyPoint {
 	public void setHouseDeclined() {
 		houseDeclined = true;
 		addPoints(-1);
-		System.out.println(this.getCode() + " is in decline house");
+//		System.out.println(this.getCode() + " is in decline house");
 	}
 
 	public boolean isLord() {
@@ -445,8 +445,8 @@ public class Planet extends SkyPoint {
 
 	public void setLord(boolean lord) {
 		this.lord = lord;
-		if (lord)
-			System.out.println(this.getCode() + " is Lord");
+//		if (lord)
+//			System.out.println(this.getCode() + " is Lord");
 	}
 
 	public boolean isRakhued() {
@@ -456,7 +456,7 @@ public class Planet extends SkyPoint {
 	public void setRakhued() {
 		this.rakhued = true;
 		addPoints(1);
-		System.out.println(this.getCode() + " is strong");
+//		System.out.println(this.getCode() + " is strong");
 	}
 
 	public static Long[] getSportSet() {
@@ -598,7 +598,7 @@ limit 500
 	public void setSelened() {
 		selened = true;
 		addPoints(1);
-		System.out.println(this.getCode() + " is selened");
+//		System.out.println(this.getCode() + " is selened");
 	}
 
 	public boolean isKethued() {
@@ -608,7 +608,7 @@ limit 500
 	public void setKethued() {
 		kethued = true;
 		setPerfect(false);
-		System.out.println(this.getCode() + " is weak");
+//		System.out.println(this.getCode() + " is weak");
 	}
 
 	/**
