@@ -221,6 +221,7 @@ public class Event extends Model {
 	/**
 	 * Инициализация полных данных о событии
 	 */
+	@Override
 	public void init(boolean initstat) {
 		try {
 			//местонахождение
