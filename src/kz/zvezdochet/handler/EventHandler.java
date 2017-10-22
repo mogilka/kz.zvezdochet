@@ -18,7 +18,7 @@ import org.osgi.service.prefs.Preferences;
 
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.core.bean.Model;
-import kz.zvezdochet.core.ui.util.DialogUtil;
+import kz.zvezdochet.core.handler.ModelOpenHandler;
 import kz.zvezdochet.part.EventPart;
 import kz.zvezdochet.part.SearchPart;
 import kz.zvezdochet.util.Constants;
@@ -28,19 +28,20 @@ import kz.zvezdochet.util.Constants;
  * @author Nataly Didenko
  *
  */
-public class EventHandler {
+public class EventHandler extends ModelOpenHandler {
 	@Inject
 	private EPartService partService;
 
 	@Execute
 	public void execute(@Active MPart activePart) {
 		Object part = activePart.getObject();
+		String partid = "kz.zvezdochet.part.event";
 		if (part instanceof SearchPart) {
 			Model model = (Model)((SearchPart)part).getModel();
 			if (model != null)
-				checkPart(model);
+				checkPart(model, partid);
 		} else
-			checkPart(new Event());
+			checkPart(new Event(), partid);
 	}
 	
 	@CanExecute
@@ -49,18 +50,14 @@ public class EventHandler {
 //		return ((SearchPart)activePart).getModel() != null;
 	}
 
-	/**
-	 * Отображение события в его представлении
-	 * @param part представление
-	 * @param model событие
-	 */
-	private void openModel(MPart part, Model model) {
+	@Override
+	protected void openPart(MPart part, Model model) {
 		if (model != null)
 			((EventPart)part.getObject()).setModel(model, true);
 	    part.setVisible(true);
 	    try {
 		    partService.showPart(part, PartState.VISIBLE);
-		    persistEvent(model);
+		    afterOpenPart(model);
 		} catch (IllegalStateException e) {
 			//Application does not have an active window
 		}
@@ -70,7 +67,8 @@ public class EventHandler {
 	 * Сохраняем событие в истории
 	 * @param event событие
 	 */
-	private void persistEvent(Model event) {
+	protected void afterOpenPart(Object object) {
+		Model event = (Model)object;
 		try {
 			if (null == event.getId())
 				return;
@@ -100,22 +98,5 @@ public class EventHandler {
 		} catch (BackingStoreException e) {
 			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * Проверка состояния представления события
-	 * @param model событие
-	 */
-	protected void checkPart(Model model) {
-		MPart part = partService.findPart("kz.zvezdochet.part.event");
-	    if (part.isDirty()) {
-			if (DialogUtil.alertConfirm(
-					"Открытый ранее объект не сохранён\n"
-							+ "и утратит все внесённые изменения,\n"
-							+ "если вы откроете новый. Продолжить?")) {
-				openModel(part, model);
-			}
-	    } else
-	    	openModel(part, model);
 	}
 }

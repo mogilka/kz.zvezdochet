@@ -13,7 +13,7 @@ import kz.zvezdochet.bean.Event;
 public class AddEventHandler extends EventHandler {
 	@Execute
 	public void execute() {
-		checkPart(new Event());
+		checkPart(new Event(), "kz.zvezdochet.part.event");
 	}
 
 	@CanExecute
