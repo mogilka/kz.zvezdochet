@@ -13,6 +13,7 @@ import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.ModelService;
 import kz.zvezdochet.core.util.DateUtil;
+import kz.zvezdochet.part.Messages;
 import kz.zvezdochet.service.EventService;
 import kz.zvezdochet.service.PlaceService;
 import kz.zvezdochet.util.Configuration;
@@ -508,4 +509,13 @@ public class Event extends Model {
 	public boolean isChild() {
 		return getAge() < MAX_TEEN_AGE;
 	}
+
+	/**
+	 * Варианты ректификации
+	 */
+	public static String[] calcs = {
+		Messages.getString("PersonView.Fault"),
+		Messages.getString("PersonView.Success"),
+		Messages.getString("PersonView.Undefined"),
+		"Недостаточно данных"};
 }

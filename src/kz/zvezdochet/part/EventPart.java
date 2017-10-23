@@ -468,10 +468,6 @@ public class EventPart extends ModelPart implements ICalculable {
 	private String[] hands = {"",
 		Messages.getString("PersonView.Right-handed"),
 		Messages.getString("PersonView.Left-handed")};
-	private String[] calcs = {Messages.getString("PersonView.Fault"),
-		Messages.getString("PersonView.Success"),
-		Messages.getString("PersonView.Undefined"),
-		"Недостаточно данных"};
 	private String[] humans = {"Событие",
 		"Живое существо",
 		"Сообщество людей"};
@@ -489,7 +485,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		cvHuman.setInput(humans);
 
 		cvRectification.setContentProvider(new ArrayContentProvider());
-		cvRectification.setInput(calcs);
+		cvRectification.setInput(Event.calcs);
 
 		cvDST.setContentProvider(new ArrayContentProvider());
 		dst.put(-3, "-3");
@@ -567,7 +563,7 @@ public class EventPart extends ModelPart implements ICalculable {
 			cvGender.getCombo().setText(genders[event.isFemale() ? 2 : 1]);
 			cvHand.getCombo().setText(hands[event.isRightHanded() ? 0 : 1]);
 			if (event.getRectification() > 0)
-				cvRectification.getCombo().setText(calcs[event.getRectification()]);
+				cvRectification.getCombo().setText(Event.calcs[event.getRectification()]);
 			if (event.getBirth() != null)
 				dtBirth.setSelection(event.getBirth());
 			if (event.getDeath() != null)

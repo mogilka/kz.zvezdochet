@@ -52,7 +52,7 @@ public class AspectService extends DictionaryService {
 			ps.setLong(6, dict.getType().getId());
 			ps.setInt(7, dict.isExact() ? 1 : 0);
 			result = ps.executeUpdate();
-			if (result == 1) {
+			if (1 == result) {
 				if (null == model.getId()) { 
 					Long autoIncKeyFromApi = -1L;
 					ResultSet rsid = ps.getGeneratedKeys();
