@@ -21,7 +21,6 @@ import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
@@ -100,7 +99,6 @@ public class EventPart extends ModelPart implements ICalculable {
 	private ComboViewer cvHuman;
 	private Text txAccuracy;
 	private Text txLog;
-	private Browser browser;
 	private CTabFolder tabfolder;
 
 	private CosmogramComposite cmpCosmogram;
@@ -212,12 +210,6 @@ public class EventPart extends ModelPart implements ICalculable {
 		item.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/contact_away.gif").createImage());
 		txLog = new Text(tabfolder, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		item.setControl(txLog);
-
-		item = new CTabItem(tabfolder, SWT.CLOSE);
-		item.setText("HTML");
-		item.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet.core", "icons/discovery.gif").createImage());
-		browser = new Browser(tabfolder, SWT.BORDER);
-		item.setControl(browser);
 
 		tabfolder.pack();
 		tabfolder.setSelection(0);
@@ -787,14 +779,5 @@ public class EventPart extends ModelPart implements ICalculable {
 			refreshCard();
 			refreshTabs();
 		}
-	}
-
-	/**
-	 * Обновление html-отчёта
-	 * @param html текст для веб-страницы
-	 */
-	public void onReport(String html) {
-		browser.setText(html);
-		tabfolder.setSelection(2);
 	}
 }
