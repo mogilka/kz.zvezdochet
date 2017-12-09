@@ -95,4 +95,17 @@ public class Element extends DiagramDictionary {
 	public void setSynastry(String synastry) {
 		this.synastry = synastry;
 	}
+
+	/**
+	 * Толкование тригона
+	 */
+	private String triangle;
+
+	public String getTriangle() {
+		return triangle;
+	}
+
+	public void setTriangle(String triangle) {
+		this.triangle = triangle;
+	}
 }

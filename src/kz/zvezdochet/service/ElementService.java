@@ -37,6 +37,7 @@ public class ElementService extends TextGenderDiagramService {
 		YinYangService service = new YinYangService();
 		element.setYinYang((YinYang)service.find(rs.getLong("yinyangid")));
 		element.setSynastry(rs.getString("synastry"));
+		element.setTriangle(rs.getString("triangle"));
 		return element;
 	}
 
