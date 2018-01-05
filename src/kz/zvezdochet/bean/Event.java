@@ -517,5 +517,14 @@ public class Event extends Model {
 		Messages.getString("PersonView.Fault"),
 		Messages.getString("PersonView.Success"),
 		Messages.getString("PersonView.Undefined"),
-		"Недостаточно данных"};
+		"Недостаточно данных"
+	};
+
+	/**
+	 * Возвращает имя события
+	 * @return
+	 */
+	public String getCallname() {
+		return name.substring(0, name.indexOf(' '));
+	}
 }
