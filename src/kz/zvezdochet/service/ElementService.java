@@ -38,6 +38,8 @@ public class ElementService extends TextGenderDiagramService {
 		element.setYinYang((YinYang)service.find(rs.getLong("yinyangid")));
 		element.setSynastry(rs.getString("synastry"));
 		element.setTriangle(rs.getString("triangle"));
+		int val = Integer.parseInt(rs.getString("loyalty"));
+		element.setLoyalty(1 == val ? true : false);
 		return element;
 	}
 

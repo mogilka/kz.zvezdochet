@@ -108,4 +108,17 @@ public class Element extends DiagramDictionary {
 	public void setTriangle(String triangle) {
 		this.triangle = triangle;
 	}
+
+	/**
+	 * Лояльность
+	 */
+	private boolean loyalty;
+
+	public boolean isLoyalty() {
+		return loyalty;
+	}
+
+	public void setLoyalty(boolean loyalty) {
+		this.loyalty = loyalty;
+	}
 }
