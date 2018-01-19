@@ -11,7 +11,7 @@ import swisseph.SwissLib;
 public class Swetest {
 
   	public static void main(String[] argv) {
-  		argv = new String[] {"22.02.1732", "10:00:00", "-5", "38.11", "-76.80"};
+  		argv = new String[] {"08.12.2007", "08:08:08", "6", "43.15", "76.55"};
   		new Swetest().calculate(argv);
   		/*
   		 * argv = ["08.12.2007", "08:08:08", "6", "43.15", "76.55"]
@@ -239,8 +239,8 @@ public class Swetest {
   		
   		//расчёт эфемерид планет
   		long rflag;
-  		double[] planets = new double[15];
-  		String[] pnames = new String[15];
+  		double[] planets = new double[51];
+  		String[] pnames = new String[51];
   		double[] xx = new double[6]; //array of 6 doubles for longitude, latitude, distance, speed in long., speed in lat., and speed in dist.
   		char[] serr = new char[256];
   		StringBuffer sb = new StringBuffer(new String(serr));
@@ -295,14 +295,11 @@ public class Swetest {
   	}
 
   	private int[] getPlanetList() {
-  		int[] list = new int[15];
-  		for (int i = SweConst.SE_SUN; i < (SweConst.SE_MEAN_NODE); i++)
+  		int[] list = new int[51];
+  		for (int i = SweConst.SE_SUN; i <= (SweConst.SE_INTP_PERG); i++)
   			list[i] = i;
-  		list[10] = SweConst.SE_TRUE_NODE;
-  		list[11] = SweConst.SE_MEAN_APOG;
-  		list[12] = SweConst.SE_CHIRON;
-  		list[13] = SweConst.SE_WHITE_MOON;
-  		list[14] = SweConst.SE_PROSERPINA;
+  		for (int i = SweConst.SE_CUPIDO; i <= (SweConst.SE_PROSERPINA); i++)
+  			list[i - 17] = i;
   		return list;
   	}
 }
