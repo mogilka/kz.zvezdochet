@@ -45,7 +45,7 @@ public class AspectPart extends ListView {
 	public View create(Composite parent) {
 		container = new Composite(parent, SWT.NONE);
 		container.setLayout(new FormLayout());
-		initFilter();
+		initFilter(parent);
 
 		tableViewer = new TableViewer(container, SWT.BORDER | SWT.FULL_SELECTION);
 		table = tableViewer.getTable();

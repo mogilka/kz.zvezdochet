@@ -42,7 +42,7 @@ public class ImportPart extends ModelListView {
 	protected CDateTime dtDate;
 
 	@Override
-	public void initFilter() {
+	public void initFilter(Composite parent) {
 		grFilter = new Group(container, SWT.NONE);
 		grFilter.setText("Поиск");
 		grFilter.setLayout(new GridLayout());
