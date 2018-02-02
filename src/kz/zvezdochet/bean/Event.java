@@ -527,4 +527,10 @@ public class Event extends Model {
 	public String getCallname() {
 		return name.substring(0, name.indexOf(' '));
 	}
+
+	public Event(Date date, String name) {
+		super();
+		this.name = name;
+		birth = date;
+	}
 }

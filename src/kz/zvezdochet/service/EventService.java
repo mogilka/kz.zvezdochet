@@ -1372,4 +1372,38 @@ and mars in (7,12)
 and celebrity = 1
 */
 	}
+
+	/**
+	 * Поиск событий по дате
+	 * @param date дата
+	 * @param limit количество событий
+	 * @return список событий
+	 * @throws DataAccessException
+	 */
+	public List<Event> findByDate(String date, int limit) throws DataAccessException {
+        List<Event> list = new ArrayList<Event>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String sql = "select * from " + tableName +  
+				" where initialdate like ?" +
+				" limit ?";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setString(1, date + "%");
+			ps.setInt(2, limit);
+			rs = ps.executeQuery();
+			while (rs.next())
+				list.add((Event)init(rs, null));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
+		return list;
+	}
 }

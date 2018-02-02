@@ -2,7 +2,7 @@ package kz.zvezdochet.util;
 
 /**
  * Вспомогательный класс для отчётов
- * @author nataly
+ * @author Nataly Didenko
  *
  */
 public class HouseMap {

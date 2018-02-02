@@ -11,7 +11,7 @@ import swisseph.SwissEph;
 
 /**
  * 
- * @author nataly
+ * @author Nataly Didenko
  * @see http://www.astrolab.ru/cgi-bin/informer/informer.cgi?type=8
  */
 public class MoonTest {
