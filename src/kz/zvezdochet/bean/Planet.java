@@ -645,4 +645,17 @@ limit 500
 	public boolean isSelened() {
 		return selened;
 	}
+
+    /**
+     * Негативный псевдоним
+     */
+    private String badname;
+
+	public String getBadname() {
+		return badname;
+	}
+
+	public void setBadname(String badname) {
+		this.badname = badname;
+	}
 }

@@ -116,12 +116,11 @@ public class PlanetService extends DictionaryService {
 		planet.setNumber(rs.getInt("OrdinalNumber"));
 		planet.setShortName(rs.getString("shortname"));
 		planet.setSymbol(rs.getString("symbol"));
-//		Image img = Toolkit.getDefaultToolkit().createImage(rs.getBytes("Image")); TODO
-//      planet.setImage(img);
 		String s = rs.getString("Fictitious");
 		boolean f = s.equals("1") ? true : false;
 		planet.setFictitious(f);
 		planet.setSynastry(rs.getString("synastry"));
+		planet.setBadname(rs.getString("badname"));
 		return planet;
 	}
 
