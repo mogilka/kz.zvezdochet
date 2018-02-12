@@ -1,7 +1,10 @@
 package kz.zvezdochet.test;
 
 import java.util.Arrays;
+import java.util.Date;
 
+import jodd.datetime.JDateTime;
+import jodd.datetime.JulianDateStamp;
 import kz.zvezdochet.core.util.DateUtil;
 import swisseph.DblObj;
 import swisseph.SweConst;
@@ -13,11 +16,26 @@ import swisseph.SwissEph;
  * 
  * @author Nataly Didenko
  * @see http://www.astrolab.ru/cgi-bin/informer/informer.cgi?type=8
+ * @link https://ru.wikipedia.org/wiki/Фазы_Луны
+ * @link https://ru.wikipedia.org/wiki/Новолуние
+ * @link http://www.abc-people.com/phenomenons/spiritism/v-5.htm
+ * @link http://mirkosmosa.ru/lunar-calendar/phase-moon/2018/february
+ * @link http://goroskop.org/luna/form.shtml
+ * @link http://lunium.ru/
+ * 🌑 🌒 🌓 🌔 🌕 🌖 🌗 🌘
+ * новолуние — Луна не видна
+ * молодая луна — первое появление Луны на небе после новолуния в виде узкого серпа
+ * первая четверть — освещена половина Луны
+ * прибывающая луна
+ * полнолуние — освещена вся целиком
+ * убывающая луна
+ * последняя четверть — освещена половина луны
+ * старая луна
  */
 public class MoonTest {
 
 	public static void main(String[] args) {
-  		args = new String[] {"06.10.2017", "00:00:00", "6", "43.15", "76.55"};
+  		args = new String[] {"07.02.2018", "00:00:00", "0", "51.48", "0"};
 
   		//обрабатываем дату
   		int iyear, imonth, iday, ihour = 0, imin = 0, isec = 0;
@@ -105,13 +123,9 @@ public class MoonTest {
   		imin = Integer.parseInt(trimLeadZero(stime.substring(3,5)));
   		isec = Integer.parseInt(trimLeadZero(stime.substring(6,8)));
 
-  		double tjd, tjdut, tjdet, dhour, deltat;
+  		@SuppressWarnings("unused")
+		double tjd, tjdut, tjdet, dhour, deltat;
   		dhour = ihour + imin/60.0 + isec/3600.0;
-  		tjd = SweDate.getJulDay(iyear, imonth, iday, dhour, true);
-  		deltat = SweDate.getDeltaT(tjd);
-  		//Universal Time
-  		tjdet = tjd + deltat;
-
   		double glon, glat;
   		dhour = ihour + imin/60.0 + isec/3600.0;
   		tjd = SweDate.getJulDay(iyear, imonth, iday, dhour, true);
@@ -140,36 +154,45 @@ public class MoonTest {
   		if (lat < 0)
   			glat = -glat;
 
+  	  	SwissEph sweph = new SwissEph();
+  		sweph.swe_set_ephe_path("/home/nataly/workspace/kz.zvezdochet.sweph/lib/ephe");
+		long iflag = SweConst.SEFLG_SWIEPH | SweConst.SEFLG_TRUEPOS | SweConst.SEFLG_TOPOCTR;
+
   		MoonTest test = new MoonTest();
-//  		test.pheno(tjdut);
-  		test.heliacal_pheno(glon, glat, tjdut);
-//  		test.rise(glon, glat, tjdut, SweConst.SE_CALC_RISE);
-//  		test.rise(glon, glat, tjdut, SweConst.SE_CALC_SET);
+  		test.pheno(sweph, tjdut, (int)iflag);
+//  		test.heliacal_pheno(glon, glat, tjdut);
+  		test.rise(sweph, glon, glat, tjdut, SweConst.SE_CALC_RISE, (int)iflag);
+  		test.rise(sweph, glon, glat, tjdut, SweConst.SE_CALC_SET, (int)iflag);
 	}
 
-  	private void pheno(double tjdut) {
-  	  	SwissEph sweph = new SwissEph();
-		long iflag = SweConst.SEFLG_TRUEPOS | SweConst.SEFLG_HELCTR;
-  		sweph.swe_set_ephe_path("/home/nataly/workspace/kz.zvezdochet.sweph/lib/ephe");
-
+	//compute phase, phase angle, elongation, apparent diameter, apparent magnitude
+	//for the Sun, the Moon, all planets and asteroids
+  	private void pheno(SwissEph sweph, double tjdut, int iflag) {
   		String ss[] = {
-  				"phase angle (earth-planet-sun)",
-  				"phase (illumined fraction of disc)",
-  				"elongation of planet",
-  				"apparent diameter of disc",
-  				"apparent magnitude"
+  			"phase angle (earth-planet-sun)",
+  			"phase (illumined fraction of disc)",
+  			"elongation of planet",
+  			"apparent diameter of disc",
+  			"apparent magnitude"
   		};
   		double[] xx = new double[20];
   		char[] serr = new char[256];
   		StringBuffer sb = new StringBuffer(new String(serr));
 
-  		sweph.swe_pheno_ut(tjdut, SweConst.SE_MOON, (int)iflag, xx, sb);
-  		for (int i = 0; i < xx.length; i++) {
-			System.out.print(i + "\t");
-  			if (i < ss.length)
-  				System.out.print(ss[i] + "\t");
-		    System.out.println(xx[i]);
-  		}
+  		try {
+  	  		int res = sweph.swe_pheno_ut(tjdut, SweConst.SE_MOON, iflag, xx, sb);
+  	  		if (SweConst.ERR == res)
+  	  			System.out.println(sb);
+  	  		else
+  		  		for (int i = 0; i < 6; i++) {
+  					System.out.print(i + "\t");
+  		  			if (i < ss.length)
+  		  				System.out.print(ss[i] + "\t");
+  				    System.out.println(xx[i]);
+  		  		}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
   	}
 
   	private static String trimLeadZero(String s) {
@@ -179,7 +202,9 @@ public class MoonTest {
   			return s;
   	}
 
-  	private void heliacal_pheno(double glon, double glat, double tjdut) {
+  	//provides data that are relevant for the calculation of heliacal risings and settings
+  	@SuppressWarnings("unused")
+	private void heliacal_pheno(double glon, double glat, double tjdut) {
   		String ss[] = {
   				"topocentric altitude of object (unrefracted)",
   				"apparent altitude of object (refracted)",
@@ -220,28 +245,33 @@ public class MoonTest {
   		double[] dobs = {36, 1, 1, 0, 0, 0};
   		new SweHel().swe_heliacal_pheno_ut(tjdut, dgeo, datm, dobs, new StringBuffer("Moon"), SweConst.SE_MORNING_LAST, SweConst.SE_HELFLAG_OPTICAL_PARAMS, xx, sb);
 
-		for (int i = 0; i < xx.length; i++)
-		    System.out.println(i + "\t" + ss[i] + "\t" + xx[i]);
+		for (int i = 0; i < xx.length; i++) {
+			String sdate = (21 == i) ? " -> " + jul2date(xx[i]) : "";
+		    System.out.println(i + "\t" + ss[i] + "\t" + xx[i] + sdate);
+		}
   	}
 
-  	private void rise(double glon, double glat, double tjdut, int flag) {
-  	  	SwissEph sweph = new SwissEph();
-		long iflag = SweConst.SEFLG_TRUEPOS | SweConst.SEFLG_HELCTR;
-  		sweph.swe_set_ephe_path("/home/nataly/workspace/kz.zvezdochet.sweph/lib/ephe");
-
-  		String ss[] = {
-  				"phase angle (earth-planet-sun)",
-  				"phase (illumined fraction of disc)",
-  				"elongation of planet",
-  				"apparent diameter of disc",
-  				"apparent magnitude"
-  		};
+  	private void rise(SwissEph sweph, double glon, double glat, double tjdut, int flag, int iflag) {
   		DblObj xx = new DblObj();
   		char[] serr = new char[256];
   		StringBuffer sb = new StringBuffer(new String(serr));
   		double[] dgeo = {glon, glat, 0};
 
-  		sweph.swe_rise_trans(tjdut, SweConst.SE_MOON, null, (int)iflag, flag, dgeo, 0.0, 0.0, xx, sb);
-		System.out.print("\t" + xx.val);
+  		//Нормальное атмосферное давление – 760 мм рт. столба. Это давление воздуха на уровне моря при температуре 0°С на широте 45°.
+  		//760 mm = 101325 Pa = 1013.25 hPa
+  		int res= sweph.swe_rise_trans(tjdut, SweConst.SE_MOON, null, (int)iflag, flag, dgeo, 1013.25, 0.0, xx, sb);
+  		if (0 == res) {
+  			String type = SweConst.SE_CALC_RISE == flag ? "rise" : "set";
+  			System.out.print("\t" + type + ":" + xx.val + " -> " + jul2date(xx.val));
+  		} else if (SweConst.ERR == res)
+  			System.out.println("error occurred (usually an ephemeris problem)");
+  		else if (-2 == res)
+  			System.out.println("rising or setting event was not found because the object is circumpolar");
+  	}
+
+  	private static Date jul2date(double jd) {
+  		JulianDateStamp julianStamp = new JulianDateStamp(jd);
+  		JDateTime jdate = new JDateTime(julianStamp);
+  		return new Date(jdate.getTimeInMillis());
   	}
 }
