@@ -1,88 +1,24 @@
 package kz.zvezdochet.test;
 
 import java.util.Arrays;
+import java.util.Date;
 
+import jodd.datetime.JDateTime;
+import jodd.datetime.JulianDateStamp;
 import kz.zvezdochet.core.util.DateUtil;
 import swisseph.SweConst;
 import swisseph.SweDate;
 import swisseph.SwissEph;
 
-public class Swestar {
+public class Sweclipse {
 
   	public static void main(String[] argv) {
-  		argv = new String[] {"08.12.2007", "08:08:08", "6", "43.15", "76.55"};
-  		new Swestar().calculate(argv);
+  		argv = new String[] {"29.01.2018", "00:00:00", "6", "43.15", "76.55"};
+  		new Sweclipse().calculate(argv);
   	}
   
 	@SuppressWarnings("unused")
   	private void calculate(String[] argv) {
-//		SE_STARFILE    = 'fixstars.cat';
-
-		String[] snames = new String[] {
-			"Aldebaran",
-			"Algol",
-			"Antares",
-			"Regulus",
-			"Polaris",
-			"Rigel",
-			"Alpheratz",
-			"Mirach",
-			"Altair",
-			"Canopus",
-			"Capella",
-			"Arcturus",
-			"Sirius",
-			"Murzim",
-			"Procyon",
-			"Schedar",
-			"Toliman",
-			"Hadar",
-			"Alderamin",
-			"Menkar",
-			"Diadem",
-			"Alfecca Meridiana",
-			"Alkes",
-			"Acrux",
-			"Deneb Adige",
-			"Sualocin",
-			"Thuban",
-			"Achernar",
-			"Ras Algethi",
-			"Alphard",
-			"Vega",
-			"Rasalhague",
-			"Betelgeuse",
-			"Bellatrix",
-			"Markab",
-			"Scheat",
-			"Mirfak",
-			"Capulus",
-			"Fomalhaut",
-			"Dubhe",
-			"Phact",
-			"Ankaa",
-			"Hamal",
-			"El Nath",
-			"Alcyone",
-			"Castor",
-			"Pollux",
-			"Alhena",
-			"Acubens",
-			"Denebola",
-			"Zosma",
-			"Spica",
-			"Vindemiatrix",
-			"Zuben Elgenubi",
-			"Zuben Eshamali",
-			"Aculeus",
-			"Acumen",
-			"Rukbat",
-			"Facies",
-			"Deneb Algedi",
-			"Sadalmelek",
-			"Sadalsuud",
-			"Alrischa"
-		};
 
   		//обрабатываем координаты места
   		double lat = Double.parseDouble(argv[3]);
@@ -195,31 +131,77 @@ public class Swestar {
   		tjdut = tjd;
   		tjdet = tjd + deltat;
   		
-  		//расчёт эфемерид звёзд
-  		long rflag;
-  		double[] stars = new double[2];
-  		double[] xx = new double[6];
+  		//расчёт затмений
+  		double[] tret = new double[10];
+  		double[] attr = new double[20];
+  		double[] geopos = new double[10];
+
   		char[] serr = new char[256];
   		StringBuffer sb = new StringBuffer(new String(serr));
-  		for (int i = 0; i < snames.length; i++) {
-  			String sname = snames[i];
-  		    rflag = sweph.swe_fixstar_ut(new StringBuffer(sname), tjdut, iflag, xx, sb);
-  			System.out.println(i + "\t" + sname + "\t" + xx[0]);
-  		}
-/*
-star		=name of fixed star to be searched, returned name of found star
-tjd_ut		=Julian day in Universal Time (swe_fixstar_ut())
-tjd_et		=Julian day in Ephemeris Time (swe_fixstar())
-iflag		=an integer containing several flags that indicate what        kind of computation is wanted
-xx			=array of 6 doubles for longitude, latitude, distance, speed in long., speed in lat., and speed in dist.
-serr[256]	=character string to contain error messages in case of error.
- */
-  	}
+
+  		int whicheph = 0; /* default ephemeris */
+
+  		double tjd_start = tjdut;
+
+  		int ifltype = SweConst.SE_ECL_ALLTYPES_SOLAR | SweConst.SE_ECL_CENTRAL | SweConst.SE_ECL_NONCENTRAL;
+
+  		/* find next Sun eclipse anywhere on earth */
+  		int eclflag = sweph.swe_sol_eclipse_when_glob(tjd_start, whicheph, ifltype, tret, 0, sb);
+  		if (eclflag != SweConst.ERR)
+  			System.out.println("solar eclipse type: " + eclflag);
+  		/*
+  		 * 1 - SE_ECL_CENTRAL
+  		 * 2 - SE_ECL_NONCENTRAL
+  		 * 4 - SE_ECL_TOTAL
+  		 * 8 - SE_ECL_ANNULAR
+  		 * 16 - SE_ECL_PARTIAL
+  		 * 32 - SE_ECL_ANNULAR_TOTAL
+  		 */
+  		System.out.println("the time of the next solar eclipse: " + tret[0] + " -> " + jul2date(tret[0]));
+
+  		//now we can find geographical position of the eclipse maximum
+  		tjd_start = tret[0];
+  		eclflag = sweph.swe_sol_eclipse_where(tjd_start, whicheph, geopos, attr, sb);
+//  		if (eclflag == ERR)
+//  		  return ERR;
+  		System.out.println("the geographical position of the eclipse maximum: " + geopos[0] + ", " + geopos[1]);
+
+  		//now we can calculate the four contacts for this place.
+  		//The start time is chosen a day before the maximum eclipse:
+  		tjd_start = tret[0] - 1;
+  		eclflag = sweph.swe_sol_eclipse_when_loc(tjd_start, whicheph, geopos, tret, attr, 0, sb);
+//  		if (eclflag == ERR)
+//  		  return ERR;
+  		System.out.println("time of solar eclipse (Julian day number): " + tret[0] + " -> " + jul2date(tret[0]));
+  		System.out.println("first contact: " + tret[1] + " -> " + jul2date(tret[1]));
+  		System.out.println("second contact: " + tret[2] + " -> " + jul2date(tret[2]));
+  		System.out.println("third contact: " + tret[3] + " -> " + jul2date(tret[3]));
+  		System.out.println("fourth contact: " + tret[4] + " -> " + jul2date(tret[4]) + "\n");
+
+  		/* find next Moon eclipse anywhere on earth */
+  		ifltype = SweConst.SE_ECL_ALLTYPES_LUNAR;
+  		eclflag = sweph.swe_lun_eclipse_when(tjd_start, whicheph, ifltype, tret, 0, sb);
+  		if (eclflag != SweConst.ERR)
+  		  System.out.println("lunar eclipse type: " + eclflag);
+  		int i = SweConst.SE_ECL_PARTIAL;
+  		/*
+  		 * 4 - SE_ECL_TOTAL
+  		 * 64 - SE_ECL_PENUMBRAL
+  		 * 16 - SE_ECL_PARTIAL
+  		 */
+  		System.out.println("the time of the next lunar eclipse: " + tret[0] + " -> " + jul2date(tret[0]));
+	}
   	
   	private String trimLeadZero(String s) {
   		if (s.indexOf('0') == 0)
   			return String.valueOf(s.charAt(1));
   		else
   			return s;
+  	}
+
+  	private static Date jul2date(double jd) {
+  		JulianDateStamp julianStamp = new JulianDateStamp(jd);
+  		JDateTime jdate = new JDateTime(julianStamp);
+  		return new Date(jdate.getTimeInMillis());
   	}
 }

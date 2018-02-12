@@ -35,7 +35,7 @@ import swisseph.SwissEph;
 public class MoonTest {
 
 	public static void main(String[] args) {
-  		args = new String[] {"07.02.2018", "00:00:00", "0", "51.48", "0"};
+  		args = new String[] {"29.01.2018", "00:00:00", "0", "51.48", "0"};
 
   		//обрабатываем дату
   		int iyear, imonth, iday, ihour = 0, imin = 0, isec = 0;
@@ -127,7 +127,6 @@ public class MoonTest {
 		double tjd, tjdut, tjdet, dhour, deltat;
   		dhour = ihour + imin/60.0 + isec/3600.0;
   		double glon, glat;
-  		dhour = ihour + imin/60.0 + isec/3600.0;
   		tjd = SweDate.getJulDay(iyear, imonth, iday, dhour, true);
   		deltat = SweDate.getDeltaT(tjd);
   		//Universal Time
@@ -156,18 +155,17 @@ public class MoonTest {
 
   	  	SwissEph sweph = new SwissEph();
   		sweph.swe_set_ephe_path("/home/nataly/workspace/kz.zvezdochet.sweph/lib/ephe");
-		long iflag = SweConst.SEFLG_SWIEPH | SweConst.SEFLG_TRUEPOS | SweConst.SEFLG_TOPOCTR;
 
   		MoonTest test = new MoonTest();
-  		test.pheno(sweph, tjdut, (int)iflag);
+  		test.pheno(sweph, tjdut);
 //  		test.heliacal_pheno(glon, glat, tjdut);
-  		test.rise(sweph, glon, glat, tjdut, SweConst.SE_CALC_RISE, (int)iflag);
-  		test.rise(sweph, glon, glat, tjdut, SweConst.SE_CALC_SET, (int)iflag);
+  		test.rise(sweph, glon, glat, tjdut, SweConst.SE_CALC_RISE);
+  		test.rise(sweph, glon, glat, tjdut, SweConst.SE_CALC_SET);
 	}
 
 	//compute phase, phase angle, elongation, apparent diameter, apparent magnitude
 	//for the Sun, the Moon, all planets and asteroids
-  	private void pheno(SwissEph sweph, double tjdut, int iflag) {
+  	private void pheno(SwissEph sweph, double tjdut) {
   		String ss[] = {
   			"phase angle (earth-planet-sun)",
   			"phase (illumined fraction of disc)",
@@ -178,6 +176,7 @@ public class MoonTest {
   		double[] xx = new double[20];
   		char[] serr = new char[256];
   		StringBuffer sb = new StringBuffer(new String(serr));
+  		int iflag = SweConst.SEFLG_SWIEPH | SweConst.SEFLG_TRUEPOS | SweConst.SEFLG_HELCTR;
 
   		try {
   	  		int res = sweph.swe_pheno_ut(tjdut, SweConst.SE_MOON, iflag, xx, sb);
@@ -251,7 +250,8 @@ public class MoonTest {
 		}
   	}
 
-  	private void rise(SwissEph sweph, double glon, double glat, double tjdut, int flag, int iflag) {
+  	//computes the times of rising, setting and meridian transits for all planets, asteroids, the moon, and the fixed stars
+  	private void rise(SwissEph sweph, double glon, double glat, double tjdut, int flag) {
   		DblObj xx = new DblObj();
   		char[] serr = new char[256];
   		StringBuffer sb = new StringBuffer(new String(serr));
@@ -259,7 +259,8 @@ public class MoonTest {
 
   		//Нормальное атмосферное давление – 760 мм рт. столба. Это давление воздуха на уровне моря при температуре 0°С на широте 45°.
   		//760 mm = 101325 Pa = 1013.25 hPa
-  		int res= sweph.swe_rise_trans(tjdut, SweConst.SE_MOON, null, (int)iflag, flag, dgeo, 1013.25, 0.0, xx, sb);
+		long iflag = SweConst.SEFLG_SWIEPH | SweConst.SEFLG_TRUEPOS | SweConst.SEFLG_TOPOCTR;
+  		int res = sweph.swe_rise_trans(tjdut, SweConst.SE_MOON, null, (int)iflag, flag, dgeo, 1013.25, 0.0, xx, sb);
   		if (0 == res) {
   			String type = SweConst.SE_CALC_RISE == flag ? "rise" : "set";
   			System.out.print("\t" + type + ":" + xx.val + " -> " + jul2date(xx.val));
@@ -269,6 +270,11 @@ public class MoonTest {
   			System.out.println("rising or setting event was not found because the object is circumpolar");
   	}
 
+  	/**
+  	 * Конвертируем Юлианский день в дату
+  	 * @param jd номер Юлианского дня
+  	 * @return дата
+  	 */
   	private static Date jul2date(double jd) {
   		JulianDateStamp julianStamp = new JulianDateStamp(jd);
   		JDateTime jdate = new JDateTime(julianStamp);
