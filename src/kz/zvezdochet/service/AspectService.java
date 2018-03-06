@@ -90,6 +90,7 @@ public class AspectService extends DictionaryService {
 		aspect.setPoints(rs.getDouble("points"));
 		aspect.setSymbol(rs.getString("symbol"));
 		aspect.setExact(rs.getBoolean("exact"));
+		aspect.setStrong(rs.getBoolean("strong"));
 		return aspect;
 	}
 

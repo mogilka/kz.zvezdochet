@@ -195,4 +195,18 @@ public class Aspect extends Dictionary {
 	public boolean isApplication(double val) {
 	    return val <= value && getFloor() <= val;
 	}
+
+	/**
+	 * Признак аспекта, существенного для прогноза:
+	 * соединение, квадратура, трин, оппозиция
+	 */
+	private boolean strong;
+
+	public boolean isStrong() {
+		return strong;
+	}
+
+	public void setStrong(boolean strong) {
+		this.strong = strong;
+	}
 }

@@ -213,4 +213,29 @@ public class House extends SkyPoint {
 	public void setStage(String stage) {
 		this.stage = stage;
 	}
+
+	/**
+	 * Описание для позитивного прогноза
+	 */
+	private String positive;
+	/**
+	 * Описание для негативного прогноза
+	 */
+	private String negative;
+
+	public String getPositive() {
+		return positive;
+	}
+
+	public void setPositive(String positive) {
+		this.positive = positive;
+	}
+
+	public String getNegative() {
+		return negative;
+	}
+
+	public void setNegative(String negative) {
+		this.negative = negative;
+	}
 }

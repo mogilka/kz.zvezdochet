@@ -120,7 +120,8 @@ public class PlanetService extends DictionaryService {
 		boolean f = s.equals("1") ? true : false;
 		planet.setFictitious(f);
 		planet.setSynastry(rs.getString("synastry"));
-		planet.setBadname(rs.getString("badname"));
+		planet.setNegative(rs.getString("negative"));
+		planet.setPositive(rs.getString("positive"));
 		return planet;
 	}
 

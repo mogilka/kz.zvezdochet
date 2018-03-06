@@ -649,13 +649,26 @@ limit 500
     /**
      * Негативный псевдоним
      */
-    private String badname;
+    private String negative;
 
-	public String getBadname() {
-		return badname;
+	public String getNegative() {
+		return negative;
 	}
 
-	public void setBadname(String badname) {
-		this.badname = badname;
+	public void setNegative(String badname) {
+		this.negative = badname;
+	}
+
+    /**
+     * Позитивный псевдоним
+     */
+    private String positive;
+
+	public String getPositive() {
+		return positive;
+	}
+
+	public void setPositive(String positive) {
+		this.positive = positive;
 	}
 }

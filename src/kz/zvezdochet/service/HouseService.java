@@ -127,6 +127,8 @@ public class HouseService extends DictionaryService {
 		house.setExportOnSign(rs.getBoolean("exportonsign"));
 		house.setElement((Element)new ElementService().find(rs.getLong("elementid")));
 		house.setStage(rs.getString("stage"));
+		house.setPositive(rs.getString("positive"));
+		house.setNegative(rs.getString("negative"));
 		return house;
 	}
 
