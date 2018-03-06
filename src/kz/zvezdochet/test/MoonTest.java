@@ -22,31 +22,38 @@ import swisseph.SwissEph;
  * @link http://mirkosmosa.ru/lunar-calendar/phase-moon/2018/february
  * @link http://goroskop.org/luna/form.shtml
  * @link http://lunium.ru/
+ * @link http://astrolab.ru/cgi-bin/moonphases.cgi.html
+ * @link http://redday.ru/moon/
+ * @link https://www.timeanddate.com/moon/uk/london
  * 🌑 🌒 🌓 🌔 🌕 🌖 🌗 🌘
  * новолуние — Луна не видна
- * молодая луна — первое появление Луны на небе после новолуния в виде узкого серпа
- * первая четверть — освещена половина Луны
+ * молодая луна — первое появление Луны на небе после новолуния в виде узкого серпа не позднее чем через 3 дня
+ * первая четверть — освещена половина Луны 50%
  * прибывающая луна
- * полнолуние — освещена вся целиком
+ * полнолуние — освещена вся целиком 100%
  * убывающая луна
- * последняя четверть — освещена половина луны
+ * последняя четверть — освещена половина луны 50%
  * старая луна
  */
 public class MoonTest {
 
 	public static void main(String[] args) {
-  		args = new String[] {"29.01.2018", "00:00:00", "0", "51.48", "0"};
+  		args = new String[] {"15.02.2018", "00:00:00", "6", "43.15", "76.56"};
 
   		//обрабатываем дату
   		int iyear, imonth, iday, ihour = 0, imin = 0, isec = 0;
   		String sdate = args[0];
-  		iday = Integer.parseInt(sdate.substring(0, 2));
-  		imonth = Integer.parseInt(sdate.substring(3, 5));
-  		iyear = Integer.parseInt(sdate.substring(6, 10));
+  		int lday = Integer.parseInt(sdate.substring(0, 2));
+  		int lmonth = Integer.parseInt(sdate.substring(3, 5));
+  		int lyear = Integer.parseInt(sdate.substring(6, 10));
+  		iday = lday;
+  		imonth = lmonth;
+  		iyear = lyear;
 
   		//обрабатываем время
   		String stime = args[1];
-  		double timing = Double.parseDouble(trimLeadZero(stime.substring(0,2))); //час по местному времени
+  		double lhour = Double.parseDouble(trimLeadZero(stime.substring(0,2))); //час по местному времени
+  		double timing = lhour;
   		double zone = Double.parseDouble(args[2]); //зона
   		if (zone < 0) {
   			if (timing < (24 + zone))
@@ -132,6 +139,7 @@ public class MoonTest {
   		//Universal Time
   		tjdut = tjd;
   		tjdet = tjd + deltat;
+  		System.out.println("tjdut " + tjdut);
 
   		//обрабатываем координаты места
   		double lat = Double.parseDouble(args[3]);
@@ -159,6 +167,13 @@ public class MoonTest {
   		MoonTest test = new MoonTest();
   		test.pheno(sweph, tjdut);
 //  		test.heliacal_pheno(glon, glat, tjdut);
+
+  		//используем локальное время
+  		dhour = lhour + imin/60.0 + isec/3600.0;
+  		tjd = SweDate.getJulDay(lyear, lmonth, lday, dhour, true);
+  		tjdut = tjd;
+  		System.out.println("tjdut2 " + tjdut);
+
   		test.rise(sweph, glon, glat, tjdut, SweConst.SE_CALC_RISE);
   		test.rise(sweph, glon, glat, tjdut, SweConst.SE_CALC_SET);
 	}
