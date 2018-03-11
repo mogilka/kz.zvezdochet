@@ -16,6 +16,8 @@ import kz.zvezdochet.bean.Aspect;
 import kz.zvezdochet.bean.AspectType;
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
+import kz.zvezdochet.bean.Ingress;
+import kz.zvezdochet.bean.IngressType;
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.bean.Sign;
 import kz.zvezdochet.bean.SkyPoint;
@@ -854,7 +856,7 @@ order by year(initialdate)
 	}
 
 	/**
-	 * Сохранение аспектов планет конфигурации события
+	 * Сохранение аспектов планет события
 	 * @param event событие
 	 * @throws DataAccessException
 	 */
@@ -1405,5 +1407,155 @@ and celebrity = 1
 			}
 		}
 		return list;
+	}
+
+	/**
+	 * Сохранение ингрессий события
+	 * @param event событие
+	 * @throws DataAccessException
+	 */
+	public void saveIngress(Event event) throws DataAccessException {
+		if (null == event.getConfiguration()) return;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String table = getIngressTable();
+		try {
+			Event prev = event.getPrev();
+			prev.getConfiguration().initPlanetAspects();
+
+			List<Ingress> list = new ArrayList<>();
+			IngressService iservice = new IngressService();
+
+			List<Model> planets = event.getConfiguration().getPlanets();
+			List<Model> planets1 = prev.getConfiguration().getPlanets();
+			for (Model model : planets) {
+				Planet planet = (Planet)model;
+				for (Model model1 : planets1) {
+					Planet planet1 = (Planet)model1;
+					if (planet.getCode().equals(planet1.getCode())) {
+						String icode = null;
+
+						if (Math.abs(planet1.getCoord()) == Math.abs(planet.getCoord())) {
+							//планета осталась в той же координате
+							icode = "stationary";
+						} else if (planet1.isRetrograde() && !planet.isRetrograde()) {
+							//планета перешла в директное движение
+							icode = "direct";
+						} else if (planet.isRetrograde() && !planet1.isRetrograde()) {
+							//планета перешла в обратное движение
+							icode = "retrograde";
+						}
+						if (icode != null) {
+							IngressType type = (IngressType)iservice.find(icode);
+							Ingress ingress = new Ingress(event.getId(), planet, null, type);
+							list.add(ingress);
+						}
+
+						//изменился ли знак Зодиака планеты
+						Sign sign = planet.getSign();
+						if (null == sign)
+							sign = SkyPoint.getSign(planet.getCoord(), event.getBirthYear());
+	
+						Sign sign2 = planet1.getSign();
+						if (null == sign2)
+							sign2 = SkyPoint.getSign(planet1.getCoord(), prev.getBirthYear());
+	
+						if (sign.getId() != sign2.getId()) {
+							icode = "sign";
+							IngressType type = (IngressType)iservice.find(icode);
+							Ingress ingress = new Ingress(event.getId(), planet, sign, type);
+							list.add(ingress);
+						}
+
+						//изменились ли аспекты
+						Map<String,String> map = planet.getAspectMap();
+						Map<String,String> map1 = planet1.getAspectMap();
+						String acode = map.get(planet.getCode());
+						String acode1 = map1.get(planet1.getCode());
+						if (!acode.equals(acode1)) {
+							IngressType type = (IngressType)iservice.find(icode);
+							Ingress ingress = new Ingress(event.getId(), planet, sign, type);
+							list.add(ingress);
+							break;
+						}
+/*
+SELECT * FROM stargazer.eventaspects
+where eventid in (47457,47456)
+and planetid = 19
+and planet2id = 26
+order by planetid, planet2id
+limit 500
+*/
+					}
+				}
+			}
+
+			
+			
+			
+			String sql = "update " + table + " set aspectid = null where eventid = ?";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, event.getId());
+			ps.executeUpdate();
+			ps.close();
+
+			List<SkyPointAspect> aspects = event.getConfiguration().getAspects();
+			for (SkyPointAspect aspect : aspects) {
+				SkyPoint point = aspect.getSkyPoint1();
+				SkyPoint point2 = aspect.getSkyPoint2();
+				if (point.getNumber() > point2.getNumber())
+					continue;
+				sql = "select id from " + table + 
+					" where eventid = ?" +
+					" and planetid = ?" +
+					" and planet2id = ?";
+				ps = Connector.getInstance().getConnection().prepareStatement(sql);
+				ps.setLong(1, event.getId());
+				ps.setLong(2, point.getId());
+				ps.setLong(3, point2.getId());
+				rs = ps.executeQuery();
+				long id = (rs.next()) ? rs.getLong("id") : 0;
+				ps.close();
+				
+				if (0 == id)
+					sql = "insert into " + table + " values(0,?,?,?,?,?,?)";
+				else
+					sql = "update " + table + 
+						" set eventid = ?,"
+						+ " planetid = ?,"
+						+ " aspectid = ?,"
+						+ " planet2id = ?,"
+						+ " exact = ?,"
+						+ " application = ?" +
+						" where id = ?";
+				ps = Connector.getInstance().getConnection().prepareStatement(sql);
+				ps.setLong(1, event.getId());
+				ps.setLong(2, point.getId());
+				ps.setLong(3, aspect.getAspect().getId());
+				ps.setLong(4, point2.getId());
+				ps.setInt(5, aspect.isExact() ? 1 : 0);
+				ps.setInt(6, aspect.isApplication() ? 1 : 0);
+				if (id > 0)
+					ps.setLong(7, id);
+				ps.executeUpdate();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (ps != null)	ps.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Возвращает имя таблицы, хранящей ингрессии события
+	 * @return имя ТБД
+	 */
+	public String getIngressTable() {
+		return "eventingress";
 	}
 }

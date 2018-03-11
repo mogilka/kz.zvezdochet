@@ -533,4 +533,31 @@ public class Event extends Model {
 		this.name = name;
 		birth = date;
 	}
+
+	/**
+	 * Поиск предыдущего события
+	 * @return событие днём ранее
+	 */
+	public Event getPrev() {
+		Event prev = null;
+		try {
+			String sdate = DateUtil.formatCustomDateTime(date, "yyyy-MM-dd");
+			EventService service = (EventService)getService();
+			List<Event> events;
+			events = service.findByDate(sdate, 1);
+			if (null == events || 0 == events.size()) {
+				//если нет, создаём
+				prev = new Event(DateUtil.getDatabaseDateTime(sdate + " 12:00:00"), "Мой гороскоп");
+				prev.calc(true);
+				prev.setCalculated(true);
+				service.save(prev);
+			} else {
+				prev = events.get(0);
+				prev.init(false);
+			}
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+		}
+		return prev;
+	}
 }
