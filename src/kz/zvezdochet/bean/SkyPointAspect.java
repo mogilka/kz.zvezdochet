@@ -130,7 +130,7 @@ public class SkyPointAspect {
 		AspectTypeService service = new AspectTypeService();
 
 		String negative[] = {"Lilith", "Kethu"};
-		String positive[] = {"Selena", "Sun", "Moon", "Rakhu", "Mercury", "Venus", "Jupiter", "Proserpina"};
+		String positive[] = {"Selena", "Rakhu"};
 
 		try {
 			if (type.getCode().equals("NEUTRAL")) {
@@ -142,9 +142,9 @@ public class SkyPointAspect {
 						Arrays.asList(negative).contains(pcode2) || baded)
 					type = (AspectType)service.find("NEGATIVE");
 
-//				else if (Arrays.asList(positive).contains(pcode1) ||
-//						Arrays.asList(positive).contains(pcode2))
-//					type = (AspectType)service.find("POSITIVE");
+				else if (Arrays.asList(positive).contains(pcode1) ||
+						Arrays.asList(positive).contains(pcode2))
+					type = (AspectType)service.find("POSITIVE");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
