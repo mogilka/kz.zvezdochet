@@ -4,8 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/kz.zvezdochet.sweph"/>
-	<classpathentry kind="lib" path="/kz.zvezdochet.sweph/lib/swisseph.jar"/>
+	<classpathentry exported="true" kind="lib" path="/kz.zvezdochet.sweph/lib/swisseph.jar"/>
 	<classpathentry kind="lib" path="/home/nataly/.p2/pool/plugins/org.eclipse.nebula.cwt_1.0.0.201607202302.jar"/>
-	<classpathentry kind="lib" path="/kz.zvezdochet.core/lib/jodd.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
