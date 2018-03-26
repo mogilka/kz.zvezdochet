@@ -238,4 +238,29 @@ public class House extends SkyPoint {
 	public void setNegative(String negative) {
 		this.negative = negative;
 	}
+
+    /**
+     * Признак Лилит в доме
+     */
+    private boolean lilithed;
+	/**
+	 * Признак Селены в доме
+	 */
+	private boolean selened;
+
+	public boolean isLilithed() {
+		return lilithed;
+	}
+
+	public void setLilithed() {
+		this.lilithed = true;
+	}
+
+	public boolean isSelened() {
+		return selened;
+	}
+
+	public void setSelened() {
+		this.selened = true;
+	}
 }

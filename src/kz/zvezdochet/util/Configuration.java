@@ -417,8 +417,13 @@ public class Configuration {
 				//текущей и предыдущей трети домов,
 				//запоминаем, в каком доме находится планета
 				if (Math.abs(pcoord) < hmargin & 
-						Math.abs(pcoord) >= house.getCoord())
+						Math.abs(pcoord) >= house.getCoord()) {
 					planet.setHouse(house);
+					if (planet.getCode().equals("Lilith"))
+						house.setLilithed();
+					else if (planet.getCode().equals("Selena"))
+						house.setSelened();
+				}
 			}
 		}
 	}
