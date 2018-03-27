@@ -238,18 +238,9 @@ public class MoonCalc {
   		try {
   			int iflag = SweConst.SEFLG_SWIEPH | SweConst.SEFLG_TRUEPOS | SweConst.SEFLG_TOPOCTR;
   	  		int res = sweph.swe_rise_trans(tjdut, SweConst.SE_MOON, null, iflag, flag, dgeo, 1013.25, 0.0, xx, sb);
-  	  		if (0 == res) {
-  	  			Date date = DateUtil.jul2date(tjdut);
-  	  			if (zone != 0.0)
-  	  				date = DateUtil.zoneDateTime(date, zone);
-  	  			String sdate = DateUtil.formatDate(date);
-
-  	  			Date rise = DateUtil.jul2date(xx.val);
-  	  			if (zone != 0.0)
-  	  				rise = DateUtil.zoneDateTime(rise, zone);
-  	  			String date2 = DateUtil.formatDate(rise);
-  	  			return sdate.equals(date2) ? rise : null;
-  	  		} else if (SweConst.ERR == res)
+  	  		if (0 == res)
+  	  			return DateUtil.jul2date(xx.val);
+  	  		else if (SweConst.ERR == res)
   	  			System.out.println("error occurred (usually an ephemeris problem)");
   	  		else if (-2 == res)
   	  			System.out.println("rising or setting event was not found because the object is circumpolar");
