@@ -172,9 +172,21 @@ public class MoonCalc {
 	  			double SYNMONTH = 29.53058812; //synodic month (new Moon to new Moon)
 		  		double num = SYNMONTH * (fixangle(res) / 360);
 		  		if (res > 0)
-		  			num += 1;
+		  			++num;
 		  		else if (Math.abs(res) > 201)
-		  			num += 1;
+		  			++num;
+		  		else {
+	  	  			Date cdate = DateUtil.jul2date(tjdut);
+	  	  			if (dzone != 0.0)
+	  	  				cdate = DateUtil.zoneDateTime(cdate, dzone);
+	  	  			String strdate = DateUtil.formatDate(cdate);
+	  	  			Date crise = rise;
+	  	  			if (dzone != 0.0)
+	  	  				crise = DateUtil.zoneDateTime(crise, dzone);
+	  	  			String strdate2 = DateUtil.formatDate(crise);
+	  	  			if (!strdate.equals(strdate2))
+	  	  				++num;
+		  		}
 		  		age = (int)num;
 	  		}
 	  		pheno.setAge((int)age);

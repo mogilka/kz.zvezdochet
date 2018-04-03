@@ -137,4 +137,11 @@ public class Pheno {
 		}
 		return age;
 	}
+
+	public Pheno(int age) {
+		super();
+		this.age = age;
+	}
+
+	public Pheno() {}
 }
