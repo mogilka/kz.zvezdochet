@@ -79,8 +79,8 @@ public class Aspect extends Dictionary {
 	 * @return true - значение эквивалентно значению аспекта
 	 */
 	public boolean isExact(double d) {
-        return (this.exact)
-        	? this.value == NumberUtil.round(d, 2)
+        return (exact)
+        	? value == NumberUtil.round(d, 2)
             : value == CalcUtil.trunc(d);
 	}
 
@@ -208,5 +208,14 @@ public class Aspect extends Dictionary {
 
 	public void setStrong(boolean strong) {
 		this.strong = strong;
+	}
+
+	/**
+	 * Проверка, является ли аспект аппликацией с орбисом в размере не более 1°
+	 * @param val значение реального аспекта между объектами
+	 * @return true|false аппликация|сепарация
+	 */
+	public boolean isApproximation(double val) {
+	    return val < value && value - 1 < val;
 	}
 }
