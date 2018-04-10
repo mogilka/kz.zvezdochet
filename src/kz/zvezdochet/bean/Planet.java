@@ -463,8 +463,20 @@ public class Planet extends SkyPoint {
 		return new Long[] {19L,21L,22L,23L,25L,26L,27L,28L,29L,30L,31L,32L,33L,34L};
 	}
 
+	/**
+	 * Проверка ингрессии планеты за два дня
+	 * @param prev событие днём ранее
+	 * @param next событие текущего дня
+	 * @return если Луна, то ингрессию ставим автоматом, в противном случае проверяем позицию планеты
+	 */
 	public List<Object> isIngressed(Event prev, Event next) {
 		List<Object> list = new ArrayList<>();
+
+		if (2 == number) {
+			list.add("D");
+			return list;
+		}
+
 		try {
 			List<Model> planets = prev.getConfiguration().getPlanets();
 			List<Model> planets2 = next.getConfiguration().getPlanets();
@@ -497,7 +509,9 @@ public class Planet extends SkyPoint {
 						Map<String,String> map2 = planet2.getAspectMap();
 						String acode = map.get(planet2.getCode());
 						String acode2 = map2.get(planet.getCode());
-						if (acode != acode2) {
+						if (null == acode)
+							continue;
+						else if (null == acode2 || !acode.equals(acode2)) {
 							list.add("A");
 							break;
 						}
@@ -670,5 +684,18 @@ limit 500
 
 	public void setPositive(String positive) {
 		this.positive = positive;
+	}
+
+	/**
+	 * Признак позитивной планеты для транзита (по толкованию)
+	 */
+	boolean good;
+
+	public boolean isGood() {
+		return good;
+	}
+
+	public void setGood(boolean good) {
+		this.good = good;
 	}
 }

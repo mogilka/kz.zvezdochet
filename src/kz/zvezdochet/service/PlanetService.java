@@ -122,6 +122,9 @@ public class PlanetService extends DictionaryService {
 		planet.setSynastry(rs.getString("synastry"));
 		planet.setNegative(rs.getString("negative"));
 		planet.setPositive(rs.getString("positive"));
+		s = rs.getString("good");
+		f = s.equals("1") ? true : false;
+		planet.setGood(f);
 		return planet;
 	}
 
