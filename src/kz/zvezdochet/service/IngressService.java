@@ -1,14 +1,18 @@
 package kz.zvezdochet.service;
 
-import kz.zvezdochet.bean.IngressType;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import kz.zvezdochet.bean.Ingress;
 import kz.zvezdochet.core.bean.Model;
-import kz.zvezdochet.core.service.DictionaryService;
+import kz.zvezdochet.core.service.DataAccessException;
+import kz.zvezdochet.core.service.ModelService;
 
 /**
- * Сервис типов ингрессий
+ * Сервис ингрессий
  * @author Nataly Didenko
  */
-public class IngressService extends DictionaryService {
+public class IngressService extends ModelService {
 
 	public IngressService() {
 		tableName = "ingress";
@@ -16,6 +20,18 @@ public class IngressService extends DictionaryService {
 
 	@Override
 	public Model create() {
-		return new IngressType();
+		return new Ingress();
+	}
+
+	@Override
+	public Model save(Model model) throws DataAccessException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Model init(ResultSet rs, Model base) throws DataAccessException, SQLException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

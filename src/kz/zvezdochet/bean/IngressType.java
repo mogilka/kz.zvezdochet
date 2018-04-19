@@ -2,7 +2,7 @@ package kz.zvezdochet.bean;
 
 import kz.zvezdochet.core.bean.Dictionary;
 import kz.zvezdochet.core.service.ModelService;
-import kz.zvezdochet.service.IngressService;
+import kz.zvezdochet.service.IngressTypeService;
 
 /**
  * Тип ингрессии
@@ -13,6 +13,6 @@ public class IngressType extends Dictionary {
 
 	@Override
 	public ModelService getService() {
-		return new IngressService();
+		return new IngressTypeService();
 	}
 }

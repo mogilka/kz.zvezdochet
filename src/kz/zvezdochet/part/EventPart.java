@@ -106,6 +106,7 @@ public class EventPart extends ModelPart implements ICalculable {
 	private Group grHouses;
 	private CTabFolder folder;
 	private Group grAspectType;
+	private Group grIngress;
 	
 	@PostConstruct
 	public View create(Composite parent) {
@@ -249,7 +250,7 @@ public class EventPart extends ModelPart implements ICalculable {
 	 * @return массив вкладок
 	 */
 	private Tab[] initTabs() {
-		Tab[] tabs = new Tab[4];
+		Tab[] tabs = new Tab[5];
 		//настройки расчёта
 		Tab tab = new Tab();
 		tab.name = "Настройки";
@@ -352,7 +353,27 @@ public class EventPart extends ModelPart implements ICalculable {
 		}
 		tab.control = grAspectType;
 		tabs[3] = tab;
-		
+
+		//ингрессии
+		tab = new Tab();
+		tab.name = "Ингрессии";
+		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/runtoline_co.gif").createImage();
+		grIngress = new Group(folder, SWT.NONE);
+		titles2 = new String[] {"Тип", "Планета", "Точка", "Объект"};
+		table = new Table(grIngress, SWT.BORDER | SWT.V_SCROLL);
+		table.setLinesVisible(true);
+		table.setHeaderVisible(true);
+		table.setSize(grIngress.getSize());
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(table);
+		for (int i = 0; i < titles2.length; i++) {
+			TableColumn column = new TableColumn (table, SWT.NONE);
+			column.setText(titles2[i]);
+		}
+		tab.control = grIngress;
+		GridLayoutFactory.swtDefaults().applyTo(grIngress);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(grIngress);
+		tabs[4] = tab;
+
 		return tabs;
 	}
 
@@ -703,6 +724,30 @@ public class EventPart extends ModelPart implements ICalculable {
 			
 		//дома
 		controls = grHouses.getChildren();
+		table = (Table)controls[0];
+		table.removeAll();
+		if (conf != null) {
+			for (Model base : conf.getHouses()) {
+				House house = (House)base;
+				TableItem item = new TableItem(table, SWT.NONE);
+				item.setText(0, house.getName());		
+				item.setText(1, String.valueOf(house.getCoord()));
+
+  				Sign sign;
+				try {
+					sign = SkyPoint.getSign(house.getCoord(), event.getBirthYear());
+//  				house.setSign(sign);
+					item.setText(2, null == sign ? "" : sign.getName());
+				} catch (DataAccessException e) {
+					e.printStackTrace();
+				}
+			}
+			for (int i = 0; i < table.getColumnCount(); i++)
+				table.getColumn(i).pack();
+		}
+
+		//ингрессии
+		controls = grIngress.getChildren();
 		table = (Table)controls[0];
 		table.removeAll();
 		if (conf != null) {

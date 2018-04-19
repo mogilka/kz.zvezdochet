@@ -1,11 +1,15 @@
 package kz.zvezdochet.bean;
 
+import kz.zvezdochet.core.bean.Model;
+import kz.zvezdochet.core.service.ModelService;
+import kz.zvezdochet.service.IngressService;
+
 /**
  * Ингрессия планеты события
  * @author Nataly Didenko
  */
-public class Ingress {
-
+public class Ingress extends Model {
+	private static final long serialVersionUID = 5670761424933047181L;
 	/**
 	 * Идентификатор события
 	 */
@@ -17,7 +21,7 @@ public class Ingress {
 	/**
 	 * связанный объект
 	 */
-	private Object object;
+	private SkyPoint skyPoint;
 	/**
 	 * Тип
 	 */
@@ -35,11 +39,11 @@ public class Ingress {
 	public void setPlanet(Planet planet) {
 		this.planet = planet;
 	}
-	public Object getObject() {
-		return object;
+	public SkyPoint getSkyPoint() {
+		return skyPoint;
 	}
-	public void setObject(Object object) {
-		this.object = object;
+	public void setSkyPoint(SkyPoint skyPoint) {
+		this.skyPoint = skyPoint;
 	}
 	public IngressType getType() {
 		return type;
@@ -48,11 +52,34 @@ public class Ingress {
 		this.type = type;
 	}
 
-	public Ingress(long eventid, Planet planet, Object object, IngressType type) {
+	public Ingress(long eventid, Planet planet, SkyPoint skyPoint, Model object, IngressType type) {
 		super();
 		this.eventid = eventid;
 		this.planet = planet;
+		this.skyPoint = skyPoint;
 		this.object = object;
 		this.type = type;
-	}	
+	}
+
+	public Ingress() {}
+
+	@Override
+	public ModelService getService() {
+		return new IngressService();
+	}
+
+	@Override
+	public void init(boolean mode) {}	
+
+	public Model getObject() {
+		return object;
+	}
+	public void setObject(Model object) {
+		this.object = object;
+	}
+
+	/**
+	 * Связанный объект (аспект, знак Зодиака и т.п.)
+	 */
+	private Model object;
 }

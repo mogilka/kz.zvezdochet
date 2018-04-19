@@ -169,6 +169,7 @@ public class EventService extends ModelService {
 					saveHouses(event);
 					savePlanetHouses(event);
 				}
+				saveIngress(event);
 			}
 			if (event.isNeedSaveBlob())
 				saveBlob(event);
@@ -1420,13 +1421,15 @@ and celebrity = 1
 		if (null == event.getConfiguration()) return;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        String table = getIngressTable();
+        IngressService service = new IngressService();
+        String table = service.getTableName();
 		try {
 			Event prev = event.getPrev();
 			prev.getConfiguration().initPlanetAspects();
 
 			List<Ingress> list = new ArrayList<>();
-			IngressService iservice = new IngressService();
+			IngressTypeService iservice = new IngressTypeService();
+			AspectService aservice = new AspectService();
 
 			List<Model> planets = event.getConfiguration().getPlanets();
 			List<Model> planets1 = prev.getConfiguration().getPlanets();
@@ -1449,7 +1452,7 @@ and celebrity = 1
 						}
 						if (icode != null) {
 							IngressType type = (IngressType)iservice.find(icode);
-							Ingress ingress = new Ingress(event.getId(), planet, null, type);
+							Ingress ingress = new Ingress(event.getId(), planet, null, null, type);
 							list.add(ingress);
 						}
 
@@ -1465,7 +1468,7 @@ and celebrity = 1
 						if (sign.getId() != sign2.getId()) {
 							icode = "sign";
 							IngressType type = (IngressType)iservice.find(icode);
-							Ingress ingress = new Ingress(event.getId(), planet, sign, type);
+							Ingress ingress = new Ingress(event.getId(), planet, null, sign, type);
 							list.add(ingress);
 						}
 
@@ -1474,71 +1477,65 @@ and celebrity = 1
 						Map<String,String> map1 = planet1.getAspectMap();
 						String acode = map.get(planet.getCode());
 						String acode1 = map1.get(planet1.getCode());
-						if (!acode.equals(acode1)) {
+						if (null == acode)
+							continue;
+						else if (null == acode1 || !acode.equals(acode1)) {
+							icode = "application";
 							IngressType type = (IngressType)iservice.find(icode);
-							Ingress ingress = new Ingress(event.getId(), planet, sign, type);
+							Ingress ingress = new Ingress(event.getId(), planet, planet1, aservice.find(acode), type);
 							list.add(ingress);
 							break;
 						}
-/*
-SELECT * FROM stargazer.eventaspects
-where eventid in (47457,47456)
-and planetid = 19
-and planet2id = 26
-order by planetid, planet2id
-limit 500
-*/
 					}
 				}
 			}
-
-			
-			
-			
-			String sql = "update " + table + " set aspectid = null where eventid = ?";
+			String sql = "update " + table + " set typeid = 9, objectid = null, skypointid = null where eventid = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, event.getId());
 			ps.executeUpdate();
 			ps.close();
 
-			List<SkyPointAspect> aspects = event.getConfiguration().getAspects();
-			for (SkyPointAspect aspect : aspects) {
-				SkyPoint point = aspect.getSkyPoint1();
-				SkyPoint point2 = aspect.getSkyPoint2();
-				if (point.getNumber() > point2.getNumber())
-					continue;
+			for (Ingress ingress : list) {
 				sql = "select id from " + table + 
 					" where eventid = ?" +
 					" and planetid = ?" +
-					" and planet2id = ?";
+					" and typeid = ?";
 				ps = Connector.getInstance().getConnection().prepareStatement(sql);
 				ps.setLong(1, event.getId());
-				ps.setLong(2, point.getId());
-				ps.setLong(3, point2.getId());
+				ps.setLong(2, ingress.getPlanet().getId());
+				ps.setLong(3, 9);
 				rs = ps.executeQuery();
 				long id = (rs.next()) ? rs.getLong("id") : 0;
 				ps.close();
 				
 				if (0 == id)
-					sql = "insert into " + table + " values(0,?,?,?,?,?,?)";
+					sql = "insert into " + table + " values(?,?,?,?,0,?)";
 				else
 					sql = "update " + table + 
 						" set eventid = ?,"
 						+ " planetid = ?,"
-						+ " aspectid = ?,"
-						+ " planet2id = ?,"
-						+ " exact = ?,"
-						+ " application = ?" +
+						+ " objectid = ?,"
+						+ " typeid = ?,"
+						+ " skypointid = ?" +
 						" where id = ?";
 				ps = Connector.getInstance().getConnection().prepareStatement(sql);
 				ps.setLong(1, event.getId());
-				ps.setLong(2, point.getId());
-				ps.setLong(3, aspect.getAspect().getId());
-				ps.setLong(4, point2.getId());
-				ps.setInt(5, aspect.isExact() ? 1 : 0);
-				ps.setInt(6, aspect.isApplication() ? 1 : 0);
+				ps.setLong(2, ingress.getPlanet().getId());
+
+				if (ingress.getObject() != null)
+					ps.setLong(3, ingress.getObject().getId());
+				else
+					ps.setLong(3, java.sql.Types.NULL);
+
+				ps.setLong(4, ingress.getType().getId());
+
+				if (ingress.getSkyPoint() != null)
+					ps.setLong(5, ingress.getSkyPoint().getId());
+				else
+					ps.setLong(5, java.sql.Types.NULL);
+
 				if (id > 0)
-					ps.setLong(7, id);
+					ps.setLong(6, id);
 				ps.executeUpdate();
 			}
 		} catch (Exception e) {
@@ -1551,13 +1548,5 @@ limit 500
 				e.printStackTrace();
 			}
 		}
-	}
-
-	/**
-	 * Возвращает имя таблицы, хранящей ингрессии события
-	 * @return имя ТБД
-	 */
-	public String getIngressTable() {
-		return "eventingress";
 	}
 }
