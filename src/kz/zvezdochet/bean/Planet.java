@@ -501,7 +501,7 @@ public class Planet extends SkyPoint {
 
 					if (sign.getId() != sign2.getId())
 						list.add("M");
-
+				} else {
 					//изменились ли аспекты
 					Map<String,String> map = planet.getAspectMap();
 					for (Model model2 : planets2) {

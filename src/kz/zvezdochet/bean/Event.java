@@ -541,7 +541,13 @@ public class Event extends Model {
 	public Event getPrev() {
 		Event prev = null;
 		try {
-			String sdate = DateUtil.formatCustomDateTime(date, "yyyy-MM-dd");
+			String sdate = DateUtil.formatCustomDateTime(birth, "yyyy-MM-dd");
+			Date edate = DateUtil.getDatabaseDateTime(sdate + " 12:00:00");
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(edate);
+			cal.add(Calendar.DATE, -1);
+			sdate = DateUtil.formatCustomDateTime(cal.getTime(), "yyyy-MM-dd");
+
 			EventService service = (EventService)getService();
 			List<Event> events;
 			events = service.findByDate(sdate, 1);

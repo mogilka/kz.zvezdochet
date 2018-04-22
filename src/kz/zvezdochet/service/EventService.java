@@ -17,7 +17,6 @@ import kz.zvezdochet.bean.AspectType;
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Ingress;
-import kz.zvezdochet.bean.IngressType;
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.bean.Sign;
 import kz.zvezdochet.bean.SkyPoint;
@@ -1424,78 +1423,17 @@ and celebrity = 1
         IngressService service = new IngressService();
         String table = service.getTableName();
 		try {
-			Event prev = event.getPrev();
-			prev.getConfiguration().initPlanetAspects();
+			List<Model> list = event.getConfiguration().getIngresses();
 
-			List<Ingress> list = new ArrayList<>();
-			IngressTypeService iservice = new IngressTypeService();
-			AspectService aservice = new AspectService();
-
-			List<Model> planets = event.getConfiguration().getPlanets();
-			List<Model> planets1 = prev.getConfiguration().getPlanets();
-			for (Model model : planets) {
-				Planet planet = (Planet)model;
-				for (Model model1 : planets1) {
-					Planet planet1 = (Planet)model1;
-					if (planet.getCode().equals(planet1.getCode())) {
-						String icode = null;
-
-						if (Math.abs(planet1.getCoord()) == Math.abs(planet.getCoord())) {
-							//планета осталась в той же координате
-							icode = "stationary";
-						} else if (planet1.isRetrograde() && !planet.isRetrograde()) {
-							//планета перешла в директное движение
-							icode = "direct";
-						} else if (planet.isRetrograde() && !planet1.isRetrograde()) {
-							//планета перешла в обратное движение
-							icode = "retrograde";
-						}
-						if (icode != null) {
-							IngressType type = (IngressType)iservice.find(icode);
-							Ingress ingress = new Ingress(event.getId(), planet, null, null, type);
-							list.add(ingress);
-						}
-
-						//изменился ли знак Зодиака планеты
-						Sign sign = planet.getSign();
-						if (null == sign)
-							sign = SkyPoint.getSign(planet.getCoord(), event.getBirthYear());
-	
-						Sign sign2 = planet1.getSign();
-						if (null == sign2)
-							sign2 = SkyPoint.getSign(planet1.getCoord(), prev.getBirthYear());
-	
-						if (sign.getId() != sign2.getId()) {
-							icode = "sign";
-							IngressType type = (IngressType)iservice.find(icode);
-							Ingress ingress = new Ingress(event.getId(), planet, null, sign, type);
-							list.add(ingress);
-						}
-
-						//изменились ли аспекты
-						Map<String,String> map = planet.getAspectMap();
-						Map<String,String> map1 = planet1.getAspectMap();
-						String acode = map.get(planet.getCode());
-						String acode1 = map1.get(planet1.getCode());
-						if (null == acode)
-							continue;
-						else if (null == acode1 || !acode.equals(acode1)) {
-							icode = "application";
-							IngressType type = (IngressType)iservice.find(icode);
-							Ingress ingress = new Ingress(event.getId(), planet, planet1, aservice.find(acode), type);
-							list.add(ingress);
-							break;
-						}
-					}
-				}
-			}
 			String sql = "update " + table + " set typeid = 9, objectid = null, skypointid = null where eventid = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, event.getId());
 			ps.executeUpdate();
 			ps.close();
 
-			for (Ingress ingress : list) {
+			for (Model model : list) {
+				Ingress ingress = (Ingress)model;
+
 				sql = "select id from " + table + 
 					" where eventid = ?" +
 					" and planetid = ?" +

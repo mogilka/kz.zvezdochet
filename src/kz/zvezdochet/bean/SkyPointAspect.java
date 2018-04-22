@@ -151,4 +151,13 @@ public class SkyPointAspect {
 		}
 		return type;
 	}
+
+	public SkyPointAspect(SkyPoint skyPoint1, SkyPoint skyPoint2, Aspect aspect) {
+		super();
+		this.skyPoint1 = skyPoint1;
+		this.skyPoint2 = skyPoint2;
+		this.aspect = aspect;
+	}
+
+	public SkyPointAspect() {}	
 }

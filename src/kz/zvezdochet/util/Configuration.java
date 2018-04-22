@@ -12,6 +12,8 @@ import kz.zvezdochet.bean.Aspect;
 import kz.zvezdochet.bean.AspectType;
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
+import kz.zvezdochet.bean.Ingress;
+import kz.zvezdochet.bean.IngressType;
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.bean.PositionType;
 import kz.zvezdochet.bean.Sign;
@@ -26,6 +28,7 @@ import kz.zvezdochet.core.util.PlatformUtil;
 import kz.zvezdochet.service.AspectService;
 import kz.zvezdochet.service.AspectTypeService;
 import kz.zvezdochet.service.HouseService;
+import kz.zvezdochet.service.IngressTypeService;
 import kz.zvezdochet.service.PlanetService;
 import kz.zvezdochet.service.PositionTypeService;
 import kz.zvezdochet.sweph.Activator;
@@ -45,6 +48,7 @@ public class Configuration {
 	private	List<SkyPointAspect> aspecthList;
 	private Date date;
 	private Event event;
+	private List<Model> ingressList;
 
 	public Event getEvent() {
 		return event;
@@ -557,6 +561,7 @@ public class Configuration {
 		initPlanetPositions();
 		initPlanetRank();
 //		initHouseAspects();
+		initIngress();
 	}
 
 	/**
@@ -810,5 +815,82 @@ public class Configuration {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void initIngress() {
+		try {
+			ingressList = new ArrayList<>();
+			IngressTypeService iservice = new IngressTypeService();
+			AspectService aservice = new AspectService();
+
+			Event prev = event.getPrev();
+			prev.getConfiguration().initPlanetAspects();
+
+			List<Model> planets1 = prev.getConfiguration().getPlanets();
+			for (Model model : planetList) {
+				Planet planet = (Planet)model;
+				Map<String,String> map = planet.getAspectMap();
+
+				for (Model model1 : planets1) {
+					Planet planet1 = (Planet)model1;
+					String icode = null;
+					if (planet.getCode().equals(planet1.getCode())) {
+						if (Math.abs(planet1.getCoord()) == Math.abs(planet.getCoord())) {
+							//планета осталась в той же координате
+							icode = "stationary";
+						} else if (planet1.isRetrograde() && !planet.isRetrograde()) {
+							//планета перешла в директное движение
+							icode = "direct";
+						} else if (planet.isRetrograde() && !planet1.isRetrograde()) {
+							//планета перешла в обратное движение
+							icode = "retrograde";
+						}
+						if (icode != null) {
+							IngressType type = (IngressType)iservice.find(icode);
+							Ingress ingress = new Ingress(event, planet, null, null, type);
+							ingressList.add(ingress);
+						}
+
+						//изменился ли знак Зодиака планеты
+						Sign sign = planet.getSign();
+						if (null == sign)
+							sign = SkyPoint.getSign(planet.getCoord(), event.getBirthYear());
+	
+						Sign sign1 = planet1.getSign();
+						if (null == sign1)
+							sign1 = SkyPoint.getSign(planet1.getCoord(), prev.getBirthYear());
+	
+						if (sign.getId() != sign1.getId()) {
+							icode = "sign";
+							IngressType type = (IngressType)iservice.find(icode);
+							Ingress ingress = new Ingress(event, planet, null, sign, type);
+							ingressList.add(ingress);
+						}
+					} else {
+						//изменились ли аспекты
+						Map<String,String> map1 = planet1.getAspectMap();
+						String acode = map.get(planet1.getCode());
+						String acode1 = map1.get(planet.getCode());
+						if (null == acode)
+							continue;
+						else if (null == acode1 || !acode.equals(acode1)) {
+							icode = "application";
+							IngressType type = (IngressType)iservice.find(icode);
+							Ingress ingress = new Ingress(event, planet, planet1, aservice.find(acode), type);
+							ingressList.add(ingress);
+							break;
+						}
+					}
+				}
+			}			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public List<Model> getIngresses() {
+		if (null == ingressList || 0 == ingressList.size())
+			initIngress();
+		return ingressList;
 	}
 }

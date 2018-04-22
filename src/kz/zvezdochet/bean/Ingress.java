@@ -11,9 +11,9 @@ import kz.zvezdochet.service.IngressService;
 public class Ingress extends Model {
 	private static final long serialVersionUID = 5670761424933047181L;
 	/**
-	 * Идентификатор события
+	 * Событие
 	 */
-	private long eventid;
+	private Event event;
 	/**
 	 * Планета
 	 */
@@ -27,11 +27,11 @@ public class Ingress extends Model {
 	 */
 	private IngressType type;
 
-	public long getEventid() {
-		return eventid;
+	public Event getEvent() {
+		return event;
 	}
-	public void setEventid(long eventid) {
-		this.eventid = eventid;
+	public void setEvent(Event event) {
+		this.event = event;
 	}
 	public Planet getPlanet() {
 		return planet;
@@ -52,9 +52,9 @@ public class Ingress extends Model {
 		this.type = type;
 	}
 
-	public Ingress(long eventid, Planet planet, SkyPoint skyPoint, Model object, IngressType type) {
+	public Ingress(Event event, Planet planet, SkyPoint skyPoint, Model object, IngressType type) {
 		super();
-		this.eventid = eventid;
+		this.event = event;
 		this.planet = planet;
 		this.skyPoint = skyPoint;
 		this.object = object;
