@@ -46,7 +46,7 @@ public class ImportRunHandler extends Handler {
 					if (null == back.getId()) { //оригинальная запись тоже не найдена, создаём
 						event.setBackid(event.getId());
 						event.setId(null);
-						event.calc(true);
+						event.calc(false);
 						event.setCalculated(true);
 						service.save(event);
 						++imported;
@@ -57,7 +57,7 @@ public class ImportRunHandler extends Handler {
 						//если даты совпадают, перезаписываем, иначе отменяем и пишем об этом в лог
 						if (idate.equals(bdate)) {
 							event.setBackid(event.getId());
-							event.calc(true);
+							event.calc(false);
 							event.setCalculated(true);
 							service.save(event);
 							++updated;
@@ -84,7 +84,7 @@ public class ImportRunHandler extends Handler {
 					back.setHuman(event.getHuman());
 					back.setAccuracy(event.getAccuracy());
 					back.setFancy(event.getFancy());
-					event.calc(true);
+					event.calc(false);
 					event.setCalculated(true);
 					service.save(back);
 					log.append("Связь обновлена: " + back.toLog() + "\n");
