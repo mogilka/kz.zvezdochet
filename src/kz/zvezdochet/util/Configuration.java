@@ -656,7 +656,11 @@ public class Configuration {
 			int badh = map.get("NEGATIVE_HIDDEN");
 			int neutral = map.get("NEUTRAL") + map.get("NEUTRAL_KERNEL") + map.get("NEGATIVE_BELT");
 
-			if (0 == good + goodh && bad > 0 && (0 == neutral || planet.isKethued() || planet.isLilithed()))
+			if (bad > 0
+					&& (0 == good + goodh)
+					&& (0 == neutral
+						|| (1 == neutral && (planet.isKethued() || planet.isLilithed())))
+						|| (2 == neutral && planet.isKethued() && planet.isLilithed()))
 				planet.setDamaged(true);
 			else if (0 == bad + badh && good > 0 && !planet.isKethued() && !planet.isLilithed())
 				planet.setPerfect(true);
