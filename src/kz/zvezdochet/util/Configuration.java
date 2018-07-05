@@ -89,6 +89,7 @@ public class Configuration {
   	  	String date = DateUtil.formatCustomDateTime(eventdate, DateUtil.sdf.toPattern());
   	  	String time = DateUtil.formatCustomDateTime(eventdate, DateUtil.stf.toPattern());
 		calculate(date, time, zone, latitude, longitude);
+		initPlanetAspects();
 		if (initstat)
 			initPlanetStatistics();
 	}
@@ -554,7 +555,6 @@ public class Configuration {
 		//и определяем планету знака
 	 */
 	public void initPlanetStatistics() throws DataAccessException {
-		initPlanetAspects();
 		initPlanetDamaged();
 //		initAngularPlanets();
 		initSunNeighbours();
