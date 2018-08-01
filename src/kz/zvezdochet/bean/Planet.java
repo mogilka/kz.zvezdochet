@@ -597,16 +597,19 @@ limit 500
 
 	public boolean isPositive() {
 		return isLord() || isKernel() || isPerfect()
-				|| isHouseExaltated() || isHouseHome() || isSignExaltated() || isSignHome()				
+//				|| isHouseExaltated() || isHouseHome() || isSignExaltated() || isSignHome()
 			&& (!inMine() && !isBelt() && !isBroken() && !isDamaged() && !isRetrograde() && !isLilithed()
-				&& !isHouseDeclined() && !isHouseExile() && !isSignDeclined() && !isSignExile());
+//				&& !isHouseDeclined() && !isHouseExile() && !isSignDeclined() && !isSignExile()
+		);
 	}
 
 	public boolean isNegative() {
-		return inMine() || isBelt() || isBroken() || isDamaged() || isRetrograde() || isLilithed()
-				|| isHouseDeclined() || isHouseExile() || isSignDeclined() || isSignExile()
+		return inMine() || isBelt() || isBroken() || isDamaged() || isLilithed()
+//				|| isRetrograde()
+//				|| isHouseDeclined() || isHouseExile() || isSignDeclined() || isSignExile()
 			&& (!isLord() && !isKernel() && !isPerfect()
-				 && !isHouseExaltated() && !isHouseHome() && !isSignExaltated() && !isSignHome());				
+//				 && !isHouseExaltated() && !isHouseHome() && !isSignExaltated() && !isSignHome()
+		);				
 	}
 
 	public void setSelened() {
