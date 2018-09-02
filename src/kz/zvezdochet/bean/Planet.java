@@ -159,6 +159,8 @@ public class Planet extends SkyPoint {
 		number = planet.number;
 		symbol = planet.symbol;
 		shortName = planet.shortName;
+		negative = planet.negative;
+		positive = planet.positive;
 	}
 
 	public double getScore() {
