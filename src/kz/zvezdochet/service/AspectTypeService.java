@@ -103,6 +103,8 @@ public class AspectTypeService extends DictionaryService {
 		if (rs.getString("text") != null)
 			type.setText(rs.getString("text"));
 		type.setPoints(rs.getInt("points"));
+		if (rs.getString("keyword") != null)
+			type.setKeyword(rs.getString("keyword"));
 		return type;
 	}
 

@@ -139,4 +139,17 @@ public class AspectType extends DiagramObject {
 	public void setPoints(int points) {
 		this.points = points;
 	}
+
+	/**
+	 * Ключевое слово
+	 */
+	private String keyword;
+
+	public String getKeyword() {
+		return keyword;
+	}
+
+	public void setKeyword(String keyword) {
+		this.keyword = keyword;
+	}
 }
