@@ -18,6 +18,8 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
@@ -46,6 +48,7 @@ import kz.zvezdochet.bean.AspectType;
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Ingress;
+import kz.zvezdochet.bean.MoonDay;
 import kz.zvezdochet.bean.Place;
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.bean.Sign;
@@ -62,9 +65,11 @@ import kz.zvezdochet.core.ui.view.ModelPart;
 import kz.zvezdochet.core.ui.view.View;
 import kz.zvezdochet.core.util.CalcUtil;
 import kz.zvezdochet.core.util.DateUtil;
+import kz.zvezdochet.provider.MoonDayLabelProvider;
 import kz.zvezdochet.provider.PlaceProposalProvider;
 import kz.zvezdochet.provider.PlaceProposalProvider.PlaceContentProposal;
 import kz.zvezdochet.service.AspectTypeService;
+import kz.zvezdochet.service.MoonDayService;
 import kz.zvezdochet.util.Configuration;
 
 /**
@@ -102,6 +107,7 @@ public class EventPart extends ModelPart implements ICalculable {
 	private Text txAccuracy;
 	private Text txLog;
 	private CTabFolder tabfolder;
+	private ComboViewer cvMoonday;
 
 	private CosmogramComposite cmpCosmogram;
 	private Group grPlanets;
@@ -213,6 +219,18 @@ public class EventPart extends ModelPart implements ICalculable {
 		item.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/contact_away.gif").createImage());
 		txLog = new Text(tabfolder, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		item.setControl(txLog);
+
+		item = new CTabItem(tabfolder, SWT.CLOSE);
+		item.setText("Лунный день");
+		item.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/moon.png").createImage());
+		cvMoonday = new ComboViewer(tabfolder, SWT.BORDER | SWT.READ_ONLY);
+		item.setControl(cvMoonday.getControl());
+
+		item = new CTabItem(tabfolder, SWT.CLOSE);
+		item.setText("Фигуры");
+//		item.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/constellation.png").createImage());
+//		txLog = new Text(tabfolder, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+//		item.setControl(txLog);
 
 		tabfolder.pack();
 		tabfolder.setSelection(0);
@@ -416,6 +434,9 @@ public class EventPart extends ModelPart implements ICalculable {
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			grab(true, false).applyTo(cvDST.getCombo());
 
+//		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
+//			grab(true, false).applyTo(cvMoonday.getCombo());
+
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).
 			grab(true, true).applyTo(txDescription);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).
@@ -512,6 +533,18 @@ public class EventPart extends ModelPart implements ICalculable {
 		dst.put(3, "+3");
 		cvDST.setInput(dst.values());
 		setPlaces();
+
+		try {
+			cvMoonday.setContentProvider(new ArrayContentProvider());
+			cvMoonday.setLabelProvider(new MoonDayLabelProvider());
+			List<Model> list = new MoonDayService().getList();
+			MoonDay day = new MoonDay();
+			day.setId(0L);
+			list.add(0, day);
+			cvMoonday.setInput(list);
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -564,6 +597,13 @@ public class EventPart extends ModelPart implements ICalculable {
 		event.setZone(zone);
 		event.setDst(cvDST.getCombo().getSelectionIndex() - 3);
 		event.setHuman(cvHuman.getCombo().getSelectionIndex());
+
+		IStructuredSelection selection = (IStructuredSelection)cvMoonday.getSelection();
+		if (selection.getFirstElement() != null) {
+			MoonDay day = (MoonDay)selection.getFirstElement();
+			if (day.getId() > 0)
+				event.setMoondayid(day.getId());
+		}
 	}
 	
 	@Override
@@ -598,6 +638,8 @@ public class EventPart extends ModelPart implements ICalculable {
 				txAccuracy.setText(event.getAccuracy());
 			if (event.getConversation() != null)
 				txLog.setText(event.getConversation());
+			if (event.getMoondayid() > 0)
+				cvMoonday.setSelection(new StructuredSelection(new MoonDayService().find((long)event.getMoondayid())));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -87,7 +87,7 @@ public class EventService extends ModelService {
 		try {
 			String sql;
 			if (null == model.getId())
-				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
 					"name = ?, " +
@@ -108,7 +108,8 @@ public class EventService extends ModelService {
 					"fancy = ?, " +
 					"dst = ?, " +
 					"finalplaceid = ?, " +
-					"backid = ? " +
+					"backid = ?, " +
+					"moondayid = ? " +
 					"where id = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setString(1, event.getName());
@@ -140,8 +141,9 @@ public class EventService extends ModelService {
 			else
 				ps.setNull(18, java.sql.Types.NULL);
 			ps.setLong(19, event.getBackid());
+			ps.setLong(20, event.getMoondayid());
 			if (model.getId() != null)
-				ps.setLong(20, model.getId());
+				ps.setLong(21, model.getId());
 			System.out.println(ps);
 
 			result = ps.executeUpdate();
@@ -308,6 +310,7 @@ public class EventService extends ModelService {
 		event.setDst(rs.getDouble("dst"));
 		s = rs.getString("calculated");
 		event.setCalculated(s.equals("1") ? true : false);
+		event.setMoondayid(rs.getInt("moondayid"));
 		return event;
 	}
 

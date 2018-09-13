@@ -567,4 +567,16 @@ public class Event extends Model {
 		}
 		return prev;
 	}
+
+	/**
+	 * Порядковый номер лунного дня
+	 */
+	private long moondayid;
+
+	public long getMoondayid() {
+		return moondayid;
+	}
+	public void setMoondayid(long moondayid) {
+		this.moondayid = moondayid;
+	}
 }
