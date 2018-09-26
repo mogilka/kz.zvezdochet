@@ -579,4 +579,16 @@ public class Event extends Model {
 	public void setMoondayid(long moondayid) {
 		this.moondayid = moondayid;
 	}
+
+	/**
+	 * Вид космограммы
+	 */
+	private long cardkindid;
+
+	public long getCardkindid() {
+		return cardkindid;
+	}
+	public void setCardkindid(long cardkindid) {
+		this.cardkindid = cardkindid;
+	}
 }

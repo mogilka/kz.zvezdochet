@@ -87,7 +87,7 @@ public class EventService extends ModelService {
 		try {
 			String sql;
 			if (null == model.getId())
-				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
 					"name = ?, " +
@@ -109,7 +109,8 @@ public class EventService extends ModelService {
 					"dst = ?, " +
 					"finalplaceid = ?, " +
 					"backid = ?, " +
-					"moondayid = ? " +
+					"moondayid = ?, " +
+					"cardkindid = ? " +
 					"where id = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setString(1, event.getName());
@@ -136,14 +137,26 @@ public class EventService extends ModelService {
 			ps.setInt(15, event.isCalculated() ? 1 : 0);
 			ps.setString(16, Translit.convert(event.getName(), true));
 			ps.setDouble(17, event.getDst());
+
 			if (event.getFinalPlace() != null && event.getFinalPlace().getId() > 0)
 				ps.setLong(18, event.getFinalPlace().getId());
 			else
 				ps.setNull(18, java.sql.Types.NULL);
+
 			ps.setLong(19, event.getBackid());
-			ps.setLong(20, event.getMoondayid());
+
+			if (event.getMoondayid() > 0)
+				ps.setLong(20, event.getMoondayid());
+			else
+				ps.setNull(20, java.sql.Types.NULL);
+
+			if (event.getCardkindid() > 0)
+				ps.setLong(21, event.getCardkindid());
+			else
+				ps.setNull(21, java.sql.Types.NULL);
+
 			if (model.getId() != null)
-				ps.setLong(21, model.getId());
+				ps.setLong(22, model.getId());
 			System.out.println(ps);
 
 			result = ps.executeUpdate();
@@ -311,6 +324,7 @@ public class EventService extends ModelService {
 		s = rs.getString("calculated");
 		event.setCalculated(s.equals("1") ? true : false);
 		event.setMoondayid(rs.getInt("moondayid"));
+		event.setCardkindid(rs.getInt("cardkindid"));
 		return event;
 	}
 

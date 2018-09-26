@@ -19,7 +19,6 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
@@ -45,6 +44,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import kz.zvezdochet.bean.Aspect;
 import kz.zvezdochet.bean.AspectType;
+import kz.zvezdochet.bean.CardKind;
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Ingress;
@@ -65,10 +65,12 @@ import kz.zvezdochet.core.ui.view.ModelPart;
 import kz.zvezdochet.core.ui.view.View;
 import kz.zvezdochet.core.util.CalcUtil;
 import kz.zvezdochet.core.util.DateUtil;
+import kz.zvezdochet.provider.CardKindLabelProvider;
 import kz.zvezdochet.provider.MoonDayLabelProvider;
 import kz.zvezdochet.provider.PlaceProposalProvider;
 import kz.zvezdochet.provider.PlaceProposalProvider.PlaceContentProposal;
 import kz.zvezdochet.service.AspectTypeService;
+import kz.zvezdochet.service.CardKindService;
 import kz.zvezdochet.service.MoonDayService;
 import kz.zvezdochet.util.Configuration;
 
@@ -108,6 +110,8 @@ public class EventPart extends ModelPart implements ICalculable {
 	private Text txLog;
 	private CTabFolder tabfolder;
 	private ComboViewer cvMoonday;
+	private ComboViewer cvCardKind;
+	private Button btTerm;
 
 	private CosmogramComposite cmpCosmogram;
 	private Group grPlanets;
@@ -201,7 +205,11 @@ public class EventPart extends ModelPart implements ICalculable {
 		btCelebrity = new Button(secEvent, SWT.BORDER | SWT.CHECK);
 		txComment = new Text(secEvent, SWT.BORDER);
 		txComment.setEditable(false);
-		
+
+		lb = new Label(secEvent, SWT.NONE);
+		lb.setText("Термины");
+		btTerm = new Button(secEvent, SWT.BORDER | SWT.CHECK);
+
 //		secEvent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		tabfolder = new CTabFolder(secEvent, SWT.BORDER);
 		tabfolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -221,10 +229,19 @@ public class EventPart extends ModelPart implements ICalculable {
 		item.setControl(txLog);
 
 		item = new CTabItem(tabfolder, SWT.CLOSE);
-		item.setText("Лунный день");
-		item.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/moon.png").createImage());
-		cvMoonday = new ComboViewer(tabfolder, SWT.BORDER | SWT.READ_ONLY);
-		item.setControl(cvMoonday.getControl());
+		item.setText("Толкования");
+		item.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet.core", "icons/configure.gif").createImage());
+		Group group = new Group(tabfolder, SWT.NONE);
+		lb = new Label(group, SWT.NONE);
+		lb.setText("Лунный день");
+		cvMoonday = new ComboViewer(group, SWT.BORDER | SWT.READ_ONLY);
+
+		lb = new Label(group, SWT.NONE);
+		lb.setText("Вид космограммы");
+		cvCardKind = new ComboViewer(group, SWT.BORDER | SWT.READ_ONLY);
+		item.setControl(group);
+		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(group);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(group);
 
 		item = new CTabItem(tabfolder, SWT.CLOSE);
 		item.setText("Фигуры");
@@ -445,6 +462,8 @@ public class EventPart extends ModelPart implements ICalculable {
 			span(2, 1).grab(true, false).applyTo(txComment);
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).
 			grab(false, false).applyTo(btCelebrity);
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).
+			grab(false, false).applyTo(btTerm);
 
 		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.FILL).
 			hint(514, 514).span(3, 1).grab(true, false).applyTo(cmpCosmogram);
@@ -542,6 +561,14 @@ public class EventPart extends ModelPart implements ICalculable {
 			day.setId(0L);
 			list.add(0, day);
 			cvMoonday.setInput(list);
+
+			cvCardKind.setContentProvider(new ArrayContentProvider());
+			cvCardKind.setLabelProvider(new CardKindLabelProvider());
+			list = new CardKindService().getList();
+			CardKind kind = new CardKind();
+			kind.setId(0L);
+			list.add(0, kind);
+			cvCardKind.setInput(list);
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
@@ -604,6 +631,13 @@ public class EventPart extends ModelPart implements ICalculable {
 			if (day.getId() > 0)
 				event.setMoondayid(day.getId());
 		}
+
+		selection = (IStructuredSelection)cvCardKind.getSelection();
+		if (selection.getFirstElement() != null) {
+			CardKind kind = (CardKind)selection.getFirstElement();
+			if (kind.getId() > 0)
+				event.setCardkindid(kind.getId());
+		}
 	}
 	
 	@Override
@@ -638,8 +672,14 @@ public class EventPart extends ModelPart implements ICalculable {
 				txAccuracy.setText(event.getAccuracy());
 			if (event.getConversation() != null)
 				txLog.setText(event.getConversation());
-			if (event.getMoondayid() > 0)
-				cvMoonday.setSelection(new StructuredSelection(new MoonDayService().find((long)event.getMoondayid())));
+			if (event.getMoondayid() > 0) {
+				MoonDay day = (MoonDay)new MoonDayService().find((long)event.getMoondayid());
+				cvMoonday.getCombo().setText(day.getId() + " " + day.getSymbol());
+			}
+			if (event.getCardkindid() > 0) {
+				CardKind kind = (CardKind)new CardKindService().find((long)event.getCardkindid());
+				cvCardKind.getCombo().setText(kind.getName() + " - " + kind.getDescription());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -663,9 +703,12 @@ public class EventPart extends ModelPart implements ICalculable {
 		cvHand.setSelection(null);
 		cvRectification.setSelection(null);
 		btCelebrity.setSelection(false);
+		btTerm.setSelection(false);
 		cvHuman.getCombo().setText(humans[1]);
 		txAccuracy.setText(""); //$NON-NLS-1$
 		txLog.setText(""); //$NON-NLS-1$
+		cvMoonday.setSelection(null);
+		cvCardKind.setSelection(null);
 	}
 	
 	public Model addModel() {
@@ -867,5 +910,15 @@ public class EventPart extends ModelPart implements ICalculable {
 			refreshCard();
 			refreshTabs();
 		}
+	}
+
+	/**
+	 * Определяем тип отчёта по выделению пункта "Астрологические термины":
+	 * 	true - делаем отчёт гороскопа с указанием названий планет, аспектов и других терминов
+	 * 	false - пишем человекопонятные заменители вместо терминов
+	 * @return
+	 */
+	public boolean isTerm() {
+		return btTerm.getSelection();
 	}
 }
