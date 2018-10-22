@@ -130,7 +130,7 @@ public class EventService extends ModelService {
 			ps.setString(9, birth);
 			ps.setDate(10, event.getDeath() != null ? new java.sql.Date(event.getDeath().getTime()) : null);
 			Date now = new Date();
-			ps.setString(11, DateUtil.formatCustomDateTime(now, "yyyy-MM-dd HH:mm:ss"));
+			ps.setString(11, event.isNeedSaveCalc() ? DateUtil.formatCustomDateTime(now, "yyyy-MM-dd HH:mm:ss") : DateUtil.formatCustomDateTime(event.getDate(), "yyyy-MM-dd HH:mm:ss"));
 			ps.setInt(12, event.getHuman());
 			ps.setString(13, event.getAccuracy());
 			ps.setNull(14, 3);
