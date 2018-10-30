@@ -598,7 +598,7 @@ limit 500
 	}
 
 	public boolean isPositive() {
-		return isLord() || isKernel() || isPerfect()
+		return isLord() || isPerfect()
 //				|| isHouseExaltated() || isHouseHome() || isSignExaltated() || isSignHome()
 			&& (!inMine() && !isBelt() && !isBroken() && !isDamaged() && !isRetrograde() && !isLilithed()
 //				&& !isHouseDeclined() && !isHouseExile() && !isSignDeclined() && !isSignExile()
@@ -609,7 +609,7 @@ limit 500
 		return inMine() || isBelt() || isBroken() || isDamaged() || isLilithed()
 //				|| isRetrograde()
 //				|| isHouseDeclined() || isHouseExile() || isSignDeclined() || isSignExile()
-			&& (!isLord() && !isKernel() && !isPerfect()
+			&& (!isLord() && !isPerfect()
 //				 && !isHouseExaltated() && !isHouseHome() && !isSignExaltated() && !isSignHome()
 		);				
 	}
@@ -702,5 +702,14 @@ limit 500
 
 	public void setGood(boolean good) {
 		this.good = good;
+	}
+
+	/**
+	 * Проверка, находится ли планета в нейтральном знаке
+	 * @return true|false
+	 */
+	public boolean isInNeutralSign() {
+		return !isSignExaltated() && !isSignHome()
+			&& !isSignDeclined() && !isSignExile();
 	}
 }
