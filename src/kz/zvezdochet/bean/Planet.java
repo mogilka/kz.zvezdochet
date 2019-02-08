@@ -1,6 +1,7 @@
 package kz.zvezdochet.bean;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -480,10 +481,9 @@ public class Planet extends SkyPoint {
 		}
 
 		try {
-			List<Model> planets = prev.getConfiguration().getPlanets();
-			List<Model> planets2 = next.getConfiguration().getPlanets();
-			for (Model model : planets) {
-				Planet planet = (Planet)model;
+			Collection<Planet> planets = prev.getConfiguration().getPlanets().values();
+			Collection<Planet> planets2 = next.getConfiguration().getPlanets().values();
+			for (Planet planet : planets) {
 				if (planet.getCode().equals(this.code)) {
 					if (Math.abs(this.coord) == Math.abs(planet.coord)) //планета осталась в той же координате
 						list.add("S");

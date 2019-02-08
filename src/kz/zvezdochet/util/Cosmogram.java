@@ -2,6 +2,7 @@ package kz.zvezdochet.util;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -180,9 +181,9 @@ public class Cosmogram {
 	 * @throws DataAccessException
 	 */
 	private void drawPlanets(Configuration configuration, GC gc, int radius) throws DataAccessException {
-		Iterator<Model> i = configuration.getPlanets().iterator();
+		Iterator<Planet> i = configuration.getPlanets().values().iterator();
 		while (i.hasNext()) {
-			Planet p = (Planet)i.next();
+			Planet p = i.next();
 			int x = CalcUtil.trunc(getXPoint(radius, p.getCoord())) + xcenter - 5;
 			int y = CalcUtil.trunc(getYPoint(radius, p.getCoord())) + ycenter - 5;
 			//String tooltip = p.getName() + " (" + Utils.replace(String.valueOf(p.getCoord()), ".", "\u00b0") + "\u2032)";
@@ -199,14 +200,14 @@ public class Cosmogram {
 	 */
 	private void drawAspects(GC gc) throws DataAccessException {
 		if (null == conf || null == conf.getPlanets()) return;
-		Iterator<Model> i = conf.getPlanets().iterator();
+		Iterator<Planet> i = conf.getPlanets().values().iterator();
 		boolean single = (null == conf2 || null == conf2.getPlanets());
-		List<Model> planets = single ? conf.getPlanets() : conf2.getPlanets();
+		Map<Long, Planet> planets = single ? conf.getPlanets() : conf2.getPlanets();
 		while (i.hasNext()) {
-			Planet p = (Planet)i.next();
-			Iterator<Model> j = planets.iterator();
+			Planet p = i.next();
+			Iterator<Planet> j = planets.values().iterator();
 			while (j.hasNext()) {
-				Planet p2 = (Planet)j.next();
+				Planet p2 = j.next();
 				if (single && p.getNumber() > p2.getNumber()) continue;
 				getAspect(Math.abs(p.getCoord()), Math.abs(p2.getCoord()), gc);
 			}

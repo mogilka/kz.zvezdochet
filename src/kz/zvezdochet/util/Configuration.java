@@ -2,6 +2,7 @@ package kz.zvezdochet.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,7 +43,7 @@ import swisseph.SwissLib;
  * @author Nataly Didenko
  */
 public class Configuration {
-	private List<Model> planetList;
+	private Map<Long, Planet> planetList;
 	private	List<Model> houseList;
 	private	List<SkyPointAspect> aspectList;
 	private	List<SkyPointAspect> aspecthList;
@@ -64,7 +65,11 @@ public class Configuration {
 	 * @throws DataAccessException 
 	 */
 	public Configuration(Date date) throws DataAccessException {
-  	  	planetList = new PlanetService().getList();
+  	  	planetList = new HashMap<>();
+		List<Model> list = new PlanetService().getList();
+		for (Model model : list)
+			planetList.put(model.getId(), (Planet)model);
+
   	  	houseList = new HouseService().getList();
   	  	aspectList = new ArrayList<SkyPointAspect>();
   	  	this.date = date;
@@ -83,7 +88,11 @@ public class Configuration {
 	 */
 	public Configuration(Event event, Date eventdate, String zone, String latitude, String longitude, boolean initstat) throws DataAccessException {
 		setEvent(event);
-  	  	planetList = new PlanetService().getList();
+  	  	planetList = new HashMap<>();
+		List<Model> list = new PlanetService().getList();
+		for (Model model : list)
+			planetList.put(model.getId(), (Planet)model);
+
   	  	houseList = new HouseService().getList();
   	  	this.date = eventdate;
   	  	String date = DateUtil.formatCustomDateTime(eventdate, DateUtil.sdf.toPattern());
@@ -255,16 +264,16 @@ public class Configuration {
 	  		for (int i = 0; i < list.length; i++) {
 	  		    rflag = sweph.swe_calc_ut(tjdut, list[i], (int)iflag, xx, sb);
 	  		    planets[i] = xx[0];
-	  		    int n = constToPlanet(i);
+	  		    long n = constToPlanet(i);
 	  		    if (n >= 0) {
-	  		    	p = (Planet)planetList.get(n);
+	  		    	p = planetList.get(n);
 	  	  			p.setCoord(xx[0]);
 	  	  			if (xx[3] < 0)
 	  	  				p.setRetrograde();
 	  		    }
 	  		}
 	  		//рассчитываем координату Кету по значению Раху
-	  		p = (Planet)planetList.get(3);
+	  		p = planetList.get(22L);
 	  		if (Math.abs(planets[10]) > 180)
 	  			p.setCoord(planets[10] - 180);
 	  		else
@@ -315,24 +324,29 @@ public class Configuration {
   	}
 	
   	/**
-  	 * Поиск соответствия планет Швейцарских эфемерид
-  	 * с их эквивалентами в данной программе
+  	 * Поиск соответствия планет Швейцарских эфемерид с их эквивалентами в БД
   	 * @param i индекс планеты в Швейцарских эфемеридах
-  	 * @return индекс планеты в системе
+  	 * @return индекс планеты в БД
   	 */
-  	private int constToPlanet(int i) {
+  	private long constToPlanet(int i) {
   		switch(i) {
-  		case 0: case 1: return i;
-  		case 2: case 3: case 4: return i + 2;
-  		case 5: case 6: return i + 4;
-  		case 7: case 8: case 9: return i + 5;
-  		case 10: return 2;
-  		case 11: return 8;
-  		case 12: return 11;
-  		case 13: return 7;
-  		case 14: return 15;
-  		default: return -1;
+	  		case 0: return 19L;
+	  		case 1: return 20L;
+	  		case 2: return 23L;
+	  		case 3: return 24L;
+	  		case 4: return 25L;
+	  		case 5: return 28L;
+	  		case 6: return 29L;
+	  		case 7: return 31L;
+	  		case 8: return 32L;
+	  		case 9: return 33L;
+	  		case 10: return 21L;
+	  		case 11: return 27L;
+	  		case 12: return 30L;
+	  		case 13: return 26L;
+	  		case 14: return 34L;
   		}
+  		return 22;
   	}
   	
   	/**
@@ -376,7 +390,7 @@ public class Configuration {
 		}
   	}
 
-	public List<Model> getPlanets() {
+	public Map<Long, Planet> getPlanets() {
 		return planetList;
 	}
 
@@ -399,7 +413,7 @@ public class Configuration {
 	 */
 	private boolean isPlanetHoused() {
 		return (planetList != null &&
-			((Planet)planetList.get(0)).getHouse() != null);
+			((Planet)planetList.get(19L)).getHouse() != null);
 	}
 
 	/**
@@ -407,8 +421,7 @@ public class Configuration {
 	 */
 	public void initHouses() {
 		if (isPlanetHoused()) return;
-		for (Model model : planetList) {
-			Planet planet = (Planet)model;
+		for (Planet planet : planetList.values()) {
 			for (int j = 0; j < houseList.size(); j++) {
 				House house = (House)houseList.get(j);
 				double pcoord = planet.getCoord();
@@ -439,8 +452,7 @@ public class Configuration {
 	 */
 	public void initPlanetSigns(boolean main) throws DataAccessException {
 		if (!main && isPlanetSigned()) return;
-		for (Model model : planetList) {
-			Planet planet = (Planet)model;
+		for (Planet planet : planetList.values()) {
 			Sign sign = SkyPoint.getSign(planet.getCoord(), event.getBirthYear());
 			planet.setSign(sign);
 		}
@@ -453,7 +465,7 @@ public class Configuration {
 	 */
 	private boolean isPlanetSigned() {
 		return (planetList != null &&
-			((Planet)planetList.get(0)).getSign() != null);
+			((Planet)planetList.get(19L)).getSign() != null);
 	}
 
 	/**
@@ -468,8 +480,7 @@ public class Configuration {
 			List<Model> aspects = new AspectService().getList();
 			List<Model> aspectTypes = new AspectTypeService().getList();
 			if (planetList != null) 
-				for (Model model : planetList) {
-					Planet p = (Planet)model;
+				for (Planet p : planetList.values()) {
 
 					//создаем карту статистики по аспектам планеты
 					Map<String, Integer> aspcountmap = new HashMap<String, Integer>();
@@ -477,8 +488,7 @@ public class Configuration {
 					for (Model asptype : aspectTypes)
 						aspcountmap.put(((AspectType)asptype).getCode(), 0);
 					
-					for (Model model2 : planetList) {
-						Planet p2 = (Planet)model2;
+					for (Planet p2 : planetList.values()) {
 						if (p.getCode().equals(p2.getCode()))
 							continue;
 //						if (p.getNumber() > p2.getNumber()) continue;
@@ -561,7 +571,7 @@ public class Configuration {
 		initPlanetPositions();
 		initPlanetRank();
 //		initHouseAspects();
-		initIngress();
+//		initIngress();
 	}
 
 	/**
@@ -574,9 +584,7 @@ public class Configuration {
 
 			PlanetService service = new PlanetService();
 			List<Model> positions = new PositionTypeService().getList();
-			for (Model model : planetList) {
-				Planet planet = (Planet)model;
-				
+			for (Planet planet : planetList.values()) {
 				for (Model type : positions) {
 					PositionType pType = (PositionType)type;
 					String pCode = pType.getCode();
@@ -617,9 +625,7 @@ public class Configuration {
 	 * Поиск поражённых и непоражённых планет
 	 */
 	private void initPlanetDamaged() {
-		for (Model model : planetList) {
-			Planet planet = (Planet)model;
-
+		for (Planet planet : planetList.values()) {
 			final String LILITH = "Lilith";
 			final String KETHU = "Kethu";
 			final String SELENA = "Selena";
@@ -671,12 +677,13 @@ public class Configuration {
 	 * Определяем ближайшие планеты к Солнцу
 	 */
 	private void initSunNeighbours() {
-		Planet sun = (Planet)planetList.get(0);
+		Planet sun = planetList.get(19L);
 		List<Planet> planets = new ArrayList<Planet>();
 		planets.add(sun);
 		//определяем ядро и пояс
-		for (int i = 1; i < planetList.size(); i++) {
-			Planet planet = (Planet)planetList.get(i);
+		for (Planet planet : planetList.values()) {
+			if (planet.getId().equals(sun.getId()))
+				continue;
 			double res = Math.abs(CalcUtil.getDifference(sun.getCoord(), planet.getCoord()));
 			if (res < 0.18)
 				planet.setKernel();
@@ -693,18 +700,14 @@ public class Configuration {
 		//определяем щит и меч
 		int isword = (sunindex == planets.size() - 1) ? 0 : sunindex + 1;
 		Planet sword = planets.get(isword);
-		int pindex = planetList.indexOf(sword);
-		Planet planet = (Planet)planetList.get(pindex);
-		planet.setSword();
+		planetList.get(sword.getId()).setSword();
 
 		int ishield = (0 == sunindex) ? planets.size() - 1 : sunindex - 1;
 		Planet shield = planets.get(ishield);
-		pindex = planetList.indexOf(shield);
-		planet = (Planet)planetList.get(pindex);
-		planet.setShield();
+		planetList.get(shield.getId()).setShield();
 	}
 
-	public void setPlanets(List<Model> planets) {
+	public void setPlanets(Map<Long, Planet> planets) {
 		planetList = planets;
 	}
 	public void setHouses(List<Model> houses) {
@@ -729,8 +732,7 @@ public class Configuration {
 			double phouse = ((House)houseList.get(prev)).getCoord();
 			double nhouse = ((House)houseList.get(next)).getCoord();
 
-			for (Model pmodel : planetList) {
-				Planet planet = (Planet)pmodel;
+			for (Planet planet : planetList.values()) {
 				double[] res = CalcUtil.checkMarginalValues(phouse, nhouse, planet.getCoord());
 				if (Math.abs(res[1]) < res[0] & 
 						Math.abs(res[1]) >= nhouse) {
@@ -753,8 +755,7 @@ public class Configuration {
 		minp.setPoints(100);
 		Planet maxp = new Planet();
 		int good = 0;
-		for (Model model : planetList) {
-    		Planet planet = (Planet)model;
+		for (Planet planet : planetList.values()) {
 	    	double rank = planet.getPoints();
 			if (rank > maxp.getPoints())
 				maxp = planet;
@@ -767,8 +768,7 @@ public class Configuration {
 				good = pgood;
 	    }
 		List<Planet> planets = new ArrayList<>();
-		for (Model model : planetList) {
-    		Planet planet = (Planet)model;
+		for (Planet planet : planetList.values()) {
 	    	double rank = planet.getPoints();
 			if (rank == maxp.getPoints())
 				maxp.setLord(true);
@@ -794,9 +794,7 @@ public class Configuration {
 	  	  	aspecthList = new ArrayList<SkyPointAspect>();
 			List<Model> aspects = new AspectService().getList();
 			if (planetList != null) 
-				for (Model model : planetList) {
-					Planet p = (Planet)model;
-					
+				for (Planet p : planetList.values()) {
 					for (Model model2 : houseList) {
 						House h = (House)model2;
 						double res = CalcUtil.getDifference(p.getCoord(), h.getCoord());
@@ -830,9 +828,8 @@ public class Configuration {
 			Event prev = event.getPrev();
 			prev.getConfiguration().initPlanetAspects();
 
-			List<Model> planets1 = prev.getConfiguration().getPlanets();
-			for (Model model : planetList) {
-				Planet planet = (Planet)model;
+			Collection<Planet> planets1 = prev.getConfiguration().getPlanets().values();
+			for (Planet planet : planetList.values()) {
 				Map<String,String> map = planet.getAspectMap();
 
 				for (Model model1 : planets1) {

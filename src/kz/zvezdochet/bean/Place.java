@@ -14,6 +14,7 @@ import kz.zvezdochet.service.PlaceService;
 /**
  * Местонахождение
  * @author Nataly Didenko
+ * @link https://www.horlogeparlante.com/История.html?city=515001
  */
 public class Place extends Dictionary {
 	private static final long serialVersionUID = 7176275971217317131L;

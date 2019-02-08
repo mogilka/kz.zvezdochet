@@ -204,7 +204,6 @@ public class EventPart extends ModelPart implements ICalculable {
 		lb.setText("Знаменитость");
 		btCelebrity = new Button(secEvent, SWT.BORDER | SWT.CHECK);
 		txComment = new Text(secEvent, SWT.BORDER);
-		txComment.setEditable(false);
 
 		lb = new Label(secEvent, SWT.NONE);
 		lb.setText("Термины");
@@ -494,14 +493,6 @@ public class EventPart extends ModelPart implements ICalculable {
 //		txBiography.addModifyListener(listener);
 //		txComment.addModifyListener(listener);
 //		btCelebrity.addSelectionListener(listener);
-		btCelebrity.addSelectionListener(new SelectionListener() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				txComment.setEditable(btCelebrity.getSelection());
-			}
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {}
-		});
 	}
 
 	/**
@@ -658,7 +649,6 @@ public class EventPart extends ModelPart implements ICalculable {
 			if (event.getDeath() != null)
 				dtDeath.setSelection(event.getDeath());
 			btCelebrity.setSelection(event.isCelebrity());
-			txComment.setEditable(btCelebrity.getSelection());
 			if (event.getDescription() != null)
 				txComment.setText(event.getDescription());
 			if (event.getText() != null)
@@ -734,8 +724,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		Configuration conf = event.getConfiguration();
 		if (conf != null) {
 			folder.setSelection(1);
-			for (Model base : conf.getPlanets()) {
-				Planet planet = (Planet)base;
+			for (Planet planet : conf.getPlanets().values()) {
 				TableItem item = new TableItem(table, SWT.NONE);
 				item.setText(0, planet.getName());
 				item.setText(1, String.valueOf(planet.getCoord()));

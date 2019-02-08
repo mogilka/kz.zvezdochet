@@ -1,5 +1,6 @@
 package kz.zvezdochet.handler;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -44,25 +45,21 @@ public class AspectHandler extends Handler {
 			if (null == conf.getPlanets()) return; //TODO выдавать сообщение
 			updateStatus("Расчёт аспектов планет", false);
 
-			List<Model> planets = conf.getPlanets();
+			Collection<Planet> planets = conf.getPlanets().values();
 			int pcount = planets.size();
 			Object[][] data = new Object[pcount][pcount + 1];
 			//заполняем заголовки строк названиями планет и их координатами
-			for (int i = 0; i < pcount; i++) {
-				Planet planet = (Planet)planets.get(i);
-				data[i][0] = planet.getName() + " (" + CalcUtil.roundTo(planet.getCoord(), 1) + ")";
-			}
+			for (Planet planet : planets)
+				data[planet.getId().intValue()][0] = planet.getName() + " (" + CalcUtil.roundTo(planet.getCoord(), 1) + ")";
 
 			//формируем массив аспектов планет
 			List<Model> aspects = new AspectService().getList();
-			for (int c = 0; c < pcount; c++) {
-				Planet planet = (Planet)planets.get(c);
-				for (int r = 0; r < pcount; r++) {
-					if (c == r) {
-						data[r][c + 1] = null;
+			for (Planet planet : planets) {
+				for (Planet planet2 : planets) {
+					if (planet.getId().equals(planet2.getId())) {
+						data[planet.getId().intValue()][planet2.getId().intValue()] = null;
 						continue;
 					}
-					Planet planet2 = (Planet)planets.get(r);
 					double res = CalcUtil.getDifference(planet.getCoord(), planet2.getCoord());
 					SkyPointAspect aspect = new SkyPointAspect();
 					aspect.setSkyPoint1(planet);
@@ -77,7 +74,7 @@ public class AspectHandler extends Handler {
 							continue;
 						}
 					}
-					data[r][c + 1] = aspect;
+					data[planet.getId().intValue()][planet2.getId().intValue()] = aspect;
 				}
 			}
 			updateStatus("Расчёт аспектов завершён", false);
@@ -88,16 +85,13 @@ public class AspectHandler extends Handler {
 			int hcount = houses.size();
 			Object[][] datah = new Object[pcount][hcount + 1];
 			//заполняем заголовки строк названиями планет и их координатами
-			for (int i = 0; i < pcount; i++) {
-				Planet planet = (Planet)planets.get(i);
-				datah[i][0] = planet.getName() + " (" + CalcUtil.roundTo(planet.getCoord(), 1) + ")";
-			}
+			for (Planet planet : planets)
+				datah[planet.getId().intValue()][0] = planet.getName() + " (" + CalcUtil.roundTo(planet.getCoord(), 1) + ")";
 
 			//формируем массив аспектов домов
 			for (int c = 0; c < hcount; c++) {
 				House house = (House)houses.get(c);
-				for (int r = 0; r < pcount; r++) {
-					Planet planet = (Planet)planets.get(r);
+				for (Planet planet : planets) {
 					double res = CalcUtil.getDifference(planet.getCoord(), house.getCoord());
 					SkyPointAspect aspect = new SkyPointAspect();
 					aspect.setSkyPoint1(planet);
@@ -112,7 +106,7 @@ public class AspectHandler extends Handler {
 							continue;
 						}
 					}
-					datah[r][c + 1] = aspect;
+					datah[planet.getId().intValue()][c + 1] = aspect;
 				}
 			}
 			updateStatus("Расчёт аспектов домов завершён", false);

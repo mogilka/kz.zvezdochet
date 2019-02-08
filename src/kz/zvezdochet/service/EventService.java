@@ -183,7 +183,7 @@ public class EventService extends ModelService {
 					saveHouses(event);
 					savePlanetHouses(event);
 				}
-				saveIngress(event);
+//				saveIngress(event);
 			}
 			if (event.isNeedSaveBlob())
 				saveBlob(event);
@@ -347,8 +347,7 @@ public class EventService extends ModelService {
 			ps.setLong(1, event.getId());
 			rs = ps.executeQuery();
 			if (rs.next()) {
-				for (Model model : event.getConfiguration().getPlanets()) {
-					Planet planet = (Planet)model;
+				for (Planet planet : event.getConfiguration().getPlanets().values()) {
 					if (rs.getString(planet.getCode()) != null) {
 						double coord = rs.getDouble(planet.getCode());
 						planet.setCoord(Math.abs(coord));
@@ -419,26 +418,26 @@ public class EventService extends ModelService {
 			long id = (rs.next()) ? rs.getLong("id") : 0;
 			ps.close();
 			
-			List<Model> planets = event.getConfiguration().getPlanets();
+			Map<Long, Planet> planets = event.getConfiguration().getPlanets();
 			if (0 == id)
 				sql = "insert into " + table + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else {
 				sql = "update " + table + " set eventid = ?,";
-				for (int i = 0; i < planets.size(); i++) {
-					sql += " " + ((Planet)planets.get(i)).getCode() + " = ?";
-					if (i < planets.size() - 1)
+				for (long i = 19; i < 35; i++) {
+					sql += " " + (planets.get(i)).getCode() + " = ?";
+					if (i < 34)
 						sql += ",";
 				}
 				sql += " where id = ?";
 			}
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, event.getId());
-			for (int i = 0; i < planets.size(); i++) {
+			for (long i = 19; i < 35; i++) {
 				Planet planet = ((Planet)planets.get(i));
 				double coord = planet.getCoord();
 				if (planet.isRetrograde())
 					coord *= -1;
-				ps.setDouble(i + 2, coord);
+				ps.setDouble((int)i + 2, coord);
 			}
 			if (id != 0)
 				ps.setLong(18, id);
@@ -567,23 +566,23 @@ public class EventService extends ModelService {
 			long id = (rs.next()) ? rs.getLong("id") : 0;
 			ps.close();
 			
-			List<Model> planets = event.getConfiguration().getPlanets();
+			Map<Long, Planet> planets = event.getConfiguration().getPlanets();
 			if (0 == id)
 				sql = "insert into " + table + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else {
 				sql = "update " + table + " set eventid = ?,";
-				for (int i = 0; i < planets.size(); i++) {
-					sql += " " + ((Planet)planets.get(i)).getCode() + " = ?";
-					if (i < planets.size() - 1)
+				for (long i = 19; i < 35; i++) {
+					sql += " " + planets.get(i).getCode() + " = ?";
+					if (i < 34)
 						sql += ",";
 				}
 				sql += " where id = ?";
 			}
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, event.getId());
-			for (int i = 0; i < planets.size(); i++) {
+			for (long i = 19; i < 35; i++) {
 				Planet planet = ((Planet)planets.get(i));
-				ps.setInt(i + 2, planet.getHouse().getNumber());
+				ps.setInt((int)i + 2, planet.getHouse().getNumber());
 			}
 			if (id != 0)
 				ps.setLong(18, id);
@@ -619,21 +618,21 @@ public class EventService extends ModelService {
 			long id = (rs.next()) ? rs.getLong("id") : 0;
 			ps.close();
 			
-			List<Model> planets = event.getConfiguration().getPlanets();
+			Map<Long, Planet> planets = event.getConfiguration().getPlanets();
 			if (0 == id)
 				sql = "insert into " + table + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else {
 				sql = "update " + table + " set eventid = ?,";
-				for (int i = 0; i < planets.size(); i++)
-					sql += " " + ((Planet)planets.get(i)).getCode() + " = ?,";
+				for (long i = 19; i < 35; i++)
+					sql += " " + (planets.get(i)).getCode() + " = ?,";
 				sql += "celebrity = ?";
 				sql += " where id = ?";
 			}
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, event.getId());
-			for (int i = 0; i < planets.size(); i++) {
-				Planet planet = ((Planet)planets.get(i));
-				ps.setLong(i + 2, planet.getSign().getId());
+			for (long i = 19; i < 35; i++) {
+				Planet planet = planets.get(i);
+				ps.setLong((int)i + 2, planet.getSign().getId());
 			}
 			ps.setInt(18, event.isCelebrity() ? 1 : 0);
 			if (id != 0)
@@ -677,10 +676,11 @@ public class EventService extends ModelService {
 			sql += " order by year(initialdate)";
 
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			ps.setLong(1, ((Planet)conf.getPlanets().get(0)).getSign().getId());
-			ps.setLong(2, ((Planet)conf.getPlanets().get(4)).getSign().getId());
-			ps.setLong(3, ((Planet)conf.getPlanets().get(5)).getSign().getId());
-			ps.setLong(4, ((Planet)conf.getPlanets().get(6)).getSign().getId());
+			Map<Long, Planet> pmap = conf.getPlanets();
+			ps.setLong(1, (pmap.get(19L)).getSign().getId());
+			ps.setLong(2, (pmap.get(23L)).getSign().getId());
+			ps.setLong(3, (pmap.get(24L)).getSign().getId());
+			ps.setLong(4, (pmap.get(25L)).getSign().getId());
 			ps.setLong(5, event.getId());
 			rs = ps.executeQuery();
 			while (rs.next())
@@ -958,9 +958,8 @@ order by year(initialdate)
         ResultSet rs = null;
 		try {
 			List<Model> aspectTypes = new AspectTypeService().getList();
-			for (Model model : event.getConfiguration().getPlanets()) {
-				Planet planet = (Planet)model;
-
+			Map<Long, Planet> pmap = event.getConfiguration().getPlanets();
+			for (Planet planet : pmap.values()) {
 				//создаем карту статистики по аспектам планеты
 				Map<String, Integer> aspcountmap = new HashMap<String, Integer>();
 				Map<String, String> aspmap = new HashMap<String, String>();
@@ -977,7 +976,7 @@ order by year(initialdate)
 				ps.setLong(2, planet.getId());
 				rs = ps.executeQuery();
 				while (rs.next()) {
-					Planet planet2 = (Planet)new PlanetService().find(rs.getLong("planet2id"));
+					Planet planet2 = pmap.get(rs.getLong("planet2id"));
 					Aspect aspect = (Aspect)new AspectService().find(rs.getLong("aspectid"));
 					SkyPointAspect spa = new SkyPointAspect();
 					spa.setSkyPoint1(planet);
@@ -1139,10 +1138,11 @@ order by year(initialdate)
 				" where";
 
 			Map<String, int[]> map = new HashMap<String, int[]>();
-			map.put("sun", Sign.getOpposite(((Planet)conf.getPlanets().get(0)).getSign().getId().intValue()));
-			map.put("mercury", Sign.getOpposite(((Planet)conf.getPlanets().get(4)).getSign().getId().intValue()));
-			map.put("venus", Sign.getOpposite(((Planet)conf.getPlanets().get(5)).getSign().getId().intValue()));
-			map.put("mars", Sign.getOpposite(((Planet)conf.getPlanets().get(6)).getSign().getId().intValue()));
+			Map<Long, Planet> pmap = conf.getPlanets();
+			map.put("sun", Sign.getOpposite((pmap.get(19L)).getSign().getId().intValue()));
+			map.put("mercury", Sign.getOpposite((pmap.get(23L)).getSign().getId().intValue()));
+			map.put("venus", Sign.getOpposite((pmap.get(24L)).getSign().getId().intValue()));
+			map.put("mars", Sign.getOpposite((pmap.get(25L)).getSign().getId().intValue()));
 
 			int j = -1;
 			for (Entry<String, int[]> entry : map.entrySet()) {
@@ -1326,8 +1326,7 @@ order by year(initialdate)
 			Sign sunSign, merSign, venSign, marSign;
 			Map<String, int[]> map = new HashMap<>();
 			for (String code : codes) {
-				for (Model model : event.getConfiguration().getPlanets()) {
-					Planet planet = (Planet)model;
+				for (Planet planet : event.getConfiguration().getPlanets().values()) {
 					if (!planet.getCode().equals(code))
 						continue;
 
