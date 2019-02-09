@@ -435,12 +435,12 @@ public class EventService extends ModelService {
 			}
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, event.getId());
-			for (long i = 19; i < 35; i++) {
-				Planet planet = ((Planet)planets.get(i));
+			for (int i = 2; i < 18; i++) {
+				Planet planet = planets.get((long)i + 17);
 				double coord = planet.getCoord();
 				if (planet.isRetrograde())
 					coord *= -1;
-				ps.setDouble((int)i + 2, coord);
+				ps.setDouble(i, coord);
 			}
 			if (id != 0)
 				ps.setLong(18, id);
@@ -998,12 +998,17 @@ order by year(initialdate)
 					aspcountmap.put(aspectTypeCode, ++score);
 
 					//суммируем сильные аспекты
-					aspectTypeCode = "COMMON";
+					String common = "COMMON";
 					if (aspect.getType().getParentType() != null &&
-							aspect.getType().getParentType().getCode() != null &&
-							aspect.getType().getParentType().getCode().equals(aspectTypeCode)) {
-						score = aspcountmap.get(aspectTypeCode);
-						aspcountmap.put(aspectTypeCode, ++score);
+							aspect.getType().getParentType().getCode().equals(common)) {
+						score = aspcountmap.get(common);
+						aspcountmap.put(common, ++score);
+					}
+
+					if (aspect.isMain()) {
+						double points = aspect.getPoints();
+						planet.addPoints(points);
+						planet2.addPoints(points);
 					}
 				}
 				planet.setAspectCountMap(aspcountmap);

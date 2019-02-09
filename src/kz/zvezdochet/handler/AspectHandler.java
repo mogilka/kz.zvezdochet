@@ -50,14 +50,14 @@ public class AspectHandler extends Handler {
 			Object[][] data = new Object[pcount][pcount + 1];
 			//заполняем заголовки строк названиями планет и их координатами
 			for (Planet planet : planets)
-				data[planet.getId().intValue()][0] = planet.getName() + " (" + CalcUtil.roundTo(planet.getCoord(), 1) + ")";
+				data[planet.getId().intValue() - 19][0] = planet.getName() + " (" + CalcUtil.roundTo(planet.getCoord(), 1) + ")";
 
 			//формируем массив аспектов планет
 			List<Model> aspects = new AspectService().getList();
 			for (Planet planet : planets) {
 				for (Planet planet2 : planets) {
 					if (planet.getId().equals(planet2.getId())) {
-						data[planet.getId().intValue()][planet2.getId().intValue()] = null;
+						data[planet.getId().intValue() - 19][planet2.getId().intValue() - 18] = null;
 						continue;
 					}
 					double res = CalcUtil.getDifference(planet.getCoord(), planet2.getCoord());
@@ -74,7 +74,7 @@ public class AspectHandler extends Handler {
 							continue;
 						}
 					}
-					data[planet.getId().intValue()][planet2.getId().intValue()] = aspect;
+					data[planet.getId().intValue() - 19][planet2.getId().intValue() - 18] = aspect;
 				}
 			}
 			updateStatus("Расчёт аспектов завершён", false);
@@ -86,7 +86,7 @@ public class AspectHandler extends Handler {
 			Object[][] datah = new Object[pcount][hcount + 1];
 			//заполняем заголовки строк названиями планет и их координатами
 			for (Planet planet : planets)
-				datah[planet.getId().intValue()][0] = planet.getName() + " (" + CalcUtil.roundTo(planet.getCoord(), 1) + ")";
+				datah[planet.getId().intValue() - 19][0] = planet.getName() + " (" + CalcUtil.roundTo(planet.getCoord(), 1) + ")";
 
 			//формируем массив аспектов домов
 			for (int c = 0; c < hcount; c++) {
@@ -106,7 +106,7 @@ public class AspectHandler extends Handler {
 							continue;
 						}
 					}
-					datah[planet.getId().intValue()][c + 1] = aspect;
+					datah[planet.getId().intValue() - 19][c + 1] = aspect;
 				}
 			}
 			updateStatus("Расчёт аспектов домов завершён", false);

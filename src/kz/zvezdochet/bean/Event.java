@@ -253,7 +253,6 @@ public class Event extends Model {
 				service.initPlanets(this);
 				service.initHouses(this);
 				service.initAspects(this);
-//				configuration.initPlanetAspects();
 				if (initstat)
 					configuration.initPlanetStatistics();
 			}

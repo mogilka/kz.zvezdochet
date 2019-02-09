@@ -43,12 +43,10 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
-import kz.zvezdochet.bean.Aspect;
 import kz.zvezdochet.bean.AspectType;
 import kz.zvezdochet.bean.CardKind;
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
-import kz.zvezdochet.bean.Ingress;
 import kz.zvezdochet.bean.MoonDay;
 import kz.zvezdochet.bean.Place;
 import kz.zvezdochet.bean.Planet;
@@ -825,27 +823,27 @@ public class EventPart extends ModelPart implements ICalculable {
 		}
 
 		//ингрессии
-		controls = grIngress.getChildren();
-		table = (Table)controls[0];
-		table.removeAll();
-		if (conf != null) {
-			for (Model base : conf.getIngresses()) {
-				Ingress ingress = (Ingress)base;
-				TableItem item = new TableItem(table, SWT.NONE);
-				item.setText(0, ingress.getPlanet().getName());
-				item.setText(1, ingress.getType().getName());		
-				if (ingress.getObject() != null) {
-					if (ingress.getType().getCode().equals("sign"))
-						item.setText(2, ((Sign)ingress.getObject()).getName());
-					else if (ingress.getType().getCode().equals("application"))
-						item.setText(2, ((Aspect)ingress.getObject()).getName());
-				}
-				if (ingress.getSkyPoint() != null)
-					item.setText(3, ingress.getSkyPoint().getName());
-			}
-			for (int i = 0; i < table.getColumnCount(); i++)
-				table.getColumn(i).pack();
-		}
+//		controls = grIngress.getChildren();
+//		table = (Table)controls[0];
+//		table.removeAll();
+//		if (conf != null) {
+//			for (Model base : conf.getIngresses()) {
+//				Ingress ingress = (Ingress)base;
+//				TableItem item = new TableItem(table, SWT.NONE);
+//				item.setText(0, ingress.getPlanet().getName());
+//				item.setText(1, ingress.getType().getName());		
+//				if (ingress.getObject() != null) {
+//					if (ingress.getType().getCode().equals("sign"))
+//						item.setText(2, ((Sign)ingress.getObject()).getName());
+//					else if (ingress.getType().getCode().equals("application"))
+//						item.setText(2, ((Aspect)ingress.getObject()).getName());
+//				}
+//				if (ingress.getSkyPoint() != null)
+//					item.setText(3, ingress.getSkyPoint().getName());
+//			}
+//			for (int i = 0; i < table.getColumnCount(); i++)
+//				table.getColumn(i).pack();
+//		}
 	}
 
 	/**

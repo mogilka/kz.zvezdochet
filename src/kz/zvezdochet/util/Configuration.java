@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import kz.zvezdochet.bean.Aspect;
 import kz.zvezdochet.bean.AspectType;
@@ -43,7 +44,7 @@ import swisseph.SwissLib;
  * @author Nataly Didenko
  */
 public class Configuration {
-	private Map<Long, Planet> planetList;
+	private TreeMap<Long, Planet> planetList;
 	private	List<Model> houseList;
 	private	List<SkyPointAspect> aspectList;
 	private	List<SkyPointAspect> aspecthList;
@@ -65,7 +66,7 @@ public class Configuration {
 	 * @throws DataAccessException 
 	 */
 	public Configuration(Date date) throws DataAccessException {
-  	  	planetList = new HashMap<>();
+  	  	planetList = new TreeMap<>();
 		List<Model> list = new PlanetService().getList();
 		for (Model model : list)
 			planetList.put(model.getId(), (Planet)model);
@@ -76,7 +77,7 @@ public class Configuration {
 	}
 
 	/**
-	 * Создание расчетной конфигурации для заданного момента времени и места
+	 * Создание расчётной конфигурации для заданного момента времени и места
 	 * @param event событие
 	 * @param date строковое значение даты
 	 * @param time строковое значение времени
@@ -88,7 +89,7 @@ public class Configuration {
 	 */
 	public Configuration(Event event, Date eventdate, String zone, String latitude, String longitude, boolean initstat) throws DataAccessException {
 		setEvent(event);
-  	  	planetList = new HashMap<>();
+  	  	planetList = new TreeMap<>();
 		List<Model> list = new PlanetService().getList();
 		for (Model model : list)
 			planetList.put(model.getId(), (Planet)model);
@@ -481,7 +482,6 @@ public class Configuration {
 			List<Model> aspectTypes = new AspectTypeService().getList();
 			if (planetList != null) 
 				for (Planet p : planetList.values()) {
-
 					//создаем карту статистики по аспектам планеты
 					Map<String, Integer> aspcountmap = new HashMap<String, Integer>();
 					Map<String, String> aspmap = new HashMap<String, String>();
@@ -584,7 +584,8 @@ public class Configuration {
 
 			PlanetService service = new PlanetService();
 			List<Model> positions = new PositionTypeService().getList();
-			for (Planet planet : planetList.values()) {
+			Collection<Planet> planets = planetList.values();
+			for (Planet planet : planets) {
 				for (Model type : positions) {
 					PositionType pType = (PositionType)type;
 					String pCode = pType.getCode();
@@ -625,7 +626,8 @@ public class Configuration {
 	 * Поиск поражённых и непоражённых планет
 	 */
 	private void initPlanetDamaged() {
-		for (Planet planet : planetList.values()) {
+		Collection<Planet> planets = planetList.values();
+		for (Planet planet : planets) {
 			final String LILITH = "Lilith";
 			final String KETHU = "Kethu";
 			final String SELENA = "Selena";
@@ -636,6 +638,8 @@ public class Configuration {
 					&& !pcode.equals(SELENA) && !pcode.equals(RAKHU)) {
 				for (SkyPointAspect aspect : aspectList) {
 					String pcode2 = aspect.getSkyPoint2().getCode();
+					if (pcode.equals(pcode2))
+						continue;
 					if (!aspect.getSkyPoint1().getCode().equals(pcode)
 							&& !pcode2.equals(pcode))
 						continue;
@@ -668,7 +672,10 @@ public class Configuration {
 						|| (1 == neutral && (planet.isKethued() || planet.isLilithed())))
 						|| (2 == neutral && planet.isKethued() && planet.isLilithed()))
 				planet.setDamaged(true);
-			else if (0 == bad + badh && good > 0 && !planet.isKethued() && !planet.isLilithed())
+			else if (0 == bad + badh
+					&& good > 0
+					&& !planet.isKethued()
+					&& !planet.isLilithed())
 				planet.setPerfect(true);
 		}
 	}
@@ -707,7 +714,7 @@ public class Configuration {
 		planetList.get(shield.getId()).setShield();
 	}
 
-	public void setPlanets(Map<Long, Planet> planets) {
+	public void setPlanets(TreeMap<Long, Planet> planets) {
 		planetList = planets;
 	}
 	public void setHouses(List<Model> houses) {
