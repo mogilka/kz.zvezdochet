@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import kz.zvezdochet.bean.Aspect;
-import kz.zvezdochet.bean.AspectType;
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Ingress;
@@ -894,45 +893,51 @@ order by year(initialdate)
 			ps.executeUpdate();
 			ps.close();
 
-			List<SkyPointAspect> aspects = event.getConfiguration().getAspects();
-			for (SkyPointAspect aspect : aspects) {
-				SkyPoint point = aspect.getSkyPoint1();
-				SkyPoint point2 = aspect.getSkyPoint2();
-				if (point.getNumber() > point2.getNumber())
+			Collection<Planet> planets = event.getConfiguration().getPlanets().values();
+			for (Planet p : planets) {
+				List<SkyPointAspect> aspects = p.getAspectList();
+				if (null == aspects)
 					continue;
-				sql = "select id from " + table + 
-					" where eventid = ?" +
-					" and planetid = ?" +
-					" and planet2id = ?";
-				ps = Connector.getInstance().getConnection().prepareStatement(sql);
-				ps.setLong(1, event.getId());
-				ps.setLong(2, point.getId());
-				ps.setLong(3, point2.getId());
-				rs = ps.executeQuery();
-				long id = (rs.next()) ? rs.getLong("id") : 0;
-				ps.close();
-				
-				if (0 == id)
-					sql = "insert into " + table + " values(0,?,?,?,?,?,?)";
-				else
-					sql = "update " + table + 
-						" set eventid = ?,"
-						+ " planetid = ?,"
-						+ " aspectid = ?,"
-						+ " planet2id = ?,"
-						+ " exact = ?,"
-						+ " application = ?" +
-						" where id = ?";
-				ps = Connector.getInstance().getConnection().prepareStatement(sql);
-				ps.setLong(1, event.getId());
-				ps.setLong(2, point.getId());
-				ps.setLong(3, aspect.getAspect().getId());
-				ps.setLong(4, point2.getId());
-				ps.setInt(5, aspect.isExact() ? 1 : 0);
-				ps.setInt(6, aspect.isApplication() ? 1 : 0);
-				if (id > 0)
-					ps.setLong(7, id);
-				ps.executeUpdate();
+
+				for (SkyPointAspect spa : aspects) {
+					SkyPoint point = spa.getSkyPoint1();
+					SkyPoint point2 = spa.getSkyPoint2();
+					if (point.getNumber() > point2.getNumber())
+						continue;
+					sql = "select id from " + table + 
+						" where eventid = ?" +
+						" and planetid = ?" +
+						" and planet2id = ?";
+					ps = Connector.getInstance().getConnection().prepareStatement(sql);
+					ps.setLong(1, event.getId());
+					ps.setLong(2, point.getId());
+					ps.setLong(3, point2.getId());
+					rs = ps.executeQuery();
+					long id = (rs.next()) ? rs.getLong("id") : 0;
+					ps.close();
+					
+					if (0 == id)
+						sql = "insert into " + table + " values(0,?,?,?,?,?,?)";
+					else
+						sql = "update " + table + 
+							" set eventid = ?,"
+							+ " planetid = ?,"
+							+ " aspectid = ?,"
+							+ " planet2id = ?,"
+							+ " exact = ?,"
+							+ " application = ?" +
+							" where id = ?";
+					ps = Connector.getInstance().getConnection().prepareStatement(sql);
+					ps.setLong(1, event.getId());
+					ps.setLong(2, point.getId());
+					ps.setLong(3, spa.getAspect().getId());
+					ps.setLong(4, point2.getId());
+					ps.setInt(5, spa.isExact() ? 1 : 0);
+					ps.setInt(6, spa.isApplication() ? 1 : 0);
+					if (id > 0)
+						ps.setLong(7, id);
+					ps.executeUpdate();
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -960,15 +965,8 @@ order by year(initialdate)
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
-			List<Model> aspectTypes = new AspectTypeService().getList();
 			Map<Long, Planet> pmap = event.getConfiguration().getPlanets();
 			for (Planet planet : pmap.values()) {
-				//создаем карту статистики по аспектам планеты
-				Map<String, Integer> aspcountmap = new HashMap<String, Integer>();
-				Map<String, String> aspmap = new HashMap<String, String>();
-				for (Model asptype : aspectTypes)
-					aspcountmap.put(((AspectType)asptype).getCode(), 0);
-
 				//для каждой планеты ищем аспекты
 				String sql = "select * from " + getAspectTable() +
 					" where eventid = ?"
@@ -987,32 +985,13 @@ order by year(initialdate)
 					spa.setAspect(aspect);
 					spa.setExact(rs.getBoolean("exact"));
 					spa.setApplication(rs.getBoolean("application"));
-					event.getConfiguration().getAspects().add(spa);
+					planet.getAspectList().add(spa);
 
-					//фиксируем аспекты планеты
-					aspmap.put(planet2.getCode(), aspect.getCode());
-					//суммируем аспекты каждого типа для планеты
-					String aspectTypeCode = aspect.getType().getCode();
-					int score = aspcountmap.get(aspectTypeCode);
-					//для людей считаем только аспекты главных планет
-					aspcountmap.put(aspectTypeCode, ++score);
-
-					//суммируем сильные аспекты
-					String common = "COMMON";
-					if (aspect.getType().getParentType() != null &&
-							aspect.getType().getParentType().getCode().equals(common)) {
-						score = aspcountmap.get(common);
-						aspcountmap.put(common, ++score);
-					}
-
-					if (aspect.isMain()) {
-						double points = aspect.getPoints();
-						planet.addPoints(points);
-						planet2.addPoints(points);
-					}
+					spa = new SkyPointAspect(spa);
+					spa.setSkyPoint1(planet2);
+					spa.setSkyPoint2(planet);
+					pmap.get(planet2.getId()).getAspectList().add(spa);
 				}
-				planet.setAspectCountMap(aspcountmap);
-				planet.setAspectMap(aspmap);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

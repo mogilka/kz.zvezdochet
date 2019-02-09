@@ -228,7 +228,7 @@ public class Event extends Model {
 			//местонахождение
 			if (null == place)
 				place = (Place)new PlaceService().find(placeid);
-			
+
 			//блобы
 			EventService service = new EventService();
 			Object[] blob = service.findBlob(id);

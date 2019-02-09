@@ -160,4 +160,12 @@ public class SkyPointAspect {
 	}
 
 	public SkyPointAspect() {}	
+
+	public SkyPointAspect(SkyPointAspect spa) {
+		skyPoint1 = spa.skyPoint1;
+		skyPoint2 = spa.skyPoint2;
+		aspect = spa.aspect;
+		exact = spa.exact;
+		application = spa.application;
+	}
 }

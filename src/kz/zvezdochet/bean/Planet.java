@@ -712,4 +712,15 @@ limit 500
 		return !isSignExaltated() && !isSignHome()
 			&& !isSignDeclined() && !isSignExile();
 	}
+
+	/**
+	 * Массив аспектов планет
+	 */
+	private	List<SkyPointAspect> aspectList;
+
+	public List<SkyPointAspect> getAspectList() {
+		if (null == aspectList)
+			aspectList = new ArrayList<SkyPointAspect>();
+		return aspectList;
+	}
 }

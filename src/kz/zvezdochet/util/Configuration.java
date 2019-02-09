@@ -46,7 +46,6 @@ import swisseph.SwissLib;
 public class Configuration {
 	private TreeMap<Long, Planet> planetList;
 	private	List<Model> houseList;
-	private	List<SkyPointAspect> aspectList;
 	private	List<SkyPointAspect> aspecthList;
 	private Date date;
 	private Event event;
@@ -72,7 +71,6 @@ public class Configuration {
 			planetList.put(model.getId(), (Planet)model);
 
   	  	houseList = new HouseService().getList();
-  	  	aspectList = new ArrayList<SkyPointAspect>();
   	  	this.date = date;
 	}
 
@@ -399,10 +397,6 @@ public class Configuration {
 		return houseList;
 	}
 
-	public List<SkyPointAspect> getAspects() {
-		return aspectList;
-	}
-
 	public List<SkyPointAspect> getAspectsh() {
 		return aspecthList;
 	}
@@ -477,18 +471,11 @@ public class Configuration {
 	 */
 	public void initPlanetAspects() throws DataAccessException {
 		try {
-	  	  	aspectList = new ArrayList<SkyPointAspect>();
-			List<Model> aspects = new AspectService().getList();
-			List<Model> aspectTypes = new AspectTypeService().getList();
-			if (planetList != null) 
-				for (Planet p : planetList.values()) {
-					//создаем карту статистики по аспектам планеты
-					Map<String, Integer> aspcountmap = new HashMap<String, Integer>();
-					Map<String, String> aspmap = new HashMap<String, String>();
-					for (Model asptype : aspectTypes)
-						aspcountmap.put(((AspectType)asptype).getCode(), 0);
-					
-					for (Planet p2 : planetList.values()) {
+			if (planetList != null) { 
+				List<Model> aspects = new AspectService().getList();
+				Collection<Planet> planets = planetList.values();
+				for (Planet p : planets) {
+					for (Planet p2 : planets) {
 						if (p.getCode().equals(p2.getCode()))
 							continue;
 //						if (p.getNumber() > p2.getNumber()) continue;
@@ -500,22 +487,6 @@ public class Configuration {
 								continue;
 							if (a.isAspect(res)) {
 								String aspectTypeCode = a.getType().getCode();
-
-								//фиксируем аспекты планеты
-								aspmap.put(p2.getCode(), a.getCode());
-								//суммируем аспекты каждого типа для планеты
-								int score = aspcountmap.get(aspectTypeCode);
-								//для людей считаем только аспекты главных планет
-								aspcountmap.put(aspectTypeCode, ++score);
-	
-								//суммируем сильные аспекты
-								String common = "COMMON";
-								if (a.getType().getParentType() != null &&
-										a.getType().getParentType().getCode().equals(common)) {
-									score = aspcountmap.get(common);
-									aspcountmap.put(common, ++score);
-								}
-
 								if (aspectTypeCode.equals("NEUTRAL") && p.getCode().equals("Sun") && res <= 3)
 									continue;
 								SkyPointAspect aspect = new SkyPointAspect();
@@ -524,19 +495,73 @@ public class Configuration {
 								aspect.setAspect(a);
 								aspect.setExact(a.isExact(res));
 								aspect.setApplication(a.isApplication(res));
-								aspectList.add(aspect);
+								p.getAspectList().add(aspect);
 
-								if (a.isMain()) {
-									double points = a.getPoints();
-									p.addPoints(points);
-									p2.addPoints(points);
-								}
+								aspect = new SkyPointAspect(aspect);
+								aspect.setSkyPoint1(p2);
+								aspect.setSkyPoint2(p);
+								planetList.get(aspect.getSkyPoint2().getId()).getAspectList().add(aspect);
 							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Расчёт статистики аспектов планет
+	 * @throws DataAccessException 
+	 */
+	private void initAspectStatistics() throws DataAccessException {
+		try {
+			if (planetList != null) {
+				List<Model> aspectTypes = new AspectTypeService().getList();
+				Collection<Planet> planets = planetList.values();
+				for (Planet p : planets)
+					p.setPoints(0);
+
+				for (Planet p : planets) {
+					List<SkyPointAspect> paspects = p.getAspectList();
+					if (null == paspects)
+						continue;
+
+					//создаем карту статистики по аспектам планеты
+					Map<String, Integer> aspcountmap = new HashMap<String, Integer>();
+					Map<String, String> aspmap = new HashMap<String, String>();
+					for (Model asptype : aspectTypes)
+						aspcountmap.put(((AspectType)asptype).getCode(), 0);
+
+					for (SkyPointAspect spa : paspects) {
+						Aspect a = spa.getAspect();
+						String aspectTypeCode = a.getType().getCode();
+
+						//фиксируем аспекты планеты
+						aspmap.put(p.getCode(), a.getCode());
+						//суммируем аспекты каждого типа для планеты
+						int score = aspcountmap.get(aspectTypeCode);
+						//для людей считаем только аспекты главных планет
+						aspcountmap.put(aspectTypeCode, ++score);
+
+						//суммируем сильные аспекты
+						String common = "COMMON";
+						if (a.getType().getParentType() != null &&
+								a.getType().getParentType().getCode().equals(common)) {
+							score = aspcountmap.get(common);
+							aspcountmap.put(common, ++score);
+						}
+
+						if (a.isMain()) {
+							double points = a.getPoints();
+							p.addPoints(points);
 						}
 					}
 					p.setAspectCountMap(aspcountmap);
 					p.setAspectMap(aspmap);
 				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -565,6 +590,7 @@ public class Configuration {
 		//и определяем планету знака
 	 */
 	public void initPlanetStatistics() throws DataAccessException {
+		initAspectStatistics();
 		initPlanetDamaged();
 //		initAngularPlanets();
 		initSunNeighbours();
@@ -636,6 +662,9 @@ public class Configuration {
 			String pcode = planet.getCode();
 			if (!pcode.equals(LILITH) && !pcode.equals(KETHU)
 					&& !pcode.equals(SELENA) && !pcode.equals(RAKHU)) {
+				List<SkyPointAspect> aspectList = planet.getAspectList();
+				if (null == aspectList)
+					continue;
 				for (SkyPointAspect aspect : aspectList) {
 					String pcode2 = aspect.getSkyPoint2().getCode();
 					if (pcode.equals(pcode2))
