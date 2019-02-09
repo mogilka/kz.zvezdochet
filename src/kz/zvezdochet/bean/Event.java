@@ -242,8 +242,9 @@ public class Event extends Model {
 				if (blob[2] != null)
 					conversation = blob[2].toString();
 			}
-			
-			//конфигурация
+
+			//если событие ещё не сохранено в базе, рассчитываем конфигурацию
+			//в противном случае берём конфигурацию из базы
 			if (null == id)
 				calc(false);
 			else {
@@ -318,7 +319,7 @@ public class Event extends Model {
 
 	/**
 	 * Расчёт положения планет и астрологических домов
-	 * @param boolean признак расчёта статистики планет
+	 * @param initstat признак расчёта статистики планет
 	 */
 	public void calc(boolean initstat) {
 		//new Configuration("12.12.2009", "23:11:16", "6.0", "43.15", "76.55");

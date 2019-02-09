@@ -832,8 +832,7 @@ public class Configuration {
 			for (Planet planet : planetList.values()) {
 				Map<String,String> map = planet.getAspectMap();
 
-				for (Model model1 : planets1) {
-					Planet planet1 = (Planet)model1;
+				for (Planet planet1 : planets1) {
 					String icode = null;
 					if (planet.getCode().equals(planet1.getCode())) {
 						if (Math.abs(planet1.getCoord()) == Math.abs(planet.getCoord())) {

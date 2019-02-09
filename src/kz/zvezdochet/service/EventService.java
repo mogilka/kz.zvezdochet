@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -347,9 +348,11 @@ public class EventService extends ModelService {
 			ps.setLong(1, event.getId());
 			rs = ps.executeQuery();
 			if (rs.next()) {
-				for (Planet planet : event.getConfiguration().getPlanets().values()) {
-					if (rs.getString(planet.getCode()) != null) {
-						double coord = rs.getDouble(planet.getCode());
+				Collection<Planet> planets = event.getConfiguration().getPlanets().values();
+				for (Planet planet : planets) {
+					String code = planet.getCode();
+					if (rs.getString(code) != null) {
+						double coord = rs.getDouble(code);
 						planet.setCoord(Math.abs(coord));
 						if (coord < 0)
 							planet.setRetrograde();
@@ -1168,7 +1171,7 @@ order by year(initialdate)
 			if (celebrity >= 0)
 				sql += " and e.celebrity = " + celebrity;
 			sql += " order by year(initialdate)";
-			System.out.println(sql);
+//			System.out.println(sql);
 
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			rs = ps.executeQuery();
@@ -1319,32 +1322,18 @@ order by year(initialdate)
 				sql += " and e.celebrity = " + celebrity;
 
 			initPlanets(event);
-			String codes[] = {
-				"Sun", "Mercury", "Venus", "Mars"
-			};
 			int year = event.getBirthYear();
 			Sign sunSign, merSign, venSign, marSign;
 			Map<String, int[]> map = new HashMap<>();
-			for (String code : codes) {
-				for (Planet planet : event.getConfiguration().getPlanets().values()) {
-					if (!planet.getCode().equals(code))
-						continue;
-
-					if (code.equals("Sun")) {
-						sunSign = SkyPoint.getSign(planet.getCoord(), year);
-						map.put(code, Sign.getByElement(sunSign.getId().intValue()));
-					} else if (code.equals("Mercury")) {
-						merSign = SkyPoint.getSign(planet.getCoord(), year);
-						map.put(code, Sign.getByElement(merSign.getId().intValue()));
-					} else if (code.equals("Venus")) {
-						venSign = SkyPoint.getSign(planet.getCoord(), year);
-						map.put(code, Sign.getByElement(venSign.getId().intValue()));
-					} else if (code.equals("Mars")) {
-						marSign = SkyPoint.getSign(planet.getCoord(), year);
-						map.put(code, Sign.getByElement(marSign.getId().intValue()));
-					}
-				}
-			}
+			Map<Long, Planet> planets = event.getConfiguration().getPlanets();
+			sunSign = SkyPoint.getSign(planets.get(19L).getCoord(), year);
+			map.put("Sun", Sign.getByElement(sunSign.getId().intValue()));
+			merSign = SkyPoint.getSign(planets.get(23L).getCoord(), year);
+			map.put("Mercury", Sign.getByElement(merSign.getId().intValue()));
+			venSign = SkyPoint.getSign(planets.get(24L).getCoord(), year);
+			map.put("Venus", Sign.getByElement(venSign.getId().intValue()));
+			marSign = SkyPoint.getSign(planets.get(25L).getCoord(), year);
+			map.put("Mars", Sign.getByElement(marSign.getId().intValue()));
 
 			Iterator<Map.Entry<String, int[]>> iterator = map.entrySet().iterator();
 		    while (iterator.hasNext()) {
