@@ -240,9 +240,7 @@ public class Planet extends SkyPoint {
 
 	public void setBroken() {
 		broken = true;
-		setPerfect(false);
 		setLord(false);
-		setDamaged(false);
 		addPoints(-1);
 //		System.out.println(this.getCode() + " is broken");
 	}
