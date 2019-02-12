@@ -582,9 +582,9 @@ public class EventService extends ModelService {
 			}
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, event.getId());
-			for (long i = 19; i < 35; i++) {
-				Planet planet = ((Planet)planets.get(i));
-				ps.setInt((int)i + 2, planet.getHouse().getNumber());
+			for (int i = 2; i < 18; i++) {
+				Planet planet = ((Planet)planets.get((long)i + 17));
+				ps.setInt(i, planet.getHouse().getNumber());
 			}
 			if (id != 0)
 				ps.setLong(18, id);
@@ -632,9 +632,9 @@ public class EventService extends ModelService {
 			}
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, event.getId());
-			for (long i = 19; i < 35; i++) {
-				Planet planet = planets.get(i);
-				ps.setLong((int)i + 2, planet.getSign().getId());
+			for (int i = 2; i < 18; i++) {
+				Planet planet = planets.get((long)i + 17);
+				ps.setLong(i, planet.getSign().getId());
 			}
 			ps.setInt(18, event.isCelebrity() ? 1 : 0);
 			if (id != 0)
