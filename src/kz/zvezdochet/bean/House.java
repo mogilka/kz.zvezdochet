@@ -1,5 +1,8 @@
 package kz.zvezdochet.bean;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.service.HouseService;
 
@@ -262,5 +265,16 @@ public class House extends SkyPoint {
 
 	public void setSelened() {
 		this.selened = true;
+	}
+
+	/**
+	 * Планеты в доме
+	 */
+	private List<Planet> planets;
+
+	public List<Planet> getPlanets() {
+		if (null == planets)
+			planets = new ArrayList<>();
+		return planets;
 	}
 }
