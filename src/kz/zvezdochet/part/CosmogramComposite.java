@@ -2,9 +2,11 @@ package kz.zvezdochet.part;
 
 import java.util.List;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
@@ -25,6 +27,7 @@ public class CosmogramComposite extends Composite {
 	    super(parent, style);
 //	    setBackground(Display.getDefault().getSystemColor(SWT.COLOR_LIST_SELECTION));TODO
 	    setSize(Cosmogram.HEIGHT, Cosmogram.HEIGHT);
+	    //Canvas canvas = new Canvas(this, SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND);
 		addPaintListener(new PaintListener() {
 	        public void paintControl(final PaintEvent e) {
         		BusyIndicator.showWhile(Display.getDefault(), new Runnable() {

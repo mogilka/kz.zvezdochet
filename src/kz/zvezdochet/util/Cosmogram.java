@@ -62,8 +62,8 @@ public class Cosmogram {
    	    Image image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/card.png").createImage();
 		gc.drawImage(image, 52, 53);
 		if (conf != null) {
-			if (conf.getHouses() != null && conf.getHouses().size() > 0) 
-				drawHouses(gc);
+			if (conf.getHouses() != null && conf.getHouses().size() > 0)
+				drawHouses(conf, gc, true);
 		    if (conf.getPlanets() != null && conf.getPlanets().size() > 0)
 				try {
 					drawPlanets(conf, gc, 135);
@@ -72,6 +72,8 @@ public class Cosmogram {
 				}
 		}
 		if (conf2 != null) {
+			if (conf2.getHouses() != null && conf2.getHouses().size() > 0)
+				drawHouses(conf2, gc, false);
 		    if (conf2.getPlanets() != null && conf2.getPlanets().size() > 0)
 				try {
 					drawPlanets(conf2, gc, 160);
@@ -133,18 +135,20 @@ public class Cosmogram {
 
 	/**
 	 * Прорисовка астрологических домов
+	 * @param conf конфигурация домов
 	 * @param gc графическая система
+	 * @param primary true - первый уровень домов
 	 */
-	private void drawHouses(GC gc) {
+	private void drawHouses(Configuration conf, GC gc, boolean primary) {
 		Iterator<Model> i = conf.getHouses().iterator();
 		while (i.hasNext()) {
 			House h = (House)i.next();
 			if (h.isMain()) {
-	     		drawLine(gc, HOUSE_COLOR, 0, 210, INNER_CIRCLE, h.getCoord(), h.getCoord(), SWT.LINE_SOLID);
-				drawHouseName(h.getDesignation(), h.getCoord(), gc);
+	     		drawLine(gc, primary ? HOUSE_COLOR : HOUSEPART_COLOR, 0, 210, INNER_CIRCLE, h.getCoord(), h.getCoord(), SWT.LINE_SOLID);
+				drawHouseName(h.getDesignation(), h.getCoord(), gc, primary);
 			}
 		}
-		drawHouseParts(gc);
+		drawHouseParts(conf, gc, primary);
 	}
 
 	/**
@@ -152,23 +156,26 @@ public class Cosmogram {
 	 * @param name имя дома
 	 * @param value градус дома
 	 * @param gc графическая система
+	 * @param primary true - первый уровень домов
 	 */
-	private void drawHouseName(String name, double value, GC gc) {
-		gc.setForeground(HOUSE_COLOR);
+	private void drawHouseName(String name, double value, GC gc, boolean primary) {
+		gc.setForeground(primary ? HOUSE_COLOR : HOUSEPART_COLOR);
 		gc.drawString(name, CalcUtil.trunc(getXPoint(230, value)) + xcenter - 5,
-						CalcUtil.trunc(getYPoint(230, value)) + ycenter);
+			CalcUtil.trunc(getYPoint(primary ? 230 : 210, value)) + ycenter);
 	}
 
 	/**
 	 * Прорисовка триплицетов астрологических домов
+	 * @param conf конфигурация домов
 	 * @param gc графическая система
+	 * @param primary true - первый уровень домов
 	 */
-	private void drawHouseParts(GC gc) {
+	private void drawHouseParts(Configuration conf, GC gc, boolean primary) {
 		Iterator<Model> i = conf.getHouses().iterator();
 		while (i.hasNext()) {
 			House h = (House)i.next();
 			if (!h.isMain()) {
-	     		drawLine(gc, HOUSEPART_COLOR, 0, 140.0, INNER_CIRCLE, h.getCoord(), h.getCoord(), SWT.LINE_SOLID);
+	     		drawLine(gc, primary ? HOUSE_COLOR : HOUSEPART_COLOR, 0, 140.0, INNER_CIRCLE, h.getCoord(), h.getCoord(), SWT.LINE_SOLID);
 			}
 		}
 	}
