@@ -129,6 +129,7 @@ public class HouseService extends DictionaryService {
 		house.setStage(rs.getString("stage"));
 		house.setPositive(rs.getString("positive"));
 		house.setNegative(rs.getString("negative"));
+		house.setSynastry(rs.getString("synastry"));
 		return house;
 	}
 

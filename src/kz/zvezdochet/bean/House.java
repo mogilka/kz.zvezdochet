@@ -277,4 +277,17 @@ public class House extends SkyPoint {
 			planets = new ArrayList<>();
 		return planets;
 	}
+
+	/**
+	 * Описание дома для синастрии
+	 */
+	private String synastry;
+
+	public String getSynastry() {
+		return synastry;
+	}
+
+	public void setSynastry(String synastry) {
+		this.synastry = synastry;
+	}
 }
