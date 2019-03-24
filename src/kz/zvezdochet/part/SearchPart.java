@@ -47,7 +47,7 @@ import kz.zvezdochet.service.PlanetService;
 import kz.zvezdochet.service.SignService;
 
 /**
- * Поиск событий
+ * Поиск гороскопов
  * @author Nataly Didenko
  */
 public class SearchPart extends ModelListView {
