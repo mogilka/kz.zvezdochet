@@ -123,26 +123,17 @@ public class SkyPointAspect {
 	 */
 	public AspectType checkType(boolean state) {
 		AspectType type = aspect.getType();
-		Planet planet1 = (Planet)skyPoint1;
-		Planet planet2 = (Planet)skyPoint2;
-		String pcode1 = planet1.getCode();
-		String pcode2 = planet2.getCode();
-		AspectTypeService service = new AspectTypeService();
-
-		String negative[] = {"Lilith", "Kethu"};
-		String positive[] = {"Selena", "Rakhu"};
-
 		try {
 			if (type.getCode().equals("NEUTRAL")) {
-				boolean baded = false;
-//				baded = state ? (planet1.isLilithed() || planet2.isLilithed()
-//					|| planet1.isKethued() || planet2.isKethued()) : false;
+				Planet planet1 = (Planet)skyPoint1;
+				Planet planet2 = (Planet)skyPoint2;
+				String pcode1 = planet1.getCode();
+				String pcode2 = planet2.getCode();
 
-				if (Arrays.asList(negative).contains(pcode1) ||
-						Arrays.asList(negative).contains(pcode2) || baded)
-					type = (AspectType)service.find("NEGATIVE");
+				AspectTypeService service = new AspectTypeService();
 
-				else if (Arrays.asList(positive).contains(pcode1) ||
+				String positive[] = {"Selena"};
+				if (Arrays.asList(positive).contains(pcode1) ||
 						Arrays.asList(positive).contains(pcode2))
 					type = (AspectType)service.find("POSITIVE");
 			}
