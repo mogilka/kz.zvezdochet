@@ -591,4 +591,12 @@ public class Event extends Model {
 	public void setCardkindid(long cardkindid) {
 		this.cardkindid = cardkindid;
 	}
+
+	/**
+	 * Проверка, известно ли время события
+	 * @return false - неизвестно
+	 */
+	public boolean isHousable() {
+		return getRectification() < 3;
+	}
 }

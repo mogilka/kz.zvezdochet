@@ -140,6 +140,7 @@ public class Cosmogram {
 	 * @param primary true - первый уровень домов
 	 */
 	private void drawHouses(Configuration conf, GC gc, boolean primary) {
+		if (!conf.getEvent().isHousable()) return;
 		Iterator<Model> i = conf.getHouses().iterator();
 		while (i.hasNext()) {
 			House h = (House)i.next();
@@ -212,9 +213,13 @@ public class Cosmogram {
 		Map<Long, Planet> planets = single ? conf.getPlanets() : conf2.getPlanets();
 		while (i.hasNext()) {
 			Planet p = i.next();
+			if (p.getCode().equals("Moon") && !conf.getEvent().isHousable())
+				continue;
 			Iterator<Planet> j = planets.values().iterator();
 			while (j.hasNext()) {
 				Planet p2 = j.next();
+				if (p2.getCode().equals("Moon") && !conf.getEvent().isHousable())
+					continue;
 				if (single && p.getNumber() > p2.getNumber()) continue;
 				getAspect(Math.abs(p.getCoord()), Math.abs(p2.getCoord()), gc);
 			}

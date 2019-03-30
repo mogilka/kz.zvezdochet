@@ -799,27 +799,29 @@ public class EventPart extends ModelPart implements ICalculable {
 			folder.setSelection(0);
 			
 		//дома
-		controls = grHouses.getChildren();
-		table = (Table)controls[0];
-		table.removeAll();
-		if (conf != null) {
-			for (Model base : conf.getHouses()) {
-				House house = (House)base;
-				TableItem item = new TableItem(table, SWT.NONE);
-				item.setText(0, house.getName());		
-				item.setText(1, String.valueOf(house.getCoord()));
-
-  				Sign sign;
-				try {
-					sign = SkyPoint.getSign(house.getCoord(), event.getBirthYear());
-//  				house.setSign(sign);
-					item.setText(2, null == sign ? "" : sign.getName());
-				} catch (DataAccessException e) {
-					e.printStackTrace();
+		if (event.isHousable()) {
+			controls = grHouses.getChildren();
+			table = (Table)controls[0];
+			table.removeAll();
+			if (conf != null) {
+				for (Model base : conf.getHouses()) {
+					House house = (House)base;
+					TableItem item = new TableItem(table, SWT.NONE);
+					item.setText(0, house.getName());		
+					item.setText(1, String.valueOf(house.getCoord()));
+	
+	  				Sign sign;
+					try {
+						sign = SkyPoint.getSign(house.getCoord(), event.getBirthYear());
+	//  				house.setSign(sign);
+						item.setText(2, null == sign ? "" : sign.getName());
+					} catch (DataAccessException e) {
+						e.printStackTrace();
+					}
 				}
+				for (int i = 0; i < table.getColumnCount(); i++)
+					table.getColumn(i).pack();
 			}
-			for (int i = 0; i < table.getColumnCount(); i++)
-				table.getColumn(i).pack();
 		}
 
 		//ингрессии
