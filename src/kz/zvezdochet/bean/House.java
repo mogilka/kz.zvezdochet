@@ -3,6 +3,7 @@ package kz.zvezdochet.bean;
 import java.util.ArrayList;
 import java.util.List;
 
+import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.service.HouseService;
 
@@ -289,5 +290,26 @@ public class House extends SkyPoint {
 
 	public void setSynastry(String synastry) {
 		this.synastry = synastry;
+	}
+
+	/**
+	 * Поиск противоположного дома
+	 * @return астрологический дом
+	 */
+	public House getOpposite() {
+		try {
+			long hid = 0;
+			if (143 == id)
+				hid = 162;
+			else if (162 == id)
+				hid = 143;
+			else
+				hid = (id > 159) ? id - 18 : id + 18;
+				if (hid > 0)
+					return (House)getService().find(hid);
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
