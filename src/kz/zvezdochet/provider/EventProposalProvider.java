@@ -18,9 +18,11 @@ import kz.zvezdochet.service.EventService;
  */
 public class EventProposalProvider implements IContentProposalProvider {
 	private Object[] humanFilter = new Object[] {0,1,2};
+	private Object[] celebFilter = new Object[] {0,1};
 
-	public EventProposalProvider(Object[] human) {
+	public EventProposalProvider(Object[] human, Object[] celeb) {
 		humanFilter = human;
+		celebFilter = celeb;
 	}
 
 	@Override
@@ -28,7 +30,7 @@ public class EventProposalProvider implements IContentProposalProvider {
 		IContentProposal[] contentProposals = null;
 		List<Model> proposals = new ArrayList<Model>();
 		try {
-			proposals = new EventService().findByName(contents, humanFilter);
+			proposals = new EventService().findByName(contents, humanFilter, celebFilter);
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}

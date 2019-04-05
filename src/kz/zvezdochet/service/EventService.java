@@ -43,10 +43,11 @@ public class EventService extends ModelService {
 	 * Поиск события по наименованию
 	 * @param text поисковое выражение
 	 * @param human null|0|1|2 все|события|живые существа|сообщества
+	 * @param celeb null|0|1 все|обычные|знаменитости
 	 * @return список событий
 	 * @throws DataAccessException
 	 */
-	public List<Model> findByName(String text, Object[] human) throws DataAccessException {
+	public List<Model> findByName(String text, Object[] human, Object[] celeb) throws DataAccessException {
         List<Model> list = new ArrayList<Model>();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -57,8 +58,14 @@ public class EventService extends ModelService {
 			String arr = this.arrayToString(human);
 			wherehuman = "and human in (" + arr + ")";
 
+			String whereceleb = "";
+			if (null == celeb)
+				celeb = new Object[] {0,1};
+			arr = this.arrayToString(celeb);
+			whereceleb = " and celebrity in (" + arr + ")";
+
 			String sql = "select * from " + tableName + 
-				" where name like ? " + wherehuman +
+				" where name like ? " + wherehuman + whereceleb +
 				" order by initialdate";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setString(1, "%" + text + "%");

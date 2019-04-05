@@ -105,7 +105,7 @@ public class SearchPart extends ModelListView {
 				String text = txSearch.getText();
 				if (text.length() > 1)
 					try {
-						setData(new EventService().findByName(text, null));
+						setData(new EventService().findByName(text, null, null));
 					} catch (DataAccessException e) {
 						e.printStackTrace();
 					}			
