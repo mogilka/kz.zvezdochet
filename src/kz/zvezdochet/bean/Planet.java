@@ -15,7 +15,7 @@ import kz.zvezdochet.service.PlanetService;
 
 /**
  * Планета
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class Planet extends SkyPoint {
 	private static final long serialVersionUID = -8328248201235163517L;
@@ -504,9 +504,13 @@ public class Planet extends SkyPoint {
 				} else {
 					//изменились ли аспекты
 					Map<String,String> map = planet.getAspectMap();
+					if (null == map)
+						continue;
 					for (Model model2 : planets2) {
 						Planet planet2 = (Planet)model2;
 						Map<String,String> map2 = planet2.getAspectMap();
+						if (null == map2)
+							continue;
 						String acode = map.get(planet2.getCode());
 						String acode2 = map2.get(planet.getCode());
 						if (null == acode)
