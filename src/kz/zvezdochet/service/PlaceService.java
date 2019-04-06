@@ -16,7 +16,7 @@ import kz.zvezdochet.core.util.DateUtil;
 
 /**
  * Сервис местностей
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class PlaceService extends DictionaryService {
 

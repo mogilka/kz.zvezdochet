@@ -13,7 +13,7 @@ import kz.zvezdochet.service.PlaceService;
 
 /**
  * Местонахождение
- * @author Nataly Didenko
+ * @author Natalie Didenko
  * @link https://www.horlogeparlante.com/История.html?city=515001
  */
 public class Place extends Dictionary {
@@ -99,7 +99,7 @@ public class Place extends Dictionary {
 	}
 
 	/**
-	 * Конвертация параметров JSON в объект места
+	 * Конвертация параметров JSON в объект
 	 * @param json объект JSON
 	 */
 	public Place(JSONObject json) {
