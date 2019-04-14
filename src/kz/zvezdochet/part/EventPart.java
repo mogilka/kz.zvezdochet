@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -852,14 +853,15 @@ public class EventPart extends ModelPart implements ICalculable {
 	 * Перерисовка космограммы
 	 */
 	private void refreshCard() {
-		List<String> params = new ArrayList<String>();
+		Map<String, Object> params = new HashMap<>();
+		List<String> aparams = new ArrayList<String>();
 		Map<String, String[]> types = AspectType.getHierarchy();
 		for (Control control : grAspectType.getChildren()) {
 			Button button = (Button)control;
 			if (button.getSelection())
-				params.addAll(Arrays.asList(types.get(button.getData("type"))));
+				aparams.addAll(Arrays.asList(types.get(button.getData("type"))));
 		}
-		if (params.size() < 1) return;
+		params.put("aspects", aparams);
 		Event event = (Event)model;
 		cmpCosmogram.paint(event.getConfiguration(), null, params);
 	}

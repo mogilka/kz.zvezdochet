@@ -1,6 +1,6 @@
 package kz.zvezdochet.part;
 
-import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.PaintEvent;
@@ -13,13 +13,13 @@ import kz.zvezdochet.util.Cosmogram;
 
 /**
  * Виджет космограммы
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class CosmogramComposite extends Composite { 
 	private Configuration conf;
 	private Configuration conf2;
-	private List<String> params;
+	private Map<String, Object> params;
 	
 	public CosmogramComposite(Composite parent, int style) {
 	    super(parent, style);
@@ -45,7 +45,7 @@ public class CosmogramComposite extends Composite {
 	 * @param params массив параметров
 	 * @todo если параметры не заданы, брать все по умолчанию
 	 */
-	public void paint(Configuration conf, Configuration conf2, List<String> params) {
+	public void paint(Configuration conf, Configuration conf2, Map<String, Object> params) {
 		this.conf = conf;
 		this.conf2 = conf2;
 		this.params = params;

@@ -22,7 +22,7 @@ import kz.zvezdochet.service.AspectService;
 
 /**
  * Космограмма
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class Cosmogram {
@@ -36,7 +36,7 @@ public class Cosmogram {
 	
 	private Configuration conf;
 	private Configuration conf2;
-	private List<String> params;
+	private Map<String, Object> params;
 
 	/**
 	 * Прорисовка космограммы
@@ -46,7 +46,7 @@ public class Cosmogram {
 	 * @param gc графический контекст
 	 * @todo если параметры не заданы, брать все по умолчанию
 	 */
-	public Cosmogram(Configuration conf, Configuration conf2, List<String> params, GC gc) {
+	public Cosmogram(Configuration conf, Configuration conf2, Map<String, Object> params, GC gc) {
 		this.conf = conf;
 		this.conf2 = conf2;
 		this.params = params;
@@ -253,8 +253,17 @@ public class Cosmogram {
 		while (i.hasNext()) {
 			Aspect a = (Aspect)i.next();
 			if (a.isAspect(res)) {
-				if (params != null && params.size() > 0 && !params.contains(a.getType().getCode()))
-					continue;
+				if (params != null) {
+					boolean exact = params.get("exact") != null;
+					if (exact && !a.isExact(res))
+						continue;
+					if (params != null && params.get("aspects") != null) {
+						@SuppressWarnings("unchecked")
+						List<String> aparams = (List<String>)params.get("aspects");
+						if (aparams.size() > 0 && !aparams.contains(a.getType().getCode()))
+							continue;
+					}
+				}
 				drawAspect(a.getType().getColor(), 0f, one, two, gc, 
 						getLineStyle(a.getType().getProtraction()));
 			}
