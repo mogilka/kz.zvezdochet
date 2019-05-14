@@ -451,13 +451,16 @@ public class Event extends Model {
 			setZone(json.getDouble("Zone"));
 		setHuman(json.getInt("human"));
 		setAccuracy(json.get("accuracy").toString());
-		setUserid(1);
+		setUserid(2);
 		setDate(DateUtil.getDatabaseDateTime(json.getString("date")));
 		setFancy(json.getString("fancy"));
 		value = json.get("backid");
 		if (value != JSONObject.NULL)
 			setBackid(json.getLong("backid"));
 		setDst(json.getDouble("dst"));
+		value = json.get("tabloid");
+		if (value != JSONObject.NULL)
+			setTabloid(json.getLong("tabloid"));
 	}
 
 	/**
@@ -598,5 +601,17 @@ public class Event extends Model {
 	 */
 	public boolean isHousable() {
 		return getRectification() < 3;
+	}
+
+	/**
+	 * Идентификатор спортсмена в Tablo.moe
+	 */
+	private long tabloid;
+
+	public long getTabloid() {
+		return tabloid;
+	}
+	public void setTabloid(long tabloid) {
+		this.tabloid = tabloid;
 	}
 }

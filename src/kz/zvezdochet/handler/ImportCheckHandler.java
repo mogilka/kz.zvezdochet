@@ -42,7 +42,7 @@ public class ImportCheckHandler extends Handler {
 			Date date = importPart.getDate();
 			long time = date.getTime() / 1000;
 
-			url = String.format(url, time);
+			url = String.format(url, time, 100);
 			System.out.println(url);
 			String res = IOUtil.getUriContent(url);
 			if (null == res) {
