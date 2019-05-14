@@ -13,10 +13,7 @@ public class Swetest {
   	public static void main(String[] argv) {
   		argv = new String[] {"08.12.2007", "08:08:08", "6", "43.15", "76.55"};
   		new Swetest().calculate(argv);
-  		/*
-  		 * argv = ["08.12.2007", "08:08:08", "6", "43.15", "76.55"]
-  		 * $ java Swetest 08.12.2007 08:08:08 6 43.15 76.55
-  		 */
+  		// $ java Swetest 08.12.2007 08:08:08 6 43.15 76.55
   	}
   
 	@SuppressWarnings("unused")
@@ -257,6 +254,7 @@ public class Swetest {
 
   		//расчёт куспидов домов
   		//{ for houses: ecliptic obliquity and nutation }
+  		sb = new StringBuffer(new String(serr));
   		rflag = sweph.swe_calc_ut(tjdut, SweConst.SE_ECL_NUT, 0, xx, sb);
   		eps_true = xx[0];
   		nut_long = xx[2];
@@ -285,6 +283,24 @@ public class Swetest {
   		System.out.println("\n");
   		for (int i = 0; i < ascmc.length; i++)
   			System.out.println("ascmc " + i + " " + ascmc[i]);
+
+  		//расчёт координат звёзд
+  		String[] scodes = {"Achernar", "Acrux", "Acubens", "Aculeus", "Acumen", "Adhab", "Adhil", "Ain", "Akrab", "Al Hecka", "Alcyone", "Aldebaran", "Alderamin",
+  				"Alfecca Meridiana", "Algenib", "Algieba", "Algol", "Algorab", "Alhena", "Alioth", "Alkaid", "Alkes", "Almaak", "Alphard", "Alpheratz", "Alrischa",
+  				"Altair", "Andromeda Galaxy", "Ankaa", "Antares", "Arcturus", "Ascella", "Asellus Australis", "Baten Kaitos", "Bellatrix", "Betelgeuse", "Canopus",
+  				"Capella", "Capulus", "Castor", "Dabih", "Deneb", "Deneb Algedi", "Denebola", "Diadem", "Difda", "Dschubba", "Dubhe", "El Nath", "Etamin", "Facies",
+  				"Fomalhaut", "Gal. Center", "Gemma", "Grafias", "Great Attractor", "Hadar", "Hamal", "Kaus Borealis", "Kochab", "Lesath", "Markab", "Menkalinan",
+  				"Menkar", "Merak", "Mimosa", "Mintaka", "Mira", "Mirach", "Mirfak", "Mirzam", "Mizar", "Nunki", "Phact", "Phecda", "Polaris", "Pollux", "Porrima",
+  				"Praesepe", "Praesepe Cluster", "Procyon", "Propus etaGem", "Ras Algethi", "Ras Elased Australis", "Rasalhague", "Regulus", "Rigel", "Rukbat",
+  				"Sadalmelek", "Sadalsuud", "Scheat", "Schedar", "Sheratan", "Sinistra", "Sirius", "Skat", "Spica", "Sualocin", "Tejat", "Thuban", "Toliman",
+  				"Unukalhai", "Vega", "Vindemiatrix", "Virgo Cluster", "Wasat", "Zaniah", "Zaurak", "Zavijava", "Zosma", "Zuben Elgenubi", "Zuben Eshamali"
+  			};
+  		System.out.println("\n");
+  		for (String scode: scodes) {
+	  		sb = new StringBuffer(new String(serr));
+	  		rflag = sweph.swe_fixstar_ut(new StringBuffer(scode), tjdut, (int)iflag, xx, sb);
+  			System.out.println(scode + " = " + xx[0] + "\t" + xx[1] + "\t" + xx[2] + "\t" + xx[3] + "\t" + xx[4] + "\t" + xx[5]);
+  		}
   	}
   	
   	private String trimLeadZero(String s) {
