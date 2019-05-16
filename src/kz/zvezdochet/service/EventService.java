@@ -1,5 +1,6 @@
 package kz.zvezdochet.service;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,6 +22,7 @@ import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.bean.Sign;
 import kz.zvezdochet.bean.SkyPoint;
 import kz.zvezdochet.bean.SkyPointAspect;
+import kz.zvezdochet.bean.Star;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.ModelService;
@@ -31,7 +33,7 @@ import kz.zvezdochet.util.Configuration;
 
 /**
  * Сервис событий
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class EventService extends ModelService {
 
@@ -197,6 +199,7 @@ public class EventService extends ModelService {
 					savePlanetHouses(event);
 				}
 //				saveIngress(event);
+				saveStars(event);
 			}
 			if (event.isNeedSaveBlob())
 				saveBlob(event);
@@ -213,7 +216,7 @@ public class EventService extends ModelService {
 	}
 
 	/**
-	 * Сохранение текстовой и мультимедийной информации о событии
+	 * Сохранение информации о событии
 	 * @param event событие
 	 */
 	private void saveBlob(Event event) throws DataAccessException {
@@ -416,7 +419,7 @@ public class EventService extends ModelService {
 	}
 
 	/**
-	 * Сохранение планет конфигурации события
+	 * Сохранение положения планет события
 	 * @param event событие
 	 * @throws DataAccessException
 	 */
@@ -470,7 +473,7 @@ public class EventService extends ModelService {
 	}
 
 	/**
-	 * Возвращает имя таблицы, хранящей планеты конфигурации события
+	 * Возвращает имя таблицы, хранящей планеты события
 	 * @return имя ТБД
 	 */
 	public String getPlanetTable() {
@@ -478,7 +481,7 @@ public class EventService extends ModelService {
 	}
 
 	/**
-	 * Возвращает имя таблицы, хранящей дома конфигурации события
+	 * Возвращает имя таблицы, хранящей дома события
 	 * @return имя ТБД
 	 */
 	private String getHouseTable() {
@@ -510,7 +513,7 @@ public class EventService extends ModelService {
 	}
 
 	/**
-	 * Сохранение домов конфигурации события
+	 * Сохранение домов события
 	 * @param event событие
 	 * @throws DataAccessException
 	 */
@@ -563,7 +566,7 @@ public class EventService extends ModelService {
 	}
 
 	/**
-	 * Сохранение позиций планет в домах конфигурации события
+	 * Сохранение позиций планет в домах события
 	 * @param event событие
 	 * @throws DataAccessException
 	 */
@@ -615,7 +618,7 @@ public class EventService extends ModelService {
 	}
 
 	/**
-	 * Сохранение позиций планет в знаках конфигурации события
+	 * Сохранение позиций планет события в знаках Зодиака
 	 * @param event событие
 	 * @throws DataAccessException
 	 */
@@ -1489,5 +1492,101 @@ and celebrity = 1
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * Сохранение положения звёзд события
+	 * @param event событие
+	 * @throws DataAccessException
+	 */
+	public void saveStars(Event event) throws DataAccessException {
+		if (null == event.getConfiguration()) return;
+        PreparedStatement ps = null;
+        String table = getStarTable();
+		Connection conn = Connector.getInstance().getConnection();
+		try {
+			String sql = "delete from " + table + " where eventid = ?";
+			ps = conn.prepareStatement(sql);
+			ps.setLong(1, event.getId());
+			ps.execute();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			String sql = "insert into " + table + " values(?,?,?,?,?,0,0,0,?,?)";
+			ps = conn.prepareStatement(sql);
+			conn.setAutoCommit(false);
+
+			Collection<Star> stars = event.getConfiguration().getStars().values();
+			for (Model model : stars) {
+				Star star = (Star)model;
+				ps.setLong(1, event.getId());
+				ps.setLong(2, star.getId());
+				ps.setDouble(3, star.getCoord());
+				ps.setDouble(4, star.getLatitude());
+				ps.setDouble(5, star.getDistance());
+				ps.setLong(6, star.getSign().getId());
+				ps.setLong(7, star.getHouse().getId());
+				ps.addBatch();
+			}
+			ps.executeBatch();
+			conn.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		} finally {
+			try {
+				if (ps != null)	ps.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Инициализация звёзд события
+	 * @param event событие
+	 * @throws DataAccessException
+	 */
+	public void initStars(Event event) throws DataAccessException {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			Map<Long, Star> stars = event.getConfiguration().getStars();
+			String sql = "select * from " + getStarTable() + " where eventid = ?";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, event.getId());
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				Star star = stars.get(rs.getLong("starid"));
+				if (star != null)
+					star.setCoord(rs.getDouble("longitude"));
+
+				Sign sign = SkyPoint.getSign(star.getCoord(), event.getBirthYear());
+				star.setSign(sign);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
+	}
+
+	/**
+	 * Возвращает имя таблицы, хранящей звёзды события
+	 * @return имя ТБД
+	 */
+	public String getStarTable() {
+		return "eventstars";
 	}
 }

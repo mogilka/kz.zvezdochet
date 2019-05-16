@@ -17,7 +17,7 @@ import kz.zvezdochet.core.util.CoreUtil;
 
 /**
  * Сервис планет
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class PlanetService extends DictionaryService {
 

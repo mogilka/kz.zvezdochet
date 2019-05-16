@@ -255,6 +255,7 @@ public class Event extends Model {
 				service.initAspects(this);
 				if (initstat)
 					configuration.initPlanetStatistics();
+				service.initStars(this);
 			}
 		} catch (DataAccessException e) {
 			e.printStackTrace();

@@ -21,6 +21,7 @@ import kz.zvezdochet.bean.PositionType;
 import kz.zvezdochet.bean.Sign;
 import kz.zvezdochet.bean.SkyPoint;
 import kz.zvezdochet.bean.SkyPointAspect;
+import kz.zvezdochet.bean.Star;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.util.CalcUtil;
@@ -33,6 +34,7 @@ import kz.zvezdochet.service.HouseService;
 import kz.zvezdochet.service.IngressTypeService;
 import kz.zvezdochet.service.PlanetService;
 import kz.zvezdochet.service.PositionTypeService;
+import kz.zvezdochet.service.StarService;
 import kz.zvezdochet.sweph.Activator;
 import swisseph.SweConst;
 import swisseph.SweDate;
@@ -50,6 +52,7 @@ public class Configuration {
 	private Date date;
 	private Event event;
 	private List<Model> ingressList;
+	private	Map<Long, Star> starList;
 
 	public Event getEvent() {
 		return event;
@@ -71,6 +74,11 @@ public class Configuration {
 			planetList.put(model.getId(), (Planet)model);
 
   	  	houseList = new HouseService().getList();
+
+  	  	starList = new HashMap<>();
+		list = new StarService().getList();
+		for (Model model : list)
+			starList.put(model.getId(), (Star)model);
   	  	this.date = date;
 	}
 
@@ -93,6 +101,12 @@ public class Configuration {
 			planetList.put(model.getId(), (Planet)model);
 
   	  	houseList = new HouseService().getList();
+
+  	  	starList = new HashMap<>();
+		list = new StarService().getList();
+		for (Model model : list)
+			starList.put(model.getId(), (Star)model);
+
   	  	this.date = eventdate;
   	  	String date = DateUtil.formatCustomDateTime(eventdate, DateUtil.sdf.toPattern());
   	  	String time = DateUtil.formatCustomDateTime(eventdate, DateUtil.stf.toPattern());
@@ -279,6 +293,7 @@ public class Configuration {
 	  			p.setCoord(planets[10] + 180);
 	
 	  		//расчёт куспидов домов
+	  		sb = new StringBuffer(new String(serr));
 	  		//{ for houses: ecliptic obliquity and nutation }
 	  		rflag = sweph.swe_calc_ut(tjdut, SweConst.SE_ECL_NUT, 0, xx, sb);
 	  		eps_true = xx[0];
@@ -300,6 +315,18 @@ public class Configuration {
 	  		//используем систему Плацидуса
 	  		sweph.swe_houses(tjdut, SweConst.SEFLG_SIDEREAL, glat, glon, hsys, hcusps, ascmc);
 	  		calcHouseParts(hcusps);
+
+	  		//расчёт координат звёзд
+	  		for (Star star : starList.values()) {
+	  			sb = new StringBuffer(new String(serr));
+	  			rflag = sweph.swe_fixstar_ut(new StringBuffer(star.getCode()), tjdut, (int)iflag, xx, sb);
+	  			star.setCoord(xx[0]);
+	  			star.setLatitude(xx[1]);
+	  			star.setDistance(xx[2]);
+
+				Sign sign = SkyPoint.getSign(star.getCoord(), event.getBirthYear());
+				star.setSign(sign);
+	  		}
 	  		sweph.swe_close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -416,27 +443,24 @@ public class Configuration {
 	 */
 	public void initHouses() {
 		if (isPlanetHoused()) return;
-		for (Planet planet : planetList.values()) {
-			for (int j = 0; j < houseList.size(); j++) {
-				House house = (House)houseList.get(j);
-				double pcoord = planet.getCoord();
-				Double hmargin = (j == houseList.size() - 1) ?
-					((House)houseList.get(0)).getCoord() : 
-					((House)houseList.get(j + 1)).getCoord();
-				double[] res = CalcUtil.checkMarginalValues(house.getCoord(), hmargin, pcoord);
-				hmargin = res[0];
-				pcoord = res[1];
-				//если градус планеты находится в пределах куспидов
-				//текущей и предыдущей трети домов,
-				//запоминаем, в каком доме находится планета
-				if (Math.abs(pcoord) < hmargin & 
-						Math.abs(pcoord) >= house.getCoord()) {
+		for (int j = 0; j < houseList.size(); j++) {
+			House house = (House)houseList.get(j);
+			int h = (j == houseList.size() - 1) ? 0 : j + 1;
+			House house2 = (House)houseList.get(h);
+			//планеты
+			for (Planet planet : planetList.values()) {
+				if (SkyPoint.getHouse(house.getCoord(), house2.getCoord(), planet.getCoord())) {
 					planet.setHouse(house);
 					if (planet.getCode().equals("Lilith"))
 						house.setLilithed();
 					else if (planet.getCode().equals("Selena"))
 						house.setSelened();
 				}
+			}
+			//звёзды
+			for (Star star : starList.values()) {
+				if (SkyPoint.getHouse(house.getCoord(), house2.getCoord(), star.getCoord())) 
+					star.setHouse(house);
 			}
 		}
 	}
@@ -765,18 +789,16 @@ public class Configuration {
 			House house = (House)model;
 			int prev = (1 == house.getNumber()) ? 34 : house.getNumber() - 3;
 			int next = house.getNumber() + 3;
-			double phouse = ((House)houseList.get(prev)).getCoord();
-			double nhouse = ((House)houseList.get(next)).getCoord();
+			House phouse = (House)houseList.get(prev);
+			House nhouse = (House)houseList.get(next);
 
 			for (Planet planet : planetList.values()) {
-				double[] res = CalcUtil.checkMarginalValues(phouse, nhouse, planet.getCoord());
-				if (Math.abs(res[1]) < res[0] & 
-						Math.abs(res[1]) >= nhouse) {
+				if (SkyPoint.getHouse(phouse.getCoord(), nhouse.getCoord(), planet.getCoord())) {
 					switch (house.getNumber()) {
-					case 1: planet.setOnASC(true); break;
-					case 10: planet.setOnIC(true); break;
-					case 19: planet.setOnDSC(true); break;
-					case 28: planet.setOnMC(true); break;
+						case 1: planet.setOnASC(true); break;
+						case 10: planet.setOnIC(true); break;
+						case 19: planet.setOnDSC(true); break;
+						case 28: planet.setOnMC(true); break;
 					}
 				}
 			}
@@ -928,5 +950,9 @@ public class Configuration {
 		if (null == ingressList || 0 == ingressList.size())
 			initIngress();
 		return ingressList;
+	}
+
+	public Map<Long, Star> getStars() {
+		return starList;
 	}
 }

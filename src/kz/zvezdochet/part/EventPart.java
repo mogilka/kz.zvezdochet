@@ -53,6 +53,7 @@ import kz.zvezdochet.bean.Place;
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.bean.Sign;
 import kz.zvezdochet.bean.SkyPoint;
+import kz.zvezdochet.bean.Star;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.handler.Handler;
 import kz.zvezdochet.core.service.DataAccessException;
@@ -119,6 +120,7 @@ public class EventPart extends ModelPart implements ICalculable {
 	private CTabFolder folder;
 	private Group grAspectType;
 	private Group grIngress;
+	private Group grStars;
 	
 	@PostConstruct
 	public View create(Composite parent) {
@@ -286,7 +288,7 @@ public class EventPart extends ModelPart implements ICalculable {
 	 * @return массив вкладок
 	 */
 	private Tab[] initTabs() {
-		Tab[] tabs = new Tab[5];
+		Tab[] tabs = new Tab[6];
 		//настройки расчёта
 		Tab tab = new Tab();
 		tab.name = "Настройки";
@@ -410,6 +412,39 @@ public class EventPart extends ModelPart implements ICalculable {
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(grIngress);
 		tabs[4] = tab;
 
+		//звёзды
+		tab = new Tab();
+		tab.name = "Звёзды";
+		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/star.png").createImage();
+		grStars = new Group(folder, SWT.NONE);
+		titles = new String[] {
+			"Звезда",
+			"Координата",
+			"",
+			"",
+			"",
+			"Знаки",
+			"Дома",
+			"",
+			"",
+			"",
+			"",
+			"",
+			""
+		};
+		table = new Table(grStars, SWT.BORDER | SWT.V_SCROLL);
+		table.setLinesVisible(true);
+		table.setHeaderVisible(true);
+		table.setSize(grStars.getSize());
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(table);
+		for (Object title : titles) {
+			TableColumn column = new TableColumn(table, SWT.NONE);
+			column.setText(title.toString());
+		}	
+		tab.control = grStars;
+		GridLayoutFactory.swtDefaults().applyTo(grStars);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(grStars);
+		tabs[5] = tab;
 		return tabs;
 	}
 
@@ -847,6 +882,54 @@ public class EventPart extends ModelPart implements ICalculable {
 //			for (int i = 0; i < table.getColumnCount(); i++)
 //				table.getColumn(i).pack();
 //		}
+
+		//звёзды
+		controls = grStars.getChildren();
+		table = (Table)controls[0];
+		table.removeAll();
+		if (conf != null) {
+			Collection<Star> stars = conf.getStars().values();
+			for (Star star : stars) {
+				TableItem item = new TableItem(table, SWT.NONE);
+				item.setText(0, star.getName());
+				item.setText(1, String.valueOf(star.getCoord()));
+				item.setImage(2, star.isDamaged() ?
+					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/disharmonic.gif").createImage() : null);
+				item.setImage(3, star.isPerfect() ?
+					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/harmonic.gif").createImage() : null);
+				item.setImage(4, star.inMine() ?
+					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/mine.gif").createImage() : null);
+
+				Sign sign = star.getSign();
+				item.setText(5, null == sign ? "" : sign.getName());
+
+				House house = star.getHouse();
+				item.setText(6, null == house ? "" : house.getCode());
+
+				item.setImage(7, star.isLilithed() ?
+					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Lilith.png").createImage() : null);
+
+				item.setImage(8, star.isSelened() ?
+						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Selena.png").createImage() : null);
+
+				item.setImage(9, star.isRakhued() ?
+						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Rakhu.png").createImage() : null);
+
+				item.setImage(10, star.isKethued() ?
+						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Kethu.png").createImage() : null);
+
+				item.setImage(11, star.isKing() ?
+					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/crown.png").createImage() : null);
+
+				item.setImage(12, star.isLord() ?
+						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/throne.png").createImage() : null);
+
+				item.setImage(13, star.isBroken() ?
+						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/ilow_obj.gif").createImage() : null);
+			}
+			for (int i = 0; i < table.getColumnCount(); i++)
+				table.getColumn(i).pack();
+		}
 	}
 
 	/**
