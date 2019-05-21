@@ -366,8 +366,6 @@ public class EventService extends ModelService {
 					planet.setSpeedLatitude(rs.getDouble("speed_latitude"));
 					planet.setSpeedDistance(rs.getDouble("speed_distance"));
 				}
-				Sign sign = SkyPoint.getSign(planet.getLongitude(), event.getBirthYear());
-				planet.setSign(sign);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1393,7 +1391,7 @@ and celebrity = 1
 		}
 
 		try {
-			String sql = "insert into " + table + " values(?,?,?,?,?,0,0,0,?,?)";
+			String sql = "insert into " + table + " values(?,?,?,?,?,0,0,0,?)";
 			ps = conn.prepareStatement(sql);
 			conn.setAutoCommit(false);
 
@@ -1405,8 +1403,7 @@ and celebrity = 1
 				ps.setDouble(3, star.getLongitude());
 				ps.setDouble(4, star.getLatitude());
 				ps.setDouble(5, star.getDistance());
-				ps.setLong(6, star.getSign().getId());
-				ps.setLong(7, star.getHouse().getId());
+				ps.setLong(6, star.getHouse().getId());
 				ps.addBatch();
 			}
 			ps.executeBatch();
@@ -1443,11 +1440,10 @@ and celebrity = 1
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				Star star = stars.get(rs.getLong("starid"));
-				if (star != null)
+				if (star != null) {
 					star.setLongitude(rs.getDouble("longitude"));
-
-				Sign sign = SkyPoint.getSign(star.getLongitude(), event.getBirthYear());
-				star.setSign(sign);
+					star.setLatitude(rs.getDouble("latitude"));
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -632,9 +632,6 @@ public class Configuration {
 	 */
 	private void initPlanetPositions() {
 		try {
-			initPlanetSigns(false);
-			initHouses();
-
 			PlanetService service = new PlanetService();
 			List<Model> positions = new PositionTypeService().getList();
 			Collection<Planet> planets = planetList.values();

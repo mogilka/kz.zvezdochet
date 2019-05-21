@@ -250,12 +250,14 @@ public class Event extends Model {
 			else {
 				configuration = new Configuration(birth);
 				configuration.setEvent(this);
-				service.initPlanets(this);
 				service.initHouses(this);
+				service.initPlanets(this);
+				configuration.initPlanetSigns(false);
 				service.initAspects(this);
 				if (initstat)
 					configuration.initPlanetStatistics();
 				service.initStars(this);
+				configuration.initHouses();
 			}
 		} catch (DataAccessException e) {
 			e.printStackTrace();

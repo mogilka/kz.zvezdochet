@@ -306,7 +306,12 @@ public class EventPart extends ModelPart implements ICalculable {
 		grPlanets = new Group(folder, SWT.NONE);
 		Object[] titles = {
 			"Планета",
-			"Координата",
+			"Долгота",
+			"Широта",
+			"Расстояние",
+			"Скорость д",
+			"Скорость ш",
+			"Скорость р",
 			"",
 			"",
 			"",
@@ -315,8 +320,8 @@ public class EventPart extends ModelPart implements ICalculable {
 			"",
 			"",
 			"",
-			"Знаки",
-			"Дома",
+			"Знак",
+			"Дом",
 			"",
 			"",
 			"",
@@ -419,12 +424,13 @@ public class EventPart extends ModelPart implements ICalculable {
 		grStars = new Group(folder, SWT.NONE);
 		titles = new String[] {
 			"Звезда",
-			"Координата",
+			"Долгота",
+			"Широта",
 			"",
 			"",
 			"",
-			"Знаки",
-			"Дома",
+			"Знак",
+			"Дом",
 			"",
 			"",
 			"",
@@ -763,25 +769,31 @@ public class EventPart extends ModelPart implements ICalculable {
 			for (Planet planet : planets) {
 				TableItem item = new TableItem(table, SWT.NONE);
 				item.setText(0, planet.getName());
-				item.setText(1, String.valueOf(planet.getLongitude()));
-				item.setText(2, planet.isRetrograde() ? "R" : "");
-				item.setImage(3, planet.isDamaged() ?
+				item.setText(1, String.valueOf(CalcUtil.roundTo(planet.getLongitude(), 3)));
+				item.setText(2, String.valueOf(CalcUtil.roundTo(planet.getLatitude(), 3)));
+				item.setText(3, String.valueOf(CalcUtil.roundTo(planet.getDistance(), 3)));
+				item.setText(4, String.valueOf(CalcUtil.roundTo(planet.getSpeedLongitude(), 3)));
+				item.setText(5, String.valueOf(CalcUtil.roundTo(planet.getSpeedLatitude(), 3)));
+				item.setText(6, String.valueOf(CalcUtil.roundTo(planet.getSpeedDistance(), 3)));
+
+				item.setText(7, planet.isRetrograde() ? "R" : "");
+				item.setImage(8, planet.isDamaged() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/disharmonic.gif").createImage() : null);
-				item.setImage(4, planet.isPerfect() ?
+				item.setImage(9, planet.isPerfect() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/harmonic.gif").createImage() : null);
-				item.setImage(5, planet.inMine() ?
+				item.setImage(10, planet.inMine() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/mine.gif").createImage() : null);
-				item.setImage(6, planet.isSword() ?
+				item.setImage(11, planet.isSword() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/sword.png").createImage() : null);
-				item.setImage(7, planet.isShield() ?
+				item.setImage(12, planet.isShield() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/shield.png").createImage() : null);
-				item.setImage(8, planet.isKernel() ?
+				item.setImage(13, planet.isKernel() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/core.png").createImage() : null);
-				item.setImage(9, planet.isBelt() ?
+				item.setImage(14, planet.isBelt() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/belt.png").createImage() : null);
 
 				Sign sign = planet.getSign();
-				item.setText(10, null == sign ? "" : sign.getName());
+				item.setText(15, null == sign ? "" : sign.getName());
 				Image image = null;
 				if (planet.isSignHome())
 					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/home.gif").createImage();
@@ -792,10 +804,10 @@ public class EventPart extends ModelPart implements ICalculable {
 				else if (planet.isSignDeclined())
 					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/next_nav.gif").createImage();
 				if (image != null)
-					item.setImage(10, image);
+					item.setImage(15, image);
 
 				House house = planet.getHouse();
-				item.setText(11, null == house ? "" : house.getCode());
+				item.setText(16, null == house ? "" : house.getCode());
 				image = null;
 				if (planet.isHouseHome())
 					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/home.gif").createImage();
@@ -806,27 +818,27 @@ public class EventPart extends ModelPart implements ICalculable {
 				else if (planet.isHouseDeclined())
 					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/next_nav.gif").createImage();
 				if (image != null)
-					item.setImage(11, image);
+					item.setImage(16, image);
 
-				item.setImage(12, planet.isLilithed() ?
+				item.setImage(17, planet.isLilithed() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Lilith.png").createImage() : null);
 
-				item.setImage(13, planet.isSelened() ?
+				item.setImage(18, planet.isSelened() ?
 						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Selena.png").createImage() : null);
 
-				item.setImage(14, planet.isRakhued() ?
+				item.setImage(19, planet.isRakhued() ?
 						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Rakhu.png").createImage() : null);
 
-				item.setImage(15, planet.isKethued() ?
+				item.setImage(20, planet.isKethued() ?
 						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Kethu.png").createImage() : null);
 
-				item.setImage(16, planet.isKing() ?
+				item.setImage(21, planet.isKing() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/crown.png").createImage() : null);
 
-				item.setImage(17, planet.isLord() ?
+				item.setImage(22, planet.isLord() ?
 						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/throne.png").createImage() : null);
 
-				item.setImage(18, planet.isBroken() ?
+				item.setImage(23, planet.isBroken() ?
 						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/ilow_obj.gif").createImage() : null);
 			}
 			for (int i = 0; i < table.getColumnCount(); i++)
@@ -892,40 +904,42 @@ public class EventPart extends ModelPart implements ICalculable {
 			for (Star star : stars) {
 				TableItem item = new TableItem(table, SWT.NONE);
 				item.setText(0, star.getName());
-				item.setText(1, String.valueOf(star.getLongitude()));
-				item.setImage(2, star.isDamaged() ?
+				item.setText(1, String.valueOf(CalcUtil.roundTo(star.getLongitude(), 3)));
+				item.setText(2, String.valueOf(CalcUtil.roundTo(star.getLatitude(), 3)));
+
+				item.setImage(3, star.isDamaged() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/disharmonic.gif").createImage() : null);
-				item.setImage(3, star.isPerfect() ?
+				item.setImage(4, star.isPerfect() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/harmonic.gif").createImage() : null);
-				item.setImage(4, star.inMine() ?
+				item.setImage(5, star.inMine() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/mine.gif").createImage() : null);
 
 				Sign sign = star.getSign();
-				item.setText(5, null == sign ? "" : sign.getName());
+				item.setText(6, null == sign ? "" : sign.getName());
 
 				House house = star.getHouse();
-				item.setText(6, null == house ? "" : house.getCode());
+				item.setText(7, null == house ? "" : house.getCode());
 
-				item.setImage(7, star.isLilithed() ?
+				item.setImage(8, star.isLilithed() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Lilith.png").createImage() : null);
 
-				item.setImage(8, star.isSelened() ?
-						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Selena.png").createImage() : null);
+				item.setImage(9, star.isSelened() ?
+					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Selena.png").createImage() : null);
 
-				item.setImage(9, star.isRakhued() ?
-						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Rakhu.png").createImage() : null);
+				item.setImage(10, star.isRakhued() ?
+					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Rakhu.png").createImage() : null);
 
-				item.setImage(10, star.isKethued() ?
-						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Kethu.png").createImage() : null);
+				item.setImage(11, star.isKethued() ?
+					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Kethu.png").createImage() : null);
 
-				item.setImage(11, star.isKing() ?
+				item.setImage(12, star.isKing() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/crown.png").createImage() : null);
 
-				item.setImage(12, star.isLord() ?
-						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/throne.png").createImage() : null);
+				item.setImage(13, star.isLord() ?
+					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/throne.png").createImage() : null);
 
-				item.setImage(13, star.isBroken() ?
-						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/ilow_obj.gif").createImage() : null);
+				item.setImage(14, star.isBroken() ?
+					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/ilow_obj.gif").createImage() : null);
 			}
 			for (int i = 0; i < table.getColumnCount(); i++)
 				table.getColumn(i).pack();
