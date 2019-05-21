@@ -170,7 +170,7 @@ public class House extends SkyPoint {
 		id = house.id;
 		name = house.name;
 		code = house.code;
-		coord = house.coord;
+		longitude = house.longitude;
 		number = house.number;
 		designation = house.designation;
 	}

@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
@@ -25,92 +24,10 @@ public class Planet extends SkyPoint {
 	 */
     private double score;
 
-	/**
-	 * Признак ретроградности
-	 */
-	private boolean retrograde = false;
-	
-    /**
-     * Знак Зодиака, в котором находится планета
-     */
-    private Sign sign;
-
-    /**
-     * Дом, в котором находится планета
-     */
-    private House house;
-
-    /**
-     * Признак поражённости
-     */
-    private boolean damaged = false;
-    
-    /**
-     * Признак непоражённости
-     */
-    private boolean perfect = false;
-    /**
-     * Признак слабой планеты (по очкам)
-     */
-    private boolean broken = false;
-    /**
-     * Признак соединения с Кету
-     */
-    private boolean kethued = false;
-    /**
-     * Признак владыки гороскопа (планета, у которой больше всего сильных аспектов)
-     */
-    private boolean lord = false;
-    /**
-     * Признак силы (соединение с Раху)
-     */
-    private boolean rakhued = false;
-
     /**
      * Признак фиктивной планеты
      */
     private boolean fictious = false;
-
-    /**
-     * Признак соединения с Лилит
-     */
-    private boolean lilithed = false;
-
-    /**
-     * Символ
-     */
-    private String symbol;
-    /**
-     * Цвет
-     */
-    private Color color;
-
-    public Color getColor() {
-		return color;
-	}
-
-	public void setColor(Color color) {
-		this.color = color;
-	}
-
-	public String getSymbol() {
-		return symbol;
-	}
-
-	public void setSymbol(String symbol) {
-		this.symbol = symbol;
-	}
-
-	public boolean isLilithed() {
-		return lilithed;
-	}
-
-	public void setLilithed() {
-		lilithed = true;
-		setPerfect(false);
-		addPoints(-1);
-//		System.out.println(this.getCode() + " is lilithed");
-	}
 
 	/**
      * Краткое описание
@@ -123,19 +40,6 @@ public class Planet extends SkyPoint {
 
 	public void setShortName(String shortName) {
 		this.shortName = shortName;
-	}
-
-	/**
-	 * Карта аспектов планеты
-	 */
-	private Map<String, String> aspectMap;
-
-	public Map<String, String> getAspectMap() {
-		return aspectMap;
-	}
-
-	public void setAspectMap(Map<String, String> aspectMap) {
-		this.aspectMap = aspectMap;
 	}
 
 	public boolean isFictitious() {
@@ -156,7 +60,7 @@ public class Planet extends SkyPoint {
 		id = planet.id;
 		name = planet.name;
 		code = planet.code;
-		coord = planet.coord;
+		longitude = planet.longitude;
 		number = planet.number;
 		symbol = planet.symbol;
 		shortName = planet.shortName;
@@ -180,122 +84,17 @@ public class Planet extends SkyPoint {
 		return score > 1;
 	}
 
-	public Sign getSign() {  
-		return sign;
-	}
-
-	public void setSign(Sign sign) {
-		this.sign = sign;
-	}
-
-	public House getHouse() {
-		return house;
-	}
-
-	public void setHouse(House house) {
-		this.house = house;
-	}
-
-    /**
-     * Метод, проверяющий, находится ли планета в шахте
-     * @return <i>true</i> если планета не имеет сильных аспектов
-     */
-	public boolean inMine() {
-		return aspectCountMap != null && 0 == aspectCountMap.get("COMMON");
-	}
-
-	public boolean isDamaged() {
-		return damaged;
-	}
-
-	public void setDamaged(boolean damaged) {
-		this.damaged = damaged;
-		if (damaged) {
-			setPerfect(false);
-			addPoints(-1);
-		}
-//		System.out.println(this.getCode() + " is damaged");
-	}
-
-	public boolean isPerfect() {
-		return perfect;
-	}
-
-	public void setPerfect(boolean perfect) {
-		this.perfect = perfect;
-		if (perfect) {
-			addPoints(1);
-//			System.out.println(this.getCode() + " is perfect");
-		}
-	}
-
 	public Image getImage() {
 		return AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/" + 
 			getCode() + ".png").createImage();
 	}
 
-	public boolean isBroken() {
-		return broken;
-	}
-
-	public void setBroken() {
-		broken = true;
-		setLord(false);
-		addPoints(-1);
-//		System.out.println(this.getCode() + " is broken");
-	}
-
 	public boolean isRetrograde() {
-		return retrograde;
-	}
-
-	public void setRetrograde() {
-		retrograde = true;
-		addPoints(-1);
-//		System.out.println(this.getCode() + " is retro");
+		return speedLongitude < 0;
 	}
 
 	public DictionaryService getService() {
 		return new PlanetService();
-	}
-
-	/**
-	 * Признаки угловой планеты
-	 */
-	private boolean onASC = false;
-	private boolean onIC = false;
-	private boolean onDSC = false;
-	private boolean onMC = false;
-	
-	public void setOnASC(boolean onAsc) {
-		onASC = onAsc;
-	}
-	public boolean onIC() {
-		return onIC;
-	}
-
-	public void setOnIC(boolean onIC) {
-		this.onIC = onIC;
-	}
-
-	public boolean onDSC() {
-		return onDSC;
-	}
-
-	public void setOnDSC(boolean onDSC) {
-		this.onDSC = onDSC;
-	}
-
-	public boolean onMC() {
-		return onMC;
-	}
-
-	public void setOnMC(boolean onMC) {
-		this.onMC = onMC;
-	}
-
-	public boolean onASC() {
-		return onASC;
 	}
 
 	/**
@@ -440,26 +239,6 @@ public class Planet extends SkyPoint {
 //		System.out.println(this.getCode() + " is in decline house");
 	}
 
-	public boolean isLord() {
-		return lord;
-	}
-
-	public void setLord(boolean lord) {
-		this.lord = lord;
-//		if (lord)
-//			System.out.println(this.getCode() + " is Lord");
-	}
-
-	public boolean isRakhued() {
-		return rakhued;
-	}
-
-	public void setRakhued() {
-		this.rakhued = true;
-		addPoints(1);
-//		System.out.println(this.getCode() + " is strong");
-	}
-
 	public static Long[] getSportSet() {
 		return new Long[] {19L,21L,22L,23L,25L,26L,27L,28L,29L,30L,31L,32L,33L,34L};
 	}
@@ -483,21 +262,21 @@ public class Planet extends SkyPoint {
 			Collection<Planet> planets2 = next.getConfiguration().getPlanets().values();
 			for (Planet planet : planets) {
 				if (planet.getCode().equals(this.code)) {
-					if (Math.abs(this.coord) == Math.abs(planet.coord)) //планета осталась в той же координате
+					if (Math.abs(this.longitude) == Math.abs(planet.longitude)) //планета осталась в той же координате
 						list.add("S");
-					else if (planet.retrograde && !this.retrograde) //планета перешла в директное движение
+					else if (planet.isRetrograde() && !this.isRetrograde()) //планета перешла в директное движение
 						list.add("D");
-					else if (this.retrograde && !planet.retrograde) //планета перешла в обратное движение
+					else if (this.isRetrograde() && !planet.isRetrograde()) //планета перешла в обратное движение
 						list.add("R");
 
 					//изменился ли знак Зодиака планеты
 					Sign sign = this.sign;
 					if (null == sign)
-						sign = SkyPoint.getSign(this.coord, next.getBirthYear());
+						sign = SkyPoint.getSign(this.longitude, next.getBirthYear());
 
 					Sign sign2 = planet.sign;
 					if (null == sign2)
-						sign2 = SkyPoint.getSign(planet.coord, prev.getBirthYear());
+						sign2 = SkyPoint.getSign(planet.longitude, prev.getBirthYear());
 
 					if (sign.getId() != sign2.getId())
 						list.add("M");
@@ -578,27 +357,6 @@ limit 500
 		return res;
 	}
 
-	/**
-	 * Очки
-	 */
-    private double points;
-
-	public double getPoints() {
-		return points;
-	}
-
-	public void setPoints(double points) {
-		this.points = points;
-	}
-
-	public void addPoints(double points) {
-		this.points += points;
-	}
-
-	public boolean isNeutral() {
-		return !isPositive() && !isNegative();				
-	}
-
 	public boolean isPositive() {
 		return isLord() || isPerfect()
 //				|| isHouseExaltated() || isHouseHome() || isSignExaltated() || isSignHome()
@@ -616,35 +374,6 @@ limit 500
 		);				
 	}
 
-	public void setSelened() {
-		selened = true;
-		addPoints(1);
-//		System.out.println(this.getCode() + " is selened");
-	}
-
-	public boolean isKethued() {
-		return kethued;
-	}
-
-	public void setKethued() {
-		kethued = true;
-		setPerfect(false);
-//		System.out.println(this.getCode() + " is weak");
-	}
-
-	/**
-	 * Король аспектов (планета с наибольшим количеством позитивных аспектов)
-	 */
-	private boolean king;
-
-	public boolean isKing() {
-		return king;
-	}
-
-	public void setKing() {
-		this.king = true;
-	}
-
 	/**
 	 * Описание для синастрии
 	 */
@@ -656,15 +385,6 @@ limit 500
 
 	public void setSynastry(String synastry) {
 		this.synastry = synastry;
-	}
-
-	/**
-	 * Признак соединения с Селеной
-	 */
-	private boolean selened;
-
-	public boolean isSelened() {
-		return selened;
 	}
 
     /**
@@ -713,16 +433,5 @@ limit 500
 	public boolean isInNeutralSign() {
 		return !isSignExaltated() && !isSignHome()
 			&& !isSignDeclined() && !isSignExile();
-	}
-
-	/**
-	 * Массив аспектов планет
-	 */
-	private	List<SkyPointAspect> aspectList;
-
-	public List<SkyPointAspect> getAspectList() {
-		if (null == aspectList)
-			aspectList = new ArrayList<SkyPointAspect>();
-		return aspectList;
 	}
 }

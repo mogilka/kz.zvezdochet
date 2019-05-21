@@ -145,8 +145,8 @@ public class Cosmogram {
 		while (i.hasNext()) {
 			House h = (House)i.next();
 			if (h.isMain()) {
-	     		drawLine(gc, primary ? HOUSE_COLOR : HOUSEPART_COLOR, 0, 210, INNER_CIRCLE, h.getCoord(), h.getCoord(), SWT.LINE_SOLID);
-				drawHouseName(h.getDesignation(), h.getCoord(), gc, primary);
+	     		drawLine(gc, primary ? HOUSE_COLOR : HOUSEPART_COLOR, 0, 210, INNER_CIRCLE, h.getLongitude(), h.getLongitude(), SWT.LINE_SOLID);
+				drawHouseName(h.getDesignation(), h.getLongitude(), gc, primary);
 			}
 		}
 		drawHouseParts(conf, gc, primary);
@@ -176,7 +176,7 @@ public class Cosmogram {
 		while (i.hasNext()) {
 			House h = (House)i.next();
 			if (!h.isMain()) {
-	     		drawLine(gc, primary ? HOUSE_COLOR : HOUSEPART_COLOR, 0, 140.0, INNER_CIRCLE, h.getCoord(), h.getCoord(), SWT.LINE_SOLID);
+	     		drawLine(gc, primary ? HOUSE_COLOR : HOUSEPART_COLOR, 0, 140.0, INNER_CIRCLE, h.getLongitude(), h.getLongitude(), SWT.LINE_SOLID);
 			}
 		}
 	}
@@ -192,8 +192,8 @@ public class Cosmogram {
 		Iterator<Planet> i = configuration.getPlanets().values().iterator();
 		while (i.hasNext()) {
 			Planet p = i.next();
-			int x = CalcUtil.trunc(getXPoint(radius, p.getCoord())) + xcenter - 5;
-			int y = CalcUtil.trunc(getYPoint(radius, p.getCoord())) + ycenter - 5;
+			int x = CalcUtil.trunc(getXPoint(radius, p.getLongitude())) + xcenter - 5;
+			int y = CalcUtil.trunc(getYPoint(radius, p.getLongitude())) + ycenter - 5;
 			//String tooltip = p.getName() + " (" + Utils.replace(String.valueOf(p.getCoord()), ".", "\u00b0") + "\u2032)";
 			gc.drawImage(p.getImage(), x, y);
 		}
@@ -221,7 +221,7 @@ public class Cosmogram {
 				if (p2.getCode().equals("Moon") && !conf.getEvent().isHousable())
 					continue;
 				if (single && p.getNumber() > p2.getNumber()) continue;
-				getAspect(Math.abs(p.getCoord()), Math.abs(p2.getCoord()), gc);
+				getAspect(Math.abs(p.getLongitude()), Math.abs(p2.getLongitude()), gc);
 			}
 		}
 	}

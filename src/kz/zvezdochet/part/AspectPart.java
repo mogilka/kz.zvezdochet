@@ -101,7 +101,7 @@ public class AspectPart extends ListView {
 			Collection<Planet> planets = conf.getPlanets().values();
 			for (Planet planet : planets) {
 				tableColumn = new TableColumn(table, SWT.NONE);
-				tableColumn.setText(CalcUtil.roundTo(planet.getCoord(), 1) + "");
+				tableColumn.setText(CalcUtil.roundTo(planet.getLongitude(), 1) + "");
 				tableColumn.setImage(planet.getImage());
 				tableColumn.setToolTipText(planet.getName());
 			}
@@ -109,7 +109,7 @@ public class AspectPart extends ListView {
 			for (int i = 0; i < conf.getHouses().size(); i++) {
 				House house = (House)conf.getHouses().get(i);
 				tableColumn = new TableColumn(table2, SWT.NONE);
-				tableColumn.setText(CalcUtil.roundTo(house.getCoord(), 1) + "");
+				tableColumn.setText(CalcUtil.roundTo(house.getLongitude(), 1) + "");
 				tableColumn.setText(house.getCode());
 				tableColumn.setToolTipText(house.getName());
 			}

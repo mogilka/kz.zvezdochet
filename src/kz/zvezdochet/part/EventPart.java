@@ -763,7 +763,7 @@ public class EventPart extends ModelPart implements ICalculable {
 			for (Planet planet : planets) {
 				TableItem item = new TableItem(table, SWT.NONE);
 				item.setText(0, planet.getName());
-				item.setText(1, String.valueOf(planet.getCoord()));
+				item.setText(1, String.valueOf(planet.getLongitude()));
 				item.setText(2, planet.isRetrograde() ? "R" : "");
 				item.setImage(3, planet.isDamaged() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/disharmonic.gif").createImage() : null);
@@ -844,11 +844,11 @@ public class EventPart extends ModelPart implements ICalculable {
 					House house = (House)base;
 					TableItem item = new TableItem(table, SWT.NONE);
 					item.setText(0, house.getName());		
-					item.setText(1, String.valueOf(house.getCoord()));
+					item.setText(1, String.valueOf(house.getLongitude()));
 	
 	  				Sign sign;
 					try {
-						sign = SkyPoint.getSign(house.getCoord(), event.getBirthYear());
+						sign = SkyPoint.getSign(house.getLongitude(), event.getBirthYear());
 	//  				house.setSign(sign);
 						item.setText(2, null == sign ? "" : sign.getName());
 					} catch (DataAccessException e) {
@@ -892,7 +892,7 @@ public class EventPart extends ModelPart implements ICalculable {
 			for (Star star : stars) {
 				TableItem item = new TableItem(table, SWT.NONE);
 				item.setText(0, star.getName());
-				item.setText(1, String.valueOf(star.getCoord()));
+				item.setText(1, String.valueOf(star.getLongitude()));
 				item.setImage(2, star.isDamaged() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/disharmonic.gif").createImage() : null);
 				item.setImage(3, star.isPerfect() ?

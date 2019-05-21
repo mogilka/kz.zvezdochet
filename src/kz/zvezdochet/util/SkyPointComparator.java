@@ -15,7 +15,7 @@ public class SkyPointComparator implements Comparator<SkyPoint> {
 
 	@Override
 	public int compare(SkyPoint point1, SkyPoint point2) {
-		return Double.compare(Math.abs(point1.getCoord()), Math.abs(point2.getCoord()));
+		return Double.compare(Math.abs(point1.getLongitude()), Math.abs(point2.getLongitude()));
 	}
 
 }

@@ -280,17 +280,20 @@ public class Configuration {
 	  		    long n = constToPlanet(i);
 	  		    if (n >= 0) {
 	  		    	p = planetList.get(n);
-	  	  			p.setCoord(xx[0]);
-	  	  			if (xx[3] < 0)
-	  	  				p.setRetrograde();
+	  	  			p.setLongitude(xx[0]);
+		  			p.setLatitude(xx[1]);
+		  			p.setDistance(xx[2]);
+	  	  			p.setSpeedLongitude(xx[3]);
+		  			p.setSpeedLatitude(xx[4]);
+		  			p.setSpeedDistance(xx[5]);
 	  		    }
 	  		}
 	  		//рассчитываем координату Кету по значению Раху
 	  		p = planetList.get(22L);
 	  		if (Math.abs(planets[10]) > 180)
-	  			p.setCoord(planets[10] - 180);
+	  			p.setLongitude(planets[10] - 180);
 	  		else
-	  			p.setCoord(planets[10] + 180);
+	  			p.setLongitude(planets[10] + 180);
 	
 	  		//расчёт куспидов домов
 	  		sb = new StringBuffer(new String(serr));
@@ -320,11 +323,11 @@ public class Configuration {
 	  		for (Star star : starList.values()) {
 	  			sb = new StringBuffer(new String(serr));
 	  			rflag = sweph.swe_fixstar_ut(new StringBuffer(star.getCode()), tjdut, (int)iflag, xx, sb);
-	  			star.setCoord(xx[0]);
+	  			star.setLongitude(xx[0]);
 	  			star.setLatitude(xx[1]);
 	  			star.setDistance(xx[2]);
 
-				Sign sign = SkyPoint.getSign(star.getCoord(), event.getBirthYear());
+				Sign sign = SkyPoint.getSign(star.getLongitude(), event.getBirthYear());
 				star.setSign(sign);
 	  		}
 	  		sweph.swe_close();
@@ -388,7 +391,7 @@ public class Configuration {
 	  			int i = CalcUtil.trunc((j + 2) / 3);
 	  			if (h.isMain()) {
 	  				double val = houses[i];
-	  	  			h.setCoord(val);
+	  	  			h.setLongitude(val);
 	  				Sign sign = SkyPoint.getSign(val, event.getBirthYear());
 	  				h.setSign(sign);
 	  			} else {
@@ -406,7 +409,7 @@ public class Configuration {
 	  				double res = multiple * ((two - one) / 3) + one;
 	  				if (res > 360) 
 	  					res = res - 360; 
-	  	  			h.setCoord(res);
+	  	  			h.setLongitude(res);
 	  				Sign sign = SkyPoint.getSign(res, event.getBirthYear());
 	  				h.setSign(sign);
 	  			}
@@ -449,7 +452,7 @@ public class Configuration {
 			House house2 = (House)houseList.get(h);
 			//планеты
 			for (Planet planet : planetList.values()) {
-				if (SkyPoint.getHouse(house.getCoord(), house2.getCoord(), planet.getCoord())) {
+				if (SkyPoint.getHouse(house.getLongitude(), house2.getLongitude(), planet.getLongitude())) {
 					planet.setHouse(house);
 					if (planet.getCode().equals("Lilith"))
 						house.setLilithed();
@@ -459,7 +462,7 @@ public class Configuration {
 			}
 			//звёзды
 			for (Star star : starList.values()) {
-				if (SkyPoint.getHouse(house.getCoord(), house2.getCoord(), star.getCoord())) 
+				if (SkyPoint.getHouse(house.getLongitude(), house2.getLongitude(), star.getLongitude())) 
 					star.setHouse(house);
 			}
 		}
@@ -472,7 +475,7 @@ public class Configuration {
 	public void initPlanetSigns(boolean main) throws DataAccessException {
 		if (!main && isPlanetSigned()) return;
 		for (Planet planet : planetList.values()) {
-			Sign sign = SkyPoint.getSign(planet.getCoord(), event.getBirthYear());
+			Sign sign = SkyPoint.getSign(planet.getLongitude(), event.getBirthYear());
 			planet.setSign(sign);
 		}
 	}
@@ -503,7 +506,7 @@ public class Configuration {
 						if (p.getCode().equals(p2.getCode()))
 							continue;
 //						if (p.getNumber() > p2.getNumber()) continue;
-						double res = CalcUtil.getDifference(p.getCoord(), p2.getCoord());
+						double res = CalcUtil.getDifference(p.getLongitude(), p2.getLongitude());
 						for (Model realasp : aspects) {
 							Aspect a = (Aspect)realasp;
 							long asplanetid = a.getPlanetid();
@@ -744,7 +747,7 @@ public class Configuration {
 		for (Planet planet : planetList.values()) {
 			if (planet.getId().equals(sun.getId()))
 				continue;
-			double res = Math.abs(CalcUtil.getDifference(sun.getCoord(), planet.getCoord()));
+			double res = Math.abs(CalcUtil.getDifference(sun.getLongitude(), planet.getLongitude()));
 			if (res < 0.18)
 				planet.setKernel();
 			else if (res <= 3)
@@ -793,12 +796,12 @@ public class Configuration {
 			House nhouse = (House)houseList.get(next);
 
 			for (Planet planet : planetList.values()) {
-				if (SkyPoint.getHouse(phouse.getCoord(), nhouse.getCoord(), planet.getCoord())) {
+				if (SkyPoint.getHouse(phouse.getLongitude(), nhouse.getLongitude(), planet.getLongitude())) {
 					switch (house.getNumber()) {
-						case 1: planet.setOnASC(true); break;
-						case 10: planet.setOnIC(true); break;
-						case 19: planet.setOnDSC(true); break;
-						case 28: planet.setOnMC(true); break;
+						case 1: planet.setOnRising(true); break;
+						case 10: planet.setOnNadir(true); break;
+						case 19: planet.setOnSetting(true); break;
+						case 28: planet.setOnZenith(true); break;
 					}
 				}
 			}
@@ -855,7 +858,7 @@ public class Configuration {
 				for (Planet p : planetList.values()) {
 					for (Model model2 : houseList) {
 						House h = (House)model2;
-						double res = CalcUtil.getDifference(p.getCoord(), h.getCoord());
+						double res = CalcUtil.getDifference(p.getLongitude(), h.getLongitude());
 						for (Model realasp : aspects) {
 							Aspect a = (Aspect)realasp;
 							if (a.isAspect(res)) {
@@ -893,7 +896,7 @@ public class Configuration {
 				for (Planet planet1 : planets1) {
 					String icode = null;
 					if (planet.getCode().equals(planet1.getCode())) {
-						if (Math.abs(planet1.getCoord()) == Math.abs(planet.getCoord())) {
+						if (Math.abs(planet1.getLongitude()) == Math.abs(planet.getLongitude())) {
 							//планета осталась в той же координате
 							icode = "stationary";
 						} else if (planet1.isRetrograde() && !planet.isRetrograde()) {
@@ -912,11 +915,11 @@ public class Configuration {
 						//изменился ли знак Зодиака планеты
 						Sign sign = planet.getSign();
 						if (null == sign)
-							sign = SkyPoint.getSign(planet.getCoord(), event.getBirthYear());
+							sign = SkyPoint.getSign(planet.getLongitude(), event.getBirthYear());
 	
 						Sign sign1 = planet1.getSign();
 						if (null == sign1)
-							sign1 = SkyPoint.getSign(planet1.getCoord(), prev.getBirthYear());
+							sign1 = SkyPoint.getSign(planet1.getLongitude(), prev.getBirthYear());
 	
 						if (sign.getId() != sign1.getId()) {
 							icode = "sign";

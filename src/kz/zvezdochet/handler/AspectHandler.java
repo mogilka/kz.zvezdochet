@@ -50,7 +50,7 @@ public class AspectHandler extends Handler {
 			Object[][] data = new Object[pcount][pcount + 1];
 			//заполняем заголовки строк названиями планет и их координатами
 			for (Planet planet : planets)
-				data[planet.getId().intValue() - 19][0] = planet.getName() + " (" + CalcUtil.roundTo(planet.getCoord(), 1) + ")";
+				data[planet.getId().intValue() - 19][0] = planet.getName() + " (" + CalcUtil.roundTo(planet.getLongitude(), 1) + ")";
 
 			//формируем массив аспектов планет
 			List<Model> aspects = new AspectService().getList();
@@ -60,7 +60,7 @@ public class AspectHandler extends Handler {
 						data[planet.getId().intValue() - 19][planet2.getId().intValue() - 18] = null;
 						continue;
 					}
-					double res = CalcUtil.getDifference(planet.getCoord(), planet2.getCoord());
+					double res = CalcUtil.getDifference(planet.getLongitude(), planet2.getLongitude());
 					SkyPointAspect aspect = new SkyPointAspect();
 					aspect.setSkyPoint1(planet);
 					aspect.setSkyPoint2(planet2);
@@ -86,13 +86,13 @@ public class AspectHandler extends Handler {
 			Object[][] datah = new Object[pcount][hcount + 1];
 			//заполняем заголовки строк названиями планет и их координатами
 			for (Planet planet : planets)
-				datah[planet.getId().intValue() - 19][0] = planet.getName() + " (" + CalcUtil.roundTo(planet.getCoord(), 1) + ")";
+				datah[planet.getId().intValue() - 19][0] = planet.getName() + " (" + CalcUtil.roundTo(planet.getLongitude(), 1) + ")";
 
 			//формируем массив аспектов домов
 			for (int c = 0; c < hcount; c++) {
 				House house = (House)houses.get(c);
 				for (Planet planet : planets) {
-					double res = CalcUtil.getDifference(planet.getCoord(), house.getCoord());
+					double res = CalcUtil.getDifference(planet.getLongitude(), house.getLongitude());
 					SkyPointAspect aspect = new SkyPointAspect();
 					aspect.setSkyPoint1(planet);
 					aspect.setSkyPoint2(house);

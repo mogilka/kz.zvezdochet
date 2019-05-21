@@ -378,7 +378,7 @@ public class Event extends Model {
 	 */
 	private boolean needSaveBlob = false;
 
-	public boolean isNeedSaveCalc() {
+	public boolean isRecalcable() {
 		return needSaveCalc;
 	}
 	public void setNeedSaveCalc(boolean needRecalc) {
