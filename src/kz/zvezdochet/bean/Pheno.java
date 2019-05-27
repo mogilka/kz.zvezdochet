@@ -4,7 +4,7 @@ import java.util.Date;
 
 /**
  * Лунный день
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class Pheno {

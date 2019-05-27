@@ -18,7 +18,7 @@ import kz.zvezdochet.service.EventService;
 /**
  * Поиск людей, противоположных по характеру
  * (нахождение Солнца, Меркурия, Венеры, Марса в противоположных знаках Зодиака)
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class NonSimilarHandler extends Handler {
@@ -30,7 +30,7 @@ public class NonSimilarHandler extends Handler {
 		try {
 			EventPart eventPart = (EventPart)activePart.getObject();
 			Event event = (Event)eventPart.getModel(EventPart.MODE_CALC, true);
-			if (null == event || null == event.getConfiguration()) return;
+			if (null == event) return;
 			updateStatus("Поиск", false);
 			Object data = new EventService().findNonSimilar(event, -1);
 		

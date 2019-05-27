@@ -9,7 +9,7 @@ import kz.zvezdochet.core.service.TextGenderDiagramService;
 
 /**
  * Сервис зон
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class ZoneService extends TextGenderDiagramService {
 

@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * Поле поиска события
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class SearchEventToolItem {

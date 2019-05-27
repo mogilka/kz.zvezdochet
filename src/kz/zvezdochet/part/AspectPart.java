@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.core.service.DataAccessException;
@@ -24,18 +25,17 @@ import kz.zvezdochet.core.ui.view.ListView;
 import kz.zvezdochet.core.ui.view.View;
 import kz.zvezdochet.core.util.CalcUtil;
 import kz.zvezdochet.provider.AspectLabelProvider;
-import kz.zvezdochet.util.Configuration;
 
 /**
  * Таблица аспектов
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class AspectPart extends ListView {
 	/**
 	 * Конфигурация события
 	 */
-	protected Configuration conf;
+	protected Event event;
 
 	private Table table2;
 	private TableViewer tableViewer2;
@@ -85,20 +85,20 @@ public class AspectPart extends ListView {
 	}
 
 	/**
-	 * Инициализация конфигурации события
-	 * @param configuration конфигурация события
+	 * Инициализация события
+	 * @param event событиy
 	 */
-	public void setConfiguration(Configuration configuration) {
-		conf = configuration;
+	public void setEvent(Event event) {
+		this.event = event;
 		addColumns();
 	}
 
 	@Override
 	protected void addColumns() {
 		removeColumns();
-		if (conf != null) {
+		if (event != null) {
 			TableColumn tableColumn = new TableColumn(table, SWT.NONE);
-			Collection<Planet> planets = conf.getPlanets().values();
+			Collection<Planet> planets = event.getPlanets().values();
 			for (Planet planet : planets) {
 				tableColumn = new TableColumn(table, SWT.NONE);
 				tableColumn.setText(CalcUtil.roundTo(planet.getLongitude(), 1) + "");
@@ -106,8 +106,8 @@ public class AspectPart extends ListView {
 				tableColumn.setToolTipText(planet.getName());
 			}
 			tableColumn = new TableColumn(table2, SWT.NONE);
-			for (int i = 0; i < conf.getHouses().size(); i++) {
-				House house = (House)conf.getHouses().get(i);
+			for (int i = 0; i < event.getHouses().size(); i++) {
+				House house = (House)event.getHouses().get(i);
 				tableColumn = new TableColumn(table2, SWT.NONE);
 				tableColumn.setText(CalcUtil.roundTo(house.getLongitude(), 1) + "");
 				tableColumn.setText(house.getCode());

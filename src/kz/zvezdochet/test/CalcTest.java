@@ -1,7 +1,7 @@
 package kz.zvezdochet.test;
 
 /**
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class CalcTest {

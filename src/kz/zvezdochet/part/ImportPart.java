@@ -24,7 +24,7 @@ import kz.zvezdochet.core.util.DateUtil;
 
 /**
  * Импорт событий
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class ImportPart extends ModelListView {
 	@Inject

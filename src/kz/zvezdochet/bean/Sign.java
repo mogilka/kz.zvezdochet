@@ -6,7 +6,7 @@ import kz.zvezdochet.service.SignService;
 
 /**
  * Знак Зодиака
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class Sign extends DiagramObject {
 	private static final long serialVersionUID = 70695380750415678L;

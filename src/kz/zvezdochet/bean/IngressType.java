@@ -6,7 +6,7 @@ import kz.zvezdochet.service.IngressTypeService;
 
 /**
  * Тип ингрессии
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class IngressType extends Dictionary {
 	private static final long serialVersionUID = 5901272355855042085L;

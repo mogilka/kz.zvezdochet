@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import kz.zvezdochet.bean.Aspect;
+import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.core.bean.Model;
@@ -34,21 +35,21 @@ public class Cosmogram {
 	private final Color HOUSE_COLOR = new Color(Display.getDefault(), new RGB(153, 0, 0));
 	private final Color HOUSEPART_COLOR = Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY);
 	
-	private Configuration conf;
-	private Configuration conf2;
+	private Event event;
+	private Event event2;
 	private Map<String, Object> params;
 
 	/**
 	 * Прорисовка космограммы
-	 * @param conf расчётная конфигурация события
-	 * @param conf2 расчётная конфигурация связанного события
+	 * @param event событие
+	 * @param event2 связанное событие
 	 * @param params массив параметров
 	 * @param gc графический контекст
 	 * @todo если параметры не заданы, брать все по умолчанию
 	 */
-	public Cosmogram(Configuration conf, Configuration conf2, Map<String, Object> params, GC gc) {
-		this.conf = conf;
-		this.conf2 = conf2;
+	public Cosmogram(Event event, Event event2, Map<String, Object> params, GC gc) {
+		this.event = event;
+		this.event2 = event2;
 		this.params = params;
 		paintCard(gc);
 	}
@@ -61,22 +62,22 @@ public class Cosmogram {
 		xcenter = ycenter = 257;
    	    Image image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/card.png").createImage();
 		gc.drawImage(image, 52, 53);
-		if (conf != null) {
-			if (conf.getHouses() != null && conf.getHouses().size() > 0)
-				drawHouses(conf, gc, true);
-		    if (conf.getPlanets() != null && conf.getPlanets().size() > 0)
+		if (event != null) {
+			if (event.getHouses() != null && event.getHouses().size() > 0)
+				drawHouses(event, gc, true);
+		    if (event.getPlanets() != null && event.getPlanets().size() > 0)
 				try {
-					drawPlanets(conf, gc, 135);
+					drawPlanets(event, gc, 135);
 				} catch (DataAccessException e) {
 					e.printStackTrace();
 				}
 		}
-		if (conf2 != null) {
-			if (conf2.getHouses() != null && conf2.getHouses().size() > 0)
-				drawHouses(conf2, gc, false);
-		    if (conf2.getPlanets() != null && conf2.getPlanets().size() > 0)
+		if (event2 != null) {
+			if (event2.getHouses() != null && event2.getHouses().size() > 0)
+				drawHouses(event2, gc, false);
+		    if (event2.getPlanets() != null && event2.getPlanets().size() > 0)
 				try {
-					drawPlanets(conf2, gc, 160);
+					drawPlanets(event2, gc, 160);
 				} catch (DataAccessException e) {
 					e.printStackTrace();
 				}
@@ -135,13 +136,13 @@ public class Cosmogram {
 
 	/**
 	 * Прорисовка астрологических домов
-	 * @param conf конфигурация домов
+	 * @param event событие
 	 * @param gc графическая система
 	 * @param primary true - первый уровень домов
 	 */
-	private void drawHouses(Configuration conf, GC gc, boolean primary) {
-		if (!conf.getEvent().isHousable()) return;
-		Iterator<Model> i = conf.getHouses().iterator();
+	private void drawHouses(Event event, GC gc, boolean primary) {
+		if (!event.isHousable()) return;
+		Iterator<Model> i = event.getHouses().iterator();
 		while (i.hasNext()) {
 			House h = (House)i.next();
 			if (h.isMain()) {
@@ -149,7 +150,7 @@ public class Cosmogram {
 				drawHouseName(h.getDesignation(), h.getLongitude(), gc, primary);
 			}
 		}
-		drawHouseParts(conf, gc, primary);
+		drawHouseParts(event, gc, primary);
 	}
 
 	/**
@@ -167,12 +168,12 @@ public class Cosmogram {
 
 	/**
 	 * Прорисовка триплицетов астрологических домов
-	 * @param conf конфигурация домов
+	 * @param event событие
 	 * @param gc графическая система
 	 * @param primary true - первый уровень домов
 	 */
-	private void drawHouseParts(Configuration conf, GC gc, boolean primary) {
-		Iterator<Model> i = conf.getHouses().iterator();
+	private void drawHouseParts(Event event, GC gc, boolean primary) {
+		Iterator<Model> i = event.getHouses().iterator();
 		while (i.hasNext()) {
 			House h = (House)i.next();
 			if (!h.isMain()) {
@@ -183,13 +184,13 @@ public class Cosmogram {
 
 	/**
 	 * Прорисовка планет
-	 * @param configuration расчётная конфигурация
+	 * @param event событие
 	 * @param gc графическая система
 	 * @param radius радиус окружности
 	 * @throws DataAccessException
 	 */
-	private void drawPlanets(Configuration configuration, GC gc, int radius) throws DataAccessException {
-		Iterator<Planet> i = configuration.getPlanets().values().iterator();
+	private void drawPlanets(Event event, GC gc, int radius) throws DataAccessException {
+		Iterator<Planet> i = event.getPlanets().values().iterator();
 		while (i.hasNext()) {
 			Planet p = i.next();
 			int x = CalcUtil.trunc(getXPoint(radius, p.getLongitude())) + xcenter - 5;
@@ -207,18 +208,18 @@ public class Cosmogram {
 	 * @throws DataAccessException
 	 */
 	private void drawAspects(GC gc) throws DataAccessException {
-		if (null == conf || null == conf.getPlanets()) return;
-		Iterator<Planet> i = conf.getPlanets().values().iterator();
-		boolean single = (null == conf2 || null == conf2.getPlanets());
-		Map<Long, Planet> planets = single ? conf.getPlanets() : conf2.getPlanets();
+		if (null == event || null == event.getPlanets()) return;
+		Iterator<Planet> i = event.getPlanets().values().iterator();
+		boolean single = (null == event2 || null == event2.getPlanets());
+		Map<Long, Planet> planets = single ? event.getPlanets() : event2.getPlanets();
 		while (i.hasNext()) {
 			Planet p = i.next();
-			if (p.getCode().equals("Moon") && !conf.getEvent().isHousable())
+			if (p.getCode().equals("Moon") && !event.isHousable())
 				continue;
 			Iterator<Planet> j = planets.values().iterator();
 			while (j.hasNext()) {
 				Planet p2 = j.next();
-				if (p2.getCode().equals("Moon") && !conf.getEvent().isHousable())
+				if (p2.getCode().equals("Moon") && !event.isHousable())
 					continue;
 				if (single && p.getNumber() > p2.getNumber()) continue;
 				getAspect(Math.abs(p.getLongitude()), Math.abs(p2.getLongitude()), gc);

@@ -10,7 +10,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 
 /**
  * Обработчик открытия импорта данных с сервера
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class ImportHandler {

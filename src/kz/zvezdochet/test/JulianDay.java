@@ -7,7 +7,7 @@ import jodd.datetime.JulianDateStamp;
 
 /**
  * Конвертация Юлианского дня в дату
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class JulianDay {

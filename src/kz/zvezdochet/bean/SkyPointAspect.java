@@ -6,7 +6,7 @@ import kz.zvezdochet.service.AspectTypeService;
 
 /**
  * Аспект между объектами гороскопа
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class SkyPointAspect {
 	/**

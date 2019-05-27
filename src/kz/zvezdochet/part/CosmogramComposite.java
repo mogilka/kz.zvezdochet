@@ -8,7 +8,7 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
-import kz.zvezdochet.util.Configuration;
+import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.util.Cosmogram;
 
 /**
@@ -17,8 +17,8 @@ import kz.zvezdochet.util.Cosmogram;
  *
  */
 public class CosmogramComposite extends Composite { 
-	private Configuration conf;
-	private Configuration conf2;
+	private Event event;
+	private Event event2;
 	private Map<String, Object> params;
 	
 	public CosmogramComposite(Composite parent, int style) {
@@ -31,7 +31,7 @@ public class CosmogramComposite extends Composite {
         		BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
         			@Override
         			public void run() {
-        				new Cosmogram(conf, conf2, params, e.gc);
+        				new Cosmogram(event, event2, params, e.gc);
         			}
         		});
 	        }
@@ -40,14 +40,14 @@ public class CosmogramComposite extends Composite {
 
 	/**
 	 * Прорисовка космограммы
-	 * @param conf расчётная конфигурация события
-	 * @param conf2 расчётная конфигурация связанного события
+	 * @param event событие
+	 * @param event2 связанное событие
 	 * @param params массив параметров
 	 * @todo если параметры не заданы, брать все по умолчанию
 	 */
-	public void paint(Configuration conf, Configuration conf2, Map<String, Object> params) {
-		this.conf = conf;
-		this.conf2 = conf2;
+	public void paint(Event event, Event event2, Map<String, Object> params) {
+		this.event = event;
+		this.event2 = event2;
 		this.params = params;
 		redraw();
 	}

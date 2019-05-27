@@ -9,7 +9,7 @@ import kz.zvezdochet.core.service.TextGenderDiagramService;
 
 /**
  * Сервис Инь-Ян
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class YinYangService extends TextGenderDiagramService {
 

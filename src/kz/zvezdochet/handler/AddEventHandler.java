@@ -7,7 +7,7 @@ import kz.zvezdochet.bean.Event;
 
 /**
  * Обработчик добавления события
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class AddEventHandler extends EventHandler {

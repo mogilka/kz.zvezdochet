@@ -16,7 +16,7 @@ import swisseph.SwissEph;
 
 /**
  * Расчёт лунного дня
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class MoonCalc {
 	private String sdate;

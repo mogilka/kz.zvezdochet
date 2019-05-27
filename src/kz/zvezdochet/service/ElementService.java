@@ -16,7 +16,7 @@ import kz.zvezdochet.core.util.CoreUtil;
 
 /**
  * Сервис стихий
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class ElementService extends TextGenderDiagramService {
 

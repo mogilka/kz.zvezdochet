@@ -6,7 +6,7 @@ import kz.zvezdochet.service.IngressService;
 
 /**
  * Ингрессия планеты события
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class Ingress extends Model {
 	private static final long serialVersionUID = 5670761424933047181L;

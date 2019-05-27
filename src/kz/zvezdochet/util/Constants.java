@@ -2,7 +2,7 @@ package kz.zvezdochet.util;
 
 /**
  * Общеупотребительные значения
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class Constants {

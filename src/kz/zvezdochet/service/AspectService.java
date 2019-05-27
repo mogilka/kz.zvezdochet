@@ -15,7 +15,7 @@ import kz.zvezdochet.core.tool.Connector;
 
 /**
  * Сервис аспектов
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class AspectService extends DictionaryService {
 

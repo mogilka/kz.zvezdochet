@@ -6,7 +6,7 @@ import kz.zvezdochet.core.service.DictionaryService;
 
 /**
  * Сервис позиций небесных тел
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class PositionTypeService extends DictionaryService {
 

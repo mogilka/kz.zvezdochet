@@ -14,7 +14,7 @@ import swisseph.SwissEph;
 
 /**
  * 
- * @author Nataly Didenko
+ * @author Natalie Didenko
  * @see http://www.astrolab.ru/cgi-bin/informer/informer.cgi?type=8
  * @link https://ru.wikipedia.org/wiki/Фазы_Луны
  * @link https://ru.wikipedia.org/wiki/Новолуние

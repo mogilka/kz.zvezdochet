@@ -8,7 +8,7 @@ import kz.zvezdochet.service.ElementService;
 
 /**
  * Стихия
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class Element extends DiagramDictionary {
 	private static final long serialVersionUID = 2457703926076101583L;

@@ -4,7 +4,7 @@ import kz.zvezdochet.core.bean.IColorizedObject;
 
 /**
  * Интерфейс точки небесной сферы
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public interface ISkyPoint extends IColorizedObject {

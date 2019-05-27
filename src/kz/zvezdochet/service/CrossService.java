@@ -11,7 +11,7 @@ import kz.zvezdochet.core.service.TextGenderDiagramService;
 
 /**
  * Сервис крестов
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class CrossService extends TextGenderDiagramService {
 

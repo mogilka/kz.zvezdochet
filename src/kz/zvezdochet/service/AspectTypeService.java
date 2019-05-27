@@ -17,7 +17,7 @@ import kz.zvezdochet.core.util.CoreUtil;
 
 /**
  * Сервис типов аспектов
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class AspectTypeService extends DictionaryService {
 

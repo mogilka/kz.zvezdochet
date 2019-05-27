@@ -21,7 +21,7 @@ import kz.zvezdochet.util.Constants;
 
 /**
  * Поиск списка недавно просматриваемых событий
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class RecentEventsHandler extends Handler {

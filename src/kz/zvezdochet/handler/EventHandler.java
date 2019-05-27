@@ -25,7 +25,7 @@ import kz.zvezdochet.util.Constants;
 
 /**
  * Обработчик открытия события
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class EventHandler extends ModelOpenHandler {
@@ -69,6 +69,8 @@ public class EventHandler extends ModelOpenHandler {
 	 */
 	protected void afterOpenPart(Object object) {
 		Model event = (Model)object;
+		if (null == event)
+			return;
 		try {
 			if (null == event.getId())
 				return;
@@ -82,7 +84,7 @@ public class EventHandler extends ModelOpenHandler {
 			if (list.contains(id))
 				list.remove(id);
 			if (Constants.PREF_RECENT_MAX == list.size())
-				list.remove(Constants.PREF_RECENT_MAX - 1);
+				list.remove(String.valueOf(Constants.PREF_RECENT_MAX - 1));
 			list.add(id.toString());
 			ids = new String[list.size()];
 			list.toArray(ids);

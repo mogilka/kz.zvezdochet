@@ -10,7 +10,7 @@ import kz.zvezdochet.core.service.ModelService;
 
 /**
  * Сервис ингрессий
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class IngressService extends ModelService {
 

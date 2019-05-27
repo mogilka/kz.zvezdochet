@@ -6,7 +6,7 @@ import kz.zvezdochet.core.service.DictionaryService;
 
 /**
  * Сервис типов ингрессий
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class IngressTypeService extends DictionaryService {
 

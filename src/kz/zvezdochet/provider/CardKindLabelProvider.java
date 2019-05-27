@@ -6,7 +6,7 @@ import kz.zvezdochet.bean.CardKind;
 
 /**
  * Формат списка видов космограммы
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class CardKindLabelProvider extends LabelProvider { 
 	public String getText(Object element) {				

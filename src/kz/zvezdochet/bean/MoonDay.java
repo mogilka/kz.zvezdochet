@@ -6,7 +6,7 @@ import kz.zvezdochet.service.MoonDayService;
 
 /**
  * Толкование лунного дня
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class MoonDay extends Model {
 	private static final long serialVersionUID = -2426149764703740664L;

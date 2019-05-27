@@ -14,7 +14,7 @@ import kz.zvezdochet.service.EventService;
 
 /**
  * Поиск списка недавно изменённых событий
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class RecentModifiedHandler extends Handler {

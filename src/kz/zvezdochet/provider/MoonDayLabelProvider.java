@@ -6,7 +6,7 @@ import kz.zvezdochet.bean.MoonDay;
 
 /**
  * Формат списка лунных дней
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class MoonDayLabelProvider extends LabelProvider { 
 	public String getText(Object element) {				

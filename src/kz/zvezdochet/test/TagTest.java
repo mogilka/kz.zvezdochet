@@ -2,7 +2,7 @@ package kz.zvezdochet.test;
 
 /**
  * Очистка HTML-текста от тегов
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class TagTest {

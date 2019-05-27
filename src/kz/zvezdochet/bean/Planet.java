@@ -258,8 +258,8 @@ public class Planet extends SkyPoint {
 		}
 
 		try {
-			Collection<Planet> planets = prev.getConfiguration().getPlanets().values();
-			Collection<Planet> planets2 = next.getConfiguration().getPlanets().values();
+			Collection<Planet> planets = prev.getPlanets().values();
+			Collection<Planet> planets2 = next.getPlanets().values();
 			for (Planet planet : planets) {
 				if (planet.getCode().equals(this.code)) {
 					if (Math.abs(this.longitude) == Math.abs(planet.longitude)) //планета осталась в той же координате

@@ -11,7 +11,7 @@ import kz.zvezdochet.part.EventPart;
 
 /**
  * Расчёт конфигурации
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class CalcHandler extends Handler {
 

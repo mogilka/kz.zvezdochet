@@ -23,7 +23,7 @@ import kz.zvezdochet.part.ImportPart;
 
 /**
  * Обработчик поиска событий для импорта с сервера
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class ImportCheckHandler extends Handler {

@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * @author Nataly Didenko
+ * @author Natalie Didenko
  * Вычисление границ сидерических знаков Зодиака. 
  * За основу взяты даты 1977 года (Ли Т. Шапиро), 
  * когда Солнце входит в тот или иной знак.

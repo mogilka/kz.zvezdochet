@@ -8,7 +8,7 @@ import kz.zvezdochet.bean.SkyPoint;
 /**
  * Сортировщик массива небесных точек
  * по возрастанию их координат
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class SkyPointComparator implements Comparator<SkyPoint> {

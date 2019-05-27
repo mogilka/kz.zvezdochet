@@ -18,7 +18,7 @@ import kz.zvezdochet.service.EventService;
 /**
  * Поиск людей, похожих по характеру
  * (совпадение знаков Солнца, Меркурия, Венеры, Марса)
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class SimilarHandler extends Handler {
@@ -30,7 +30,7 @@ public class SimilarHandler extends Handler {
 		try {
 			EventPart eventPart = (EventPart)activePart.getObject();
 			Event event = (Event)eventPart.getModel(EventPart.MODE_CALC, true);
-			if (null == event || null == event.getConfiguration()) return;
+			if (null == event) return;
 			updateStatus("Поиск", false);
 			Object data = new EventService().findSimilar(event, -1);
 		

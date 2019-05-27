@@ -11,7 +11,7 @@ import kz.zvezdochet.service.AspectTypeService;
 
 /**
  * Тип аспекта
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class AspectType extends DiagramObject {
 	private static final long serialVersionUID = 4739420822269120670L;

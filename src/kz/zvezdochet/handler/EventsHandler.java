@@ -9,7 +9,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 
 /**
  * Обработчик открытия поиска событий
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class EventsHandler {

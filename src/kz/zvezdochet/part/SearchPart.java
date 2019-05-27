@@ -48,7 +48,7 @@ import kz.zvezdochet.service.SignService;
 
 /**
  * Поиск гороскопов
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class SearchPart extends ModelListView {
 	private CTabFolder folder;

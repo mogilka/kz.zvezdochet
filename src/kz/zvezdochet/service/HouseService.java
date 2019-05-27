@@ -16,7 +16,7 @@ import kz.zvezdochet.core.util.CoreUtil;
 
 /**
  * Сервис астрологических домов
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class HouseService extends DictionaryService {
 	

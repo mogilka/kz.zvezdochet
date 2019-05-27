@@ -9,7 +9,7 @@ import kz.zvezdochet.core.service.TextGenderDiagramService;
 
 /**
  * Сервис полусфер
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class HalfsphereService extends TextGenderDiagramService {
 

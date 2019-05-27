@@ -6,7 +6,7 @@ import kz.zvezdochet.service.HalfsphereService;
 
 /**
  * Полусфера
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class Halfsphere extends DiagramDictionary {
 	private static final long serialVersionUID = -4231996901977659751L;

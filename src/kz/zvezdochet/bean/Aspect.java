@@ -8,7 +8,7 @@ import kz.zvezdochet.service.AspectService;
 
 /**
  * Аспект (угол между небесными точками)
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class Aspect extends Dictionary {
 	private static final long serialVersionUID = 4389850164699356397L;

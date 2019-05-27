@@ -2,7 +2,7 @@ package kz.zvezdochet.part;
 
 /**
  * Интерфейс для обработки результатов расчёта
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public interface ICalculable {

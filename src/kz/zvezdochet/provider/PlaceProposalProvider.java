@@ -13,7 +13,7 @@ import kz.zvezdochet.service.PlaceService;
 
 /**
  * Обработчик автозаполнения местностей
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class PlaceProposalProvider implements IContentProposalProvider {
@@ -44,7 +44,7 @@ public class PlaceProposalProvider implements IContentProposalProvider {
 
 	/**
 	 * Обработчик передачи выбранного элемента в визуальный компонент
-	 * @author Nataly Didenko
+	 * @author Natalie Didenko
 	 *
 	 */
 	public class PlaceContentProposal implements IContentProposal {

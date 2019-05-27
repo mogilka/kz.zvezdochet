@@ -23,11 +23,10 @@ import kz.zvezdochet.core.util.CalcUtil;
 import kz.zvezdochet.part.AspectPart;
 import kz.zvezdochet.part.EventPart;
 import kz.zvezdochet.service.AspectService;
-import kz.zvezdochet.util.Configuration;
 
 /**
  * Расчёт аспектов
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class AspectHandler extends Handler {
@@ -40,12 +39,10 @@ public class AspectHandler extends Handler {
 			EventPart eventPart = (EventPart)activePart.getObject();
 			Event event = (Event)eventPart.getModel(EventPart.MODE_CALC, true);
 			if (null == event) return;
-			Configuration conf = event.getConfiguration();
-			if (null == conf) return; //TODO выдавать сообщение
-			if (null == conf.getPlanets()) return; //TODO выдавать сообщение
+			if (null == event.getPlanets()) return; //TODO выдавать сообщение
 			updateStatus("Расчёт аспектов планет", false);
 
-			Collection<Planet> planets = conf.getPlanets().values();
+			Collection<Planet> planets = event.getPlanets().values();
 			int pcount = planets.size();
 			Object[][] data = new Object[pcount][pcount + 1];
 			//заполняем заголовки строк названиями планет и их координатами
@@ -80,8 +77,8 @@ public class AspectHandler extends Handler {
 			updateStatus("Расчёт аспектов завершён", false);
 
 			updateStatus("Расчёт аспектов домов", false);
-			if (null == conf.getHouses()) return; //TODO выдавать сообщение
-			List<Model> houses = conf.getHouses();
+			if (null == event.getHouses()) return; //TODO выдавать сообщение
+			List<Model> houses = event.getHouses();
 			int hcount = houses.size();
 			Object[][] datah = new Object[pcount][hcount + 1];
 			//заполняем заголовки строк названиями планет и их координатами
@@ -115,7 +112,7 @@ public class AspectHandler extends Handler {
 		    part.setVisible(true);
 		    partService.showPart(part, PartState.VISIBLE);
 		    AspectPart aspectPart = (AspectPart)part.getObject();
-		    aspectPart.setConfiguration(conf);
+		    aspectPart.setEvent(event);
 		    aspectPart.setData(data);
 		    aspectPart.setDatah(datah);
 			updateStatus("Таблица аспектов сформирована", false);

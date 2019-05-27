@@ -13,7 +13,7 @@ import kz.zvezdochet.service.EventService;
 
 /**
  * Обработчик автопоиска событий
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class EventProposalProvider implements IContentProposalProvider {
@@ -51,7 +51,7 @@ public class EventProposalProvider implements IContentProposalProvider {
 
 	/**
 	 * Обработчик передачи выбранного элемента в визуальный компонент
-	 * @author Nataly Didenko
+	 * @author Natalie Didenko
 	 *
 	 */
 	public class EventContentProposal implements IContentProposal {

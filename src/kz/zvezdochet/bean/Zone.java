@@ -6,7 +6,7 @@ import kz.zvezdochet.service.ZoneService;
 
 /**
  * Зона
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class Zone extends DiagramDictionary {
 	private static final long serialVersionUID = 3220756716128544984L;

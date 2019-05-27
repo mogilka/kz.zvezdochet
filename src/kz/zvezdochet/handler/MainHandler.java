@@ -8,7 +8,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 
 /**
  * Обработчик открытия главной страницы
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class MainHandler {

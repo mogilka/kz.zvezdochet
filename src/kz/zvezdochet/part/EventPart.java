@@ -73,11 +73,10 @@ import kz.zvezdochet.provider.PlaceProposalProvider.PlaceContentProposal;
 import kz.zvezdochet.service.AspectTypeService;
 import kz.zvezdochet.service.CardKindService;
 import kz.zvezdochet.service.MoonDayService;
-import kz.zvezdochet.util.Configuration;
 
 /**
  * Представление события
- * @author Nataly Didenko
+ * @author Natalie Didenko
  * @todo при любом изменении данных делать представление грязным
  */
 public class EventPart extends ModelPart implements ICalculable {
@@ -279,7 +278,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(grCosmogram);
 		
 		super.create(parent);
-		setModel(new Event(), true);
+		setModel(null, false);
 		return null;
 	}
 	
@@ -762,10 +761,8 @@ public class EventPart extends ModelPart implements ICalculable {
 		Table table = (Table)controls[0];
 		table.removeAll();
 		Event event = (Event)model;
-		Configuration conf = event.getConfiguration();
-		if (conf != null) {
 			folder.setSelection(1);
-			Collection<Planet> planets = conf.getPlanets().values();
+			Collection<Planet> planets = event.getPlanets().values();
 			for (Planet planet : planets) {
 				TableItem item = new TableItem(table, SWT.NONE);
 				item.setText(0, planet.getName());
@@ -843,16 +840,14 @@ public class EventPart extends ModelPart implements ICalculable {
 			}
 			for (int i = 0; i < table.getColumnCount(); i++)
 				table.getColumn(i).pack();
-		} else
-			folder.setSelection(0);
+//			folder.setSelection(0);
 			
 		//дома
 		if (event.isHousable()) {
 			controls = grHouses.getChildren();
 			table = (Table)controls[0];
 			table.removeAll();
-			if (conf != null) {
-				for (Model base : conf.getHouses()) {
+				for (Model base : event.getHouses()) {
 					House house = (House)base;
 					TableItem item = new TableItem(table, SWT.NONE);
 					item.setText(0, house.getName());		
@@ -869,7 +864,6 @@ public class EventPart extends ModelPart implements ICalculable {
 				}
 				for (int i = 0; i < table.getColumnCount(); i++)
 					table.getColumn(i).pack();
-			}
 		}
 
 		//ингрессии
@@ -899,8 +893,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		controls = grStars.getChildren();
 		table = (Table)controls[0];
 		table.removeAll();
-		if (conf != null) {
-			Collection<Star> stars = conf.getStars().values();
+			Collection<Star> stars = event.getStars().values();
 			for (Star star : stars) {
 				TableItem item = new TableItem(table, SWT.NONE);
 				item.setText(0, star.getName());
@@ -943,7 +936,6 @@ public class EventPart extends ModelPart implements ICalculable {
 			}
 			for (int i = 0; i < table.getColumnCount(); i++)
 				table.getColumn(i).pack();
-		}
 	}
 
 	/**
@@ -960,7 +952,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		}
 		params.put("aspects", aparams);
 		Event event = (Event)model;
-		cmpCosmogram.paint(event.getConfiguration(), null, params);
+		cmpCosmogram.paint(event, null, params);
 	}
 
 	/**
@@ -989,10 +981,9 @@ public class EventPart extends ModelPart implements ICalculable {
 	public void setModel(Model model, boolean sync) {
 		if (sync) {
 			Event event = (Event)model;
-			if (model != null && event.getId() != null) {
-				event.init(true);
+			if (model != null && event.getId() != null)
 				setTitle(event.getName());
-			} else
+			else
 				setTitle(Messages.getString("PersonView.New")); //$NON-NLS-1$
 		}
 		super.setModel(model, sync);

@@ -17,7 +17,7 @@ import kz.zvezdochet.service.EventService;
 
 /**
  * Поиск людей, родившихся в эту же дату
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public class EphemeronHandler extends Handler {
@@ -29,7 +29,7 @@ public class EphemeronHandler extends Handler {
 		try {
 			EventPart eventPart = (EventPart)activePart.getObject();
 			Event event = (Event)eventPart.getModel(EventPart.MODE_CALC, true);
-			if (null == event || null == event.getConfiguration()) return;
+			if (null == event) return;
 			updateStatus("Поиск", false);
 			Object data = new EventService().findEphemeron(event.getBirth());
 		

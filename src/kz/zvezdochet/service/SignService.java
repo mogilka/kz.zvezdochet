@@ -16,7 +16,7 @@ import kz.zvezdochet.core.util.CoreUtil;
 
 /**
  * Сервис знаков Зодиака
- * @author Nataly Didenko
+ * @author Natalie Didenko
  */
 public class SignService extends DictionaryService {
 	

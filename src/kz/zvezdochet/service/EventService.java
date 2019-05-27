@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import kz.zvezdochet.bean.Aspect;
 import kz.zvezdochet.bean.Event;
@@ -189,6 +191,7 @@ public class EventService extends ModelService {
 				savePlanets(event);
 				saveAspects(event);
 //				saveAspectsh(event);
+				saveSigns(event);
 				if (!birth.contains("00:00:00"))
 					saveHouses(event);
 //				saveIngress(event);
@@ -325,7 +328,6 @@ public class EventService extends ModelService {
 		event.setHuman(rs.getInt("human"));
 		if (rs.getString("accuracy") != null)
 			event.setAccuracy(rs.getString("accuracy"));
-		event.setUserid(rs.getLong("userid"));
 		event.setDate(DateUtil.getDatabaseDateTime(rs.getString("date")));
 		event.setFancy(rs.getString("fancy"));
 		event.setBackid(rs.getLong("backid"));
@@ -351,7 +353,10 @@ public class EventService extends ModelService {
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
-			Map<Long, Planet> planets = event.getConfiguration().getPlanets();
+			Map<Long, Planet> planets = event.getPlanets();
+			Map<Long, Model> signs = new SignService().getMap();
+			Map<Long, Model> houses = new HouseService().getMap();
+
 			String sql = "select * from " + getPlanetTable() + " where eventid = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, event.getId());
@@ -365,6 +370,8 @@ public class EventService extends ModelService {
 					planet.setSpeedLongitude(rs.getDouble("speed_longitude"));
 					planet.setSpeedLatitude(rs.getDouble("speed_latitude"));
 					planet.setSpeedDistance(rs.getDouble("speed_distance"));
+					planet.setSign((Sign)signs.get(rs.getLong("signid")));
+					planet.setHouse((House)houses.get(rs.getLong("houseid")));
 				}
 			}
 		} catch (Exception e) {
@@ -393,10 +400,12 @@ public class EventService extends ModelService {
 			ps.setLong(1, event.getId());
 			rs = ps.executeQuery();
 			if (rs.next()) {
-				for (Model model : event.getConfiguration().getHouses()) {
+				for (Model model : event.getHouses()) {
 					House house = (House)model;
-					if (rs.getString(house.getCode()) != null)
+					if (rs.getString(house.getCode()) != null) {
 						house.setLongitude(rs.getDouble(house.getCode()));
+						//TODO определяем знак дома
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -417,27 +426,36 @@ public class EventService extends ModelService {
 	 * @throws DataAccessException
 	 */
 	public void savePlanets(Event event) throws DataAccessException {
-		if (null == event.getConfiguration()) return;
+		if (null == event) return;
         PreparedStatement ps = null;
+        ResultSet rs = null;
         String table = getPlanetTable();
-		Connection conn = Connector.getInstance().getConnection();
 		try {
-			String sql = "delete from " + table + " where eventid = ?";
-			ps = conn.prepareStatement(sql);
-			ps.setLong(1, event.getId());
-			ps.execute();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+			Collection<Planet> planets = event.getPlanets().values();
+			for (Planet planet : planets) {
+				String sql = "select id from " + table + " where eventid = ? and planetid = ?";
+				ps = Connector.getInstance().getConnection().prepareStatement(sql);
+				ps.setLong(1, event.getId());
+				ps.setLong(2, planet.getId());
+				rs = ps.executeQuery();
+				long id = (rs.next()) ? rs.getLong("id") : 0;
+				ps.close();
 
-		try {
-			String sql = "insert into " + table + " values(?,?,?,?,?,?,?,?,?,?)";
-			ps = conn.prepareStatement(sql);
-			conn.setAutoCommit(false);
-	
-			Collection<Planet> planets = event.getConfiguration().getPlanets().values();
-			for (Model model : planets) {
-				Planet planet = (Planet)model;
+				if (0 == id)
+					sql = "insert into " + table + " values(0,?,?,?,?,?,?,?,?,?,?)";
+				else {
+					sql = "update " + table + 
+						" set eventid = ?,"
+						+ " planetid = ?,"
+						+ " longitude = ?,"
+						+ " latitude = ?,"
+						+ " distance = ?,"
+						+ " speed_longitude = ?,"
+						+ " speed_latitude = ?,"
+						+ " speed_distance = ?" +
+						" where id = ?";
+				}
+				ps = Connector.getInstance().getConnection().prepareStatement(sql);
 				ps.setLong(1, event.getId());
 				ps.setLong(2, planet.getId());
 				ps.setDouble(3, planet.getLongitude());
@@ -448,19 +466,15 @@ public class EventService extends ModelService {
 				ps.setDouble(8, planet.getSpeedDistance());
 				ps.setLong(9, planet.getSign().getId());
 				ps.setLong(10, planet.getHouse().getId());
-				ps.addBatch();
+				if (id > 0)
+					ps.setLong(11, id);
+				ps.executeUpdate();
 			}
-			ps.executeBatch();
-			conn.commit();
 		} catch (Exception e) {
 			e.printStackTrace();
-			try {
-				conn.rollback();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
 		} finally {
 			try {
+				if (rs != null) rs.close();
 				if (ps != null)	ps.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -493,12 +507,20 @@ public class EventService extends ModelService {
 	}
 
 	/**
+	 * Возвращает имя таблицы, хранящей позиции планет в знаках конфигурации события
+	 * @return имя ТБД
+	 */
+	public String getPlanetSignTable() {
+		return "eventsigns";
+	}
+
+	/**
 	 * Сохранение домов события
 	 * @param event событие
 	 * @throws DataAccessException
 	 */
 	public void saveHouses(Event event) throws DataAccessException {
-		if (null == event.getConfiguration()) return;
+		if (null == event) return;
         PreparedStatement ps = null;
         ResultSet rs = null;
         String table = getHouseTable();
@@ -510,7 +532,7 @@ public class EventService extends ModelService {
 			long id = (rs.next()) ? rs.getLong("id") : 0;
 			ps.close();
 			
-			List<Model> houses = event.getConfiguration().getHouses();
+			List<Model> houses = event.getHouses();
 			if (0 == id)
 				sql = "insert into " + table + " values(0,?,"
 						+ "?,?,?,?,?,?,?,?,?,?,"
@@ -546,6 +568,59 @@ public class EventService extends ModelService {
 	}
 
 	/**
+	 * Сохранение позиций планет события в знаках Зодиака
+	 * @param event событие
+	 * @throws DataAccessException
+	 */
+	private void saveSigns(Event event) throws DataAccessException {
+		if (null == event) return;
+		event.initSigns();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String table = getPlanetSignTable();
+		try {
+			String sql = "select id from " + table + " where eventid = ?";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, event.getId());
+			rs = ps.executeQuery();
+			long id = (rs.next()) ? rs.getLong("id") : 0;
+			ps.close();
+
+			Map<Long, Planet> planets = event.getPlanets();
+			long[] minors = {19,20,23,24,25};
+			if (0 == id)
+				sql = "insert into " + table + " values(0,?,?,?,?,?,?,?)";
+			else {
+				sql = "update " + table + " set eventid = ?,";
+				for (long pid : minors)
+					sql += " " + (planets.get(pid)).getCode() + " = ?,";
+				sql += "celebrity = ?";
+				sql += " where id = ?";
+			}
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setLong(1, event.getId());
+			int i = 1;
+			for (long pid : minors) {
+				Planet planet = planets.get(pid);
+				ps.setLong(++i, planet.getSign().getId());
+			}
+			ps.setInt(7, event.isCelebrity() ? 1 : 0);
+			if (id != 0)
+				ps.setLong(8, id);
+			ps.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (ps != null)	ps.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
 	 * Поиск похожих по характеру людей
 	 * @param event человек
 	 * @param celebrity true - поиск только знаменитостей
@@ -555,41 +630,39 @@ public class EventService extends ModelService {
 	public List<Model> findSimilar(Event event, int celebrity) throws DataAccessException {
 		if (null == event.getId()) return null;
         List<Model> list = new ArrayList<Model>();
-//		if (null == event.getConfiguration()) return list;
-//		Configuration conf = event.getConfiguration();
-//		conf.initPlanetSigns(false);
-//        PreparedStatement ps = null;
-//        ResultSet rs = null;
-//		try {
-//			String sql = "select distinct e.* from " + getPlanetSignTable() + " es" + 
-//					" inner join " + tableName + " e on es.eventid = e.id" +
-//				" where sun = ? and mercury = ? and venus = ? and mars = ?" +
-//					" and e.id <> ? "
-//					+ "and e.human = 1";
-//			if (celebrity >= 0)
-//				sql += " and e.celebrity = " + celebrity;
-//			sql += " order by year(initialdate)";
-//
-//			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-//			Map<Long, Planet> pmap = conf.getPlanets();
-//			ps.setLong(1, (pmap.get(19L)).getSign().getId());
-//			ps.setLong(2, (pmap.get(23L)).getSign().getId());
-//			ps.setLong(3, (pmap.get(24L)).getSign().getId());
-//			ps.setLong(4, (pmap.get(25L)).getSign().getId());
-//			ps.setLong(5, event.getId());
-//			rs = ps.executeQuery();
-//			while (rs.next())
-//				list.add(init(rs, null));
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		} finally {
-//			try { 
-//				if (rs != null) rs.close();
-//				if (ps != null) ps.close();
-//			} catch (SQLException e) { 
-//				e.printStackTrace(); 
-//			}
-//		}
+		event.initSigns();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String sql = "select distinct e.* from " + getPlanetSignTable() + " es" + 
+					" inner join " + tableName + " e on es.eventid = e.id" +
+				" where sun = ? and mercury = ? and venus = ? and mars = ?" +
+					" and e.id <> ? "
+					+ "and e.human = 1";
+			if (celebrity >= 0)
+				sql += " and e.celebrity = " + celebrity;
+			sql += " order by year(initialdate)";
+
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			Map<Long, Planet> pmap = event.getPlanets();
+			ps.setLong(1, (pmap.get(19L)).getSign().getId());
+			ps.setLong(2, (pmap.get(23L)).getSign().getId());
+			ps.setLong(3, (pmap.get(24L)).getSign().getId());
+			ps.setLong(4, (pmap.get(25L)).getSign().getId());
+			ps.setLong(5, event.getId());
+			rs = ps.executeQuery();
+			while (rs.next())
+				list.add(init(rs, null));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
 		return list;
 /*
 select distinct e.* from eventsigns es 
@@ -775,7 +848,7 @@ order by year(initialdate)
 	 * @throws DataAccessException
 	 */
 	public void saveAspects(Event event) throws DataAccessException {
-		if (null == event.getConfiguration()) return;
+		if (null == event) return;
         PreparedStatement ps = null;
         ResultSet rs = null;
         String table = getAspectTable();
@@ -786,7 +859,7 @@ order by year(initialdate)
 			ps.executeUpdate();
 			ps.close();
 
-			Collection<Planet> planets = event.getConfiguration().getPlanets().values();
+			Collection<Planet> planets = event.getPlanets().values();
 			for (Planet p : planets) {
 				List<SkyPointAspect> aspects = p.getAspectList();
 				if (null == aspects)
@@ -858,7 +931,7 @@ order by year(initialdate)
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
-			Map<Long, Planet> pmap = event.getConfiguration().getPlanets();
+			Map<Long, Planet> pmap = event.getPlanets();
 			for (Planet planet : pmap.values()) {
 				//для каждой планеты ищем аспекты
 				String sql = "select * from " + getAspectTable() +
@@ -1007,63 +1080,62 @@ order by year(initialdate)
 	 */
 	public List<Model> findNonSimilar(Event event, int celebrity) throws DataAccessException {
         List<Model> list = new ArrayList<Model>();
-//		if (null == event.getConfiguration()) return list;
-//		Configuration conf = event.getConfiguration();
-//		conf.initPlanetSigns(false);
-//        PreparedStatement ps = null;
-//        ResultSet rs = null;
-//		try {
-//			String sql = "select distinct e.* from " + getPlanetSignTable() + " es" + 
-//					" inner join " + tableName + " e on es.eventid = e.id" +
-//				" where";
-//
-//			Map<String, int[]> map = new HashMap<String, int[]>();
-//			Map<Long, Planet> pmap = conf.getPlanets();
-//			map.put("sun", Sign.getOpposite((pmap.get(19L)).getSign().getId().intValue()));
-//			map.put("mercury", Sign.getOpposite((pmap.get(23L)).getSign().getId().intValue()));
-//			map.put("venus", Sign.getOpposite((pmap.get(24L)).getSign().getId().intValue()));
-//			map.put("mars", Sign.getOpposite((pmap.get(25L)).getSign().getId().intValue()));
-//
-//			int j = -1;
-//			for (Entry<String, int[]> entry : map.entrySet()) {
-//				if (++j > 0)
-//					sql += " and";
-//				sql += " " + entry.getKey() + " ";
-//
-//				int ids[] = entry.getValue();
-//				if (1 == ids.length)
-//					sql += "=" + ids[0];
-//				else {
-//					sql += "in(";
-//					int k = -1;
-//					for (int i : ids) {
-//						if (++k > 0)
-//							sql += ",";
-//						sql += i;
-//					}
-//					sql += ")";
-//				}
-//			}
-//			sql += " and e.id <> " + event.getId();
-//			if (celebrity >= 0)
-//				sql += " and e.celebrity = " + celebrity;
-//			sql += " order by year(initialdate)";
-////			System.out.println(sql);
-//
-//			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-//			rs = ps.executeQuery();
-//			while (rs.next())
-//				list.add(init(rs, null));
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		} finally {
-//			try { 
-//				if (rs != null) rs.close();
-//				if (ps != null) ps.close();
-//			} catch (SQLException e) { 
-//				e.printStackTrace(); 
-//			}
-//		}
+		if (null == event) return list;
+		event.initSigns();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String sql = "select distinct e.* from " + getPlanetSignTable() + " es" + 
+					" inner join " + tableName + " e on es.eventid = e.id" +
+				" where";
+
+			Map<String, int[]> map = new HashMap<String, int[]>();
+			Map<Long, Planet> pmap = event.getPlanets();
+			map.put("sun", Sign.getOpposite((pmap.get(19L)).getSign().getId().intValue()));
+			map.put("mercury", Sign.getOpposite((pmap.get(23L)).getSign().getId().intValue()));
+			map.put("venus", Sign.getOpposite((pmap.get(24L)).getSign().getId().intValue()));
+			map.put("mars", Sign.getOpposite((pmap.get(25L)).getSign().getId().intValue()));
+
+			int j = -1;
+			for (Entry<String, int[]> entry : map.entrySet()) {
+				if (++j > 0)
+					sql += " and";
+				sql += " " + entry.getKey() + " ";
+
+				int ids[] = entry.getValue();
+				if (1 == ids.length)
+					sql += "=" + ids[0];
+				else {
+					sql += "in(";
+					int k = -1;
+					for (int i : ids) {
+						if (++k > 0)
+							sql += ",";
+						sql += i;
+					}
+					sql += ")";
+				}
+			}
+			sql += " and e.id <> " + event.getId();
+			if (celebrity >= 0)
+				sql += " and e.celebrity = " + celebrity;
+			sql += " order by year(initialdate)";
+//			System.out.println(sql);
+
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			rs = ps.executeQuery();
+			while (rs.next())
+				list.add(init(rs, null));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
 		return list;
 /*
 select distinct e.* from eventsigns es 
@@ -1112,7 +1184,7 @@ order by year(initialdate)
 	 * @throws DataAccessException
 	 */
 	public void saveAspectsh(Event event) throws DataAccessException {
-		if (null == event.getConfiguration()) return;
+		if (null == event) return;
         PreparedStatement ps = null;
         ResultSet rs = null;
         String table = getAspectHouseTable();
@@ -1123,7 +1195,7 @@ order by year(initialdate)
 			ps.executeUpdate();
 			ps.close();
 
-			List<SkyPointAspect> aspects = event.getConfiguration().getAspectsh();
+			List<SkyPointAspect> aspects = event.getAspectsh();
 			for (SkyPointAspect aspect : aspects) {
 				SkyPoint point = aspect.getSkyPoint1();
 				SkyPoint point2 = aspect.getSkyPoint2();
@@ -1300,13 +1372,13 @@ and celebrity = 1
 	 * @throws DataAccessException
 	 */
 	public void saveIngress(Event event) throws DataAccessException {
-		if (null == event.getConfiguration()) return;
+		if (null == event) return;
         PreparedStatement ps = null;
         ResultSet rs = null;
         IngressService service = new IngressService();
         String table = service.getTableName();
 		try {
-			List<Model> list = event.getConfiguration().getIngresses();
+			List<Model> list = event.getIngresses();
 
 			String sql = "update " + table + " set typeid = 9, objectid = null, skypointid = null where eventid = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
@@ -1377,7 +1449,7 @@ and celebrity = 1
 	 * @throws DataAccessException
 	 */
 	public void saveStars(Event event) throws DataAccessException {
-		if (null == event.getConfiguration()) return;
+		if (null == event) return;
         PreparedStatement ps = null;
         String table = getStarTable();
 		Connection conn = Connector.getInstance().getConnection();
@@ -1395,7 +1467,7 @@ and celebrity = 1
 			ps = conn.prepareStatement(sql);
 			conn.setAutoCommit(false);
 
-			Collection<Star> stars = event.getConfiguration().getStars().values();
+			Collection<Star> stars = event.getStars().values();
 			for (Model model : stars) {
 				Star star = (Star)model;
 				ps.setLong(1, event.getId());
@@ -1433,7 +1505,9 @@ and celebrity = 1
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
-			Map<Long, Star> stars = event.getConfiguration().getStars();
+			Map<Long, Star> stars = event.getStars();
+			Map<Long, Model> houses = new HouseService().getMap();
+
 			String sql = "select * from " + getStarTable() + " where eventid = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, event.getId());
@@ -1443,6 +1517,7 @@ and celebrity = 1
 				if (star != null) {
 					star.setLongitude(rs.getDouble("longitude"));
 					star.setLatitude(rs.getDouble("latitude"));
+					star.setHouse((House)houses.get(rs.getLong("houseid")));
 				}
 			}
 		} catch (Exception e) {

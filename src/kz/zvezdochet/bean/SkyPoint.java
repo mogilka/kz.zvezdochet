@@ -15,7 +15,7 @@ import kz.zvezdochet.util.ISkyPoint;
 
 /**
  * Точка Небесной сферы
- * @author Nataly Didenko
+ * @author Natalie Didenko
  *
  */
 public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
