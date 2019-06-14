@@ -116,7 +116,7 @@ public class AspectService extends DictionaryService {
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
-			String sql = "select * from " + tableName + " where typeid < 4";
+			String sql = "select * from " + tableName + " where id < 6";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			rs = ps.executeQuery();
 			while (rs.next()) {
