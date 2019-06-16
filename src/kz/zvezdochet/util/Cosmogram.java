@@ -1,5 +1,6 @@
 package kz.zvezdochet.util;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import kz.zvezdochet.bean.Aspect;
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Planet;
+import kz.zvezdochet.bean.SkyPointAspect;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.util.CalcUtil;
@@ -207,22 +209,56 @@ public class Cosmogram {
 	 * @param gc графическая система
 	 * @throws DataAccessException
 	 */
+	@SuppressWarnings("unchecked")
 	private void drawAspects(GC gc) throws DataAccessException {
 		if (null == event || null == event.getPlanets()) return;
-		Iterator<Planet> i = event.getPlanets().values().iterator();
+
+		List<Long> aspectypes = new ArrayList<>();
+		List<Aspect> aspectlist = new ArrayList<>();
+		List<Model> aspects = new AspectService().getList();
+		Iterator<Model> ia = aspects.iterator();
+
+		List<String> aparams = new ArrayList<>();
+		if (params != null) {
+			if (params.get("aspects") != null)
+				aparams = (List<String>)params.get("aspects");
+		}
+		while (ia.hasNext()) {
+			Aspect a = (Aspect)ia.next();
+			if (aparams.size() > 0 && !aparams.contains(a.getType().getCode()))
+				continue;
+			else {
+				aspectypes.add(a.getId());
+				aspectlist.add(a);
+			}
+		}
+
 		boolean single = (null == event2 || null == event2.getPlanets());
+		Iterator<Planet> i = event.getPlanets().values().iterator();
 		Map<Long, Planet> planets = single ? event.getPlanets() : event2.getPlanets();
+
 		while (i.hasNext()) {
 			Planet p = i.next();
 			if (p.getCode().equals("Moon") && !event.isHousable())
 				continue;
-			Iterator<Planet> j = planets.values().iterator();
-			while (j.hasNext()) {
-				Planet p2 = j.next();
-				if (p2.getCode().equals("Moon") && !event.isHousable())
-					continue;
-				if (single && p.getNumber() > p2.getNumber()) continue;
-				getAspect(Math.abs(p.getLongitude()), Math.abs(p2.getLongitude()), gc);
+
+			if (single) {
+				List<SkyPointAspect> paspects = p.getAspectList();
+				for (SkyPointAspect spa : paspects) {
+					Aspect a = spa.getAspect();
+					if (!aspectypes.contains(a.getId()))
+						continue;
+					drawAspect(a.getType().getColor(), 0f, p.getLongitude(), planets.get(spa.getSkyPoint2().getId()).getLongitude(), gc, 
+						getLineStyle(a.getType().getProtraction()));
+				}
+			} else {				
+				Iterator<Planet> j = planets.values().iterator();
+				while (j.hasNext()) {
+					Planet p2 = j.next();
+					if (p2.getCode().equals("Moon") && !event2.isHousable())
+						continue;
+					getAspect(Math.abs(p.getLongitude()), Math.abs(p2.getLongitude()), aspectlist, gc);
+				}
 			}
 		}
 	}
@@ -241,32 +277,29 @@ public class Cosmogram {
 	}
 
 	/**
-	 * Определение аспекта между небесными точками
+	 * Динамическое определение аспекта между небесными точками (только для парных космограмм)
 	 * @param one градус первой точки
 	 * @param two градус второй точки
 	 * @param gc графическая система
 	 * @throws DataAccessException
 	 */
-	private void getAspect(double one, double two, GC gc) throws DataAccessException {
+	private void getAspect(double one, double two, List<Aspect> aspects, GC gc) throws DataAccessException {
 		double res = CalcUtil.getDifference(one, two);
-		List<Model> aspects = new AspectService().getList();
-		Iterator<Model> i = aspects.iterator();
+		Iterator<Aspect> i = aspects.iterator();
+
+		boolean exact = false;
+		if (params != null)
+			exact = params.get("exact") != null;
+
 		while (i.hasNext()) {
-			Aspect a = (Aspect)i.next();
+			Aspect a = i.next();
 			if (a.isAspect(res)) {
-				if (params != null) {
-					boolean exact = params.get("exact") != null;
-					if (exact && !a.isExact(res))
-						continue;
-					if (params != null && params.get("aspects") != null) {
-						@SuppressWarnings("unchecked")
-						List<String> aparams = (List<String>)params.get("aspects");
-						if (aparams.size() > 0 && !aparams.contains(a.getType().getCode()))
-							continue;
-					}
-				}
+				if (exact && !a.isExact(res))
+					continue;
+				if (!aspects.contains(a))
+					continue;
 				drawAspect(a.getType().getColor(), 0f, one, two, gc, 
-						getLineStyle(a.getType().getProtraction()));
+					getLineStyle(a.getType().getProtraction()));
 			}
 		}
 	}
