@@ -299,14 +299,9 @@ public class House extends SkyPoint {
 	public House getOpposite() {
 		try {
 			long hid = 0;
-			if (143 == id)
-				hid = 162;
-			else if (162 == id)
-				hid = 143;
-			else
-				hid = (id > 159) ? id - 18 : id + 18;
-				if (hid > 0)
-					return (House)getService().find(hid);
+			hid = (id > 159) ? id - 18 : id + 18;
+			if (hid > 0)
+				return (House)getService().find(hid);
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
