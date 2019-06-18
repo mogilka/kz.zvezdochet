@@ -7,8 +7,12 @@ import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Path;
+import org.eclipse.swt.graphics.PathData;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -127,13 +131,18 @@ public class Cosmogram {
 	 * @param lineStyle стиль начертания линии
 	 */
 	private void drawLine(GC gc, Color color, double penStyle, double outer, 
-			double inner,	double gradus1, double gradus2, int lineStyle) {
+			double inner, double gradus1, double gradus2, int lineStyle) {
 		gc.setForeground(color);
 		gc.setLineStyle(lineStyle);
+		int destx = (int)Math.round(getXPoint(inner, gradus2)) + xcenter;
+		int desty = (int)Math.round(getYPoint(inner, gradus2)) + ycenter;
 		gc.drawLine((int)Math.round(getXPoint(outer, gradus1)) + xcenter,
 					(int)Math.round(getYPoint(outer, gradus1)) + ycenter,
-					(int)Math.round(getXPoint(inner, gradus2)) + xcenter,
-					(int)Math.round(getYPoint(inner, gradus2)) + ycenter);
+					destx,
+					desty);
+		Path path = drawLineArrow(gc.getDevice(), new Point(destx, desty), 180, 10, 45, color);
+	    gc.fillPath(path);
+	    path.dispose();
 	}
 
 	/**
@@ -252,12 +261,24 @@ public class Cosmogram {
 						getLineStyle(a.getType().getProtraction()));
 				}
 			} else {				
+				boolean houseAspectable = false;
+				if (params != null
+						&& event.getHouses() != null
+						&& event.getHouses().size() > 0)
+					houseAspectable = params.get("houseAspectable") != null;
+
 				Iterator<Planet> j = planets.values().iterator();
 				while (j.hasNext()) {
 					Planet p2 = j.next();
 					if (p2.getCode().equals("Moon") && !event2.isHousable())
 						continue;
-					getAspect(Math.abs(p.getLongitude()), Math.abs(p2.getLongitude()), aspectlist, gc);
+					getAspect(p.getLongitude(), p2.getLongitude(), aspectlist, gc);
+
+					if (houseAspectable)
+						for (Model model : event.getHouses()) {
+							House house = (House)model;
+							getAspect(p2.getLongitude(), house.getLongitude(), aspectlist, gc);
+						}
 				}
 			}
 		}
@@ -318,5 +339,26 @@ public class Cosmogram {
 			case "DASHDOTDOT": return SWT.LINE_DASHDOTDOT;
 			default: return SWT.LINE_SOLID;
 		}
+	}
+
+	/**
+	 * 
+	 * @param device
+	 * @param point
+	 * @param rotationDeg
+	 * @param length
+	 * @param wingsAngleDeg
+	 * @return
+	 */
+	private Path drawLineArrow(Device device, Point point, double rotationDeg, double length, double wingsAngleDeg, Color color) {
+		double ax = point.x;
+		double ay = point.y;
+		double radB = Math.toRadians(-rotationDeg + wingsAngleDeg);
+		double radC = Math.toRadians(-rotationDeg - wingsAngleDeg);
+		Path resultPath = new Path(device);
+		resultPath.moveTo((float)(length * Math.cos(radB) + ax), (float)(length * Math.sin(radB) + ay));
+		resultPath.lineTo((float)ax, (float)ay);
+		resultPath.lineTo((float)(length * Math.cos(radC) + ax), (float)(length * Math.sin(radC) + ay));
+		return resultPath;
 	}
 } 
