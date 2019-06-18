@@ -11,7 +11,6 @@ import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Path;
-import org.eclipse.swt.graphics.PathData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
@@ -129,20 +128,23 @@ public class Cosmogram {
 	 * @param gradus1 градус начальной точки
 	 * @param gradus2 градус конечной точки
 	 * @param lineStyle стиль начертания линии
+	 * @param arrow true - чертить стрелку на конце линии
 	 */
 	private void drawLine(GC gc, Color color, double penStyle, double outer, 
-			double inner, double gradus1, double gradus2, int lineStyle) {
+			double inner, double gradus1, double gradus2, int lineStyle, boolean arrow) {
 		gc.setForeground(color);
 		gc.setLineStyle(lineStyle);
+
+		int startx = (int)Math.round(getXPoint(outer, gradus1)) + xcenter;
+		int starty = (int)Math.round(getYPoint(outer, gradus1)) + ycenter;
 		int destx = (int)Math.round(getXPoint(inner, gradus2)) + xcenter;
 		int desty = (int)Math.round(getYPoint(inner, gradus2)) + ycenter;
-		gc.drawLine((int)Math.round(getXPoint(outer, gradus1)) + xcenter,
-					(int)Math.round(getYPoint(outer, gradus1)) + ycenter,
-					destx,
-					desty);
-		Path path = drawLineArrow(gc.getDevice(), new Point(destx, desty), 180, 10, 45, color);
-	    gc.fillPath(path);
-	    path.dispose();
+		gc.drawLine(startx, starty, destx, desty);
+
+		if (arrow) {
+			gc.setBackground(color);
+			gc.fillOval(destx, desty, 5, 5);
+		}
 	}
 
 	/**
@@ -157,7 +159,7 @@ public class Cosmogram {
 		while (i.hasNext()) {
 			House h = (House)i.next();
 			if (h.isMain()) {
-	     		drawLine(gc, primary ? HOUSE_COLOR : HOUSEPART_COLOR, 0, 210, INNER_CIRCLE, h.getLongitude(), h.getLongitude(), SWT.LINE_SOLID);
+	     		drawLine(gc, primary ? HOUSE_COLOR : HOUSEPART_COLOR, 0, 210, INNER_CIRCLE, h.getLongitude(), h.getLongitude(), SWT.LINE_SOLID, false);
 				drawHouseName(h.getDesignation(), h.getLongitude(), gc, primary);
 			}
 		}
@@ -172,6 +174,7 @@ public class Cosmogram {
 	 * @param primary true - первый уровень домов
 	 */
 	private void drawHouseName(String name, double value, GC gc, boolean primary) {
+		gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 		gc.setForeground(primary ? HOUSE_COLOR : HOUSEPART_COLOR);
 		gc.drawString(name, CalcUtil.trunc(getXPoint(230, value)) + xcenter - 5,
 			CalcUtil.trunc(getYPoint(primary ? 230 : 210, value)) + ycenter);
@@ -187,9 +190,8 @@ public class Cosmogram {
 		Iterator<Model> i = event.getHouses().iterator();
 		while (i.hasNext()) {
 			House h = (House)i.next();
-			if (!h.isMain()) {
-	     		drawLine(gc, primary ? HOUSE_COLOR : HOUSEPART_COLOR, 0, 140.0, INNER_CIRCLE, h.getLongitude(), h.getLongitude(), SWT.LINE_SOLID);
-			}
+			if (!h.isMain())
+	     		drawLine(gc, primary ? HOUSE_COLOR : HOUSEPART_COLOR, 0, 140.0, INNER_CIRCLE, h.getLongitude(), h.getLongitude(), SWT.LINE_SOLID, false);
 		}
 	}
 
@@ -294,7 +296,7 @@ public class Cosmogram {
 	 * @param lineStyle стиль начертания линии
 	 */
 	private void drawAspect(Color color, double penStyle, double a, double b, GC gc, int lineStyle) {
-		drawLine(gc, color, penStyle, 120.0, 120.0, a, b, lineStyle);
+		drawLine(gc, color, penStyle, 120.0, 120.0, a, b, lineStyle, true);
 	}
 
 	/**
@@ -342,14 +344,17 @@ public class Cosmogram {
 	}
 
 	/**
-	 * 
-	 * @param device
-	 * @param point
-	 * @param rotationDeg
-	 * @param length
-	 * @param wingsAngleDeg
-	 * @return
+	 * Рисование стрелки на конце линии
+	 * @param device устройство
+	 * @param point точка прорисовки
+	 * @param rotationDeg направление стрелки
+	 * @param length длина стрелки
+	 * @param wingsAngleDeg угол крыльев стрелки
+	 * @return фигура стрелки
+	 * @author Rüdiger Herrmann
+	 * @link https://stackoverflow.com/questions/34159006/how-to-draw-a-line-with-arrow-in-swt-on-canvas
 	 */
+	@SuppressWarnings("unused")
 	private Path drawLineArrow(Device device, Point point, double rotationDeg, double length, double wingsAngleDeg, Color color) {
 		double ax = point.x;
 		double ay = point.y;
