@@ -37,7 +37,6 @@ public class AspectPart extends ListView {
 	 */
 	protected Event event;
 
-	private Table table2;
 	private TableViewer tableViewer2;
 
 	@Inject
@@ -50,12 +49,12 @@ public class AspectPart extends ListView {
 		initFilter(parent);
 
 		tableViewer = new TableViewer(container, SWT.BORDER | SWT.FULL_SELECTION);
-		table = tableViewer.getTable();
+		Table table = tableViewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
 		tableViewer2 = new TableViewer(container, SWT.BORDER | SWT.FULL_SELECTION);
-		table2 = tableViewer2.getTable();
+		Table table2 = tableViewer2.getTable();
 		table2.setHeaderVisible(true);
 		table2.setLinesVisible(true);
 
@@ -97,6 +96,7 @@ public class AspectPart extends ListView {
 	protected void addColumns() {
 		removeColumns();
 		if (event != null) {
+			Table table = tableViewer.getTable();
 			TableColumn tableColumn = new TableColumn(table, SWT.NONE);
 			Collection<Planet> planets = event.getPlanets().values();
 			for (Planet planet : planets) {
@@ -105,6 +105,7 @@ public class AspectPart extends ListView {
 				tableColumn.setImage(planet.getImage());
 				tableColumn.setToolTipText(planet.getName());
 			}
+			Table table2 = tableViewer2.getTable();
 			tableColumn = new TableColumn(table2, SWT.NONE);
 			for (int i = 0; i < event.getHouses().size(); i++) {
 				House house = (House)event.getHouses().get(i);
@@ -134,8 +135,9 @@ public class AspectPart extends ListView {
 	@Override
 	protected void removeColumns() {
 		super.removeColumns();
-		if (table2.getColumns() != null)
-			for (TableColumn column : table2.getColumns())
+		Table table = tableViewer2.getTable();
+		if (table.getColumns() != null)
+			for (TableColumn column : table.getColumns())
 				column.dispose();
 	}
 
@@ -165,8 +167,9 @@ public class AspectPart extends ListView {
 			showBusy(true);
 			if (datah != null)
 				tableViewer2.setInput(datah);
-			for (int i = 0; i < table2.getColumnCount(); i++)
-				table2.getColumn(i).pack();
+			Table table = tableViewer2.getTable();
+			for (int i = 0; i < table.getColumnCount(); i++)
+				table.getColumn(i).pack();
 		} catch(Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -179,8 +182,8 @@ public class AspectPart extends ListView {
 		GridLayoutFactory.swtDefaults().applyTo(parent);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(container);
 		GridLayoutFactory.swtDefaults().applyTo(container);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(table);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(table2);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(tableViewer.getTable());
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(tableViewer2.getTable());
 	}
 
 	@Override
@@ -192,6 +195,6 @@ public class AspectPart extends ListView {
 	@Override
 	public void reset() {
 		super.reset();
-		table2.removeAll();
+		tableViewer2.getTable().removeAll();
 	}
 }
