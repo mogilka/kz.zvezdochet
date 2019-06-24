@@ -388,7 +388,6 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
 	 * @param coord координата объекта
 	 */ 
 	public static boolean getHouse(double house1, double house2, double coord) {
-		coord = Math.abs(coord);
 		//если границы домов находятся по разные стороны нуля
 		if (house1 > 200 & house2 < 160) {
 			//если градус объекта находится по другую сторону

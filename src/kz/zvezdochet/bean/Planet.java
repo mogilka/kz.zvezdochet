@@ -262,7 +262,7 @@ public class Planet extends SkyPoint {
 			Collection<Planet> planets2 = next.getPlanets().values();
 			for (Planet planet : planets) {
 				if (planet.getCode().equals(this.code)) {
-					if (Math.abs(this.longitude) == Math.abs(planet.longitude)) //планета осталась в той же координате
+					if (this.longitude == planet.longitude) //планета осталась в той же координате
 						list.add("S");
 					else if (planet.isRetrograde() && !this.isRetrograde()) //планета перешла в директное движение
 						list.add("D");
