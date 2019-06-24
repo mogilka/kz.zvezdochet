@@ -141,9 +141,11 @@ public class Cosmogram {
 		int desty = (int)Math.round(getYPoint(inner, gradus2)) + ycenter;
 		gc.drawLine(startx, starty, destx, desty);
 
-		if (arrow) {
+		if (arrow && event2 != null && event2.getPlanets() != null) {
 			gc.setBackground(color);
-			gc.fillOval(destx, desty, 5, 5);
+			Path path = drawLineArrow(gc.getDevice(), new Point(destx, desty), getRotation(gradus1, gradus2), 10, 15);
+		    gc.fillPath(path);
+		    path.dispose();
 		}
 	}
 
@@ -260,9 +262,9 @@ public class Cosmogram {
 					if (!aspectypes.contains(a.getId()))
 						continue;
 					drawAspect(a.getType().getColor(), 0f, p.getLongitude(), planets.get(spa.getSkyPoint2().getId()).getLongitude(), gc, 
-						getLineStyle(a.getType().getProtraction()));
+						getLineStyle(a.getType().getProtraction()), !a.getCode().equals("CONJUNCTION"));
 				}
-			} else {				
+			} else {
 				boolean houseAspectable = false;
 				if (params != null
 						&& event.getHouses() != null
@@ -294,9 +296,10 @@ public class Cosmogram {
 	 * @param b координата второй точки
 	 * @param gc графическая система
 	 * @param lineStyle стиль начертания линии
+	 * @param arrow true - чертить стрелку на конце линии
 	 */
-	private void drawAspect(Color color, double penStyle, double a, double b, GC gc, int lineStyle) {
-		drawLine(gc, color, penStyle, 120.0, 120.0, a, b, lineStyle, true);
+	private void drawAspect(Color color, double penStyle, double a, double b, GC gc, int lineStyle, boolean arrow) {
+		drawLine(gc, color, penStyle, 120.0, 120.0, a, b, lineStyle, arrow);
 	}
 
 	/**
@@ -322,7 +325,7 @@ public class Cosmogram {
 				if (!aspects.contains(a))
 					continue;
 				drawAspect(a.getType().getColor(), 0f, one, two, gc, 
-					getLineStyle(a.getType().getProtraction()));
+					getLineStyle(a.getType().getProtraction()), !a.getCode().equals("CONJUNCTION"));
 			}
 		}
 	}
@@ -354,8 +357,7 @@ public class Cosmogram {
 	 * @author Rüdiger Herrmann
 	 * @link https://stackoverflow.com/questions/34159006/how-to-draw-a-line-with-arrow-in-swt-on-canvas
 	 */
-	@SuppressWarnings("unused")
-	private Path drawLineArrow(Device device, Point point, double rotationDeg, double length, double wingsAngleDeg, Color color) {
+	private Path drawLineArrow(Device device, Point point, double rotationDeg, double length, double wingsAngleDeg) {
 		double ax = point.x;
 		double ay = point.y;
 		double radB = Math.toRadians(-rotationDeg + wingsAngleDeg);
@@ -365,5 +367,20 @@ public class Cosmogram {
 		resultPath.lineTo((float)ax, (float)ay);
 		resultPath.lineTo((float)(length * Math.cos(radC) + ax), (float)(length * Math.sin(radC) + ay));
 		return resultPath;
+	}
+
+	/**
+	 * Вычисления угла поворота
+	 * @param gradus1 начальный градус окружности
+	 * @param gradus2 конечный градус окружности
+	 * @return угол
+	 */
+	private double getRotation(double gradus1, double gradus2) {
+		double res = 180;
+		if (gradus1 < gradus2)
+			res = 360 - gradus1 + (360 - gradus2);
+		else
+			res = 360 - (360 - gradus2) + gradus1;
+		return res;
 	}
 } 
