@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -1255,72 +1256,69 @@ order by year(initialdate)
 			return null;
 
         List<Model> list = new ArrayList<Model>();
-//		if (null == event.getConfiguration())
-//			return list;
-//		Configuration conf = event.getConfiguration();
-//		conf.initPlanetSigns(false);
-//        PreparedStatement ps = null;
-//        ResultSet rs = null;
-//		try {
-//			String sql = "select e.* from " + getPlanetSignTable() + " es" + 
-//				" inner join " + tableName + " e on es.eventid = e.id" +
-//				" where gender <> ? " +
-//					"and e.id <> ? " +
-//					"and e.human = 1";
-//			if (celebrity >= 0)
-//				sql += " and e.celebrity = " + celebrity;
-//
-//			initPlanets(event);
-//			int year = event.getBirthYear();
-//			Sign sunSign, merSign, venSign, marSign;
-//			Map<String, int[]> map = new HashMap<>();
-//			Map<Long, Planet> planets = event.getConfiguration().getPlanets();
-//			sunSign = SkyPoint.getSign(planets.get(19L).getCoord(), year);
-//			map.put("Sun", Sign.getByElement(sunSign.getId().intValue()));
-//			merSign = SkyPoint.getSign(planets.get(23L).getCoord(), year);
-//			map.put("Mercury", Sign.getByElement(merSign.getId().intValue()));
-//			venSign = SkyPoint.getSign(planets.get(24L).getCoord(), year);
-//			map.put("Venus", Sign.getByElement(venSign.getId().intValue()));
-//			marSign = SkyPoint.getSign(planets.get(25L).getCoord(), year);
-//			map.put("Mars", Sign.getByElement(marSign.getId().intValue()));
-//
-//			Iterator<Map.Entry<String, int[]>> iterator = map.entrySet().iterator();
-//		    while (iterator.hasNext()) {
-//		    	Entry<String, int[]> entry = iterator.next();
-//		    	String k = entry.getKey();
-//		    	int v[] = entry.getValue();
-//				sql += " and " + k + " ";
-//				if (1 == v.length)
-//					sql += "=" + v[0];
-//				else {
-//					sql += "in(";
-//					int l = -1;
-//					for (int i : v) {
-//						if (++l > 0)
-//							sql += ",";
-//						sql += i;
-//					}
-//					sql += ")";
-//				}
-//		    }
-//			sql += " order by year(initialdate)";
-//			
-//			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-//			ps.setInt(1, event.isFemale() ? 1 : 0);
-//			ps.setLong(2, event.getId());
-//			rs = ps.executeQuery();
-//			while (rs.next())
-//				list.add(init(rs, null));
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		} finally {
-//			try { 
-//				if (rs != null) rs.close();
-//				if (ps != null) ps.close();
-//			} catch (SQLException e) { 
-//				e.printStackTrace(); 
-//			}
-//		}
+        event.initSigns();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String sql = "select e.* from " + getPlanetSignTable() + " es" + 
+				" inner join " + tableName + " e on es.eventid = e.id" +
+				" where gender <> ? " +
+					"and e.id <> ? " +
+					"and e.human = 1";
+			if (celebrity >= 0)
+				sql += " and e.celebrity = " + celebrity;
+
+			initPlanets(event);
+			int year = event.getBirthYear();
+			Sign sunSign, merSign, venSign, marSign;
+			Map<String, int[]> map = new HashMap<>();
+			Map<Long, Planet> planets = event.getPlanets();
+			sunSign = SkyPoint.getSign(planets.get(19L).getLongitude(), year);
+			map.put("Sun", Sign.getByElement(sunSign.getId().intValue()));
+			merSign = SkyPoint.getSign(planets.get(23L).getLongitude(), year);
+			map.put("Mercury", Sign.getByElement(merSign.getId().intValue()));
+			venSign = SkyPoint.getSign(planets.get(24L).getLongitude(), year);
+			map.put("Venus", Sign.getByElement(venSign.getId().intValue()));
+			marSign = SkyPoint.getSign(planets.get(25L).getLongitude(), year);
+			map.put("Mars", Sign.getByElement(marSign.getId().intValue()));
+
+			Iterator<Map.Entry<String, int[]>> iterator = map.entrySet().iterator();
+		    while (iterator.hasNext()) {
+		    	Entry<String, int[]> entry = iterator.next();
+		    	String k = entry.getKey();
+		    	int v[] = entry.getValue();
+				sql += " and " + k + " ";
+				if (1 == v.length)
+					sql += "=" + v[0];
+				else {
+					sql += "in(";
+					int l = -1;
+					for (int i : v) {
+						if (++l > 0)
+							sql += ",";
+						sql += i;
+					}
+					sql += ")";
+				}
+		    }
+			sql += " order by year(initialdate)";
+			
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			ps.setInt(1, event.isFemale() ? 1 : 0);
+			ps.setLong(2, event.getId());
+			rs = ps.executeQuery();
+			while (rs.next())
+				list.add(init(rs, null));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
 		return list;
 /*
 SELECT * FROM `eventsigns` 

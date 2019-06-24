@@ -970,6 +970,8 @@ public class EventPart extends ModelPart implements ICalculable {
 			public void proposalAccepted(IContentProposal proposal) {
 				Place place = (Place)((PlaceContentProposal)proposal).getObject();
 				if (place != null) {
+					if (null == model)
+						model = new Event();
 					((Event)model).setPlace(place);
 					initPlace(place);
 				}

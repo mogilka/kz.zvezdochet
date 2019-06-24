@@ -51,22 +51,7 @@ public class Event extends Model {
 		super();
 		name = "";
 		birth = new Date();
-
-		try {
-	  	  	planetList = new TreeMap<>();
-			List<Model> list = new PlanetService().getList();
-			for (Model model : list)
-				planetList.put(model.getId(), (Planet)model);
-
-	  	  	houseList = new HouseService().getList();
-
-	  	  	starList = new HashMap<>();
-			list = new StarService().getList();
-			for (Model model : list)
-				starList.put(model.getId(), (Star)model);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		recalculable = true;
 	}
 
 	/**
@@ -247,11 +232,32 @@ public class Event extends Model {
 		return new EventService();
 	}
 
+	@Override
+	public void init(boolean mode) {
+		try {
+	  	  	planetList = new TreeMap<>();
+			List<Model> list = new PlanetService().getList();
+			for (Model model : list)
+				planetList.put(model.getId(), (Planet)model);
+
+	  	  	houseList = new HouseService().getList();
+
+	  	  	starList = new HashMap<>();
+			list = new StarService().getList();
+			for (Model model : list)
+				starList.put(model.getId(), (Star)model);
+
+			if (mode)
+				initData(true);
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * Инициализация полных данных о событии
 	 */
-	@Override
-	public void init(boolean initstat) {
+	public void initData(boolean initstat) {
 		try {
 			//местонахождение
 			if (null == place)
@@ -350,18 +356,7 @@ public class Event extends Model {
 	public void calc(boolean initstat) {
 		//new Configuration("12.12.2009", "23:11:16", "6.0", "43.15", "76.55");
 		try {
-	  	  	planetList = new TreeMap<>();
-			List<Model> list = new PlanetService().getList();
-			for (Model model : list)
-				planetList.put(model.getId(), (Planet)model);
-
-	  	  	houseList = new HouseService().getList();
-
-	  	  	starList = new HashMap<>();
-			list = new StarService().getList();
-			for (Model model : list)
-				starList.put(model.getId(), (Star)model);
-
+			init(false);
 			Place calcplace = (null == place) ? new Place().getDefault() : place;
 
 	  	  	String date = DateUtil.formatCustomDateTime(birth, DateUtil.sdf.toPattern());
@@ -511,7 +506,7 @@ public class Event extends Model {
 		  		}
 		  		//рассчитываем координату Кету по значению Раху
 		  		p = planetList.get(22L);
-		  		if (Math.abs(planets[10]) > 180)
+		  		if (planets[10] > 180)
 		  			p.setLongitude(planets[10] - 180);
 		  		else
 		  			p.setLongitude(planets[10] + 180);
@@ -675,6 +670,7 @@ public class Event extends Model {
 		value = json.get("tabloid");
 		if (value != JSONObject.NULL)
 			setTabloid(json.getLong("tabloid"));
+		recalculable = true;
 	}
 
 	/**
@@ -750,6 +746,7 @@ public class Event extends Model {
 		super();
 		this.name = name;
 		birth = date;
+		recalculable = true;
 	}
 
 	/**
@@ -777,7 +774,7 @@ public class Event extends Model {
 				service.save(prev);
 			} else {
 				prev = events.get(0);
-				prev.init(false);
+				prev.initData(false);
 			}
 		} catch (DataAccessException e) {
 			e.printStackTrace();
@@ -1409,7 +1406,7 @@ public class Event extends Model {
 				for (Planet planet1 : planets1) {
 					String icode = null;
 					if (planet.getCode().equals(planet1.getCode())) {
-						if (Math.abs(planet1.getLongitude()) == Math.abs(planet.getLongitude())) {
+						if (planet1.getLongitude() == planet.getLongitude()) {
 							//планета осталась в той же координате
 							icode = "stationary";
 						} else if (planet1.isRetrograde() && !planet.isRetrograde()) {
