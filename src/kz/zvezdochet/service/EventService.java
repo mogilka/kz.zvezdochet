@@ -453,7 +453,9 @@ public class EventService extends ModelService {
 						+ " distance = ?,"
 						+ " speed_longitude = ?,"
 						+ " speed_latitude = ?,"
-						+ " speed_distance = ?" +
+						+ " speed_distance = ?,"
+						+ " signid = ?,"
+						+ " houseid = ?" +
 						" where id = ?";
 				}
 				ps = Connector.getInstance().getConnection().prepareStatement(sql);
