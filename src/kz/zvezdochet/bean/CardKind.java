@@ -1,8 +1,8 @@
 package kz.zvezdochet.bean;
 
-import kz.zvezdochet.service.CardKindService;
 import kz.zvezdochet.core.bean.TextGenderDictionary;
 import kz.zvezdochet.core.service.ModelService;
+import kz.zvezdochet.service.CardKindService;
 
 
 /**

@@ -1,7 +1,6 @@
 package kz.zvezdochet.util;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -157,9 +156,7 @@ public class Cosmogram {
 	 */
 	private void drawHouses(Event event, GC gc, boolean primary) {
 		if (!event.isHousable()) return;
-		Iterator<Model> i = event.getHouses().iterator();
-		while (i.hasNext()) {
-			House h = (House)i.next();
+		for (House h : event.getHouses().values()) {
 			if (h.isMain()) {
 	     		drawLine(gc, primary ? HOUSE_COLOR : HOUSEPART_COLOR, 0, 210, INNER_CIRCLE, h.getLongitude(), h.getLongitude(), SWT.LINE_SOLID, false);
 				drawHouseName(h.getDesignation(), h.getLongitude(), gc, primary);
@@ -189,9 +186,7 @@ public class Cosmogram {
 	 * @param primary true - первый уровень домов
 	 */
 	private void drawHouseParts(Event event, GC gc, boolean primary) {
-		Iterator<Model> i = event.getHouses().iterator();
-		while (i.hasNext()) {
-			House h = (House)i.next();
+		for (House h :event.getHouses().values()) {
 			if (!h.isMain())
 	     		drawLine(gc, primary ? HOUSE_COLOR : HOUSEPART_COLOR, 0, 140.0, INNER_CIRCLE, h.getLongitude(), h.getLongitude(), SWT.LINE_SOLID, false);
 		}
@@ -205,9 +200,7 @@ public class Cosmogram {
 	 * @throws DataAccessException
 	 */
 	private void drawPlanets(Event event, GC gc, int radius) throws DataAccessException {
-		Iterator<Planet> i = event.getPlanets().values().iterator();
-		while (i.hasNext()) {
-			Planet p = i.next();
+		for (Planet p : event.getPlanets().values()) {
 			int x = CalcUtil.trunc(getXPoint(radius, p.getLongitude())) + xcenter - 5;
 			int y = CalcUtil.trunc(getYPoint(radius, p.getLongitude())) + ycenter - 5;
 			//String tooltip = p.getName() + " (" + Utils.replace(String.valueOf(p.getCoord()), ".", "\u00b0") + "\u2032)";
@@ -229,15 +222,14 @@ public class Cosmogram {
 		List<Long> aspectypes = new ArrayList<>();
 		List<Aspect> aspectlist = new ArrayList<>();
 		List<Model> aspects = new AspectService().getList();
-		Iterator<Model> ia = aspects.iterator();
 
 		List<String> aparams = new ArrayList<>();
 		if (params != null) {
 			if (params.get("aspects") != null)
 				aparams = (List<String>)params.get("aspects");
 		}
-		while (ia.hasNext()) {
-			Aspect a = (Aspect)ia.next();
+		for (Model model : aspects) {
+			Aspect a = (Aspect)model;
 			if (aparams.size() > 0 && !aparams.contains(a.getType().getCode()))
 				continue;
 			else {
@@ -246,44 +238,63 @@ public class Cosmogram {
 			}
 		}
 
+		Map<Long, Planet> planets = event.getPlanets();
 		boolean single = (null == event2 || null == event2.getPlanets());
-		Iterator<Planet> i = event.getPlanets().values().iterator();
-		Map<Long, Planet> planets = single ? event.getPlanets() : event2.getPlanets();
+		if (single) {
+			for (Planet p : planets.values()) {
+				if (p.getCode().equals("Moon") && !event.isHousable())
+					continue;
+	
+					List<SkyPointAspect> paspects = p.getAspectList();
+					for (SkyPointAspect spa : paspects) {
+						Aspect a = spa.getAspect();
+						if (!aspectypes.contains(a.getId()))
+							continue;
+						drawAspect(
+							a.getType().getColor(),
+							0f,
+							p.getLongitude(),
+							planets.get(spa.getSkyPoint2().getId()).getLongitude(),
+							gc, 
+							getLineStyle(a.getType().getProtraction()),
+							!a.getCode().equals("CONJUNCTION"));
+					}
+			}
+		} else {
+			Map<Long, Planet> planets2 = event2.getPlanets();
+			Map<Long, House> houses = event.getHouses();
+			List<SkyPointAspect> paspects = event2.getAspectList();
 
-		while (i.hasNext()) {
-			Planet p = i.next();
-			if (p.getCode().equals("Moon") && !event.isHousable())
-				continue;
+			boolean houseAspectable = false;
+			if (params != null
+					&& event.getHouses() != null
+					&& event.getHouses().size() > 0)
+				houseAspectable = params.get("houseAspectable") != null;
 
-			if (single) {
-				List<SkyPointAspect> paspects = p.getAspectList();
-				for (SkyPointAspect spa : paspects) {
-					Aspect a = spa.getAspect();
-					if (!aspectypes.contains(a.getId()))
-						continue;
-					drawAspect(a.getType().getColor(), 0f, p.getLongitude(), planets.get(spa.getSkyPoint2().getId()).getLongitude(), gc, 
-						getLineStyle(a.getType().getProtraction()), !a.getCode().equals("CONJUNCTION"));
-				}
-			} else {
-				boolean houseAspectable = false;
-				if (params != null
-						&& event.getHouses() != null
-						&& event.getHouses().size() > 0)
-					houseAspectable = params.get("houseAspectable") != null;
+			for (SkyPointAspect spa : paspects) {
+				Aspect a = spa.getAspect();
+				if (!aspectypes.contains(a.getId()))
+					continue;
 
-				Iterator<Planet> j = planets.values().iterator();
-				while (j.hasNext()) {
-					Planet p2 = j.next();
-					if (p2.getCode().equals("Moon") && !event2.isHousable())
-						continue;
-					getAspect(p.getLongitude(), p2.getLongitude(), aspectlist, gc);
+				if (spa.getSkyPoint1().getCode().equals("Moon") && !event2.isHousable())
+					continue;
 
-					if (houseAspectable)
-						for (Model model : event.getHouses()) {
-							House house = (House)model;
-							getAspect(p2.getLongitude(), house.getLongitude(), aspectlist, gc);
-						}
-				}
+				if (spa.getSkyPoint2().getCode().equals("Moon") && !event.isHousable())
+					continue;
+
+				if (!houseAspectable && spa.getSkyPoint2() instanceof House)
+					continue;
+
+				drawAspect(
+					a.getType().getColor(),
+					0f, 
+					planets2.get(spa.getSkyPoint1().getId()).getLongitude(),
+					spa.getSkyPoint2() instanceof Planet
+						? planets.get(spa.getSkyPoint2().getId()).getLongitude()
+						: houses.get(spa.getSkyPoint2().getId()).getLongitude(),
+					gc, 
+					getLineStyle(a.getType().getProtraction()), 
+					!a.getCode().equals("CONJUNCTION"));
 			}
 		}
 	}
@@ -300,34 +311,6 @@ public class Cosmogram {
 	 */
 	private void drawAspect(Color color, double penStyle, double a, double b, GC gc, int lineStyle, boolean arrow) {
 		drawLine(gc, color, penStyle, 120.0, 120.0, a, b, lineStyle, arrow);
-	}
-
-	/**
-	 * Динамическое определение аспекта между небесными точками (только для парных космограмм)
-	 * @param one градус первой точки
-	 * @param two градус второй точки
-	 * @param gc графическая система
-	 * @throws DataAccessException
-	 */
-	private void getAspect(double one, double two, List<Aspect> aspects, GC gc) throws DataAccessException {
-		double res = CalcUtil.getDifference(one, two);
-		Iterator<Aspect> i = aspects.iterator();
-
-		boolean exact = false;
-		if (params != null)
-			exact = params.get("exact") != null;
-
-		while (i.hasNext()) {
-			Aspect a = i.next();
-			if (a.isAspect(res)) {
-				if (exact && !a.isExact(res))
-					continue;
-				if (!aspects.contains(a))
-					continue;
-				drawAspect(a.getType().getColor(), 0f, one, two, gc, 
-					getLineStyle(a.getType().getProtraction()), !a.getCode().equals("CONJUNCTION"));
-			}
-		}
 	}
 
 	/**

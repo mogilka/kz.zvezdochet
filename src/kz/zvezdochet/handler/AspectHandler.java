@@ -78,7 +78,7 @@ public class AspectHandler extends Handler {
 
 			updateStatus("Расчёт аспектов домов", false);
 			if (null == event.getHouses()) return; //TODO выдавать сообщение
-			List<Model> houses = event.getHouses();
+			Collection<House> houses = event.getHouses().values();
 			int hcount = houses.size();
 			Object[][] datah = new Object[pcount][hcount + 1];
 			//заполняем заголовки строк названиями планет и их координатами
@@ -86,8 +86,7 @@ public class AspectHandler extends Handler {
 				datah[planet.getId().intValue() - 19][0] = planet.getName() + " (" + CalcUtil.roundTo(planet.getLongitude(), 1) + ")";
 
 			//формируем массив аспектов домов
-			for (int c = 0; c < hcount; c++) {
-				House house = (House)houses.get(c);
+			for (House house : houses) {
 				for (Planet planet : planets) {
 					double res = CalcUtil.getDifference(planet.getLongitude(), house.getLongitude());
 					SkyPointAspect aspect = new SkyPointAspect();
@@ -103,7 +102,7 @@ public class AspectHandler extends Handler {
 							continue;
 						}
 					}
-					datah[planet.getId().intValue() - 19][c + 1] = aspect;
+					datah[planet.getId().intValue() - 19][house.getId().intValue() - 141] = aspect;
 				}
 			}
 			updateStatus("Расчёт аспектов домов завершён", false);

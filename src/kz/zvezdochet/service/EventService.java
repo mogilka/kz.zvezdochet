@@ -401,11 +401,11 @@ public class EventService extends ModelService {
 			ps.setLong(1, event.getId());
 			rs = ps.executeQuery();
 			if (rs.next()) {
-				for (Model model : event.getHouses()) {
-					House house = (House)model;
+				for (House house : event.getHouses().values()) {
 					if (rs.getString(house.getCode()) != null) {
 						house.setLongitude(rs.getDouble(house.getCode()));
-						//TODO определяем знак дома
+						Sign sign = SkyPoint.getSign(house.getLongitude(), event.getBirthYear());
+						house.setSign(sign);
 					}
 				}
 			}
@@ -535,7 +535,7 @@ public class EventService extends ModelService {
 			long id = (rs.next()) ? rs.getLong("id") : 0;
 			ps.close();
 			
-			List<Model> houses = event.getHouses();
+			Collection<House> houses = event.getHouses().values();
 			if (0 == id)
 				sql = "insert into " + table + " values(0,?,"
 						+ "?,?,?,?,?,?,?,?,?,?,"
@@ -544,17 +544,17 @@ public class EventService extends ModelService {
 						+ "?,?,?,?,?,?)";
 			else {
 				sql = "update " + table + " set eventid = ?,";
-				for (int i = 0; i < houses.size(); i++) {
-					sql += " " + ((House)houses.get(i)).getCode() + " = ?";
-					if (i < houses.size() - 1)
+				for (House house : houses) {
+					sql += " " + house.getCode() + " = ?";
+					if (house.getNumber() < houses.size())
 						sql += ",";
 				}
 				sql += " where id = ?";
 			}
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, event.getId());
-			for (int i = 0; i < houses.size(); i++)
-				ps.setDouble(i + 2, ((House)houses.get(i)).getLongitude());
+			for (House house : houses)
+				ps.setDouble(house.getNumber() + 1, house.getLongitude());
 			if (id != 0)
 				ps.setLong(38, id);
 			ps.executeUpdate();

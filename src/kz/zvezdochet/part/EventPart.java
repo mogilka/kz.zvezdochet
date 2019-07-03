@@ -52,7 +52,6 @@ import kz.zvezdochet.bean.MoonDay;
 import kz.zvezdochet.bean.Place;
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.bean.Sign;
-import kz.zvezdochet.bean.SkyPoint;
 import kz.zvezdochet.bean.Star;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.handler.Handler;
@@ -82,7 +81,7 @@ import kz.zvezdochet.service.MoonDayService;
 public class EventPart extends ModelPart implements ICalculable {
 	/**
 	 * Режим синхронизации данных события,
-	 * при котором проверяются только расчётные показатели 
+	 * при котором проверяются только расчётные показатели
 	 */
 	public static int MODE_CALC = 1;
 
@@ -847,20 +846,13 @@ public class EventPart extends ModelPart implements ICalculable {
 			controls = grHouses.getChildren();
 			table = (Table)controls[0];
 			table.removeAll();
-				for (Model base : event.getHouses()) {
-					House house = (House)base;
+				for (House house : event.getHouses().values()) {
 					TableItem item = new TableItem(table, SWT.NONE);
 					item.setText(0, house.getName());		
 					item.setText(1, String.valueOf(house.getLongitude()));
-	
-	  				Sign sign;
-					try {
-						sign = SkyPoint.getSign(house.getLongitude(), event.getBirthYear());
-	//  				house.setSign(sign);
-						item.setText(2, null == sign ? "" : sign.getName());
-					} catch (DataAccessException e) {
-						e.printStackTrace();
-					}
+
+					Sign sign = house.getSign();
+					item.setText(2, null == sign ? "" : sign.getName());
 				}
 				for (int i = 0; i < table.getColumnCount(); i++)
 					table.getColumn(i).pack();

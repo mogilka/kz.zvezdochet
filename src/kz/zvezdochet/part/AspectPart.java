@@ -107,8 +107,8 @@ public class AspectPart extends ListView {
 			}
 			Table table2 = tableViewer2.getTable();
 			tableColumn = new TableColumn(table2, SWT.NONE);
-			for (int i = 0; i < event.getHouses().size(); i++) {
-				House house = (House)event.getHouses().get(i);
+			Collection<House> houses = event.getHouses().values();
+			for (House house : houses) {
 				tableColumn = new TableColumn(table2, SWT.NONE);
 				tableColumn.setText(CalcUtil.roundTo(house.getLongitude(), 1) + "");
 				tableColumn.setText(house.getCode());

@@ -240,7 +240,10 @@ public class Event extends Model {
 			for (Model model : list)
 				planetList.put(model.getId(), (Planet)model);
 
-	  	  	houseList = new HouseService().getList();
+			houseList = new TreeMap<>();
+			list = new HouseService().getList();
+			for (Model model : list)
+				houseList.put(model.getId(), (House)model);
 
 	  	  	starList = new HashMap<>();
 			list = new StarService().getList();
@@ -531,7 +534,6 @@ public class Event extends Model {
 		  		//{ house method }
 		  		double[] ascmc = new double[10];
 		  		double[] hcusps = new double[13];
-		  		//используем систему Плацидуса
 		  		sweph.swe_houses(tjdut, SweConst.SEFLG_SIDEREAL, glat, glon, hsys, hcusps, ascmc);
 		  		calcHouseParts(hcusps);
 
@@ -553,6 +555,7 @@ public class Event extends Model {
 			initSigns();
 			initAspects();
 			initHouses();
+			initPlanetStatistics();
 			setRecalculable(true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -831,9 +834,9 @@ public class Event extends Model {
 	 */
 	private TreeMap<Long, Planet> planetList;
 	/**
-	 * Список домов
+	 * Карта домов
 	 */
-	private	List<Model> houseList;
+	private	TreeMap<Long, House> houseList;
 	/**
 	 * Список аспектов домов
 	 */
@@ -911,24 +914,24 @@ public class Event extends Model {
   	}
   	
   	/**
-  	 * Расчет третей домов
-  	 * @param houses массив вычисленных основных домов
+  	 * Инициализация домов и расчёт третей
+  	 * @param houses массив координат 12 домов
   	 */
   	private void calcHouseParts(double[] houses) {
 		try {
 	  		byte multiple;
 	  		//шерстим трети домов, минуя основные куспиды
 	  		for (int j = 1; j < 37; j++) {
-	  			House h = (House)houseList.get(j - 1);
+	  			House h = houseList.get((long)j + 141);
 	  			int i = CalcUtil.trunc((j + 2) / 3);
+	  			double val = 0;
 	  			if (h.isMain()) {
-	  				double val = houses[i];
+	  				val = houses[i];
 	  	  			h.setLongitude(val);
-	  				Sign sign = SkyPoint.getSign(val, getBirthYear());
-	  				h.setSign(sign);
 	  			} else {
 	  				double one = houses[i];
-	  				if (12 == i) i = 0;
+	  				if (12 == i)
+	  					i = 0;
 	  				double two = houses[i + 1];
 	  				if ((one > 300) && (one < 360) && (two < 60))
 	  					two = two + 360;
@@ -938,13 +941,13 @@ public class Event extends Model {
 	  					multiple = 2; 
 	  				else 
 	  					multiple = 1;
-	  				double res = multiple * ((two - one) / 3) + one;
-	  				if (res > 360) 
-	  					res = res - 360; 
-	  	  			h.setLongitude(res);
-	  				Sign sign = SkyPoint.getSign(res, getBirthYear());
-	  				h.setSign(sign);
+	  				val = multiple * ((two - one) / 3) + one;
+	  				if (val > 360) 
+	  					val = val - 360; 
+	  	  			h.setLongitude(val);
 	  			}
+  				Sign sign = SkyPoint.getSign(val, getBirthYear());
+  				h.setSign(sign);
 	  		}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -955,7 +958,7 @@ public class Event extends Model {
 		return planetList;
 	}
 
-	public List<Model> getHouses() {
+	public Map<Long, House> getHouses() {
 		return houseList;
 	}
 
@@ -964,14 +967,13 @@ public class Event extends Model {
 	}
 
 	/**
-	 * Определение позиций планет в домах. 
-	 * Используется для новых событий или после перерасчёта
+	 * Определение позиций планет и звёзд в домах. 
+	 * Используется для новых (не сохранённых) событий или после перерасчёта
 	 */
 	private void initHouses() {
-		for (int j = 0; j < houseList.size(); j++) {
-			House house = (House)houseList.get(j);
-			int h = (j == houseList.size() - 1) ? 0 : j + 1;
-			House house2 = (House)houseList.get(h);
+		for (House house : houseList.values()) {
+			long h = (house.getNumber() == houseList.size()) ? 142 : house.getId() + 1;
+			House house2 = houseList.get(h);
 			//планеты
 			for (Planet planet : planetList.values()) {
 				if (SkyPoint.getHouse(house.getLongitude(), house2.getLongitude(), planet.getLongitude())) {
@@ -1283,7 +1285,7 @@ public class Event extends Model {
 	public void setPlanets(TreeMap<Long, Planet> planets) {
 		planetList = planets;
 	}
-	public void setHouses(List<Model> houses) {
+	public void setHouses(TreeMap<Long, House> houses) {
 		houseList = houses;
 	}
 
@@ -1292,30 +1294,30 @@ public class Event extends Model {
 	 */
 	@SuppressWarnings("unused")
 	private void initAngularPlanets() {
-		Model[] hangular = {
-			houseList.get(0),
-			houseList.get(9),	
-			houseList.get(18),	
-			houseList.get(27)	
-		};
-		for (Model model : hangular) {
-			House house = (House)model;
-			int prev = (1 == house.getNumber()) ? 34 : house.getNumber() - 3;
-			int next = house.getNumber() + 3;
-			House phouse = (House)houseList.get(prev);
-			House nhouse = (House)houseList.get(next);
-
-			for (Planet planet : planetList.values()) {
-				if (SkyPoint.getHouse(phouse.getLongitude(), nhouse.getLongitude(), planet.getLongitude())) {
-					switch (house.getNumber()) {
-						case 1: planet.setOnRising(true); break;
-						case 10: planet.setOnNadir(true); break;
-						case 19: planet.setOnSetting(true); break;
-						case 28: planet.setOnZenith(true); break;
-					}
-				}
-			}
-		}
+//		Model[] hangular = {
+//			houseList.get(142L),
+//			houseList.get(151L),	
+//			houseList.get(160L),	
+//			houseList.get(169L)	
+//		};
+//		for (Model model : hangular) {
+//			House house = (House)model;
+//			int prev = (1 == house.getNumber()) ? 34 : house.getNumber() - 3;
+//			int next = house.getNumber() + 3;
+//			House phouse = (House)houseList.get(prev);
+//			House nhouse = (House)houseList.get(next);
+//
+//			for (Planet planet : planetList.values()) {
+//				if (SkyPoint.getHouse(phouse.getLongitude(), nhouse.getLongitude(), planet.getLongitude())) {
+//					switch (house.getNumber()) {
+//						case 1: planet.setOnRising(true); break;
+//						case 10: planet.setOnNadir(true); break;
+//						case 19: planet.setOnSetting(true); break;
+//						case 28: planet.setOnZenith(true); break;
+//					}
+//				}
+//			}
+//		}
 	}
 
 	/**
@@ -1366,7 +1368,7 @@ public class Event extends Model {
 			List<Model> aspects = new AspectService().getList();
 			if (planetList != null) 
 				for (Planet p : planetList.values()) {
-					for (Model model2 : houseList) {
+					for (Model model2 : houseList.values()) {
 						House h = (House)model2;
 						double res = CalcUtil.getDifference(p.getLongitude(), h.getLongitude());
 						for (Model realasp : aspects) {
@@ -1467,5 +1469,19 @@ public class Event extends Model {
 
 	public Map<Long, Star> getStars() {
 		return starList;
+	}
+
+	/**
+	 * Массив аспектов
+	 */
+	private	List<SkyPointAspect> aspectList;
+
+	public void setAspectList(List<SkyPointAspect> aspectList) {
+		this.aspectList = aspectList;
+	}
+	public List<SkyPointAspect> getAspectList() {
+		if (null == aspectList)
+			aspectList = new ArrayList<SkyPointAspect>();
+		return aspectList;
 	}
 }

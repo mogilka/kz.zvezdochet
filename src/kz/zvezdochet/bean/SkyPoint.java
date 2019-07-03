@@ -344,7 +344,7 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
 	}
 
 	/**
-	 * Массив аспектов звезды
+	 * Массив аспектов
 	 */
 	private	List<SkyPointAspect> aspectList;
 
