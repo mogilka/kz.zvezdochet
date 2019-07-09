@@ -31,7 +31,7 @@ public class CosmogramComposite extends Composite {
         		BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
         			@Override
         			public void run() {
-        				new Cosmogram(event, event2, params, e.gc);
+        				new Cosmogram(event, event2, params, e.gc, true);
         			}
         		});
 	        }

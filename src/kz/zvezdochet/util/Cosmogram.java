@@ -49,26 +49,28 @@ public class Cosmogram {
 	 * @param event2 связанное событие
 	 * @param params массив параметров
 	 * @param gc графический контекст
+	 * @param widget true - прорисовка виджета, false - прорисовка изображения для файла
 	 * @todo если параметры не заданы, брать все по умолчанию
 	 */
-	public Cosmogram(Event event, Event event2, Map<String, Object> params, GC gc) {
+	public Cosmogram(Event event, Event event2, Map<String, Object> params, GC gc, boolean widget) {
 		this.event = event;
 		this.event2 = event2;
 		this.params = params;
-		paintCard(gc);
+		paintCard(gc, widget);
 	}
 
 	/**
 	 * Прорисовка космограммы
 	 * @param gc графическая система
+	 * @param widget true - прорисовка виджета, false - прорисовка изображения для файла
 	 */
-	private void paintCard(GC gc) {
+	private void paintCard(GC gc, boolean widget) {
 		xcenter = ycenter = 257;
    	    Image image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/card.png").createImage();
 		gc.drawImage(image, 52, 53);
 		if (event != null) {
 			if (event.getHouses() != null && event.getHouses().size() > 0)
-				drawHouses(event, gc, true);
+				drawHouses(event, gc, true, widget);
 		    if (event.getPlanets() != null && event.getPlanets().size() > 0)
 				try {
 					drawPlanets(event, gc, 135);
@@ -78,7 +80,7 @@ public class Cosmogram {
 		}
 		if (event2 != null) {
 			if (event2.getHouses() != null && event2.getHouses().size() > 0)
-				drawHouses(event2, gc, false);
+				drawHouses(event2, gc, false, widget);
 		    if (event2.getPlanets() != null && event2.getPlanets().size() > 0)
 				try {
 					drawPlanets(event2, gc, 160);
@@ -153,13 +155,14 @@ public class Cosmogram {
 	 * @param event событие
 	 * @param gc графическая система
 	 * @param primary true - первый уровень домов
+	 * @param widget true - прорисовка виджета, false - прорисовка изображения для файла
 	 */
-	private void drawHouses(Event event, GC gc, boolean primary) {
+	private void drawHouses(Event event, GC gc, boolean primary, boolean widget) {
 		if (!event.isHousable()) return;
 		for (House h : event.getHouses().values()) {
 			if (h.isMain()) {
 	     		drawLine(gc, primary ? HOUSE_COLOR : HOUSEPART_COLOR, 0, 210, INNER_CIRCLE, h.getLongitude(), h.getLongitude(), SWT.LINE_SOLID, false);
-				drawHouseName(h.getDesignation(), h.getLongitude(), gc, primary);
+				drawHouseName(h.getDesignation(), h.getLongitude(), gc, primary, widget);
 			}
 		}
 		drawHouseParts(event, gc, primary);
@@ -171,9 +174,10 @@ public class Cosmogram {
 	 * @param value градус дома
 	 * @param gc графическая система
 	 * @param primary true - первый уровень домов
+	 * @param widget true - прорисовка виджета, false - прорисовка изображения для файла
 	 */
-	private void drawHouseName(String name, double value, GC gc, boolean primary) {
-		gc.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+	private void drawHouseName(String name, double value, GC gc, boolean primary, boolean widget) {
+		gc.setBackground(Display.getDefault().getSystemColor(widget ? SWT.COLOR_WIDGET_BACKGROUND : SWT.COLOR_TRANSPARENT));
 		gc.setForeground(primary ? HOUSE_COLOR : HOUSEPART_COLOR);
 		gc.drawString(name, CalcUtil.trunc(getXPoint(230, value)) + xcenter - 5,
 			CalcUtil.trunc(getYPoint(primary ? 230 : 210, value)) + ycenter);
