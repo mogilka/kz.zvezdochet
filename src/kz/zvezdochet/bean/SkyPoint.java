@@ -473,4 +473,12 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
 	public void setSpeedDistance(double speedDistance) {
 		this.speedDistance = speedDistance;
 	}
+
+	/**
+	 * Проверка ретроградности
+	 * @return true - попятное движение
+	 */
+	public boolean isRetrograde() {
+		return speedLongitude < 0;
+	}
 }

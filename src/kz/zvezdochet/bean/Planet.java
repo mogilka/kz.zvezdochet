@@ -89,10 +89,6 @@ public class Planet extends SkyPoint {
 			getCode() + ".png").createImage();
 	}
 
-	public boolean isRetrograde() {
-		return speedLongitude < 0;
-	}
-
 	public DictionaryService getService() {
 		return new PlanetService();
 	}
