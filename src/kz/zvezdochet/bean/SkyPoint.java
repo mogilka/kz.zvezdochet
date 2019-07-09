@@ -348,6 +348,10 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
 	 */
 	private	List<SkyPointAspect> aspectList;
 
+	public void setAspectList(List<SkyPointAspect> aspectList) {
+		this.aspectList = aspectList;
+	}
+
 	public List<SkyPointAspect> getAspectList() {
 		if (null == aspectList)
 			aspectList = new ArrayList<SkyPointAspect>();

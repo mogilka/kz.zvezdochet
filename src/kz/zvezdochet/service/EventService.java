@@ -935,6 +935,8 @@ order by year(initialdate)
         ResultSet rs = null;
 		try {
 			Map<Long, Planet> pmap = event.getPlanets();
+			for (Planet planet : pmap.values())
+				planet.setAspectList(new ArrayList<SkyPointAspect>());
 			for (Planet planet : pmap.values()) {
 				//для каждой планеты ищем аспекты
 				String sql = "select * from " + getAspectTable() +
