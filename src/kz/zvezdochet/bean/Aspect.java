@@ -218,4 +218,9 @@ public class Aspect extends Dictionary {
 	public boolean isApproximation(double val) {
 	    return val < value && value - 1 < val;
 	}
+
+	public Aspect(AspectType type) {
+		super();
+		this.type = type;
+	}
 }
