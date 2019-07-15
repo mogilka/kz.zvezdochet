@@ -696,8 +696,7 @@ public class EventPart extends ModelPart implements ICalculable {
 				initPlace(event.getPlace());
 			txZone.setText(CalcUtil.formatNumber("###.##", event.getZone()));
 			String dststr = dst.get((int)event.getDst());
-			if (dststr != null)
-				cvDST.getCombo().setText(dststr);
+			cvDST.getCombo().setText(null == dststr ? "0" : dststr);
 			int human = event.getHuman();
 			if (human > -1)
 				cvHuman.getCombo().setText(humans[human]);
