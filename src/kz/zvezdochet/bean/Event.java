@@ -955,6 +955,8 @@ public class Event extends Model {
   	}
 
 	public Map<Long, Planet> getPlanets() {
+		if (null == planetList)
+			init(false);
 		return planetList;
 	}
 
@@ -1057,7 +1059,6 @@ public class Event extends Model {
 	 */
 	private void initAspectStatistics() throws DataAccessException {
 		try {
-			if (planetList != null) {
 				List<Model> aspectTypes = new AspectTypeService().getList();
 				Collection<Planet> planets = planetList.values();
 				for (Planet p : planets)
@@ -1079,7 +1080,7 @@ public class Event extends Model {
 						String aspectTypeCode = a.getType().getCode();
 
 						//фиксируем аспекты планеты
-						aspmap.put(p.getCode(), a.getCode());
+						aspmap.put(spa.getSkyPoint2().getCode(), a.getCode());
 						//суммируем аспекты каждого типа для планеты
 						int score = aspcountmap.get(aspectTypeCode);
 						//для людей считаем только аспекты главных планет
@@ -1101,7 +1102,6 @@ public class Event extends Model {
 					p.setAspectCountMap(aspcountmap);
 					p.setAspectMap(aspmap);
 				}
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
