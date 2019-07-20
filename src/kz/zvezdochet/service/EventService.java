@@ -196,8 +196,7 @@ public class EventService extends ModelService {
 //				saveIngress(event);
 				saveStars(event);
 			}
-			if (event.isNeedSaveBlob())
-				saveBlob(event);
+			saveBlob(event);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -361,7 +360,8 @@ public class EventService extends ModelService {
 			ps.setLong(1, event.getId());
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				Planet planet = planets.get(rs.getLong("planetid"));
+				long pid = rs.getLong("planetid");
+				Planet planet = planets.get(pid);
 				if (planet != null) {
 					planet.setLongitude(rs.getDouble("longitude"));
 					planet.setLatitude(rs.getDouble("latitude"));
