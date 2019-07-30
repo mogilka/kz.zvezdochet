@@ -234,24 +234,41 @@ public class Event extends Model {
 
 	@Override
 	public void init(boolean mode) {
+		initPlanetList();
+		initHouseList();
+		initStarList();
+		if (mode)
+			initData(true);
+	}
+
+	public void initPlanetList() {
 		try {
 	  	  	planetList = new TreeMap<>();
 			List<Model> list = new PlanetService().getList();
 			for (Model model : list)
 				planetList.put(model.getId(), (Planet)model);
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+		}
+	}
 
+	public void initHouseList() {
+		try {
 			houseList = new TreeMap<>();
-			list = new HouseService().getList();
+			List<Model> list = new HouseService().getList();
 			for (Model model : list)
 				houseList.put(model.getId(), (House)model);
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+		}
+	}
 
+	public void initStarList() {
+		try {
 	  	  	starList = new HashMap<>();
-			list = new StarService().getList();
+	  	  	List<Model> list = new StarService().getList();
 			for (Model model : list)
 				starList.put(model.getId(), (Star)model);
-
-			if (mode)
-				initData(true);
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
@@ -956,11 +973,13 @@ public class Event extends Model {
 
 	public Map<Long, Planet> getPlanets() {
 		if (null == planetList)
-			init(false);
+			initPlanetList();
 		return planetList;
 	}
 
 	public Map<Long, House> getHouses() {
+		if (null == houseList)
+			initHouseList();
 		return houseList;
 	}
 
