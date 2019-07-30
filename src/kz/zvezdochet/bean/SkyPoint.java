@@ -481,4 +481,12 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
 	public boolean isRetrograde() {
 		return speedLongitude < 0;
 	}
+
+	/**
+	 * Проверка, есть ли у планеты соединение с фиктивными планетами (лунными узлами, Лилит или Селеной)
+	 * @return true - есть соединение с одной из указанных фиктивных планет
+	 */
+	public boolean isFictived() {
+		return isKethued() || isRakhued() || isLilithed() || isSelened();
+	}
 }
