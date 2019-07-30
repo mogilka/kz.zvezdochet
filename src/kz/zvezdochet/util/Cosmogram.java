@@ -39,8 +39,6 @@ public class Cosmogram {
 	private final Color HOUSE_COLOR = new Color(Display.getDefault(), new RGB(153, 0, 0));
 	private final Color HOUSEPART_COLOR = Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY);
 	
-	private Event event;
-	private Event event2;
 	private Map<String, Object> params;
 
 	/**
@@ -53,10 +51,10 @@ public class Cosmogram {
 	 * @todo если параметры не заданы, брать все по умолчанию
 	 */
 	public Cosmogram(Event event, Event event2, Map<String, Object> params, GC gc, boolean widget) {
-		this.event = event;
-		this.event2 = event2;
 		this.params = params;
-		paintCard(gc, widget);
+		if (null == gc)
+			gc = new GC(Display.getDefault());
+		paintCard(gc, widget, event, event2);
 	}
 
 	/**
@@ -64,7 +62,7 @@ public class Cosmogram {
 	 * @param gc графическая система
 	 * @param widget true - прорисовка виджета, false - прорисовка изображения для файла
 	 */
-	private void paintCard(GC gc, boolean widget) {
+	private void paintCard(GC gc, boolean widget, Event event, Event event2) {
 		xcenter = ycenter = 257;
    	    Image image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/card.png").createImage();
 		gc.drawImage(image, 52, 53);
@@ -89,7 +87,7 @@ public class Cosmogram {
 				}
 		}
 		try {
-			drawAspects(gc);
+			drawAspects(gc, event, event2);
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
@@ -142,7 +140,7 @@ public class Cosmogram {
 		int desty = (int)Math.round(getYPoint(inner, gradus2)) + ycenter;
 		gc.drawLine(startx, starty, destx, desty);
 
-		if (arrow && event2 != null && event2.getPlanets() != null) {
+		if (arrow) {
 			gc.setBackground(color);
 			Path path = drawLineArrow(gc.getDevice(), new Point(destx, desty), getRotation(gradus1, gradus2), 10, 15);
 		    gc.fillPath(path);
@@ -220,7 +218,7 @@ public class Cosmogram {
 	 * @throws DataAccessException
 	 */
 	@SuppressWarnings("unchecked")
-	private void drawAspects(GC gc) throws DataAccessException {
+	private void drawAspects(GC gc, Event event, Event event2) throws DataAccessException {
 		if (null == event || null == event.getPlanets()) return;
 
 		List<Long> aspectypes = new ArrayList<>();
@@ -261,7 +259,7 @@ public class Cosmogram {
 							planets.get(spa.getSkyPoint2().getId()).getLongitude(),
 							gc, 
 							getLineStyle(a.getType().getProtraction()),
-							!a.getCode().equals("CONJUNCTION"));
+							!single && !a.getCode().equals("CONJUNCTION"));
 					}
 			}
 		} else {
