@@ -95,7 +95,7 @@ public class EventService extends ModelService {
 		try {
 			String sql;
 			if (null == model.getId())
-				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
 					"name = ?, " +
@@ -119,7 +119,9 @@ public class EventService extends ModelService {
 					"backid = ?, " +
 					"moondayid = ?, " +
 					"cardkindid = ?, " +
-					"tabloid = ? " +
+					"tabloid = ?, " +
+					"biography = ?, " +
+					"conversation = ? " +
 					"where id = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setString(1, event.getName());
@@ -132,7 +134,7 @@ public class EventService extends ModelService {
 				ps.setNull(3, java.sql.Types.NULL);
 			ps.setDouble(4, event.getZone());
 			ps.setBoolean(5, event.isCelebrity());
-			ps.setString(6, event.getDescription());
+			ps.setString(6, event.getComment());
 			ps.setInt(7, event.getRectification());
 			ps.setBoolean(8, event.isRightHanded());
 			String birth = DateUtil.formatCustomDateTime(event.getBirth(), "yyyy-MM-dd HH:mm:ss");
@@ -168,8 +170,11 @@ public class EventService extends ModelService {
 			else
 				ps.setNull(22, java.sql.Types.NULL);
 
+			ps.setString(23, event.getBio());
+			ps.setString(24, event.getConversation());
+
 			if (model.getId() != null)
-				ps.setLong(23, model.getId());
+				ps.setLong(25, model.getId());
 			System.out.println(ps);
 
 			result = ps.executeUpdate();
@@ -196,7 +201,6 @@ public class EventService extends ModelService {
 //				saveIngress(event);
 				saveStars(event);
 			}
-			saveBlob(event);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -207,90 +211,6 @@ public class EventService extends ModelService {
 			}
 		}
 		return model;
-	}
-
-	/**
-	 * Сохранение информации о событии
-	 * @param event событие
-	 */
-	private void saveBlob(Event event) throws DataAccessException {
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        String table = getBlobTable();
-		try {
-			String sql = "select id from " + table + " where eventid = ?";
-			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			ps.setLong(1, event.getId());
-			rs = ps.executeQuery();
-			long id = (rs.next()) ? rs.getLong("id") : 0;
-			ps.close();
-			
-			if (0 == id)
-				sql = "insert into " + table + "(eventid, biography, conversation) values(?,?,?)";
-			else {
-				sql = "update " + table + " set "
-					+ "eventid = ?,"
-					+ "biography = ?,"
-					+ "conversation = ?"
-					+ "where id = ?";
-			}
-			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			ps.setLong(1, event.getId());
-			ps.setString(2, event.getText());
-			ps.setString(3, event.getConversation()); //TODO сохранять изображение в папку
-			if (id != 0)
-				ps.setLong(4, id);
-			System.out.println(ps);
-			ps.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null) rs.close();
-				if (ps != null)	ps.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	/**
-	 * Поиск дополнительной информации о событии
-	 * @param eventId идентификатор события
-	 * @return массив, содержащий:<br>
-	 * - текстовое описание события<br>
-	 * - изображение
-	 * @throws DataAccessException
-	 */
-	public Object[] findBlob(Long eventId) throws DataAccessException {
-		if (null == eventId) return null;
-		Object[] blob = new Object[3];
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-		try {
-			String sql = "select * from blobs where eventid = ?";
-			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			ps.setLong(1, eventId);
-			rs = ps.executeQuery();
-			if (rs.next()) {
-				if (rs.getString("Biography") != null)
-					blob[0] = rs.getString("Biography");
-				if (rs.getString("Photo") != null)
-					blob[1] = rs.getBytes("Photo");
-				if (rs.getString("conversation") != null)
-					blob[2] = rs.getString("conversation");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try { 
-				if (rs != null) rs.close();
-				if (ps != null) ps.close();
-			} catch (SQLException e) { 
-				e.printStackTrace(); 
-			}
-		}
-		return blob;
 	}
 
 	@Override
@@ -314,7 +234,7 @@ public class EventService extends ModelService {
 		s = rs.getString("Celebrity");
 		event.setCelebrity(s.equals("1") ? true : false);
 		if (rs.getString("Comment") != null)
-			event.setDescription(rs.getString("Comment"));
+			event.setComment(rs.getString("Comment"));
 		s = rs.getString("Gender");
 		event.setFemale(s.equals("1") ? true : false);
 		if (rs.getString("Placeid") != null)
@@ -334,6 +254,8 @@ public class EventService extends ModelService {
 		event.setCalculated(s.equals("1") ? true : false);
 		event.setMoondayid(rs.getInt("moondayid"));
 		event.setCardkindid(rs.getInt("cardkindid"));
+		event.setBio(rs.getString("biography"));
+		event.setConversation(rs.getString("conversation"));
 		return event;
 	}
 
@@ -497,14 +419,6 @@ public class EventService extends ModelService {
 	 */
 	private String getHouseTable() {
 		return "eventhouses";
-	}
-
-	/**
-	 * Возвращает имя таблицы, хранящей текстовую и мультимедийную информацию о событии
-	 * @return имя ТБД
-	 */
-	private String getBlobTable() {
-		return "blobs";
 	}
 
 	/**
@@ -1052,8 +966,7 @@ order by year(initialdate)
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
-			String sql = "select e.* from " + getBlobTable() + " b" +
-				" inner join " + tableName + " e on e.id = b.eventid" +
+			String sql = "select * from " + getTableName() +
 				" where biography like ? " +
 				" order by initialdate";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);

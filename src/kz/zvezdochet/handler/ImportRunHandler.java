@@ -78,7 +78,7 @@ public class ImportRunHandler extends Handler {
 					back.setZone(event.getZone());
 					back.setDst(event.getDst());
 					back.setCelebrity(true);
-					back.setDescription(event.getDescription());
+					back.setComment(event.getComment());
 					back.setRectification(event.getRectification());
 					back.setRightHanded(event.isRightHanded());
 					back.setHuman(event.getHuman());

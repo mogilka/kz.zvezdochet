@@ -409,7 +409,7 @@ public class SearchPart extends ModelListView {
 						case 1: return event.getId().toString();
 						case 2: return event.getName();
 						case 3: return DateUtil.formatDateTime(event.getBirth());
-						case 4: return event.getDescription();
+						case 4: return event.getComment();
 						case 5: return DateUtil.formatDateTime(event.getDate());
 					}
 				return null;

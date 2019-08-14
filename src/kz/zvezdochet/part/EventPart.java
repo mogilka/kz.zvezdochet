@@ -99,14 +99,14 @@ public class EventPart extends ModelPart implements ICalculable {
 	private ComboViewer cvDST;
 	private Text txGreenwich;
 	private Text txComment;
-	private Text txDescription;
+	private Text txBio;
 	private Label lbBirth;
 	private CDateTime dtBirth;
 	private CDateTime dtDeath; 
 	private Button btCelebrity;
 	private ComboViewer cvHuman;
 	private Text txAccuracy;
-	private Text txLog;
+	private Text txConversation;
 	private CTabFolder tabfolder;
 	private ComboViewer cvMoonday;
 	private ComboViewer cvCardKind;
@@ -218,14 +218,14 @@ public class EventPart extends ModelPart implements ICalculable {
 		CTabItem item = new CTabItem(tabfolder, SWT.CLOSE);
 		item.setText(Messages.getString("PersonView.Biography"));
 		item.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/contact_enabled.gif").createImage());
-		txDescription = new Text(tabfolder, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-		item.setControl(txDescription);
+		txBio = new Text(tabfolder, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		item.setControl(txBio);
 
 		item = new CTabItem(tabfolder, SWT.CLOSE);
 		item.setText("Журнал");
 		item.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/contact_away.gif").createImage());
-		txLog = new Text(tabfolder, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-		item.setControl(txLog);
+		txConversation = new Text(tabfolder, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		item.setControl(txConversation);
 
 		item = new CTabItem(tabfolder, SWT.CLOSE);
 		item.setText("Толкования");
@@ -493,9 +493,9 @@ public class EventPart extends ModelPart implements ICalculable {
 //			grab(true, false).applyTo(cvMoonday.getCombo());
 
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).
-			grab(true, true).applyTo(txDescription);
+			grab(true, true).applyTo(txBio);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).
-			grab(true, true).applyTo(txLog);
+			grab(true, true).applyTo(txConversation);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			span(2, 1).grab(true, false).applyTo(txComment);
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).
@@ -509,11 +509,11 @@ public class EventPart extends ModelPart implements ICalculable {
 		ModifyListener blobListener = new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent e) {
-				((Event)model).setNeedSaveBlob(true);
+				part.setDirty(true);
 			}
 		};
-		txDescription.addModifyListener(blobListener);
-		txDescription.addModifyListener(blobListener);
+		txBio.addModifyListener(blobListener);
+		txConversation.addModifyListener(blobListener);
 
 //		StateChangedListener listener = new StateChangedListener(); TODO
 //		dtBirth.addSelectionListener(listener);
@@ -643,11 +643,11 @@ public class EventPart extends ModelPart implements ICalculable {
 			event.setRightHanded(2 == cvHand.getCombo().getSelectionIndex());
 			event.setRectification(cvRectification.getCombo().getSelectionIndex());
 			event.setDeath(dtDeath.getSelection());
-			event.setText(txDescription.getText());
-			event.setDescription(txComment.getText());
+			event.setBio(txBio.getText());
+			event.setComment(txComment.getText());
 			event.setCelebrity(btCelebrity.getSelection());
 			event.setAccuracy(txAccuracy.getText());
-			event.setConversation(txLog.getText());
+			event.setConversation(txConversation.getText());
 		}
 		event.setBirth(dtBirth.getSelection());
 		double zone = (txZone.getText() != null && txZone.getText().length() > 0) ? Double.parseDouble(txZone.getText()) : 0;
@@ -688,10 +688,10 @@ public class EventPart extends ModelPart implements ICalculable {
 			if (event.getDeath() != null)
 				dtDeath.setSelection(event.getDeath());
 			btCelebrity.setSelection(event.isCelebrity());
-			if (event.getDescription() != null)
-				txComment.setText(event.getDescription());
-			if (event.getText() != null)
-				txDescription.setText(event.getText());
+			if (event.getComment() != null)
+				txComment.setText(event.getComment());
+			if (event.getBio() != null)
+				txBio.setText(event.getBio());
 			if (event.getPlace() != null)
 				initPlace(event.getPlace());
 			txZone.setText(CalcUtil.formatNumber("###.##", event.getZone()));
@@ -703,7 +703,7 @@ public class EventPart extends ModelPart implements ICalculable {
 			if (event.getAccuracy() != null)
 				txAccuracy.setText(event.getAccuracy());
 			if (event.getConversation() != null)
-				txLog.setText(event.getConversation());
+				txConversation.setText(event.getConversation());
 			if (event.getMoondayid() > 0) {
 				MoonDay day = (MoonDay)new MoonDayService().find((long)event.getMoondayid());
 				cvMoonday.getCombo().setText(day.getId() + " " + day.getSymbol());
@@ -727,7 +727,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		txZone.setText(""); //$NON-NLS-1$
 		cvDST.setSelection(null);
 		txGreenwich.setText(""); //$NON-NLS-1$
-		txDescription.setText(""); //$NON-NLS-1$
+		txBio.setText(""); //$NON-NLS-1$
 		txComment.setText(""); //$NON-NLS-1$
 		dtBirth.setSelection(new Date());
 		dtDeath.setSelection(null);
@@ -738,7 +738,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		btTerm.setSelection(false);
 		cvHuman.getCombo().setText(humans[1]);
 		txAccuracy.setText(""); //$NON-NLS-1$
-		txLog.setText(""); //$NON-NLS-1$
+		txConversation.setText(""); //$NON-NLS-1$
 		cvMoonday.setSelection(null);
 		cvCardKind.setSelection(null);
 	}

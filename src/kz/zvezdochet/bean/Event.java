@@ -113,11 +113,11 @@ public class Event extends Model {
 	/**
 	 * Описание события или биография человека
 	 */
-    private String text;
+    private String bio;
 	/**
 	 * Краткий комментарий
 	 */
-	private String description;
+	private String comment;
 	/**
 	 * Источник времени рождения
 	 */
@@ -151,19 +151,19 @@ public class Event extends Model {
 	public void setHuman(int human) {
 		this.human = human;
 	}
-	public String getDescription() {
-		return description;
+	public String getComment() {
+		return comment;
 	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getText() {
-		return text;
+	public void setComment(String description) {
+		this.comment = description;
 	}
 
-	public void setText(String text) {
-		this.text = text;
+	public String getBio() {
+		return bio;
+	}
+
+	public void setBio(String text) {
+		this.bio = text;
 	}
 	public boolean isFemale() {
 		return female;
@@ -293,19 +293,6 @@ public class Event extends Model {
 				service.initPlanets(this);
 				service.initAspects(this);
 				service.initStars(this);
-
-				//блобы
-				Object[] blob = service.findBlob(id);
-				if (blob != null && blob.length > 0) {
-					if (blob[0] != null)
-						text = blob[0].toString();
-//					if (blob[1] != null) {
-//		                InputStream is = new ByteArrayInputStream((byte[])blob[1]);
-//						image = new Image(Display.getDefault(), is);
-//					}
-					if (blob[2] != null)
-						conversation = blob[2].toString();
-				}
 			}
 			if (initstat)
 				initPlanetStatistics();
@@ -602,22 +589,12 @@ public class Event extends Model {
 	 * Признак необходимости сохранить расчётные данные в БД
 	 */
 	private boolean recalculable = false;
-	/**
-	 * Признак необходимости сохранить медиа-данные в БД
-	 */
-	private boolean reblobable = false;
 
 	public boolean isRecalcable() {
 		return recalculable;
 	}
 	public void setRecalculable(boolean needRecalc) {
 		this.recalculable = needRecalc;
-	}
-	public boolean isNeedSaveBlob() {
-		return reblobable;
-	}
-	public void setNeedSaveBlob(boolean needReblob) {
-		this.reblobable = needReblob;
 	}
 
 	/**
@@ -667,7 +644,7 @@ public class Event extends Model {
 		setRectification(json.getInt("Rectification"));
 		value = json.getInt("Celebrity");
 		setCelebrity(1 == (int)value ? true : false);
-		setDescription(json.get("Comment").toString());
+		setComment(json.get("Comment").toString());
 		value = json.getInt("Gender");
 		setFemale(1 == (int)value ? true : false);
 		value = json.get("Placeid");

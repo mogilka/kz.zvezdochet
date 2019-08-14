@@ -78,7 +78,7 @@ public class EventProposalProvider implements IContentProposalProvider {
 
 		@Override
 		public String getDescription() {
-			return dict.getDescription();
+			return dict.getComment();
 		}		
 
 		/**
