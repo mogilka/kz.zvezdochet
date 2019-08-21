@@ -714,7 +714,7 @@ public class Event extends Model {
 	}
 
 	/**
-	 * Проверка, является ли человек ребёнком
+	 * Проверка, является ли человек ребёнком или подростком
 	 * @return
 	 */
 	public boolean isChild() {
@@ -1479,5 +1479,13 @@ public class Event extends Model {
 		if (null == aspectList)
 			aspectList = new ArrayList<SkyPointAspect>();
 		return aspectList;
+	}
+
+	/**
+	 * Проверка, является ли человек ребёнком
+	 * @return
+	 */
+	public boolean isBaby() {
+		return getAge() < MAX_CHILD_AGE;
 	}
 }
