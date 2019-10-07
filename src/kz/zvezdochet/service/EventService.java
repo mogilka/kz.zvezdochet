@@ -95,7 +95,7 @@ public class EventService extends ModelService {
 		try {
 			String sql;
 			if (null == model.getId())
-				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
 					"name = ?, " +
@@ -121,7 +121,8 @@ public class EventService extends ModelService {
 					"cardkindid = ?, " +
 					"tabloid = ?, " +
 					"biography = ?, " +
-					"conversation = ? " +
+					"conversation = ?, " +
+					"updated_at = ? " +
 					"where id = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setString(1, event.getName());
@@ -140,10 +141,11 @@ public class EventService extends ModelService {
 			String birth = DateUtil.formatCustomDateTime(event.getBirth(), "yyyy-MM-dd HH:mm:ss");
 			ps.setString(9, birth);
 			ps.setDate(10, event.getDeath() != null ? new java.sql.Date(event.getDeath().getTime()) : null);
-			ps.setString(11, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
+			String date = DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss");
+			ps.setString(11, date);
 			ps.setInt(12, event.getHuman());
 			ps.setString(13, event.getAccuracy());
-			ps.setNull(14, 3);
+			ps.setLong(14, 3);
 			ps.setInt(15, event.isCalculated() ? 1 : 0);
 			ps.setString(16, Translit.convert(event.getName(), true));
 			ps.setDouble(17, event.getDst());
@@ -172,9 +174,10 @@ public class EventService extends ModelService {
 
 			ps.setString(23, event.getBio());
 			ps.setString(24, event.getConversation());
+			ps.setString(25, date);
 
 			if (model.getId() != null)
-				ps.setLong(25, model.getId());
+				ps.setLong(26, model.getId());
 			System.out.println(ps);
 
 			result = ps.executeUpdate();
@@ -256,6 +259,7 @@ public class EventService extends ModelService {
 		event.setCardkindid(rs.getInt("cardkindid"));
 		event.setBio(rs.getString("biography"));
 		event.setConversation(rs.getString("conversation"));
+		event.setModified(DateUtil.getDatabaseDateTime(rs.getString("updated_at")));
 		return event;
 	}
 
@@ -387,8 +391,14 @@ public class EventService extends ModelService {
 				ps.setDouble(6, planet.getSpeedLongitude());
 				ps.setDouble(7, planet.getSpeedLatitude());
 				ps.setDouble(8, planet.getSpeedDistance());
-				ps.setLong(9, planet.getSign().getId());
-				ps.setLong(10, planet.getHouse().getId());
+				if (planet.getSign() != null)
+					ps.setLong(9, planet.getSign().getId());
+				else
+					ps.setNull(9, java.sql.Types.NULL);
+				if (planet.getHouse() != null)
+					ps.setLong(10, planet.getHouse().getId());
+				else
+					ps.setNull(10, java.sql.Types.NULL);
 				if (id > 0)
 					ps.setLong(11, id);
 				ps.executeUpdate();

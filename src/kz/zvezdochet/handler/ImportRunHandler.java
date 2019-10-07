@@ -84,8 +84,8 @@ public class ImportRunHandler extends Handler {
 					back.setHuman(event.getHuman());
 					back.setAccuracy(event.getAccuracy());
 					back.setFancy(event.getFancy());
-					event.calc(false);
-					event.setCalculated(true);
+					back.calc(false);
+					back.setCalculated(true);
 					service.save(back);
 					log.append("Связь обновлена: " + back.toLog() + "\n");
 					++updated;

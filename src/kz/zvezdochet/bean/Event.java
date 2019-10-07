@@ -128,7 +128,7 @@ public class Event extends Model {
 	 */
 	private int human = 1;
 	/**
-	 * Дата изменения
+	 * Дата создания
 	 */
 	private Date date;
 	/**
@@ -668,6 +668,7 @@ public class Event extends Model {
 		if (value != JSONObject.NULL)
 			setTabloid(json.getLong("tabloid"));
 		recalculable = true;
+		setModified(DateUtil.getDatabaseDateTime(json.getString("updated_at")));
 	}
 
 	/**
@@ -1487,5 +1488,17 @@ public class Event extends Model {
 	 */
 	public boolean isBaby() {
 		return getAge() < MAX_CHILD_AGE;
+	}
+
+	/**
+	 * Дата изменения
+	 */
+	private Date modified;
+
+	public Date getModified() {
+		return modified;
+	}
+	public void setModified(Date modified) {
+		this.modified = modified;
 	}
 }
