@@ -140,7 +140,7 @@ public class PlaceService extends DictionaryService {
 		int result = -1;
         PreparedStatement ps = null;
 		try {
-			String sql = "insert into " + tableName + " values(?,?,?,?,?,?,?,?,?,?)";
+			String sql = "insert into " + tableName + " values(?,?,?,?,?,?,?,?,?,?,?,?)";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, dict.getId());
 			ps.setDouble(2, dict.getLatitude());
@@ -155,6 +155,8 @@ public class PlaceService extends DictionaryService {
 			else
 				ps.setNull(9, java.sql.Types.NULL);
 			ps.setString(10, dict.getType());
+			ps.setDouble(11, dict.getZone());
+			ps.setBoolean(12, dict.isDst());
 			System.out.println(ps);
 			result = ps.executeUpdate();
 			if (result == 1) {

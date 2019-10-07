@@ -139,4 +139,26 @@ public class Place extends Dictionary {
 		}
 		return "[" + res + "]";
 	}
+
+	/**
+	 * Текущий часовой пояс
+	 */
+	private double zone;
+	/**
+	 * Признак того, что в настоящее время в этом месте практикуется летнее время
+	 */
+	private boolean dst;
+
+	public double getZone() {
+		return zone;
+	}
+	public void setZone(double zone) {
+		this.zone = zone;
+	}
+	public boolean isDst() {
+		return dst;
+	}
+	public void setDst(boolean dst) {
+		this.dst = dst;
+	}
 }
