@@ -172,4 +172,17 @@ public class SkyPointAspect {
 	public void setDescr(String descr) {
 		this.descr = descr;
 	}
+
+	/**
+	 * Поиск знака силы аспекта
+	 * @return знак силы
+	 */
+	public String getMark() {
+		if (exact)
+			return "•";
+		else if (application)
+			return "→";
+		else
+			return "←";
+	}
 }
