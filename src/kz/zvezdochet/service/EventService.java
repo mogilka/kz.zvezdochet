@@ -202,7 +202,7 @@ public class EventService extends ModelService {
 				if (!birth.contains("00:00:00"))
 					saveHouses(event);
 //				saveIngress(event);
-				saveStars(event);
+//				saveStars(event);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1428,7 +1428,7 @@ and celebrity = 1
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
-			Map<Long, Star> stars = event.getStars();
+			Map<Long, Model> stars = new StarService().getMap();
 			Map<Long, Model> houses = new HouseService().getMap();
 
 			String sql = "select * from " + getStarTable() + " where eventid = ?";
@@ -1436,7 +1436,7 @@ and celebrity = 1
 			ps.setLong(1, event.getId());
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				Star star = stars.get(rs.getLong("starid"));
+				Star star = (Star)stars.get(rs.getLong("starid"));
 				if (star != null) {
 					star.setLongitude(rs.getDouble("longitude"));
 					star.setLatitude(rs.getDouble("latitude"));
