@@ -120,6 +120,9 @@ public class Place extends Dictionary {
 		setGreenwich(json.getDouble("Greenwich"));
 		setType(json.getString("type"));
 		setDate(DateUtil.getDatabaseDateTime(json.getString("date")));
+		value = json.get("dst");
+		setDst((int)value > 0);
+		setZone(json.getDouble("zone"));
 	}
 
 	public Place() {}
