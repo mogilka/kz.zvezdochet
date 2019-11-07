@@ -741,6 +741,8 @@ public class EventPart extends ModelPart implements ICalculable {
 		txConversation.setText(""); //$NON-NLS-1$
 		cvMoonday.setSelection(null);
 		cvCardKind.setSelection(null);
+		refreshCard();
+		refreshTabs();
 	}
 	
 	public Model addModel() {
@@ -763,6 +765,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		Table table = (Table)controls[0];
 		table.removeAll();
 		Event event = (Event)model;
+		if (event != null) {
 			folder.setSelection(1);
 			Collection<Planet> planets = event.getPlanets().values();
 			for (Planet planet : planets) {
@@ -843,12 +846,14 @@ public class EventPart extends ModelPart implements ICalculable {
 			for (int i = 0; i < table.getColumnCount(); i++)
 				table.getColumn(i).pack();
 //			folder.setSelection(0);
-			
+		}
+
 		//дома
-		if (event.isHousable()) {
-			controls = grHouses.getChildren();
-			table = (Table)controls[0];
-			table.removeAll();
+		controls = grHouses.getChildren();
+		table = (Table)controls[0];
+		table.removeAll();
+		if (event != null) {
+			if (event.isHousable()) {
 				for (House house : event.getHouses().values()) {
 					TableItem item = new TableItem(table, SWT.NONE);
 					item.setText(0, house.getName());		
@@ -859,6 +864,7 @@ public class EventPart extends ModelPart implements ICalculable {
 				}
 				for (int i = 0; i < table.getColumnCount(); i++)
 					table.getColumn(i).pack();
+			}
 		}
 
 		//ингрессии
@@ -888,6 +894,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		controls = grStars.getChildren();
 		table = (Table)controls[0];
 		table.removeAll();
+		if (event != null) {
 			Collection<Star> stars = event.getStars().values();
 			for (Star star : stars) {
 				TableItem item = new TableItem(table, SWT.NONE);
@@ -931,6 +938,7 @@ public class EventPart extends ModelPart implements ICalculable {
 			}
 			for (int i = 0; i < table.getColumnCount(); i++)
 				table.getColumn(i).pack();
+		}
 	}
 
 	/**

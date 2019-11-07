@@ -30,7 +30,7 @@ import kz.zvezdochet.util.Constants;
  */
 public class EventHandler extends ModelOpenHandler {
 	@Inject
-	private EPartService partService;
+	protected EPartService partService;
 
 	@Execute
 	public void execute(@Active MPart activePart) {
