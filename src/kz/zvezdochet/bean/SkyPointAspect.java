@@ -136,6 +136,12 @@ public class SkyPointAspect {
 				if (Arrays.asList(positive).contains(pcode1) ||
 						Arrays.asList(positive).contains(pcode2))
 					type = (AspectType)service.find("POSITIVE");
+
+				if (state) {
+					String negative[] = {"Lilith", "Kethu"};
+					if (Arrays.asList(negative).contains(pcode1) ||
+							Arrays.asList(negative).contains(pcode2))
+						type = (AspectType)service.find("NEGATIVE");				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
