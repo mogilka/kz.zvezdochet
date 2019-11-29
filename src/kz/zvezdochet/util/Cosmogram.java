@@ -274,29 +274,51 @@ public class Cosmogram {
 				houseAspectable = params.get("houseAspectable") != null;
 
 			for (SkyPointAspect spa : paspects) {
+//				if (20 == spa.getSkyPoint1().getId() && 19 == spa.getSkyPoint2().getId())
+//					System.out.println(spa.getSkyPoint1().getCode() + " " + spa.getSkyPoint2().getCode() + " = " + spa.getScore());
+//				else if (19 == spa.getSkyPoint1().getId() && 20 == spa.getSkyPoint2().getId())
+//					System.out.println(spa.getSkyPoint1().getCode() + " " + spa.getSkyPoint2().getCode() + " = " + spa.getScore());
+//				else
+//					continue;
+
 				Aspect a = spa.getAspect();
 				if (!aspectypes.contains(a.getId()))
 					continue;
 
-				if (spa.getSkyPoint1().getCode().equals("Moon") && !event2.isHousable())
+				if (spa.getSkyPoint1().getCode().equals("Moon") && !event.isHousable())
 					continue;
 
-				if (spa.getSkyPoint2().getCode().equals("Moon") && !event.isHousable())
+				if (spa.getSkyPoint2().getCode().equals("Moon") && !event2.isHousable())
 					continue;
 
 				if (!houseAspectable && spa.getSkyPoint2() instanceof House)
 					continue;
 
+				boolean synastry = false, arrow = false;
+				if (params != null
+						&& params.get("type") != null
+						&& params.get("type").equals("synastry"))
+					synastry = true;
+
+				double one = 0, two = 0;
+				if (synastry) {
+					one = planets.get(spa.getSkyPoint1().getId()).getLongitude();
+					two = planets2.get(spa.getSkyPoint2().getId()).getLongitude();
+				} else {
+					one = planets2.get(spa.getSkyPoint1().getId()).getLongitude();
+					two = spa.getSkyPoint2() instanceof Planet
+						? planets.get(spa.getSkyPoint2().getId()).getLongitude()
+						: houses.get(spa.getSkyPoint2().getId()).getLongitude();
+					arrow = !a.getCode().equals("CONJUNCTION");
+				}
 				drawAspect(
 					a.getType().getColor(),
 					0f, 
-					planets2.get(spa.getSkyPoint1().getId()).getLongitude(),
-					spa.getSkyPoint2() instanceof Planet
-						? planets.get(spa.getSkyPoint2().getId()).getLongitude()
-						: houses.get(spa.getSkyPoint2().getId()).getLongitude(),
+					one,
+					two,
 					gc, 
 					getLineStyle(a.getType().getProtraction()), 
-					!a.getCode().equals("CONJUNCTION"));
+					arrow);
 			}
 		}
 	}
