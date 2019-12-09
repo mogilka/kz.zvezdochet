@@ -141,7 +141,10 @@ public class EventService extends ModelService {
 			String birth = DateUtil.formatCustomDateTime(event.getBirth(), "yyyy-MM-dd HH:mm:ss");
 			ps.setString(9, birth);
 			ps.setDate(10, event.getDeath() != null ? new java.sql.Date(event.getDeath().getTime()) : null);
-			String date = DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss");
+			Date created_at = event.getDate();
+			if (null == created_at)
+				created_at = new Date();
+			String date = DateUtil.formatCustomDateTime(created_at, "yyyy-MM-dd HH:mm:ss");
 			ps.setString(11, date);
 			ps.setInt(12, event.getHuman());
 			ps.setString(13, event.getAccuracy());
@@ -174,7 +177,7 @@ public class EventService extends ModelService {
 
 			ps.setString(23, event.getBio());
 			ps.setString(24, event.getConversation());
-			ps.setString(25, date);
+			ps.setString(25, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
 
 			if (model.getId() != null)
 				ps.setLong(26, model.getId());
