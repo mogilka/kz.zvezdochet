@@ -1465,4 +1465,31 @@ and celebrity = 1
 	public String getStarTable() {
 		return "eventstars";
 	}
+
+	/**
+	 * Поиск даты последнего обновления
+	 * @return дата
+	 * @throws DataAccessException
+	 */
+	public Date findLastDate() throws DataAccessException {
+		Date date = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String sql = "select max(updated_at) as maxdate from " + tableName + " where Celebrity = 1";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			rs = ps.executeQuery();
+			date = rs.next() ? DateUtil.getDatabaseDateTime(rs.getString("maxdate")) : new Date();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
+		return date;
+	}
 }

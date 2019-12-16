@@ -17,10 +17,12 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import kz.zvezdochet.core.bean.Model;
+import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.ui.view.ModelLabelProvider;
 import kz.zvezdochet.core.ui.view.ModelListView;
 import kz.zvezdochet.core.ui.view.View;
 import kz.zvezdochet.core.util.DateUtil;
+import kz.zvezdochet.service.EventService;
 
 /**
  * Импорт событий
@@ -108,5 +110,16 @@ public class ImportPart extends ModelListView {
 	@Override
 	public Model createModel() {
 		return null;
+	}
+
+	@Override
+	protected void initControls() throws DataAccessException {
+		super.initControls();
+		try {
+			Date date = new EventService().findLastDate();
+			dtDate.setSelection(date);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

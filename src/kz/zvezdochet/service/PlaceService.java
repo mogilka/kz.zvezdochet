@@ -182,4 +182,31 @@ public class PlaceService extends DictionaryService {
 		}
 		return dict;
 	}
+
+	/**
+	 * Поиск даты последнего обновления
+	 * @return дата
+	 * @throws DataAccessException
+	 */
+	public Date findLastDate() throws DataAccessException {
+		Date date = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+		try {
+			String sql = "select max(date) as maxdate from " + tableName;
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			rs = ps.executeQuery();
+			date = rs.next() ? DateUtil.getDatabaseDateTime(rs.getString("maxdate")) : new Date();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
+		return date;
+	}
 }
