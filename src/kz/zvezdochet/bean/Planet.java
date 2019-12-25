@@ -440,4 +440,12 @@ limit 500
 	public void setLoyalty(String loyalty) {
 		this.loyalty = loyalty;
 	}
+
+	/**
+	 * Проверка, является ли планета слабой
+	 * @return
+	 */
+	public boolean isWeak() {
+		return isBroken() || isKethued() || inMine() || isRetrograde();
+	}
 }
