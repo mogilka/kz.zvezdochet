@@ -1133,7 +1133,7 @@ public class Event extends Model {
 		initSunNeighbours();
 		initPlanetPositions();
 		initPlanetRank();
-//		initHouseAspects();
+		initHouseAspects();
 //		initIngress();
 	}
 
