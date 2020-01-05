@@ -301,11 +301,14 @@ public class Cosmogram {
 					synastry = true;
 
 				double one = 0, two = 0;
-				if (synastry) {
+				if (synastry) { //TODO
 					one = planets.get(spa.getSkyPoint1().getId()).getLongitude();
 					two = planets2.get(spa.getSkyPoint2().getId()).getLongitude();
 				} else {
-					one = planets2.get(spa.getSkyPoint1().getId()).getLongitude();
+					one = spa.getSkyPoint1() instanceof Planet
+						? planets2.get(spa.getSkyPoint1().getId()).getLongitude()
+						: houses.get(spa.getSkyPoint1().getId()).getLongitude();
+
 					two = spa.getSkyPoint2() instanceof Planet
 						? planets.get(spa.getSkyPoint2().getId()).getLongitude()
 						: houses.get(spa.getSkyPoint2().getId()).getLongitude();
