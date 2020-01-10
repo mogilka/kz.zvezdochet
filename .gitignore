@@ -1,3 +1,5 @@
 /bin
 /out/import.log
 /out/
+/cache/*
+/cache/

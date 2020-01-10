@@ -1,6 +1,7 @@
 package kz.zvezdochet.bean;
 
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.eclipse.swt.graphics.Image;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import kz.zvezdochet.core.bean.Model;
@@ -21,6 +23,7 @@ import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.ModelService;
 import kz.zvezdochet.core.util.CalcUtil;
 import kz.zvezdochet.core.util.DateUtil;
+import kz.zvezdochet.core.util.IOUtil;
 import kz.zvezdochet.core.util.NumberUtil;
 import kz.zvezdochet.core.util.PlatformUtil;
 import kz.zvezdochet.part.Messages;
@@ -276,6 +279,7 @@ public class Event extends Model {
 
 	/**
 	 * Инициализация полных данных о событии
+	 * @param initstat true - инициализировать статистику события
 	 */
 	public void initData(boolean initstat) {
 		try {
@@ -286,7 +290,7 @@ public class Event extends Model {
 			//если событие ещё не сохранено в базе, рассчитываем конфигурацию
 			//в противном случае берём конфигурацию из базы
 			if (null == id)
-				calc(false);
+				calc(true);
 			else {
 				EventService service = new EventService();
 				service.initHouses(this);
@@ -358,209 +362,29 @@ public class Event extends Model {
 
 	/**
 	 * Расчёт положения планет и астрологических домов
-	 * @param initstat признак расчёта статистики планет
+	 * @param cachable признак сохранения данных в кэш
 	 */
-	public void calc(boolean initstat) {
-		//new Configuration("12.12.2009", "23:11:16", "6.0", "43.15", "76.55");
+	public void calc(boolean cachable) {
 		try {
-			init(false);
 			Place calcplace = (null == place) ? new Place().getDefault() : place;
-
 	  	  	String date = DateUtil.formatCustomDateTime(birth, DateUtil.sdf.toPattern());
 	  	  	String time = DateUtil.formatCustomDateTime(birth, DateUtil.stf.toPattern());
-	  	  	String slat = Double.toString(calcplace.getLatitude());
-	  	  	String slon = Double.toString(calcplace.getLongitude());
-	  	  	String szone = Double.toString(zone + dst);
-			//System.out.println("calculate\t" + sdate + "\t" + stime + "\tzone:\t" + szone + "\tlat\t" + slat + "\tlon\t" + slon);
-	  		
-			try {
-		  		//обрабатываем координаты места
-		  		double lat = (slat != null && slat.length() > 0) ? Double.parseDouble(slat) : 51.48;
-		  		double lon = (slon != null && slon.length() > 0) ? Double.parseDouble(slon) : 0;
-		  		int ilondeg, ilonmin, ilonsec, ilatdeg, ilatmin, ilatsec;
-		  		ilondeg = (int)lon;
-		  		ilonmin = (int)Math.round((Math.abs(lon) - Math.abs(ilondeg)) * 100);
-		  		ilonsec = 0;
-		  		ilatdeg = (int)lat;
-		  		ilatmin = (int)Math.round((Math.abs(lat) - Math.abs(ilatdeg)) * 100);
-		  		ilatsec = 0;
 
-		  	  	SwissEph sweph = new SwissEph();
-				sweph.swe_set_topo(lon, lat, 0);
-		  		long iflag = SweConst.SEFLG_SWIEPH | SweConst.SEFLG_SIDEREAL | SweConst.SEFLG_SPEED | SweConst.SEFLG_TRUEPOS | SweConst.SEFLG_TOPOCTR;
-//		  	  	String path = "/home/nataly/workspace/kz.zvezdochet.sweph/lib/ephe";
-				String path = PlatformUtil.getPath(Activator.PLUGIN_ID, "/lib/ephe").getPath(); //$NON-NLS-1$
-		  		sweph.swe_set_ephe_path(path);
-		  		sweph.swe_set_sid_mode(SweConst.SE_SIDM_DJWHAL_KHUL, 0, 0);
-
-		  		//обрабатываем дату
-		  		int iyear, imonth, iday, ihour = 0, imin = 0, isec = 0;
-		  		iday = Integer.parseInt(date.substring(0, 2));
-		  		imonth = Integer.parseInt(date.substring(3, 5));
-		  		iyear = Integer.parseInt(date.substring(6, 10));
-		  		
-		  		//обрабатываем время
-		  		double timing = Double.parseDouble(NumberUtil.trimLeadZero(time.substring(0, 2))); //час по местному времени
-		  		double zone = Double.parseDouble(szone); //зона
-		  		if (zone < 0) {
-		  			if (timing < (24 + zone))
-		  				timing -= zone;
-		  			else {
-		  				/*
-		  				 * Если час больше разности 24 часов и зоны, значит по Гринвичу будет следующий день,
-		  				 * поэтому нужно увеличить указанную дату на 1 день
-		  				 */
-		  				timing = timing - zone - 24;
-		  				if (iday < 28)
-		  					++iday;
-		  				else if (31 == iday) {
-		  					iday = 1;  							
-		  					if (12 == imonth) {
-		  	  					++iyear;
-		  	  					imonth = 1;
-		  					} else
-		  						++imonth;
-		  				} else if (30 == iday) {
-		  					if (Arrays.asList(new Integer[] {4,6,9,11}).contains(imonth)) {
-		  						++imonth;
-		  						iday = 1;
-		  					} else
-		  						iday = 31;
-		  				} else if (2 == imonth) {
-		  					if (29 == iday) {
-		  	  					imonth = 3;
-		  	  					iday = 1;
-		  					} else if (28 == iday) {
-		  						if (DateUtil.isLeapYear(iyear))
-		  							iday = 29;
-		  						else {
-		  							imonth = 3;
-		  							iday = 1;
-		  						}
-		  					}
-		  				} else //28 и 29 числа месяцев кроме февраля
-		  					++iday;
-		  			}
-		  		} else {
-		  			if (timing >= zone)
-		  				timing -= zone;
-		  			else {
-		  				/*
-		  				 * Если час меньше зоны, значит по Гринвичу будет предыдущий день,
-		  				 * поэтому нужно уменьшить указанную дату на 1 день
-		  				 */
-		  				timing = timing + 24 - zone;
-		  				if (iday > 1)
-		  					--iday;
-		  				else {
-		  					if (1 == imonth) {
-		  						--iyear;
-		  						imonth = 12;
-		  						iday = 31;
-		  					} else if (3 == imonth) {
-		  						imonth = 2;
-		  						iday = DateUtil.isLeapYear(iyear) ? 29 : 28;
-		  					} else if (Arrays.asList(new Integer[] {2,4,6,8,9,11}).contains(imonth)) {
-		  						--imonth;
-		  						iday = 31;
-		  					} else if (Arrays.asList(new Integer[] {5,7,10,12}).contains(imonth)) {
-		  						--imonth;
-		  						iday = 30;
-		  					}
-		  				}
-		  			}
-		  		}
-		  		if (timing >= 24)
-		  			timing -= 24;
-		  		ihour = (int)timing; //гринвичский час
-		  		imin = Integer.parseInt(NumberUtil.trimLeadZero(time.substring(3,5)));
-		  		isec = Integer.parseInt(NumberUtil.trimLeadZero(time.substring(6,8)));
-		
-		  		//обрабатываем время
-		  		@SuppressWarnings("unused")
-				double tjd, tjdet, tjdut, tsid, armc, dhour, deltat;
-		  		@SuppressWarnings("unused")
-				double eps_true, nut_long, glon, glat;
-		  		dhour = ihour + imin/60.0 + isec/3600.0;
-		  		tjd = SweDate.getJulDay(iyear, imonth, iday, dhour, true);
-		  		deltat = SweDate.getDeltaT(tjd);
-		  		//Universal Time
-		  		tjdut = tjd;
-		  		tjdet = tjd + deltat;
-		  		
-		  		//расчёт эфемерид планет
-		  		@SuppressWarnings("unused")
-				long rflag;
-		  		double[] planets = new double[15];
-		  		double[] xx = new double[6];
-		  		char[] serr = new char[256];
-		  		StringBuffer sb = new StringBuffer(new String(serr));
-		  		int[] plist = getPlanetList();
-		  		Planet p;
-		  		for (int i = 0; i < plist.length; i++) {
-		  		    rflag = sweph.swe_calc_ut(tjdut, plist[i], (int)iflag, xx, sb);
-		  		    planets[i] = xx[0];
-		  		    long n = constToPlanet(i);
-		  		    if (n >= 0) {
-		  		    	p = planetList.get(n);
-		  	  			p.setLongitude(xx[0]);
-			  			p.setLatitude(xx[1]);
-			  			p.setDistance(xx[2]);
-		  	  			p.setSpeedLongitude(xx[3]);
-			  			p.setSpeedLatitude(xx[4]);
-			  			p.setSpeedDistance(xx[5]);
-		  		    }
-		  		}
-		  		//рассчитываем координату Кету по значению Раху
-		  		p = planetList.get(22L);
-		  		if (planets[10] > 180)
-		  			p.setLongitude(planets[10] - 180);
-		  		else
-		  			p.setLongitude(planets[10] + 180);
-		
-		  		//расчёт куспидов домов
-		  		sb = new StringBuffer(new String(serr));
-		  		//{ for houses: ecliptic obliquity and nutation }
-		  		rflag = sweph.swe_calc_ut(tjdut, SweConst.SE_ECL_NUT, 0, xx, sb);
-		  		eps_true = xx[0];
-		  		nut_long = xx[2];
-		  		//{ geographic position }
-		  		glon = Math.abs(ilondeg) + ilonmin/60.0 + ilonsec/3600.0;
-		  		if (lon < 0)
-		  			glon = -glon;
-		  		glat = Math.abs(ilatdeg) + ilatmin/60.0 + ilatsec/3600.0;
-		  		if (lat < 0)
-		  			glat = -glat;
-		  		//{ sidereal time }
-		  		tsid = new SwissLib().swe_sidtime(tjdut);
-		  		tsid = tsid + glon / 15;
-		  		armc = tsid * 15;
-		  		//{ house method }
-		  		double[] ascmc = new double[10];
-		  		double[] hcusps = new double[13];
-		  		sweph.swe_houses(tjdut, SweConst.SEFLG_SIDEREAL, glat, glon, hsys, hcusps, ascmc);
-		  		calcHouseParts(hcusps);
-
-		  		//расчёт координат звёзд
-		  		for (Star star : starList.values()) {
-		  			sb = new StringBuffer(new String(serr));
-		  			rflag = sweph.swe_fixstar_ut(new StringBuffer(star.getCode()), tjdut, (int)iflag, xx, sb);
-		  			star.setLongitude(xx[0]);
-		  			star.setLatitude(xx[1]);
-		  			star.setDistance(xx[2]);
-
-					Sign sign = SkyPoint.getSign(star.getLongitude(), getBirthYear());
-					star.setSign(sign);
-		  		}
-		  		sweph.swe_close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			initSigns();
-			initAspects();
-			initHouses();
-			initPlanetStatistics();
-			setRecalculable(true);
+	  	  	if (cachable) {
+	  	  		String cachekey = date + "_" + time + "_" + calcplace.getId();
+	  	  		URL url = PlatformUtil.getPath(kz.zvezdochet.Activator.PLUGIN_ID, "/cache/" + cachekey + ".txt");
+	  	  		if (null == url) {
+	  	  			calcSweph(calcplace, date, time, cachable);
+	  	  			String filename = PlatformUtil.getPath(kz.zvezdochet.Activator.PLUGIN_ID, "/cache/").getPath() + cachekey + ".txt";
+	  	  			String data = toJSON();
+	  	  			IOUtil.createFile(filename, data);
+	  	  		} else {
+	  	  			String filename = url.getPath();
+	  	  			String json = IOUtil.getTextFromFile(filename);
+	  	  			init(json);
+	  	  		}
+	  	  	} else
+	  	  		calcSweph(calcplace, date, time, cachable);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1501,4 +1325,269 @@ public class Event extends Model {
 	public void setModified(Date modified) {
 		this.modified = modified;
 	}
+
+	/**
+	 * Расчёт положения планет и астрологических домов
+	 * @param place местонахождение
+	 * @param date дата
+	 * @param time время
+	 * @param cachable признак сохранения данных в кэш
+	 */
+	private void calcSweph(Place place, String date, String time, boolean cachable) {
+		try {
+			init(false);
+			double lat = place.getLatitude();
+			double lon = place.getLongitude();
+			double nzone = cachable ? place.getZone() : zone;
+			double ndst = cachable ? (place.isDst() ? 1 : 0) : dst;
+			//System.out.println("calculate\t" + date + "\t" + time + "\tzone:\t" + szone + "\tlat\t" + slat + "\tlon\t" + slon);
+
+			try {
+		  		//обрабатываем координаты места
+		  		int ilondeg, ilonmin, ilonsec, ilatdeg, ilatmin, ilatsec;
+		  		ilondeg = (int)lon;
+		  		ilonmin = (int)Math.round((Math.abs(lon) - Math.abs(ilondeg)) * 100);
+		  		ilonsec = 0;
+		  		ilatdeg = (int)lat;
+		  		ilatmin = (int)Math.round((Math.abs(lat) - Math.abs(ilatdeg)) * 100);
+		  		ilatsec = 0;
+
+		  	  	SwissEph sweph = new SwissEph();
+				sweph.swe_set_topo(lon, lat, 0);
+		  		long iflag = SweConst.SEFLG_SWIEPH | SweConst.SEFLG_SIDEREAL | SweConst.SEFLG_SPEED | SweConst.SEFLG_TRUEPOS | SweConst.SEFLG_TOPOCTR;
+//		  	  	String path = "/home/nataly/workspace/kz.zvezdochet.sweph/lib/ephe";
+				String path = PlatformUtil.getPath(Activator.PLUGIN_ID, "/lib/ephe").getPath(); //$NON-NLS-1$
+		  		sweph.swe_set_ephe_path(path);
+		  		sweph.swe_set_sid_mode(SweConst.SE_SIDM_DJWHAL_KHUL, 0, 0);
+
+		  		//обрабатываем дату
+		  		int iyear, imonth, iday, ihour = 0, imin = 0, isec = 0;
+		  		iday = Integer.parseInt(date.substring(0, 2));
+		  		imonth = Integer.parseInt(date.substring(3, 5));
+		  		iyear = Integer.parseInt(date.substring(6, 10));
+		  		
+		  		//обрабатываем время
+		  		double timing = Double.parseDouble(NumberUtil.trimLeadZero(time.substring(0, 2))); //час по местному времени
+		  		nzone += ndst; //часовой пояс + DST
+		  		if (nzone < 0) {
+		  			if (timing < (24 + nzone))
+		  				timing -= nzone;
+		  			else {
+		  				/*
+		  				 * Если час больше разности 24 часов и зоны, значит по Гринвичу будет следующий день,
+		  				 * поэтому нужно увеличить указанную дату на 1 день
+		  				 */
+		  				timing = timing - nzone - 24;
+		  				if (iday < 28)
+		  					++iday;
+		  				else if (31 == iday) {
+		  					iday = 1;  							
+		  					if (12 == imonth) {
+		  	  					++iyear;
+		  	  					imonth = 1;
+		  					} else
+		  						++imonth;
+		  				} else if (30 == iday) {
+		  					if (Arrays.asList(new Integer[] {4,6,9,11}).contains(imonth)) {
+		  						++imonth;
+		  						iday = 1;
+		  					} else
+		  						iday = 31;
+		  				} else if (2 == imonth) {
+		  					if (29 == iday) {
+		  	  					imonth = 3;
+		  	  					iday = 1;
+		  					} else if (28 == iday) {
+		  						if (DateUtil.isLeapYear(iyear))
+		  							iday = 29;
+		  						else {
+		  							imonth = 3;
+		  							iday = 1;
+		  						}
+		  					}
+		  				} else //28 и 29 числа месяцев кроме февраля
+		  					++iday;
+		  			}
+		  		} else {
+		  			if (timing >= nzone)
+		  				timing -= nzone;
+		  			else {
+		  				/*
+		  				 * Если час меньше зоны, значит по Гринвичу будет предыдущий день,
+		  				 * поэтому нужно уменьшить указанную дату на 1 день
+		  				 */
+		  				timing = timing + 24 - nzone;
+		  				if (iday > 1)
+		  					--iday;
+		  				else {
+		  					if (1 == imonth) {
+		  						--iyear;
+		  						imonth = 12;
+		  						iday = 31;
+		  					} else if (3 == imonth) {
+		  						imonth = 2;
+		  						iday = DateUtil.isLeapYear(iyear) ? 29 : 28;
+		  					} else if (Arrays.asList(new Integer[] {2,4,6,8,9,11}).contains(imonth)) {
+		  						--imonth;
+		  						iday = 31;
+		  					} else if (Arrays.asList(new Integer[] {5,7,10,12}).contains(imonth)) {
+		  						--imonth;
+		  						iday = 30;
+		  					}
+		  				}
+		  			}
+		  		}
+		  		if (timing >= 24)
+		  			timing -= 24;
+		  		ihour = (int)timing; //гринвичский час
+		  		imin = Integer.parseInt(NumberUtil.trimLeadZero(time.substring(3,5)));
+		  		isec = Integer.parseInt(NumberUtil.trimLeadZero(time.substring(6,8)));
+
+		  		//обрабатываем время
+		  		@SuppressWarnings("unused")
+				double tjd, tjdet, tjdut, tsid, armc, dhour, deltat;
+		  		@SuppressWarnings("unused")
+				double eps_true, nut_long, glon, glat;
+		  		dhour = ihour + imin/60.0 + isec/3600.0;
+		  		tjd = SweDate.getJulDay(iyear, imonth, iday, dhour, true);
+		  		deltat = SweDate.getDeltaT(tjd);
+		  		//Universal Time
+		  		tjdut = tjd;
+		  		tjdet = tjd + deltat;
+
+		  		//расчёт эфемерид планет
+		  		@SuppressWarnings("unused")
+				long rflag;
+		  		double[] planets = new double[15];
+		  		double[] xx = new double[6];
+		  		char[] serr = new char[256];
+		  		StringBuffer sb = new StringBuffer(new String(serr));
+		  		int[] plist = getPlanetList();
+		  		Planet p;
+		  		for (int i = 0; i < plist.length; i++) {
+		  		    rflag = sweph.swe_calc_ut(tjdut, plist[i], (int)iflag, xx, sb);
+		  		    planets[i] = xx[0];
+		  		    long n = constToPlanet(i);
+		  		    if (n >= 0) {
+		  		    	p = planetList.get(n);
+		  	  			p.setLongitude(xx[0]);
+			  			p.setLatitude(xx[1]);
+			  			p.setDistance(xx[2]);
+		  	  			p.setSpeedLongitude(xx[3]);
+			  			p.setSpeedLatitude(xx[4]);
+			  			p.setSpeedDistance(xx[5]);
+		  		    }
+		  		}
+		  		//рассчитываем координату Кету по значению Раху
+		  		p = planetList.get(22L);
+		  		if (planets[10] > 180)
+		  			p.setLongitude(planets[10] - 180);
+		  		else
+		  			p.setLongitude(planets[10] + 180);
+
+		  		//расчёт куспидов домов
+		  		sb = new StringBuffer(new String(serr));
+		  		//{ for houses: ecliptic obliquity and nutation }
+		  		rflag = sweph.swe_calc_ut(tjdut, SweConst.SE_ECL_NUT, 0, xx, sb);
+		  		eps_true = xx[0];
+		  		nut_long = xx[2];
+		  		//{ geographic position }
+		  		glon = Math.abs(ilondeg) + ilonmin/60.0 + ilonsec/3600.0;
+		  		if (lon < 0)
+		  			glon = -glon;
+		  		glat = Math.abs(ilatdeg) + ilatmin/60.0 + ilatsec/3600.0;
+		  		if (lat < 0)
+		  			glat = -glat;
+		  		//{ sidereal time }
+		  		tsid = new SwissLib().swe_sidtime(tjdut);
+		  		tsid = tsid + glon / 15;
+		  		armc = tsid * 15;
+		  		//{ house method }
+		  		double[] ascmc = new double[10];
+		  		double[] hcusps = new double[13];
+		  		sweph.swe_houses(tjdut, SweConst.SEFLG_SIDEREAL, glat, glon, hsys, hcusps, ascmc);
+		  		calcHouseParts(hcusps);
+
+		  		//расчёт координат звёзд
+		  		for (Star star : starList.values()) {
+		  			sb = new StringBuffer(new String(serr));
+		  			rflag = sweph.swe_fixstar_ut(new StringBuffer(star.getCode()), tjdut, (int)iflag, xx, sb);
+		  			star.setLongitude(xx[0]);
+		  			star.setLatitude(xx[1]);
+		  			star.setDistance(xx[2]);
+
+					Sign sign = SkyPoint.getSign(star.getLongitude(), getBirthYear());
+					star.setSign(sign);
+		  		}
+		  		sweph.swe_close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (!cachable) {
+				initSigns();
+				initAspects();
+				initHouses();
+				initPlanetStatistics();
+				setRecalculable(true);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Маршализация расчётных данных в JSON-массив
+	 * @return JSON-строка
+	 */
+    public String toJSON() {
+    	JSONObject object = new JSONObject();
+
+        JSONArray array = new JSONArray();
+        for (House house : houseList.values())
+        	array.put(house.getId().intValue() - 142, house.getLongitude());
+        object.put("houses", array);
+
+        array = new JSONArray();
+        for (Planet planet : planetList.values())
+        	array.put(planet.getId().intValue() - 19, planet.getLongitude());
+        object.put("planets", array);
+
+//        array = new JSONArray();
+//        for (Star star : starList.values())
+//        	array.put(star.getId().intValue() - 1, star.getLongitude());
+//        object.put("stars", array);
+
+        return object.toString();
+    }
+
+    public void init(String json) {
+    	if (null == json) return;
+    	try {
+    		init(false);
+	    	JSONObject object = new JSONObject(json);
+	
+	    	JSONArray array = object.getJSONArray("houses");
+	    	for (int i = 0; i < array.length(); i++) {
+	    		double lon = array.getDouble(i);
+	    		House house = houseList.get((long)i + 142);
+	    		house.setLongitude(lon);
+	    	}
+	
+	    	array = object.getJSONArray("planets");
+	    	for (int i = 0; i < array.length(); i++) {
+	    		double lon = array.getDouble(i);
+	    		Planet planet = planetList.get((long)i + 19);
+	    		planet.setLongitude(lon);
+	    	}
+	
+//	    	array = object.getJSONArray("stars");
+//	    	for (int i = 0; i < array.length(); i++) {
+//	    		double lon = array.getDouble(i);
+//	    		Star star = starList.get((long)i + 1);
+//	    		star.setLongitude(lon);
+//	    	}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
 }
