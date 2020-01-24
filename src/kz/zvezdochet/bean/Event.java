@@ -2,6 +2,7 @@ package kz.zvezdochet.bean;
 
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -371,7 +372,7 @@ public class Event extends Model {
 	  	  	String time = DateUtil.formatCustomDateTime(birth, DateUtil.stf.toPattern());
 
 	  	  	if (cachable) {
-	  	  		String cachekey = date + "_" + time + "_" + calcplace.getId();
+	  	  		String cachekey = calcplace.getId() + "_" + DateUtil.formatCustomDateTime(birth, new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").toPattern());
 	  	  		URL url = PlatformUtil.getPath(kz.zvezdochet.Activator.PLUGIN_ID, "/cache/" + cachekey + ".txt");
 	  	  		if (null == url) {
 	  	  			calcSweph(calcplace, date, time, cachable);
