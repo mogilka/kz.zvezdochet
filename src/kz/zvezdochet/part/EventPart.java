@@ -461,8 +461,10 @@ public class EventPart extends ModelPart implements ICalculable {
 
 	@Override
 	protected void arrange(Composite parent) {
-		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(parent);
+		GridLayoutFactory.swtDefaults().applyTo(parent);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(parent);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(sashForm);
+		GridLayoutFactory.swtDefaults().applyTo(sashForm);
 
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			span(3, 1).grab(true, false).applyTo(lbID);

@@ -48,16 +48,15 @@ public class AspectPart extends ListView {
 
 	@Override
 	protected void init(Composite parent) {
-		container = new Composite(parent, SWT.NONE);
-		container.setLayout(new FormLayout());
+		parent.setLayout(new FormLayout());
 		initFilter(parent);
 
-		tableViewer = new TableViewer(container, SWT.BORDER | SWT.FULL_SELECTION);
+		tableViewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
 		Table table = tableViewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
-		tableViewer2 = new TableViewer(container, SWT.BORDER | SWT.FULL_SELECTION);
+		tableViewer2 = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
 		Table table2 = tableViewer2.getTable();
 		table2.setHeaderVisible(true);
 		table2.setLinesVisible(true);
@@ -173,8 +172,7 @@ public class AspectPart extends ListView {
 	@Override
 	protected void arrange(Composite parent) {
 		GridLayoutFactory.swtDefaults().applyTo(parent);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(container);
-		GridLayoutFactory.swtDefaults().applyTo(container);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(parent);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(tableViewer.getTable());
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(tableViewer2.getTable());
 	}

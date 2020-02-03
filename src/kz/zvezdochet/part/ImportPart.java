@@ -44,7 +44,7 @@ public class ImportPart extends ModelListView {
 
 	@Override
 	public void initFilter(Composite parent) {
-		grFilter = new Group(container, SWT.NONE);
+		grFilter = new Group(parent, SWT.NONE);
 		grFilter.setText("Поиск");
 		grFilter.setLayout(new GridLayout());
 		dtDate = new CDateTime(grFilter, CDT.BORDER | CDT.COMPACT | CDT.DROP_DOWN | CDT.DATE_LONG | CDT.TIME_MEDIUM);
