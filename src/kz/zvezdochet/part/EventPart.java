@@ -26,6 +26,7 @@ import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -120,10 +121,18 @@ public class EventPart extends ModelPart implements ICalculable {
 	private Group grAspectType;
 	private Group grIngress;
 	private Group grStars;
-	
+
+	private SashForm shCosmogram;
+
 	@PostConstruct
 	public View create(Composite parent) {
-		Group secEvent = new Group(parent, SWT.NONE);
+		return super.create(parent);
+	}
+
+	@Override
+	protected void init(Composite parent) {
+		super.init(parent);
+		Group secEvent = new Group(sashForm, SWT.NONE);
 		secEvent.setText(Messages.getString("PersonView.Options")); //$NON-NLS-1$
 
 		Label lb = new Label(secEvent, SWT.NONE);
@@ -258,7 +267,7 @@ public class EventPart extends ModelPart implements ICalculable {
 
 		//////////////////////////////////////////////////
 
-		Group grCosmogram = new Group(parent, SWT.NONE);
+		Group grCosmogram = new Group(sashForm, SWT.NONE);
 		grCosmogram.setText("Космограмма");
 		cmpCosmogram = new CosmogramComposite(grCosmogram, SWT.NONE);
 		
@@ -276,10 +285,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		folder.pack();
 		GridLayoutFactory.swtDefaults().applyTo(grCosmogram);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(grCosmogram);
-		
-		super.create(parent);
 		setModel(null, false);
-		return null;
 	}
 	
 	/**
@@ -454,7 +460,7 @@ public class EventPart extends ModelPart implements ICalculable {
 	}
 
 	@Override
-	protected void init(Composite parent) {
+	protected void arrange(Composite parent) {
 		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(parent);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(parent);
 

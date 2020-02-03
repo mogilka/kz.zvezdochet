@@ -37,8 +37,7 @@ public class ImportPart extends ModelListView {
 
 	@PostConstruct @Override
 	public View create(Composite parent) {
-		super.create(parent);
-		return null;
+		return super.create(parent);
 	}
 
 	protected CDateTime dtDate;
@@ -114,7 +113,6 @@ public class ImportPart extends ModelListView {
 
 	@Override
 	protected void initControls() throws DataAccessException {
-		super.initControls();
 		try {
 			Date date = new EventService().findLastDate();
 			dtDate.setSelection(date);

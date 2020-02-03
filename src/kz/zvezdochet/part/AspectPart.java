@@ -19,7 +19,6 @@ import org.eclipse.swt.widgets.TableColumn;
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Planet;
-import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.ui.listener.ListSelectionListener;
 import kz.zvezdochet.core.ui.view.ListView;
 import kz.zvezdochet.core.ui.view.View;
@@ -44,6 +43,11 @@ public class AspectPart extends ListView {
 	
 	@PostConstruct @Override
 	public View create(Composite parent) {
+		return super.create(parent);
+	}
+
+	@Override
+	protected void init(Composite parent) {
 		container = new Composite(parent, SWT.NONE);
 		container.setLayout(new FormLayout());
 		initFilter(parent);
@@ -59,28 +63,17 @@ public class AspectPart extends ListView {
 		table2.setLinesVisible(true);
 
 		addColumns();
-		init(parent);
-		try {
-			initControls();
-		} catch (DataAccessException e) {
-			e.printStackTrace();
-		}
-
 		tableViewer.setContentProvider(new ArrayContentProvider());
 		tableViewer.setLabelProvider(getLabelProvider());
-
 		tableViewer2.setContentProvider(new ArrayContentProvider());
 		tableViewer2.setLabelProvider(getLabelProvider());
 
 		ListSelectionListener listener = getSelectionListener();
 		tableViewer.addSelectionChangedListener(listener);
 		tableViewer.addDoubleClickListener(listener);
-
 		tableViewer2.addSelectionChangedListener(listener);
 		tableViewer2.addDoubleClickListener(listener);
-
 		initTable();
-		return null;
 	}
 
 	/**
@@ -178,7 +171,7 @@ public class AspectPart extends ListView {
 	}
 
 	@Override
-	protected void init(Composite parent) {
+	protected void arrange(Composite parent) {
 		GridLayoutFactory.swtDefaults().applyTo(parent);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(container);
 		GridLayoutFactory.swtDefaults().applyTo(container);

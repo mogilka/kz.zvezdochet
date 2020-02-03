@@ -58,14 +58,13 @@ public class SearchPart extends ModelListView {
 
 	@PostConstruct @Override
 	public View create(Composite parent) {
-		super.create(parent);
+		return super.create(parent);
 //		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 //			@Override
 //			public void doubleClick(DoubleClickEvent event) {
 //				new EventHandler().execute(SearchPart.this);				
 //			}
 //		});
-		return null;
 	}
 	
 	@Override
