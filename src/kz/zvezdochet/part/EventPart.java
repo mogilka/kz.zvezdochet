@@ -267,11 +267,13 @@ public class EventPart extends ModelPart implements ICalculable {
 
 		//////////////////////////////////////////////////
 
-		Group grCosmogram = new Group(sashForm, SWT.NONE);
+		shCosmogram = new SashForm(sashForm, SWT.VERTICAL);
+		Group grCosmogram = new Group(shCosmogram, SWT.NONE);
 		grCosmogram.setText("Космограмма");
 		cmpCosmogram = new CosmogramComposite(grCosmogram, SWT.NONE);
 		
-		folder = new CTabFolder(grCosmogram, SWT.BORDER);
+		Group grSettings = new Group(shCosmogram, SWT.NONE);
+		folder = new CTabFolder(grSettings, SWT.BORDER);
 		folder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		folder.setSimple(false);
 		folder.setUnselectedCloseVisible(false);
@@ -283,8 +285,11 @@ public class EventPart extends ModelPart implements ICalculable {
 			item.setControl(tab.control);
 		}
 		folder.pack();
+
 		GridLayoutFactory.swtDefaults().applyTo(grCosmogram);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(grCosmogram);
+		GridLayoutFactory.swtDefaults().applyTo(grSettings);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(grSettings);
 		setModel(null, false);
 	}
 	
@@ -461,10 +466,9 @@ public class EventPart extends ModelPart implements ICalculable {
 
 	@Override
 	protected void arrange(Composite parent) {
-		GridLayoutFactory.swtDefaults().applyTo(parent);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(parent);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(sashForm);
-		GridLayoutFactory.swtDefaults().applyTo(sashForm);
+		super.arrange(parent);
+		GridDataFactory.fillDefaults().grab(false, true).applyTo(shCosmogram);
+		GridLayoutFactory.swtDefaults().applyTo(shCosmogram);
 
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			span(3, 1).grab(true, false).applyTo(lbID);
@@ -513,7 +517,7 @@ public class EventPart extends ModelPart implements ICalculable {
 			grab(false, false).applyTo(btTerm);
 
 		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.FILL).
-			hint(514, 514).span(3, 1).grab(true, false).applyTo(cmpCosmogram);
+			hint(514, 514).grab(true, false).applyTo(cmpCosmogram);
 		
 		ModifyListener blobListener = new ModifyListener() {
 			@Override

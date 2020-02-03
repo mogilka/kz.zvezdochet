@@ -6,7 +6,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -171,8 +170,7 @@ public class AspectPart extends ListView {
 
 	@Override
 	protected void arrange(Composite parent) {
-		GridLayoutFactory.swtDefaults().applyTo(parent);
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(parent);
+		super.arrange(parent);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(tableViewer.getTable());
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(tableViewer2.getTable());
 	}
