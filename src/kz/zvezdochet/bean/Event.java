@@ -786,7 +786,9 @@ public class Event extends Model {
 		return houseList;
 	}
 
-	public List<SkyPointAspect> getAspectsh() {
+	public List<SkyPointAspect> getAspectHouseList() {
+		if (null == aspecthList)
+			aspecthList = new ArrayList<SkyPointAspect>();
 		return aspecthList;
 	}
 
@@ -1185,30 +1187,38 @@ public class Event extends Model {
 	 */
 	public void initHouseAspects() throws DataAccessException {
 		try {
-			if (aspecthList != null && aspecthList.size() > 0) return;
-	  	  	aspecthList = new ArrayList<SkyPointAspect>();
-			List<Model> aspects = new AspectService().getList();
-			if (planetList != null) 
-				for (Planet p : planetList.values()) {
-					for (Model model2 : houseList.values()) {
-						House h = (House)model2;
+			aspecthList = new ArrayList<SkyPointAspect>();
+			if (planetList != null) { 
+				List<Model> aspects = new AspectService().getList();
+				Collection<Planet> planets = planetList.values();
+				Collection<House> houses = houseList.values();
+				for (Planet p : planets) {
+					for (House h : houses) {
 						double res = CalcUtil.getDifference(p.getLongitude(), h.getLongitude());
 						for (Model realasp : aspects) {
 							Aspect a = (Aspect)realasp;
+
+							long asplanetid = a.getPlanetid();
+							if (asplanetid > 0)
+								continue;
+
 							if (a.isAspect(res)) {
 								String aspectTypeCode = a.getType().getCode();
-
 								if (aspectTypeCode.equals("NEUTRAL") && p.getCode().equals("Sun") && res <= 3)
 									continue;
 								SkyPointAspect aspect = new SkyPointAspect();
 								aspect.setSkyPoint1(p);
 								aspect.setSkyPoint2(h);
 								aspect.setAspect(a);
+								aspect.setExact(a.isExact(res));
+								aspect.setApplication(a.isApplication(res));
+								p.getAspectHouseList().add(aspect);
 								aspecthList.add(aspect);
 							}
 						}
 					}
 				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

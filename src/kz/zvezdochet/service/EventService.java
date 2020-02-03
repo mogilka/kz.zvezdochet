@@ -1124,7 +1124,7 @@ order by year(initialdate)
 			ps.executeUpdate();
 			ps.close();
 
-			List<SkyPointAspect> aspects = event.getAspectsh();
+			List<SkyPointAspect> aspects = event.getAspectHouseList();
 			for (SkyPointAspect aspect : aspects) {
 				SkyPoint point = aspect.getSkyPoint1();
 				SkyPoint point2 = aspect.getSkyPoint2();

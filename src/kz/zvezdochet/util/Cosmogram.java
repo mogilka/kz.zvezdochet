@@ -240,23 +240,37 @@ public class Cosmogram {
 			}
 		}
 
+		boolean houseAspectable = false;
+		if (params != null
+				&& event.getHouses() != null
+				&& event.getHouses().size() > 0)
+			houseAspectable = params.get("houseAspectable") != null;
+
 		Map<Long, Planet> planets = event.getPlanets();
+		Map<Long, House> houses = event.getHouses();
 		boolean single = (null == event2 || null == event2.getPlanets());
 		if (single) {
 			for (Planet p : planets.values()) {
 				if (p.getCode().equals("Moon") && !event.isHousable())
 					continue;
 	
-					List<SkyPointAspect> paspects = p.getAspectList();
+					List<SkyPointAspect> paspects = houseAspectable ? p.getAspectHouseList() : p.getAspectList();
 					for (SkyPointAspect spa : paspects) {
 						Aspect a = spa.getAspect();
 						if (!aspectypes.contains(a.getId()))
 							continue;
+						if (houseAspectable && !a.isMain())
+							continue;
+
+						double coord = houseAspectable
+							? houses.get(spa.getSkyPoint2().getId()).getLongitude()
+							: planets.get(spa.getSkyPoint2().getId()).getLongitude();
+
 						drawAspect(
 							a.getType().getColor(),
 							0f,
 							p.getLongitude(),
-							planets.get(spa.getSkyPoint2().getId()).getLongitude(),
+							coord,
 							gc, 
 							getLineStyle(a.getType().getProtraction()),
 							!single && !a.getCode().equals("CONJUNCTION"));
@@ -264,14 +278,7 @@ public class Cosmogram {
 			}
 		} else {
 			Map<Long, Planet> planets2 = event2.getPlanets();
-			Map<Long, House> houses = event.getHouses();
 			List<SkyPointAspect> paspects = event2.getAspectList();
-
-			boolean houseAspectable = false;
-			if (params != null
-					&& event.getHouses() != null
-					&& event.getHouses().size() > 0)
-				houseAspectable = params.get("houseAspectable") != null;
 
 			for (SkyPointAspect spa : paspects) {
 //				if (20 == spa.getSkyPoint1().getId() && 19 == spa.getSkyPoint2().getId())

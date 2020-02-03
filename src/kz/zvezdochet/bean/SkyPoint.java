@@ -344,7 +344,7 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
 	}
 
 	/**
-	 * Массив аспектов
+	 * Массив аспектов с планетами
 	 */
 	private	List<SkyPointAspect> aspectList;
 
@@ -488,5 +488,20 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
 	 */
 	public boolean isFictived() {
 		return isKethued() || isRakhued() || isLilithed() || isSelened();
+	}
+
+	/**
+	 * Массив аспектов с домами
+	 */
+	private	List<SkyPointAspect> aspectHouseList;
+
+	public void setAspectHouseList(List<SkyPointAspect> aspectList) {
+		this.aspectHouseList = aspectList;
+	}
+
+	public List<SkyPointAspect> getAspectHouseList() {
+		if (null == aspectHouseList)
+			aspectHouseList = new ArrayList<SkyPointAspect>();
+		return aspectHouseList;
 	}
 }

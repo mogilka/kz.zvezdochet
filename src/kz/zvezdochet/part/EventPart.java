@@ -84,6 +84,7 @@ public class EventPart extends ModelPart implements ICalculable {
 	 * при котором проверяются только расчётные показатели
 	 */
 	public static int MODE_CALC = 1;
+	public static int MODE_ASPECT_HOUSE = 2;
 
 	private Label lbGender;
 	private Label lbID;
@@ -751,9 +752,27 @@ public class EventPart extends ModelPart implements ICalculable {
 
 	@Override
 	public void onCalc(Object obj) {
-		part.setDirty(true);
-		refreshCard();
-		refreshTabs();
+		if (null == obj)
+			obj = MODE_CALC;
+		int mode = (int)obj;
+		if (MODE_CALC == mode) {
+			part.setDirty(true);
+			refreshCard();
+			refreshTabs();
+		} else if (MODE_ASPECT_HOUSE == mode) {
+			Map<String, Object> params = new HashMap<>();
+			List<String> aparams = new ArrayList<String>();
+			Map<String, String[]> types = AspectType.getHierarchy();
+			for (Control control : grAspectType.getChildren()) {
+				Button button = (Button)control;
+				if (button.getSelection())
+					aparams.addAll(Arrays.asList(types.get(button.getData("type"))));
+			}
+			params.put("aspects", aparams);
+			params.put("houseAspectable", true);
+			Event event = (Event)model;
+			cmpCosmogram.paint(event, null, params);
+		}
 	}
 
 	/**

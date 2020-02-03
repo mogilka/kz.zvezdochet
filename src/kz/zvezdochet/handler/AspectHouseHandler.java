@@ -10,10 +10,10 @@ import kz.zvezdochet.core.ui.util.DialogUtil;
 import kz.zvezdochet.part.EventPart;
 
 /**
- * Расчёт конфигурации
+ * Расчёт аспектов планет с домами
  * @author Natalie Didenko
  */
-public class CalcHandler extends Handler {
+public class AspectHouseHandler extends Handler {
 
 	@Execute
 	public void execute(@Active MPart activePart) {
@@ -21,10 +21,9 @@ public class CalcHandler extends Handler {
 			EventPart eventPart = (EventPart)activePart.getObject();
 			Event event = (Event)eventPart.getModel(EventPart.MODE_CALC, true);
 			if (null == event) return;
-			updateStatus("Расчет конфигурации", false);
-			event.calc(false);
-			eventPart.setModel(event, false);
-			eventPart.onCalc(EventPart.MODE_CALC);
+			updateStatus("Расчет аспектов домов", false);
+			event.initHouseAspects();
+			eventPart.onCalc(EventPart.MODE_ASPECT_HOUSE);
 			updateStatus("Расчетная конфигурация создана", false);
 		} catch (Exception e) {
 			DialogUtil.alertError(e.getMessage());
