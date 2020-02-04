@@ -27,6 +27,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -72,7 +73,9 @@ import kz.zvezdochet.provider.PlaceProposalProvider;
 import kz.zvezdochet.provider.PlaceProposalProvider.PlaceContentProposal;
 import kz.zvezdochet.service.AspectTypeService;
 import kz.zvezdochet.service.CardKindService;
+import kz.zvezdochet.service.HouseService;
 import kz.zvezdochet.service.MoonDayService;
+import kz.zvezdochet.service.PlanetService;
 
 /**
  * Представление события
@@ -123,6 +126,7 @@ public class EventPart extends ModelPart implements ICalculable {
 	private Group grStars;
 
 	private SashForm shCosmogram;
+	private Button btHouseAspects;
 
 	@PostConstruct
 	public View create(Composite parent) {
@@ -309,7 +313,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		tab.control = group;
 		tabs[0] = tab;
 
-		//планеты
+//-------- планеты
 		tab = new Tab();
 		tab.name = "Планеты";
 		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet.gif").createImage();
@@ -353,7 +357,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(grPlanets);
 		tabs[1] = tab;
 		
-		//дома
+//-------- дома
 		tab = new Tab();
 		tab.name = "Дома";
 		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/home.gif").createImage();
@@ -373,39 +377,147 @@ public class EventPart extends ModelPart implements ICalculable {
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(grHouses);
 		tabs[2] = tab;
 		
-		//аспекты
-		tab = new Tab();
-		tab.name = "Аспекты";
-		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect.gif").createImage();
-		grAspectType = new Group(folder, SWT.NONE);
-		grAspectType.setLayout(new GridLayout());
-		List<Model> types = new ArrayList<Model>();
+//-------- аспекты
 		try {
-			types = new AspectTypeService().getList();
+			tab = new Tab();
+			tab.name = "Аспекты";
+			tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect.gif").createImage();
+			grAspectType = new Group(folder, SWT.NONE);
+			grAspectType.setLayout(new GridLayout());
+	
+			//типы аспектов
+			Group gr = new Group(grAspectType, SWT.NONE);
+			List<Model> types = new AspectTypeService().getList();
+			for (Model model : types) {
+				AspectType type = (AspectType)model;
+				if (type.getImage() != null) {
+					final Button bt = new Button(gr, SWT.BORDER | SWT.CHECK);
+					bt.setText(type.getName());
+					bt.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/" + type.getImage()).createImage());
+					bt.setSelection(true);
+					bt.setData("type", type.getCode());
+				}
+			}
+			GridLayoutFactory.swtDefaults().applyTo(gr);
+			GridDataFactory.fillDefaults().grab(false, true).applyTo(gr);
+	
+			//планеты аспектов
+			final Group grp = new Group(grAspectType, SWT.NONE);
+			Button bt = new Button(grp, SWT.NONE);
+			bt.setText("Выбрать все");
+			bt.addSelectionListener(new SelectionListener() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					for (Control control : grp.getChildren()) {
+						Button button = (Button)control;
+						if (button.getData("planet") != null)
+							button.setSelection(true);
+					}
+				}
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {}
+			});
+			bt = new Button(grp, SWT.NONE);
+			bt.setText("Снять выделение");
+			bt.addSelectionListener(new SelectionListener() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					for (Control control : grp.getChildren()) {
+						Button button = (Button)control;
+						if (button.getData("planet") != null)
+							button.setSelection(false);
+					}
+				}
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {}
+			});
+
+			List<Model> planets = new PlanetService().getList();
+			for (Model model : planets) {
+				Planet planet = (Planet)model;
+				final Button b = new Button(grp, SWT.BORDER | SWT.CHECK);
+				b.setText(planet.getName());
+				b.setImage(planet.getImage());
+				b.setSelection(true);
+				b.setData("planet", planet.getCode());
+			}
+			GridLayoutFactory.swtDefaults().applyTo(grp);
+			GridDataFactory.fillDefaults().grab(false, true).applyTo(grp);
+
+			//дома аспектов
+			ScrolledComposite scroll = new ScrolledComposite(grAspectType, SWT.V_SCROLL);
+			scroll.setLayout(new GridLayout(1, false));
+			scroll.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		    
+			final Group grh = new Group(scroll, SWT.NONE);
+			bt = new Button(grh, SWT.NONE);
+			bt.setText("Выбрать все");
+			bt.addSelectionListener(new SelectionListener() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					for (Control control : grh.getChildren()) {
+						Button button = (Button)control;
+						if (button.getData("house") != null)
+							button.setSelection(true);
+					}
+				}
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {}
+			});
+			bt = new Button(grh, SWT.NONE);
+			bt.setText("Снять выделение");
+			bt.addSelectionListener(new SelectionListener() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					for (Control control : grh.getChildren()) {
+						Button button = (Button)control;
+						if (button.getData("house") != null)
+							button.setSelection(false);
+					}
+				}
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {}
+			});
+
+			List<Model> houses = new HouseService().getList();
+			for (Model model : houses) {
+				House house = (House)model;
+				final Button b = new Button(grh, SWT.BORDER | SWT.CHECK);
+				b.setText(house.getDesignation() + " - " + house.getName());
+				b.setData("house", house.getCode());
+			}
+			GridLayoutFactory.swtDefaults().applyTo(grh);
+			GridDataFactory.fillDefaults().grab(false, true).applyTo(grh);
+			scroll.setContent(grh);
+			scroll.setExpandHorizontal(true);
+			scroll.setExpandVertical(true);
+			scroll.setMinSize(grh.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+
+			//настройки аспектов
+			gr = new Group(grAspectType, SWT.NONE);
+			btHouseAspects = new Button(gr, SWT.BORDER | SWT.CHECK);
+			btHouseAspects.setText("Аспекты планет с куспидами");
+
+			bt = new Button(gr, SWT.NONE);
+			bt.setText("Расчёт");
+			bt.addSelectionListener(new SelectionListener() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					refreshCard();
+				}
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {}
+			});
+			GridLayoutFactory.swtDefaults().applyTo(gr);
+			GridDataFactory.fillDefaults().grab(false, true).applyTo(gr);
+
+			GridLayoutFactory.swtDefaults().numColumns(4).applyTo(grAspectType);
+			GridDataFactory.fillDefaults().span(4, 1).grab(false, true).applyTo(grAspectType);
+			tab.control = grAspectType;
+			tabs[3] = tab;
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
-		for (Model model : types) {
-			AspectType type = (AspectType)model;
-			if (type.getImage() != null) {
-				final Button bt = new Button(grAspectType, SWT.BORDER | SWT.CHECK);
-				bt.setText(type.getName());
-				bt.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/" + type.getImage()).createImage());
-				bt.setSelection(true);
-				bt.setData("type", type.getCode());
-				bt.addSelectionListener(new SelectionListener() {
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						if (bt.getSelection())
-							refreshCard();
-					}
-					@Override
-					public void widgetDefaultSelected(SelectionEvent e) {}
-				});
-			}
-		}
-		tab.control = grAspectType;
-		tabs[3] = tab;
 
 		//ингрессии
 		tab = new Tab();
@@ -976,17 +1088,42 @@ public class EventPart extends ModelPart implements ICalculable {
 	 * Перерисовка космограммы
 	 */
 	private void refreshCard() {
+		if (null == model)
+			return;
 		Map<String, Object> params = new HashMap<>();
-		List<String> aparams = new ArrayList<String>();
+		List<String> subparams = new ArrayList<String>();
 		Map<String, String[]> types = AspectType.getHierarchy();
-		for (Control control : grAspectType.getChildren()) {
+		Group group = (Group)grAspectType.getChildren()[0];
+		for (Control control : group.getChildren()) {
 			Button button = (Button)control;
 			if (button.getSelection())
-				aparams.addAll(Arrays.asList(types.get(button.getData("type"))));
+				subparams.addAll(Arrays.asList(types.get(button.getData("type"))));
 		}
-		params.put("aspects", aparams);
-		Event event = (Event)model;
-		cmpCosmogram.paint(event, null, params);
+		params.put("aspects", subparams);
+
+		if (btHouseAspects.getSelection()) {
+			params.put("houseAspectable", true);
+			
+			subparams = new ArrayList<String>();
+			group = (Group)grAspectType.getChildren()[1];
+			for (Control control : group.getChildren()) {
+				Button button = (Button)control;
+				if (button.getSelection())
+					subparams.add(button.getData("planet").toString());
+			}
+			params.put("planets", subparams);
+
+			subparams = new ArrayList<String>();
+			ScrolledComposite scroll = (ScrolledComposite)grAspectType.getChildren()[2];
+			group = (Group)scroll.getChildren()[0];
+			for (Control control : group.getChildren()) {
+				Button button = (Button)control;
+				if (button.getSelection())
+					subparams.add(button.getData("house").toString());
+			}
+			params.put("houses", subparams);
+		}
+		cmpCosmogram.paint((Event)model, null, params);
 	}
 
 	/**

@@ -19,6 +19,7 @@ import kz.zvezdochet.bean.Aspect;
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Planet;
+import kz.zvezdochet.bean.SkyPoint;
 import kz.zvezdochet.bean.SkyPointAspect;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
@@ -222,22 +223,26 @@ public class Cosmogram {
 		if (null == event || null == event.getPlanets()) return;
 
 		List<Long> aspectypes = new ArrayList<>();
-		List<Aspect> aspectlist = new ArrayList<>();
 		List<Model> aspects = new AspectService().getList();
 
 		List<String> aparams = new ArrayList<>();
+		List<String> pparams = new ArrayList<>();
+		List<String> hparams = new ArrayList<>();
 		if (params != null) {
 			if (params.get("aspects") != null)
 				aparams = (List<String>)params.get("aspects");
+			if (params.get("planets") != null)
+				pparams = (List<String>)params.get("planets");
+			if (params.get("houses") != null)
+				hparams = (List<String>)params.get("houses");
 		}
+
 		for (Model model : aspects) {
 			Aspect a = (Aspect)model;
 			if (aparams.size() > 0 && !aparams.contains(a.getType().getCode()))
 				continue;
-			else {
+			else
 				aspectypes.add(a.getId());
-				aspectlist.add(a);
-			}
 		}
 
 		boolean houseAspectable = false;
@@ -251,6 +256,12 @@ public class Cosmogram {
 		boolean single = (null == event2 || null == event2.getPlanets());
 		if (single) {
 			for (Planet p : planets.values()) {
+				if (houseAspectable
+						&& pparams != null
+						&& !pparams.isEmpty()
+						&& !pparams.contains(p.getCode()))
+					continue;
+
 				if (p.getCode().equals("Moon") && !event.isHousable())
 					continue;
 	
@@ -259,21 +270,24 @@ public class Cosmogram {
 						Aspect a = spa.getAspect();
 						if (!aspectypes.contains(a.getId()))
 							continue;
-						if (houseAspectable && !a.isMain())
-							continue;
 
-						double coord = houseAspectable
-							? houses.get(spa.getSkyPoint2().getId()).getLongitude()
-							: planets.get(spa.getSkyPoint2().getId()).getLongitude();
+						Double coord = null;
+						if (houseAspectable) {
+							SkyPoint skyPoint = spa.getSkyPoint2();
+							if (hparams != null && hparams.contains(skyPoint.getCode()))
+								coord = houses.get(skyPoint.getId()).getLongitude();
+						} else
+							coord = planets.get(spa.getSkyPoint2().getId()).getLongitude();
 
-						drawAspect(
-							a.getType().getColor(),
-							0f,
-							p.getLongitude(),
-							coord,
-							gc, 
-							getLineStyle(a.getType().getProtraction()),
-							!single && !a.getCode().equals("CONJUNCTION"));
+						if (coord != null)
+							drawAspect(
+								a.getType().getColor(),
+								0f,
+								p.getLongitude(),
+								coord,
+								gc, 
+								getLineStyle(a.getType().getProtraction()),
+								!single && !a.getCode().equals("CONJUNCTION"));
 					}
 			}
 		} else {

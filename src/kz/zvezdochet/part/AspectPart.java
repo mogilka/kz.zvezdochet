@@ -10,6 +10,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
@@ -50,12 +51,13 @@ public class AspectPart extends ListView {
 		parent.setLayout(new FormLayout());
 		initFilter(parent);
 
-		tableViewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
+		sashForm = new SashForm(parent, SWT.VERTICAL);
+		tableViewer = new TableViewer(sashForm, SWT.BORDER | SWT.FULL_SELECTION);
 		Table table = tableViewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
-		tableViewer2 = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
+		tableViewer2 = new TableViewer(sashForm, SWT.BORDER | SWT.FULL_SELECTION);
 		Table table2 = tableViewer2.getTable();
 		table2.setHeaderVisible(true);
 		table2.setLinesVisible(true);
@@ -171,7 +173,6 @@ public class AspectPart extends ListView {
 	@Override
 	protected void arrange(Composite parent) {
 		super.arrange(parent);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(tableViewer.getTable());
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(tableViewer2.getTable());
 	}
 
