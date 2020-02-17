@@ -134,7 +134,7 @@ public class EventPart extends ModelPart implements ICalculable {
 	}
 
 	@Override
-	protected void init(Composite parent) {
+	protected void init(Composite parent) { 
 		super.init(parent);
 		Group secEvent = new Group(sashForm, SWT.NONE);
 		secEvent.setText(Messages.getString("PersonView.Options")); //$NON-NLS-1$
