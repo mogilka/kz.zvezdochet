@@ -113,6 +113,7 @@ public class ImportPart extends ModelListView {
 
 	@Override
 	protected void initControls() throws DataAccessException {
+		super.initControls();
 		try {
 			Date date = new EventService().findLastDate();
 			dtDate.setSelection(date);
