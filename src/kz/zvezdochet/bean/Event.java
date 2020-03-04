@@ -1,5 +1,6 @@
 package kz.zvezdochet.bean;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -15,7 +16,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -373,16 +378,22 @@ public class Event extends Model {
 
 	  	  	if (cachable) {
 	  	  		String cachekey = calcplace.getId() + "_" + DateUtil.formatCustomDateTime(birth, new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").toPattern());
-	  	  		URL url = PlatformUtil.getPath(kz.zvezdochet.Activator.PLUGIN_ID, "/cache/" + cachekey + ".txt");
-	  	  		if (null == url) {
-	  	  			calcSweph(calcplace, date, time, cachable);
-	  	  			String filename = PlatformUtil.getPath(kz.zvezdochet.Activator.PLUGIN_ID, "/cache/").getPath() + cachekey + ".txt";
-	  	  			String data = toJSON();
-	  	  			IOUtil.createFile(filename, data);
-	  	  		} else {
-	  	  			String filename = url.getPath();
+
+//		  	  	IPreferenceStore preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, "kz.zvezdochet.runner");
+//		        String dir = preferenceStore.getString(CACHE_DIR_PATH);
+
+	  	  		String dir = "/media/nataly/toshiba/cache/";
+	  	  		if (null == dir)
+	  	  			dir = PlatformUtil.getPath(kz.zvezdochet.Activator.PLUGIN_ID, "/cache/").getPath();
+	  	  		String filename = dir + cachekey + ".txt";
+	  	  		File file = new File(filename);
+	  	  		if (file.exists()) { 
 	  	  			String json = IOUtil.getTextFromFile(filename);
 	  	  			init(json);
+	  	  		} else {
+	  	  			calcSweph(calcplace, date, time, cachable);
+	  	  			String data = toJSON();
+	  	  			IOUtil.createFile(filename, data);
 	  	  		}
 	  	  	} else
 	  	  		calcSweph(calcplace, date, time, cachable);
