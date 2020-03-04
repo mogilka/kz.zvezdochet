@@ -2,7 +2,6 @@ package kz.zvezdochet.bean;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,11 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
