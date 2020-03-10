@@ -191,4 +191,30 @@ public class SkyPointAspect {
 		else
 			return "←";
 	}
+
+	/**
+	 * Поиск описания силы аспекта
+	 * @return описание силы
+	 */
+	public String getMarkDescr() {
+		if (exact)
+			return "точное сочетание, наиболее сильное и сконцентрированное";
+		else if (application)
+			return "нарастающее сочетание с тенденцией к усилению";
+		else
+			return "угасающее сочетание с тенденцией к ослаблению";
+	}
+
+	/**
+	 * Поиск значения силы аспекта
+	 * @return значение силы
+	 */
+	public int getMarkPoints() {
+		if (exact)
+			return 0;
+		else if (application)
+			return -1;
+		else
+			return 1;
+	}
 }
