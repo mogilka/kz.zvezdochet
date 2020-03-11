@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.json.JSONObject;
 
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DictionaryService;
@@ -50,8 +51,15 @@ public class Planet extends SkyPoint {
 		this.fictious = fictitious;
 	}
 
-	public Planet(String name) {
-		setName(name);
+	public Planet(String string) {
+    	JSONObject object = new JSONObject(string);
+        setId(object.getLong("id"));
+        setLongitude(object.getDouble("longitude"));
+        setLatitude(object.getDouble("latitude"));
+        setDistance(object.getDouble("distance"));
+        setSpeedLongitude(object.getDouble("speed_longitude"));
+        setSpeedLatitude(object.getDouble("speed_latitude"));
+        setSpeedDistance(object.getDouble("speed_distance"));
 	}
 
 	public Planet() {}
@@ -448,4 +456,20 @@ limit 500
 	public boolean isWeak() {
 		return isBroken() || isKethued() || inMine() || isRetrograde();
 	}
+
+	/**
+	 * Маршализация в JSON-массив
+	 * @return JSON-строка
+	 */
+    public String toJSON() {
+    	JSONObject object = new JSONObject();
+        object.put("id", getId());
+        object.put("longitude", getLongitude());
+        object.put("latitude", getLatitude());
+        object.put("distance", getDistance());
+        object.put("speed_longitude", getSpeedLongitude());
+        object.put("speed_latitude", getSpeedLatitude());
+        object.put("speed_distance", getSpeedDistance());
+        return object.toString();
+    }
 }

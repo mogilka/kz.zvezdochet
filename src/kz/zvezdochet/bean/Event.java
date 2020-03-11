@@ -1559,50 +1559,35 @@ public class Event extends Model {
     public String toJSON() {
     	JSONObject object = new JSONObject();
 
-        JSONArray array = new JSONArray();
-        for (House house : houseList.values())
-        	array.put(house.getId().intValue() - 142, house.getLongitude());
-        object.put("houses", array);
-
-        array = new JSONArray();
+    	JSONArray array = new JSONArray();
         for (Planet planet : planetList.values())
-        	array.put(planet.getId().intValue() - 19, planet.getLongitude());
+        	array.put(planet.getId().intValue() - 19, planet.toJSON());
         object.put("planets", array);
-
-//        array = new JSONArray();
-//        for (Star star : starList.values())
-//        	array.put(star.getId().intValue() - 1, star.getLongitude());
-//        object.put("stars", array);
 
         return object.toString();
     }
 
+    /**
+     * Инициализация расчётных данных из JSON-массива
+     * @param json JSON-строка
+     */
     public void init(String json) {
     	if (null == json) return;
     	try {
     		init(false);
 	    	JSONObject object = new JSONObject(json);
-	
-	    	JSONArray array = object.getJSONArray("houses");
+	    	JSONArray array = object.getJSONArray("planets");
 	    	for (int i = 0; i < array.length(); i++) {
-	    		double lon = array.getDouble(i);
-	    		House house = houseList.get((long)i + 142);
-	    		house.setLongitude(lon);
-	    	}
-	
-	    	array = object.getJSONArray("planets");
-	    	for (int i = 0; i < array.length(); i++) {
-	    		double lon = array.getDouble(i);
+	    		String str = array.getString(i);
+	    		Planet jplanet = new Planet(str);
 	    		Planet planet = planetList.get((long)i + 19);
-	    		planet.setLongitude(lon);
+	    		planet.setLongitude(jplanet.getLongitude());
+	    		planet.setLatitude(jplanet.getLatitude());
+	    		planet.setDistance(jplanet.getDistance());
+	    		planet.setSpeedLongitude(jplanet.getSpeedLongitude());
+	    		planet.setSpeedLatitude(jplanet.getSpeedLatitude());
+	    		planet.setSpeedDistance(jplanet.getSpeedDistance());
 	    	}
-	
-//	    	array = object.getJSONArray("stars");
-//	    	for (int i = 0; i < array.length(); i++) {
-//	    		double lon = array.getDouble(i);
-//	    		Star star = starList.get((long)i + 1);
-//	    		star.setLongitude(lon);
-//	    	}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
