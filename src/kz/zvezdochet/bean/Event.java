@@ -846,11 +846,13 @@ public class Event extends Model {
 			if (planetList != null) { 
 				List<Model> aspects = new AspectService().getList();
 				Collection<Planet> planets = planetList.values();
+				for (Planet p : planets)
+					p.setAspectList(null);
 				for (Planet p : planets) {
 					for (Planet p2 : planets) {
 						if (p.getCode().equals(p2.getCode()))
 							continue;
-//						if (p.getNumber() > p2.getNumber()) continue;
+						if (p.getNumber() > p2.getNumber()) continue;
 						double res = CalcUtil.getDifference(p.getLongitude(), p2.getLongitude());
 						for (Model realasp : aspects) {
 							Aspect a = (Aspect)realasp;
@@ -858,9 +860,8 @@ public class Event extends Model {
 							if (asplanetid > 0 && asplanetid != p.getId())
 								continue;
 							if (a.isAspect(res)) {
-								String aspectTypeCode = a.getType().getCode();
-								if (aspectTypeCode.equals("NEUTRAL") && p.getCode().equals("Sun") && res <= 3)
-									continue;
+//								if (19 == p.getId() && 24 == p2.getId())
+//									System.out.println("aspectid=" + a.getId());
 								SkyPointAspect aspect = new SkyPointAspect();
 								aspect.setSkyPoint1(p);
 								aspect.setSkyPoint2(p2);
@@ -872,7 +873,8 @@ public class Event extends Model {
 								aspect = new SkyPointAspect(aspect);
 								aspect.setSkyPoint1(p2);
 								aspect.setSkyPoint2(p);
-								planetList.get(aspect.getSkyPoint2().getId()).getAspectList().add(aspect);
+								planetList.get(p2.getId()).getAspectList().add(aspect);
+								break;
 							}
 						}
 					}
