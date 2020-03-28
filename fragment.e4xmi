@@ -23,6 +23,7 @@
     <elements xsi:type="commands:Command" xmi:id="_Jz2DoCv6Eea8ho93V63yqQ" elementId="kz.zvezdochet.command.importrun" commandName="importRunCommand"/>
     <elements xsi:type="commands:Command" xmi:id="_IJQpQDIdEeaojrkXKYxgpQ" elementId="kz.zvezdochet.command.main" commandName="mainCommand"/>
     <elements xsi:type="commands:Command" xmi:id="_zl0AwDhmEea8n4ZXEu0wrA" elementId="kz.zvezdochet.command.add" commandName="addCommand"/>
+    <elements xsi:type="commands:Command" xmi:id="_1CpAkG0OEeqOv-2naHEU8g" elementId="kz.zvezdochet.command.eventconf" commandName="eventconfCommand"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_nj-6cNZfEeK-x7EaamJw9Q" featurename="handlers" parentElementId="org.eclipse.e4.ide.application">
     <elements xsi:type="commands:Handler" xmi:id="_fSwJcNZyEeK-x7EaamJw9Q" elementId="kz.zvezdochet.handler.event" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.handler.EventHandler" command="_EZFS8NZfEeK-x7EaamJw9Q"/>
@@ -39,6 +40,7 @@
     <elements xsi:type="commands:Handler" xmi:id="_TadYkCv6Eea8ho93V63yqQ" elementId="kz.zvezdochet.handler.importrun" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.handler.ImportRunHandler" command="_Jz2DoCv6Eea8ho93V63yqQ"/>
     <elements xsi:type="commands:Handler" xmi:id="_LISmMDIdEeaojrkXKYxgpQ" elementId="kz.zvezdochet.handler.main" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.handler.MainHandler" command="_IJQpQDIdEeaojrkXKYxgpQ"/>
     <elements xsi:type="commands:Handler" xmi:id="_3Y4CsDhmEea8n4ZXEu0wrA" elementId="kz.zvezdochet.handler.add" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.handler.AddEventHandler" command="_zl0AwDhmEea8n4ZXEu0wrA"/>
+    <elements xsi:type="commands:Handler" xmi:id="_4sajoG0OEeqOv-2naHEU8g" elementId="kz.zvezdochet.handler.eventconf" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.handler.EventConfHandler" command="_1CpAkG0OEeqOv-2naHEU8g"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_I0RPYNZgEeK-x7EaamJw9Q" featurename="children" parentElementId="org.eclipse.ui.main.menu" positionInList="first">
     <elements xsi:type="menu:Menu" xmi:id="_OThtYNZgEeK-x7EaamJw9Q" elementId="kz.zvezdochet.menu.events" label="&#x413;&#x43e;&#x440;&#x43e;&#x441;&#x43a;&#x43e;&#x43f;&#x44b;">
@@ -62,9 +64,10 @@
         <children xsi:type="menu:HandledToolItem" xmi:id="_fyhloBoqEeSUudsvByCRlw" elementId="kz.zvezdochet.handledtoolitem.similar" visible="false" label="&#x41f;&#x43e;&#x445;&#x43e;&#x436;&#x438;&#x435; &#x43f;&#x43e; &#x445;&#x430;&#x440;&#x430;&#x43a;&#x442;&#x435;&#x440;&#x443;" iconURI="platform:/plugin/kz.zvezdochet/icons/contacts.gif" tooltip="&#x41f;&#x43e;&#x445;&#x43e;&#x436;&#x438;&#x435; &#x43f;&#x43e; &#x445;&#x430;&#x440;&#x430;&#x43a;&#x442;&#x435;&#x440;&#x443;" command="_OY8DoBoqEeSUudsvByCRlw"/>
         <children xsi:type="menu:HandledToolItem" xmi:id="_LBNfMK7dEeS-0sohEvr2Kg" elementId="kz.zvezdochet.handledtoolitem.nonsimilar" visible="false" label="&#x41f;&#x440;&#x43e;&#x442;&#x438;&#x432;&#x43e;&#x43f;&#x43e;&#x43b;&#x43e;&#x436;&#x43d;&#x44b;&#x435; &#x43f;&#x43e; &#x445;&#x430;&#x440;&#x430;&#x43a;&#x442;&#x435;&#x440;&#x443;" iconURI="platform:/plugin/kz.zvezdochet/icons/contact_do_not_disturb.gif" tooltip="&#x41f;&#x440;&#x43e;&#x442;&#x438;&#x432;&#x43e;&#x43f;&#x43e;&#x43b;&#x43e;&#x436;&#x43d;&#x44b;&#x435; &#x43f;&#x43e; &#x445;&#x430;&#x440;&#x430;&#x43a;&#x442;&#x435;&#x440;&#x443;" command="_HP1UwK7cEeS-0sohEvr2Kg"/>
         <children xsi:type="menu:HandledToolItem" xmi:id="_6bW28HF1EeSjDK-VmtVS2w" elementId="kz.zvezdochet.handledtoolitem.events" label="&#x41f;&#x43e;&#x438;&#x441;&#x43a; &#x433;&#x43e;&#x440;&#x43e;&#x441;&#x43a;&#x43e;&#x43f;&#x43e;&#x432;" iconURI="platform:/plugin/kz.zvezdochet.core/icons/search.gif" tooltip="&#x41f;&#x43e;&#x438;&#x441;&#x43a; &#x433;&#x43e;&#x440;&#x43e;&#x441;&#x43a;&#x43e;&#x43f;&#x43e;&#x432;" command="_Kpei4NZzEeK-x7EaamJw9Q"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="__4gJ0G5hEeq8YK270OqWRQ" elementId="kz.zvezdochet.handledtoolitem.ecentconf" label="&#x424;&#x438;&#x433;&#x443;&#x440;&#x44b; &#x433;&#x43e;&#x440;&#x43e;&#x441;&#x43a;&#x43e;&#x43f;&#x430;" iconURI="platform:/plugin/kz.zvezdochet/icons/aspectconf.png" tooltip="&#x424;&#x438;&#x433;&#x443;&#x440;&#x44b; &#x433;&#x43e;&#x440;&#x43e;&#x441;&#x43a;&#x43e;&#x43f;&#x430;" command="_1CpAkG0OEeqOv-2naHEU8g"/>
       </toolbar>
     </elements>
-    <elements xsi:type="basic:Part" xmi:id="_6atxgA5_EeSg-JkqPuRrkA" elementId="kz.zvezdochet.part.events" visible="false" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.part.SearchPart" label="&#x41f;&#x43e;&#x438;&#x441;&#x43a; &#x433;&#x43e;&#x440;&#x43e;&#x441;&#x43a;&#x43e;&#x43f;&#x43e;&#x432;" iconURI="platform:/plugin/kz.zvezdochet.core/icons/search.gif" tooltip="" closeable="true">
+    <elements xsi:type="basic:Part" xmi:id="_6atxgA5_EeSg-JkqPuRrkA" elementId="kz.zvezdochet.part.events" visible="false" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.part.SearchPart" label="&#x41f;&#x43e;&#x438;&#x441;&#x43a; &#x433;&#x43e;&#x440;&#x43e;&#x441;&#x43a;&#x43e;&#x43f;&#x43e;&#x432;" iconURI="platform:/plugin/kz.zvezdochet.core/icons/search.gif" tooltip="&#x41f;&#x43e;&#x438;&#x441;&#x43a; &#x433;&#x43e;&#x440;&#x43e;&#x441;&#x43a;&#x43e;&#x43f;&#x43e;&#x432;" closeable="true">
       <toolbar xmi:id="_ChY9sA6AEeSg-JkqPuRrkA" elementId="kz.zvezdochet.toolbar.events">
         <children xsi:type="menu:HandledToolItem" xmi:id="_vTKG4A6CEeSg-JkqPuRrkA" elementId="kz.zvezdochet.handledtoolitem.add" label="&#x414;&#x43e;&#x431;&#x430;&#x432;&#x438;&#x442;&#x44c;" iconURI="platform:/plugin/kz.zvezdochet.core/icons/addElement.gif" tooltip="&#x414;&#x43e;&#x431;&#x430;&#x432;&#x438;&#x442;&#x44c;" command="_j_Ue8DhkEea8n4ZXEu0wrA">
           <parameters xmi:id="_I2jscDhlEea8n4ZXEu0wrA" elementId="kz.zvezdochet.parameter.addmodel" name="kz.zvezdochet.core.commandparameter.addmodel" value="kz.zvezdochet.part.event"/>
@@ -76,8 +79,8 @@
         </children>
       </toolbar>
     </elements>
-    <elements xsi:type="basic:Part" xmi:id="_5N80EBsPEeSmDKwadHMMRA" elementId="kz.zvezdochet.part.aspect" visible="false" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.part.AspectPart" label="&#x410;&#x441;&#x43f;&#x435;&#x43a;&#x442;&#x44b; &#x43f;&#x43b;&#x430;&#x43d;&#x435;&#x442;" iconURI="platform:/plugin/kz.zvezdochet/icons/aspect.gif" closeable="true"/>
-    <elements xsi:type="basic:Part" xmi:id="_ov20gCpoEeaqP6amqx7WdQ" elementId="kz.zvezdochet.part.import" visible="false" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.part.ImportPart" label="&#x418;&#x43c;&#x43f;&#x43e;&#x440;&#x442; &#x433;&#x43e;&#x440;&#x43e;&#x441;&#x43a;&#x43e;&#x43f;&#x43e;&#x432;" iconURI="platform:/plugin/kz.zvezdochet.core/icons/import.gif" closeable="true">
+    <elements xsi:type="basic:Part" xmi:id="_5N80EBsPEeSmDKwadHMMRA" elementId="kz.zvezdochet.part.aspect" visible="false" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.part.AspectPart" label="&#x410;&#x441;&#x43f;&#x435;&#x43a;&#x442;&#x44b; &#x43f;&#x43b;&#x430;&#x43d;&#x435;&#x442;" iconURI="platform:/plugin/kz.zvezdochet/icons/aspect.gif" tooltip="&#x410;&#x441;&#x43f;&#x435;&#x43a;&#x442;&#x44b; &#x43f;&#x43b;&#x430;&#x43d;&#x435;&#x442;" closeable="true"/>
+    <elements xsi:type="basic:Part" xmi:id="_ov20gCpoEeaqP6amqx7WdQ" elementId="kz.zvezdochet.part.import" visible="false" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.part.ImportPart" label="&#x418;&#x43c;&#x43f;&#x43e;&#x440;&#x442; &#x433;&#x43e;&#x440;&#x43e;&#x441;&#x43a;&#x43e;&#x43f;&#x43e;&#x432;" iconURI="platform:/plugin/kz.zvezdochet.core/icons/import.gif" tooltip="&#x418;&#x43c;&#x43f;&#x43e;&#x440;&#x442; &#x433;&#x43e;&#x440;&#x43e;&#x441;&#x43a;&#x43e;&#x43f;&#x43e;&#x432;" closeable="true">
       <toolbar xmi:id="_-34bkCpoEeaqP6amqx7WdQ" elementId="kz.zvezdochet.toolbar.0">
         <children xsi:type="menu:HandledToolItem" xmi:id="_ePRKoCpoEeaqP6amqx7WdQ" elementId="kz.zvezdochet.handledtoolitem.importcheck" label="&#x41d;&#x430;&#x439;&#x442;&#x438;" iconURI="platform:/plugin/kz.zvezdochet.core/icons/search.gif" tooltip="&#x41d;&#x430;&#x439;&#x442;&#x438;" command="_kHxrkCpnEeaqP6amqx7WdQ">
           <parameters xmi:id="_6cFeoDyQEea_lYoYKqetow" elementId="kz.zvezdochet.parameter.importcheck" name="kz.zvezdochet.commandparameter.importcheck" value="kz.zvezdochet.part.import"/>
@@ -85,6 +88,9 @@
         </children>
         <children xsi:type="menu:HandledToolItem" xmi:id="_cjZ6ECv6Eea8ho93V63yqQ" elementId="kz.zvezdochet.handledtoolitem.importrun" label="&#x418;&#x43c;&#x43f;&#x43e;&#x440;&#x442;&#x438;&#x440;&#x43e;&#x432;&#x430;&#x442;&#x44c;" iconURI="platform:/plugin/kz.zvezdochet.core/icons/import.gif" tooltip="&#x418;&#x43c;&#x43f;&#x43e;&#x440;&#x442;&#x438;&#x440;&#x43e;&#x432;&#x430;&#x442;&#x44c;" command="_Jz2DoCv6Eea8ho93V63yqQ"/>
       </toolbar>
+    </elements>
+    <elements xsi:type="basic:Part" xmi:id="_OI67cG5iEeq8YK270OqWRQ" elementId="kz.zvezdochet.part.eventconf" visible="false" contributionURI="bundleclass://kz.zvezdochet/kz.zvezdochet.part.ConfPart" label="&#x424;&#x438;&#x433;&#x443;&#x440;&#x44b; &#x433;&#x43e;&#x440;&#x43e;&#x441;&#x43a;&#x43e;&#x43f;&#x430;" iconURI="platform:/plugin/kz.zvezdochet/icons/aspectconf.png" tooltip="&#x424;&#x438;&#x433;&#x443;&#x440;&#x44b; &#x433;&#x43e;&#x440;&#x43e;&#x441;&#x43a;&#x43e;&#x43f;&#x430;" closeable="true">
+      <toolbar xmi:id="_WYZeUG5iEeq8YK270OqWRQ" elementId="kz.zvezdochet.toolbar.1"/>
     </elements>
   </fragments>
 </fragment:ModelFragments>
