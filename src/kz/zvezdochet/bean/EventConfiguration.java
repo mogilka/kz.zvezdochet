@@ -1,9 +1,8 @@
 package kz.zvezdochet.bean;
 
-import kz.zvezdochet.bean.AspectConfiguration;
-import kz.zvezdochet.service.EventConfigurationService;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.ModelService;
+import kz.zvezdochet.service.EventConfigurationService;
 
 /**
  * Конфигурация аспектов события
@@ -133,13 +132,26 @@ public class EventConfiguration extends Model {
 	/**
 	 * Событие
 	 */
-	private long eventid;
+	private Event event;
 
-	public long getEventid() {
-		return eventid;
+	public Event getEvent() {
+		return event;
 	}
 
-	public void setEventid(long eventid) {
-		this.eventid = eventid;
+	public void setEvent(Event event) {
+		this.event = event;
+	}
+
+	/**
+	 * Дом для толкования ожерелья
+	 */
+	private long houseid;
+
+	public long getHouseid() {
+		return houseid;
+	}
+
+	public void setHouseid(long houseid) {
+		this.houseid = houseid;
 	}
 }

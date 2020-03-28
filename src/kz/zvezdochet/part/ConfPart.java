@@ -200,7 +200,7 @@ public class ConfPart extends ModelListView {
 		try {
 			super.addModel(model);
 			EventConfiguration econf = (EventConfiguration)model;
-			econf.setEventid(model.getId());
+//			econf.setEventid(model.getId());
 			new EventConfigurationService().save(econf);
 			reset();
 		} catch (DataAccessException e) {
@@ -216,7 +216,7 @@ public class ConfPart extends ModelListView {
 		try {
 			if (!check(mode)) return;
 			conf = new EventConfiguration();
-			conf.setEventid(event.getId());
+//			conf.setEventid(event.getId());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
