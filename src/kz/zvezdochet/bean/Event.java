@@ -759,8 +759,8 @@ public class Event extends Model {
 	  				if (12 == i)
 	  					i = 0;
 	  				double two = houses[i + 1];
-	  				if ((one > 300) && (one < 360) && (two < 60))
-	  					two = two + 360;
+	  				if (two < one)
+	  					two += 360;
 	  				//вычисляем и сохраняем значения вершин третей дома
 	  				//учитываем, что индекс последней трети всегда кратен трем
 	  				if (j % 3 == 0) 
