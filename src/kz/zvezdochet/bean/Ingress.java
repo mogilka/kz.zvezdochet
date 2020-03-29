@@ -1,38 +1,21 @@
 package kz.zvezdochet.bean;
 
 import kz.zvezdochet.core.bean.Model;
-import kz.zvezdochet.core.service.ModelService;
-import kz.zvezdochet.service.IngressService;
 
 /**
- * Ингрессия планеты события
+ * Ингрессия планеты
  * @author Natalie Didenko
  */
-public class Ingress extends Model {
-	private static final long serialVersionUID = 5670761424933047181L;
+public class Ingress {
 	/**
-	 * Событие
-	 */
-	private Event event;
-	/**
-	 * Планета
+	 * Транзитная планета
 	 */
 	private Planet planet;
 	/**
-	 * связанный объект
+	 * Натальная небесная точка (планета|дом)
 	 */
 	private SkyPoint skyPoint;
-	/**
-	 * Тип
-	 */
-	private IngressType type;
 
-	public Event getEvent() {
-		return event;
-	}
-	public void setEvent(Event event) {
-		this.event = event;
-	}
 	public Planet getPlanet() {
 		return planet;
 	}
@@ -45,31 +28,15 @@ public class Ingress extends Model {
 	public void setSkyPoint(SkyPoint skyPoint) {
 		this.skyPoint = skyPoint;
 	}
-	public IngressType getType() {
-		return type;
-	}
-	public void setType(IngressType type) {
-		this.type = type;
-	}
 
-	public Ingress(Event event, Planet planet, SkyPoint skyPoint, Model object, IngressType type) {
+	public Ingress(Planet planet, SkyPoint skyPoint, Model object) {
 		super();
-		this.event = event;
 		this.planet = planet;
 		this.skyPoint = skyPoint;
 		this.object = object;
-		this.type = type;
 	}
 
 	public Ingress() {}
-
-	@Override
-	public ModelService getService() {
-		return new IngressService();
-	}
-
-	@Override
-	public void init(boolean mode) {}	
 
 	public Model getObject() {
 		return object;
@@ -82,4 +49,27 @@ public class Ingress extends Model {
 	 * Связанный объект (аспект, знак Зодиака и т.п.)
 	 */
 	private Model object;
+
+	public static String _STATIC = "MOTION_STATIC";
+	public static String _DIRECT = "MOTION_DIRECT";
+	public static String _RETRO = "MOTION_RETRO";
+	public static String _INGRESS = "SIGN_INGRESS";
+	public static String _EXACT = "ASPECT_EXACT";
+	public static String _SEPARATION = "ASPECT_SEPARATION";
+	public static String _REPEAT = "ASPECT_REPEAT";
+	public static String _EXACT_HOUSE = "HOUSE_EXACT";
+	public static String _SEPARATION_HOUSE = "HOUSE_SEPARATION";
+	public static String _REPEAT_HOUSE = "HOUSE_REPEAT";
+
+	/**
+	 * Возвращает все используемые в ингрессиях коды
+	 * @return массив кодов
+	 */
+	public static String[] getKeys() {
+		return new String[] {
+			_STATIC, _DIRECT, _RETRO, _INGRESS,
+			_EXACT, _EXACT_HOUSE, _REPEAT, _REPEAT_HOUSE,
+			_SEPARATION, _SEPARATION_HOUSE
+		};
+	}
 }

@@ -217,4 +217,66 @@ public class SkyPointAspect {
 		else
 			return 1;
 	}
+
+    /**
+     * Возвращает длительность транзита
+     * @return длительность транзита в текстовом виде
+     */
+    public String getTransitDuration() {
+    	String res = "";
+    	String acode = aspect.getCode();
+    	String pcode = skyPoint1.getCode();
+    	boolean housable = (skyPoint2 instanceof House);
+
+    	String[] innerPlanets = new String[] {"Sun", "Mercury", "Venus"};
+    	String[] urans = new String[] {"Chiron", "Uranus"};
+    	String[] nodes = new String[] {"Rakhu", "Kethu"};
+    	String[] moons = new String[] {"Selena", "Lilith"};
+
+    	if (acode.equals("CONJUNCTION")) {
+   			if (Arrays.asList(innerPlanets).contains(pcode))
+   				res = housable ? "3 дня" : "2 дня";
+   			else if (pcode.equals("Mars"))
+   				res = housable ? "4 дня" : "3 дня";
+   			else if (pcode.equals("Jupiter"))
+   				res = housable ? "10 дней" : "5 дней";
+   			else if (pcode.equals("Saturn"))
+   				res = housable ? "3 недели" : "2 недели";
+   			else if (Arrays.asList(urans).contains(pcode))
+   				res = housable ? "1 месяц" : "3 недели";
+   			else if (pcode.equals("Neptune"))
+   				res = housable ? "1 месяц" : "1 месяц";
+   			else if (pcode.equals("Pluto"))
+   				res = housable ? "1 месяц" : "1 месяц";
+   			else if (pcode.equals("Proserpina"))
+   				res = housable ? "7 месяцев" : "7 месяцев";
+   			else if (Arrays.asList(nodes).contains(pcode))
+   				res = housable ? "3 недели" : "2 недели";
+   			else if (Arrays.asList(moons).contains(pcode))
+   				res = housable ? "2 недели" : "2 недели";
+    	} else {
+   			if (Arrays.asList(innerPlanets).contains(pcode)) {
+   				if (housable)
+   					res = "2 дня";
+   			} else if (pcode.equals("Mars"))
+   				res = housable ? "3 дня" : "2 дня";
+   			else if (pcode.equals("Jupiter"))
+   				res = housable ? "5 дней" : "4 дня";
+   			else if (pcode.equals("Saturn"))
+   				res = housable ? "10 дней" : "1 неделя";
+   			else if (Arrays.asList(urans).contains(pcode))
+   				res = housable ? "3 недели" : "2 недели";
+   			else if (pcode.equals("Neptune"))
+   				res = housable ? "1 месяц" : "1 месяц";
+   			else if (pcode.equals("Pluto"))
+   				res = housable ? "1 месяц" : "1 месяц";
+   			else if (pcode.equals("Proserpina"))
+   				res = housable ? "7 месяцев" : "7 месяцев";
+   			else if (Arrays.asList(nodes).contains(pcode))
+   				res = housable ? "3 недели" : "2 недели";
+   			else if (Arrays.asList(moons).contains(pcode))
+   				res = housable ? "1 неделя" : "1 неделя";
+    	}
+    	return res;
+    }
 }

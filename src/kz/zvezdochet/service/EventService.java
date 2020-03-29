@@ -17,7 +17,6 @@ import java.util.Map.Entry;
 import kz.zvezdochet.bean.Aspect;
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
-import kz.zvezdochet.bean.Ingress;
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.bean.Sign;
 import kz.zvezdochet.bean.SkyPoint;
@@ -1290,83 +1289,6 @@ and celebrity = 1
 			}
 		}
 		return list;
-	}
-
-	/**
-	 * Сохранение ингрессий события
-	 * @param event событие
-	 * @throws DataAccessException
-	 */
-	public void saveIngress(Event event) throws DataAccessException {
-		if (null == event) return;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        IngressService service = new IngressService();
-        String table = service.getTableName();
-		try {
-			List<Model> list = event.getIngresses();
-
-			String sql = "update " + table + " set typeid = 9, objectid = null, skypointid = null where eventid = ?";
-			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			ps.setLong(1, event.getId());
-			ps.executeUpdate();
-			ps.close();
-
-			for (Model model : list) {
-				Ingress ingress = (Ingress)model;
-
-				sql = "select id from " + table + 
-					" where eventid = ?" +
-					" and planetid = ?" +
-					" and typeid = ?";
-				ps = Connector.getInstance().getConnection().prepareStatement(sql);
-				ps.setLong(1, event.getId());
-				ps.setLong(2, ingress.getPlanet().getId());
-				ps.setLong(3, 9);
-				rs = ps.executeQuery();
-				long id = (rs.next()) ? rs.getLong("id") : 0;
-				ps.close();
-				
-				if (0 == id)
-					sql = "insert into " + table + " values(?,?,?,?,0,?)";
-				else
-					sql = "update " + table + 
-						" set eventid = ?,"
-						+ " planetid = ?,"
-						+ " objectid = ?,"
-						+ " typeid = ?,"
-						+ " skypointid = ?" +
-						" where id = ?";
-				ps = Connector.getInstance().getConnection().prepareStatement(sql);
-				ps.setLong(1, event.getId());
-				ps.setLong(2, ingress.getPlanet().getId());
-
-				if (ingress.getObject() != null)
-					ps.setLong(3, ingress.getObject().getId());
-				else
-					ps.setLong(3, java.sql.Types.NULL);
-
-				ps.setLong(4, ingress.getType().getId());
-
-				if (ingress.getSkyPoint() != null)
-					ps.setLong(5, ingress.getSkyPoint().getId());
-				else
-					ps.setLong(5, java.sql.Types.NULL);
-
-				if (id > 0)
-					ps.setLong(6, id);
-				ps.executeUpdate();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null) rs.close();
-				if (ps != null)	ps.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 
 	/**

@@ -32,7 +32,6 @@ import kz.zvezdochet.service.AspectService;
 import kz.zvezdochet.service.AspectTypeService;
 import kz.zvezdochet.service.EventService;
 import kz.zvezdochet.service.HouseService;
-import kz.zvezdochet.service.IngressTypeService;
 import kz.zvezdochet.service.PlaceService;
 import kz.zvezdochet.service.PlanetService;
 import kz.zvezdochet.service.PositionTypeService;
@@ -591,21 +590,10 @@ public class Event extends Model {
 			cal.setTime(edate);
 			cal.add(Calendar.DATE, -1);
 			sdate = DateUtil.formatCustomDateTime(cal.getTime(), "yyyy-MM-dd");
-
-			EventService service = (EventService)getService();
-			List<Event> events;
-			events = service.findByDate(sdate, 1);
-			if (null == events || 0 == events.size()) {
-				//если нет, создаём
-				prev = new Event(DateUtil.getDatabaseDateTime(sdate + " 12:00:00"), "Мой гороскоп");
-				prev.calc(true);
-				prev.setCalculated(true);
-				service.save(prev);
-			} else {
-				prev = events.get(0);
-				prev.initData(false);
-			}
-		} catch (DataAccessException e) {
+			prev = new Event(DateUtil.getDatabaseDateTime(sdate + " 12:00:00"), "Мой гороскоп");
+			prev.setPlace(place);
+			prev.calc(true);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return prev;
@@ -667,10 +655,6 @@ public class Event extends Model {
 	 * Список аспектов домов
 	 */
 	private	List<SkyPointAspect> aspecthList;
-	/**
-	 * Список ингрессий
-	 */
-	private List<Model> ingressList;
 	/**
 	 * Карта звёзд
 	 */
@@ -1232,78 +1216,103 @@ public class Event extends Model {
 		}
 	}
 
-	public void initIngress() {
+	/**
+	 * Расчёт ингрессий на дату
+	 * @param today транзитное событие
+	 * @return список ингрессий
+	 */
+	public Map<String, List<Object>> initIngresses(Event today) {
+		Map<String, List<Object>> ingressList = new TreeMap<>();
 		try {
-			ingressList = new ArrayList<>();
-			IngressTypeService iservice = new IngressTypeService();
-			AspectService aservice = new AspectService();
+			for (String key : Ingress.getKeys())
+				ingressList.put(key, new ArrayList<Object>());
 
-			Event prev = getPrev();
-			prev.initAspects();
+			Event yesterday = today.getPrev();
+			Collection<Planet> planets = yesterday.getPlanets().values();
+			Collection<Planet> planets2 = planetList.values();
 
-			Collection<Planet> planets1 = prev.getPlanets().values();
-			for (Planet planet : planetList.values()) {
-				Map<String,String> map = planet.getAspectMap();
+			List<SkyPointAspect> easpects = initTransits(today);
+			List<SkyPointAspect> easpects2 = initTransits(yesterday);
 
-				for (Planet planet1 : planets1) {
-					String icode = null;
-					if (planet.getCode().equals(planet1.getCode())) {
-						if (planet1.getLongitude() == planet.getLongitude()) {
-							//планета осталась в той же координате
-							icode = "stationary";
-						} else if (planet1.isRetrograde() && !planet.isRetrograde()) {
-							//планета перешла в директное движение
-							icode = "direct";
-						} else if (planet.isRetrograde() && !planet1.isRetrograde()) {
-							//планета перешла в обратное движение
-							icode = "retrograde";
-						}
-						if (icode != null) {
-							IngressType type = (IngressType)iservice.find(icode);
-							Ingress ingress = new Ingress(this, planet, null, null, type);
-							ingressList.add(ingress);
-						}
+			List<SkyPointAspect> easpectsh = initHousesTransits(today);
+			List<SkyPointAspect> easpectsh2 = initHousesTransits(yesterday);
+			Collection<House> houses = getHouses().values();
 
-						//изменился ли знак Зодиака планеты
-						Sign sign = planet.getSign();
-						if (null == sign)
-							sign = SkyPoint.getSign(planet.getLongitude(), getBirthYear());
-	
-						Sign sign1 = planet1.getSign();
-						if (null == sign1)
-							sign1 = SkyPoint.getSign(planet1.getLongitude(), prev.getBirthYear());
-	
-						if (sign.getId() != sign1.getId()) {
-							icode = "sign";
-							IngressType type = (IngressType)iservice.find(icode);
-							Ingress ingress = new Ingress(this, planet, null, sign, type);
-							ingressList.add(ingress);
-						}
-					} else {
-						//изменились ли аспекты
-						Map<String,String> map1 = planet1.getAspectMap();
-						String acode = map.get(planet1.getCode());
-						String acode1 = map1.get(planet.getCode());
-						if (null == acode)
-							continue;
-						else if (null == acode1 || !acode.equals(acode1)) {
-							icode = "application";
-							IngressType type = (IngressType)iservice.find(icode);
-							Ingress ingress = new Ingress(this, planet, planet1, aservice.find(acode), type);
-							ingressList.add(ingress);
-							break;
-						}
-					}
+			for (Planet p : planets) {
+	            boolean moonable = p.getId().equals(20L);
+			    for (Planet p2 : planets2) {
+		            //изменились ли транзиты планеты?
+		            String acode = null;
+		            SkyPointAspect trspa = null;
+		            for (SkyPointAspect spa : easpects) {
+		            	if (p.getId().equals(spa.getSkyPoint1().getId())
+		            			&& p2.getId().equals(spa.getSkyPoint2().getId())) {
+		            		acode = spa.getAspect().getCode();
+		            		trspa = spa;
+		            		break;
+		            	}
+		            }
+		            String acode2 = null;
+		            SkyPointAspect trspa2 = null;
+		            for (SkyPointAspect spa : easpects2) {
+		            	if (p.getId().equals(spa.getSkyPoint1().getId())
+		            			&& p2.getId().equals(spa.getSkyPoint2().getId())) {
+		            		acode2 = spa.getAspect().getCode();
+		            		trspa2 = spa;
+		            		break;
+		            	}
+		            }
+
+		            if (null == acode && null == acode2) { //точного аспекта между планетами не было и нет
+						//
+		            } else if (null == acode && acode2 != null) { //точный аспект прекратился
+		                if (moonable)
+		                    ingressList.get(Ingress._SEPARATION).add(trspa2);
+		            } else if (acode != null && null == acode2) //точный аспект появился
+						ingressList.get(Ingress._EXACT).add(trspa);
+		            else if (acode.equals(acode2)) //точный аспект повторился
+		                if (!moonable)
+		                	ingressList.get(Ingress._REPEAT).add(trspa2);
 				}
-			}			
+
+			    for (House p2 : houses) {
+		            //изменились ли транзиты дома?
+		            String acode = null;
+		            SkyPointAspect trspa = null;
+		            for (SkyPointAspect spa : easpectsh) {
+		            	if (p.getId().equals(spa.getSkyPoint1().getId())
+		            			&& p2.getId().equals(spa.getSkyPoint2().getId())) {
+		            		acode = spa.getAspect().getCode();
+		            		trspa = spa;
+		            		break;
+		            	}
+		            }
+		            String acode2 = null;
+		            SkyPointAspect trspa2 = null;
+		            for (SkyPointAspect spa : easpectsh2) {
+		            	if (p.getId().equals(spa.getSkyPoint1().getId())
+		            			&& p2.getId().equals(spa.getSkyPoint2().getId())) {
+		            		acode2 = spa.getAspect().getCode();
+		            		trspa2 = spa;
+		            		break;
+		            	}
+		            }
+
+		            if (null == acode && null == acode2) { //точного аспекта между планетами не было и нет
+						//
+		            } else if (null == acode && acode2 != null) { //точный аспект прекратился
+		                if (moonable)
+		                    ingressList.get(Ingress._SEPARATION_HOUSE).add(trspa2);
+		            } else if (acode != null && null == acode2) //точный аспект появился
+						ingressList.get(Ingress._EXACT_HOUSE).add(trspa);
+		            else if (acode.equals(acode2)) //точный аспект повторился
+		                if (!moonable)
+		                	ingressList.get(Ingress._REPEAT_HOUSE).add(trspa2);
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	public List<Model> getIngresses() {
-		if (null == ingressList || 0 == ingressList.size())
-			initIngress();
 		return ingressList;
 	}
 
@@ -1594,4 +1603,103 @@ public class Event extends Model {
 			e.printStackTrace();
 		}
     }
+
+	/**
+	 * Расчёт транзитов
+	 * @param event транзитное событие
+	 * @return список транзитов планет
+	 * @throws DataAccessException
+	 */
+    private List<SkyPointAspect> initTransits(Event event) throws DataAccessException {
+		List<SkyPointAspect> spas = new ArrayList<SkyPointAspect>();
+		try {
+			Collection<Planet> planets = event.getPlanets().values();
+			Collection<Planet> planets2 = planetList.values();
+			List<Model> aspects = new AspectService().getMajorList();
+
+			for (Planet p : planets) {
+				for (Planet p2 : planets2) {
+					double one = p.getLongitude();
+					double two = p2.getLongitude();
+
+					double res = CalcUtil.getDifference(p.getLongitude(), p2.getLongitude());
+					if (p2.getCode().equals("Rakhu") || p2.getCode().equals("Kethu"))
+						if ((res >= 179 && res < 180)
+								|| CalcUtil.compareAngles(one, two))
+							++res;
+
+					for (Model realasp : aspects) {
+						Aspect a = (Aspect)realasp;
+						if (!a.isMain())
+							continue;
+						if (a.getPlanetid() > 0)
+							continue;
+
+						if (a.isExact(res)) {
+							SkyPointAspect aspect = new SkyPointAspect();
+							aspect.setSkyPoint1(p);
+							aspect.setSkyPoint2(p2);
+							aspect.setScore(res);
+							aspect.setAspect(a);
+							aspect.setRetro(p.isRetrograde());
+							aspect.setExact(true);
+							spas.add(aspect);
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return spas;
+	}
+
+	/**
+	 * Расчёт транзитов домов
+	 * @param event транзитное событие
+	 * @return список транзитов домов
+	 * @throws DataAccessException
+	 */
+	private List<SkyPointAspect> initHousesTransits(Event event) throws DataAccessException {
+		List<SkyPointAspect> spas = new ArrayList<SkyPointAspect>();
+		try {
+			Collection<Planet> planets = event.getPlanets().values();
+			Collection<House> houses = houseList.values();
+			List<Model> aspects = new AspectService().getMajorList();
+
+			for (Planet p : planets) {
+				for (House p2 : houses) {
+					double one = p.getLongitude();
+					double two = p2.getLongitude();
+
+					double res = CalcUtil.getDifference(p.getLongitude(), p2.getLongitude());
+					if ((res >= 179 && res < 180)
+							|| CalcUtil.compareAngles(one, two))
+						++res;
+
+					for (Model realasp : aspects) {
+						Aspect a = (Aspect)realasp;
+						if (!a.isMain())
+							continue;
+						if (a.getPlanetid() > 0)
+							continue;
+
+						if (a.isExact(res)) {
+							SkyPointAspect aspect = new SkyPointAspect();
+							aspect.setSkyPoint1(p);
+							aspect.setSkyPoint2(p2);
+							aspect.setScore(res);
+							aspect.setAspect(a);
+							aspect.setRetro(p.isRetrograde());
+							aspect.setExact(true);
+							spas.add(aspect);
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return spas;
+	}
 }
