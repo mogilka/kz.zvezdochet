@@ -62,13 +62,12 @@ public class Ingress {
 	public static String _REPEAT_HOUSE = "HOUSE_REPEAT";
 
 	/**
-	 * Возвращает все используемые в ингрессиях коды
+	 * Возвращает используемые в отчёте ингрессии
 	 * @return массив кодов
 	 */
 	public static String[] getKeys() {
 		return new String[] {
-			_STATIC, _DIRECT, _RETRO, _INGRESS,
-			_EXACT, _EXACT_HOUSE, _REPEAT, _REPEAT_HOUSE,
+			_EXACT, _EXACT_HOUSE,
 			_SEPARATION, _SEPARATION_HOUSE
 		};
 	}

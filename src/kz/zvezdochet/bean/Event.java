@@ -1266,13 +1266,14 @@ public class Event extends Model {
 		            if (null == acode && null == acode2) { //точного аспекта между планетами не было и нет
 						//
 		            } else if (null == acode && acode2 != null) { //точный аспект прекратился
-		                if (moonable)
+		                if (!moonable)
 		                    ingressList.get(Ingress._SEPARATION).add(trspa2);
 		            } else if (acode != null && null == acode2) //точный аспект появился
 						ingressList.get(Ingress._EXACT).add(trspa);
 		            else if (acode.equals(acode2)) //точный аспект повторился
 		                if (!moonable)
-		                	ingressList.get(Ingress._REPEAT).add(trspa2);
+		                	if (ingressList.containsKey(Ingress._REPEAT))
+		                		ingressList.get(Ingress._REPEAT).add(trspa2);
 				}
 
 			    for (House p2 : houses) {
@@ -1301,13 +1302,14 @@ public class Event extends Model {
 		            if (null == acode && null == acode2) { //точного аспекта между планетами не было и нет
 						//
 		            } else if (null == acode && acode2 != null) { //точный аспект прекратился
-		                if (moonable)
+		                if (!moonable)
 		                    ingressList.get(Ingress._SEPARATION_HOUSE).add(trspa2);
 		            } else if (acode != null && null == acode2) //точный аспект появился
 						ingressList.get(Ingress._EXACT_HOUSE).add(trspa);
 		            else if (acode.equals(acode2)) //точный аспект повторился
 		                if (!moonable)
-		                	ingressList.get(Ingress._REPEAT_HOUSE).add(trspa2);
+		                	if (ingressList.containsKey(Ingress._REPEAT_HOUSE))
+		                		ingressList.get(Ingress._REPEAT_HOUSE).add(trspa2);
 				}
 			}
 		} catch (Exception e) {

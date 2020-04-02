@@ -228,13 +228,16 @@ public class SkyPointAspect {
     	String pcode = skyPoint1.getCode();
     	boolean housable = (skyPoint2 instanceof House);
 
-    	String[] innerPlanets = new String[] {"Sun", "Mercury", "Venus"};
+    	String[] innerPlanets = new String[] {"Sun", "Venus"};
     	String[] urans = new String[] {"Chiron", "Uranus"};
     	String[] nodes = new String[] {"Rakhu", "Kethu"};
     	String[] moons = new String[] {"Selena", "Lilith"};
 
     	if (acode.equals("CONJUNCTION")) {
-   			if (Arrays.asList(innerPlanets).contains(pcode))
+   			if (pcode.equals("Mercury")) {
+   				if (housable)
+					res = "2 дня";
+   			} else if (Arrays.asList(innerPlanets).contains(pcode))
    				res = housable ? "3 дня" : "2 дня";
    			else if (pcode.equals("Mars"))
    				res = housable ? "4 дня" : "3 дня";
@@ -245,17 +248,20 @@ public class SkyPointAspect {
    			else if (Arrays.asList(urans).contains(pcode))
    				res = housable ? "1 месяц" : "3 недели";
    			else if (pcode.equals("Neptune"))
-   				res = housable ? "1 месяц" : "1 месяц";
+   				res = housable ? "3 месяца" : "1 месяц";
    			else if (pcode.equals("Pluto"))
    				res = housable ? "1 месяц" : "1 месяц";
    			else if (pcode.equals("Proserpina"))
    				res = housable ? "7 месяцев" : "7 месяцев";
    			else if (Arrays.asList(nodes).contains(pcode))
-   				res = housable ? "3 недели" : "2 недели";
+   				res = housable ? "3 месяца" : "3 месяца";
    			else if (Arrays.asList(moons).contains(pcode))
    				res = housable ? "2 недели" : "2 недели";
     	} else {
-   			if (Arrays.asList(innerPlanets).contains(pcode)) {
+   			if (pcode.equals("Mercury")) {
+   				if (housable)
+					res = "2 дня";
+   			} else if (Arrays.asList(innerPlanets).contains(pcode)) {
    				if (housable)
    					res = "2 дня";
    			} else if (pcode.equals("Mars"))
