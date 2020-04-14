@@ -2,6 +2,7 @@ package kz.zvezdochet.part;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,11 +36,14 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -91,7 +95,7 @@ public class EventPart extends ModelPart implements ICalculable {
 	public static int MODE_ASPECT_HOUSE = 2;
 
 	private Label lbGender;
-	private Label lbID;
+	private Link lbID;
 	private ComboViewer cvGender;
 	private ComboViewer cvHand;
 	private ComboViewer cvRectification;
@@ -141,7 +145,7 @@ public class EventPart extends ModelPart implements ICalculable {
 
 		Label lb = new Label(secEvent, SWT.NONE);
 		lb.setText("ID");
-		lbID = new Label(secEvent, SWT.NONE);
+		lbID = new Link(secEvent, SWT.NONE);
 
 		lbName = new Label(secEvent, SWT.NONE);
 		lbName.setText(Messages.getString("PersonView.Name")); //$NON-NLS-1$
@@ -724,6 +728,13 @@ public class EventPart extends ModelPart implements ICalculable {
 			kind.setId(0L);
 			list.add(0, kind);
 			cvCardKind.setInput(list);
+
+			lbID.addListener(SWT.Selection, new Listener() {
+				@Override
+				public void handleEvent(org.eclipse.swt.widgets.Event event) {
+					Program.launch(event.text);
+				}
+			});
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
@@ -801,8 +812,14 @@ public class EventPart extends ModelPart implements ICalculable {
 			reset();
 			model = (null == model) ? new Event() : model;
 			Event event = (Event)model;
-			if (event.getId() != null && event.getId() > 0)
-				lbID.setText(event.getId().toString());
+			long id = event.getId();
+			if (id > 0) {
+				Calendar calendar = Calendar.getInstance();
+				int year = calendar.get(Calendar.YEAR);
+				int month = calendar.get(Calendar.MONTH);
+				String url = "http://zvezdochet.local/month/transits?id=" + month + "&year=" + year + "&eventid=" + id + "&placeid=7095";
+				lbID.setText(id + " " + "<a href=\"" + url + "\">транзиты</a>");			    
+			}
 			txName.setText(event.getName());
 			cvGender.getCombo().setText(genders[event.isFemale() ? 2 : 1]);
 			cvHand.getCombo().setText(hands[event.isRightHanded() ? 0 : 1]);
