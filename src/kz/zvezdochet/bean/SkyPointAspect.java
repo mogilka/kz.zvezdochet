@@ -271,7 +271,7 @@ public class SkyPointAspect {
    			else if (pcode.equals("Saturn"))
    				res = housable ? "10 дней" : "1 неделя";
    			else if (Arrays.asList(urans).contains(pcode))
-   				res = housable ? "3 недели" : "2 недели";
+   				res = housable ? "3 недели" : "3 недели";
    			else if (pcode.equals("Neptune"))
    				res = housable ? "1 месяц" : "1 месяц";
    			else if (pcode.equals("Pluto"))
