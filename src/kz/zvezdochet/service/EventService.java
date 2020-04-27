@@ -94,7 +94,7 @@ public class EventService extends ModelService {
 		try {
 			String sql;
 			if (null == model.getId())
-				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
 					"name = ?, " +
@@ -121,7 +121,8 @@ public class EventService extends ModelService {
 					"tabloid = ?, " +
 					"biography = ?, " +
 					"conversation = ?, " +
-					"updated_at = ? " +
+					"updated_at = ?, " +
+					"options = ? " +
 					"where id = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setString(1, event.getName());
@@ -177,9 +178,10 @@ public class EventService extends ModelService {
 			ps.setString(23, event.getBio());
 			ps.setString(24, event.getConversation());
 			ps.setString(25, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
+			ps.setString(26, event.getOptions());
 
 			if (model.getId() != null)
-				ps.setLong(26, model.getId());
+				ps.setLong(27, model.getId());
 			System.out.println(ps);
 
 			result = ps.executeUpdate();
@@ -262,6 +264,7 @@ public class EventService extends ModelService {
 		event.setBio(rs.getString("biography"));
 		event.setConversation(rs.getString("conversation"));
 		event.setModified(DateUtil.getDatabaseDateTime(rs.getString("updated_at")));
+		event.setOptions(rs.getString("options"));
 		return event;
 	}
 

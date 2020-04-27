@@ -1707,4 +1707,16 @@ public class Event extends Model {
 		}
 		return spas;
 	}
+
+	/**
+	 * Параметры космограммы для толкования
+	 */
+	private String options;
+
+	public String getOptions() {
+		return options;
+	}
+	public void setOptions(String options) {
+		this.options = options;
+	}
 }

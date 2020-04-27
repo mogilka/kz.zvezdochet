@@ -119,6 +119,7 @@ public class EventPart extends ModelPart implements ICalculable {
 	private CTabFolder tabfolder;
 	private ComboViewer cvMoonday;
 	private ComboViewer cvCardKind;
+	private Text txOptions;
 	private Button btTerm;
 
 	private CosmogramComposite cmpCosmogram;
@@ -256,6 +257,10 @@ public class EventPart extends ModelPart implements ICalculable {
 		lb = new Label(group, SWT.NONE);
 		lb.setText("Вид космограммы");
 		cvCardKind = new ComboViewer(group, SWT.BORDER | SWT.READ_ONLY);
+
+		lb = new Label(group, SWT.NONE);
+		lb.setText("Настройки космограммы");
+		txOptions = new Text(group, SWT.BORDER);
 		item.setControl(group);
 		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(group);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(group);
@@ -631,6 +636,8 @@ public class EventPart extends ModelPart implements ICalculable {
 			grab(false, false).applyTo(btCelebrity);
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).
 			grab(false, false).applyTo(btTerm);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
+			grab(true, false).applyTo(txOptions);
 
 		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.FILL).
 			hint(514, 514).grab(true, false).applyTo(cmpCosmogram);
@@ -784,6 +791,7 @@ public class EventPart extends ModelPart implements ICalculable {
 			event.setCelebrity(btCelebrity.getSelection());
 			event.setAccuracy(txAccuracy.getText());
 			event.setConversation(txConversation.getText());
+			event.setOptions(txOptions.getText());
 		}
 		event.setBirth(dtBirth.getSelection());
 		double zone = (txZone.getText() != null && txZone.getText().length() > 0) ? Double.parseDouble(txZone.getText()) : 0;
@@ -854,6 +862,8 @@ public class EventPart extends ModelPart implements ICalculable {
 				CardKind kind = (CardKind)new CardKindService().find((long)event.getCardkindid());
 				cvCardKind.getCombo().setText(kind.getName() + " - " + kind.getDescription());
 			}
+			if (event.getOptions() != null)
+				txOptions.setText(event.getOptions());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -883,6 +893,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		txConversation.setText(""); //$NON-NLS-1$
 		cvMoonday.setSelection(null);
 		cvCardKind.setSelection(null);
+		txOptions.setText("");
 		refreshCard();
 		refreshTabs();
 	}
