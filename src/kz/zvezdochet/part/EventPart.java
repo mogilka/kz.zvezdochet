@@ -742,6 +742,8 @@ public class EventPart extends ModelPart implements ICalculable {
 					Program.launch(event.text);
 				}
 			});
+
+			txOptions.setText("{\"cardkind\":{\"planet\":0,\"planet2\":0,\"direction\":\"\"}}");
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
@@ -893,7 +895,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		txConversation.setText(""); //$NON-NLS-1$
 		cvMoonday.setSelection(null);
 		cvCardKind.setSelection(null);
-		txOptions.setText("");
+		txOptions.setText("{\"cardkind\":{\"planet\":0,\"planet2\":0,\"direction\":\"\"}}");
 		refreshCard();
 		refreshTabs();
 	}
