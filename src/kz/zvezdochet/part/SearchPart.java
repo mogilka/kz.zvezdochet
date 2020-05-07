@@ -393,6 +393,7 @@ public class SearchPart extends ModelListView {
 			"Имя",
 			"Дата",
 			"Описание",
+			"Дата создания",
 			"Дата изменения" };
 		return columns;
 	}
@@ -409,7 +410,8 @@ public class SearchPart extends ModelListView {
 						case 2: return event.getName();
 						case 3: return DateUtil.formatDateTime(event.getBirth());
 						case 4: return event.getComment();
-						case 5: return DateUtil.formatDateTime(event.getModified());
+						case 5: return DateUtil.formatDateTime(event.getDate());
+						case 6: return DateUtil.formatDateTime(event.getModified());
 					}
 				return null;
 			}

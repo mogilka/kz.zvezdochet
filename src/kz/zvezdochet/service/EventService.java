@@ -951,7 +951,7 @@ order by year(initialdate)
 			String sql = "select * from " + tableName + 
 				" where celebrity = ? " +
 					"and placeid <> 7095 " +
-				"order by date desc limit 30";
+				"order by updated_at desc limit 30";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setInt(1, celebrity ? 1 : 0);
 			rs = ps.executeQuery();
