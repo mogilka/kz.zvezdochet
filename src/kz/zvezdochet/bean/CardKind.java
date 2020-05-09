@@ -29,4 +29,41 @@ public class CardKind extends TextGenderDictionary {
 	public void setDirection(String direction) {
 		this.direction = direction;
 	}
+
+	/**
+	 * Толкование высокого уровня
+	 */
+	private String high;
+	/**
+	 * Толкование среднего уровня
+	 */
+	private String medium;
+	/**
+	 * Толкование низкого уровня
+	 */
+	private String low;
+
+	public String getHigh() {
+		return high;
+	}
+
+	public void setHigh(String high) {
+		this.high = high;
+	}
+
+	public String getMedium() {
+		return medium;
+	}
+
+	public void setMedium(String medium) {
+		this.medium = medium;
+	}
+
+	public String getLow() {
+		return low;
+	}
+
+	public void setLow(String low) {
+		this.low = low;
+	}
 }
