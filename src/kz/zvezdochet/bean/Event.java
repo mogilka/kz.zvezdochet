@@ -567,7 +567,10 @@ public class Event extends Model {
 	 * @return наименование
 	 */
 	public String getCallname() {
-		return name.contains(" ") ? name.substring(0, name.indexOf(' ')) : name;
+		if (celebrity)
+			return name;
+		else
+			return name.contains(" ") ? name.substring(0, name.indexOf(' ')) : name;
 	}
 
 	public Event(Date date, String name) {
