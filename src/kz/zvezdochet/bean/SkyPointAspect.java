@@ -285,4 +285,27 @@ public class SkyPointAspect {
     	}
     	return res;
     }
+
+    /**
+     * Генерация идентификатора аспекта
+     * @return код аспекта
+     */
+	public String getCode() {
+		return skyPoint1.getCode() + "_" + 
+			aspect.getCode() + "_" + 
+			skyPoint2.getCode();
+	}
+
+	/**
+	 * Порядок аспектирующей и аспектируемой планеты не изменён
+	 */
+	private boolean reverse = false;
+
+	public boolean isReverse() {
+		return reverse;
+	}
+
+	public void setReverse(boolean reverse) {
+		this.reverse = reverse;
+	}
 }
