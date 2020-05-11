@@ -121,11 +121,6 @@ public class AspectPart extends ListView {
 	}
 
 	@Override
-	public boolean check(int mode) throws Exception {
-		return false;
-	}
-
-	@Override
 	protected void removeColumns() {
 		super.removeColumns();
 		Table table = tableViewer2.getTable();
