@@ -1184,6 +1184,8 @@ public class Event extends Model {
 	 */
 	public void initHouseAspects() throws DataAccessException {
 		try {
+			if (null == houseList || houseList.isEmpty())
+				return;
 			aspecthList = new ArrayList<SkyPointAspect>();
 			if (planetList != null) { 
 				List<Model> aspects = new AspectService().getList();
