@@ -1021,7 +1021,7 @@ public class Event extends Model {
 
 			String pcode = planet.getCode();
 			if (!pcode.equals(LILITH) && !pcode.equals(KETHU)
-					&& !pcode.equals(SELENA) && !pcode.equals(RAKHU)) {
+					&& !pcode.equals(SELENA)) {
 				List<SkyPointAspect> aspectList = planet.getAspectList();
 				if (null == aspectList)
 					continue;
@@ -1235,8 +1235,10 @@ public class Event extends Model {
 				ingressList.put(key, new ArrayList<Object>());
 
 			Event yesterday = today.getPrev();
-			Collection<Planet> planets = yesterday.getPlanets().values();
+			Map<Long, Planet> yplanets = yesterday.getPlanets();
+			Collection<Planet> planets = yplanets.values();
 			Collection<Planet> planets2 = planetList.values();
+			Map<Long, Planet> tplanets = today.getPlanets();
 
 			List<SkyPointAspect> easpects = initTransits(today);
 			List<SkyPointAspect> easpects2 = initTransits(yesterday);
@@ -1244,6 +1246,17 @@ public class Event extends Model {
 			List<SkyPointAspect> easpectsh = initHousesTransits(today);
 			List<SkyPointAspect> easpectsh2 = initHousesTransits(yesterday);
 			Collection<House> houses = getHouses().values();
+
+	    	//изменилось ли направление планеты
+			for (Planet p : planets) {
+				if (p.isFictitious())
+					continue;
+			    Planet p2 = tplanets.get(p.getId());
+			    if (p.isRetrograde() && !p2.isRetrograde())
+			    	ingressList.get(Ingress._DIRECT).add(p2);
+			    else if (!p.isRetrograde() && p2.isRetrograde())
+			    	ingressList.get(Ingress._RETRO).add(p2);
+			}
 
 			for (Planet p : planets) {
 	            boolean moonable = p.getId().equals(20L);
