@@ -297,6 +297,7 @@ public class Event extends Model {
 				service.initPlanets(this);
 				service.initAspects(this);
 				service.initStars(this);
+				initHouses();
 			}
 			if (initstat)
 				initPlanetStatistics();
@@ -801,6 +802,8 @@ public class Event extends Model {
 						house.setLilithed();
 					else if (planet.getCode().equals("Selena"))
 						house.setSelened();
+					else if (planet.getCode().equals("Kethu"))
+						house.setKethued();
 				}
 			}
 			//звёзды
