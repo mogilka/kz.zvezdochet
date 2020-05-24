@@ -27,7 +27,7 @@ public class CalcHandler extends Handler {
 			eventPart.onCalc(EventPart.MODE_CALC);
 			updateStatus("Расчетная конфигурация создана", false);
 		} catch (Exception e) {
-			DialogUtil.alertError(e.getMessage());
+			DialogUtil.alertError(e);
 			updateStatus("Ошибка создания расчетной конфигурации", true);
 			e.printStackTrace();
 		}

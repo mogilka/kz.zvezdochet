@@ -106,7 +106,7 @@ public class ImportRunHandler extends Handler {
 			System.out.println("Импорт завершён");
 			updateStatus("Импорт завершён", false);
 		} catch (Exception e) {
-			DialogUtil.alertError(e.getMessage());
+			DialogUtil.alertError(e);
 			e.printStackTrace();
 		}
 	}

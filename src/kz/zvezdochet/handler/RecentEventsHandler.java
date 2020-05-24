@@ -57,7 +57,7 @@ public class RecentEventsHandler extends Handler {
 			} else
 				DialogUtil.alertInfo("История пуста");
 		} catch (Exception e) {
-			DialogUtil.alertError(e.getMessage());
+			DialogUtil.alertError(e);
 			e.printStackTrace();
 		}
 	}		

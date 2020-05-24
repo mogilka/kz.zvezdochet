@@ -35,7 +35,7 @@ public class EventConfHandler extends Handler {
 		    ConfPart confPart = (ConfPart)part.getObject();
 		    confPart.setEvent(event);
 		} catch (Exception e) {
-			DialogUtil.alertError(e.getMessage());
+			DialogUtil.alertError(e);
 			updateStatus("Ошибка", true);
 			e.printStackTrace();
 		}

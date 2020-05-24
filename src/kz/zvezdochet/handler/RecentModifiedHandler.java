@@ -32,7 +32,7 @@ public class RecentModifiedHandler extends Handler {
 		    searchPart.setData(new EventService().findRecent(false));
 			updateStatus("Поиск завершён", false);
 		} catch (Exception e) {
-			DialogUtil.alertError(e.getMessage());
+			DialogUtil.alertError(e);
 			e.printStackTrace();
 		}
 	}

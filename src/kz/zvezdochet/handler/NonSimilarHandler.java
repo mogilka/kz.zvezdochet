@@ -41,7 +41,7 @@ public class NonSimilarHandler extends Handler {
 		    searchPart.setData(data);
 			updateStatus("Поиск завершён", false);
 		} catch (Exception e) {
-			DialogUtil.alertError(e.getMessage());
+			DialogUtil.alertError(e);
 			updateStatus("Ошибка", true);
 			e.printStackTrace();
 		}

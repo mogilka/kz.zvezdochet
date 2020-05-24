@@ -754,7 +754,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		StringBuffer msgBody = new StringBuffer();
 		if (Handler.MODE_SAVE == mode) {
 			if (null == txPlace.getText()) {
-				DialogUtil.alertError(Messages.getString("EventView.PlaceIsWrong"));
+				DialogUtil.alertWarning(Messages.getString("EventView.PlaceIsWrong"));
 				return false;
 			}
 			if (dtBirth.getSelection() != null && dtDeath.getSelection() != null)

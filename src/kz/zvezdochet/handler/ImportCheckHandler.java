@@ -73,7 +73,7 @@ public class ImportCheckHandler extends Handler {
 		    importPart.setData(models);
 			updateStatus("Поиск завершён", false);
 		} catch (Exception e) {
-			DialogUtil.alertError(e.getMessage());
+			DialogUtil.alertError(e);
 			e.printStackTrace();
 		}
 	}
