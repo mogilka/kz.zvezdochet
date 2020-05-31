@@ -791,6 +791,8 @@ public class Event extends Model {
 	 * Используется для новых (не сохранённых) событий или после перерасчёта
 	 */
 	private void initHouses() {
+		if (null == houseList)
+			initHouseList();
 		for (House house : houseList.values()) {
 			long h = (house.getNumber() == houseList.size()) ? 142 : house.getId() + 1;
 			House house2 = houseList.get(h);
@@ -807,10 +809,10 @@ public class Event extends Model {
 				}
 			}
 			//звёзды
-			for (Star star : starList.values()) {
-				if (SkyPoint.getHouse(house.getLongitude(), house2.getLongitude(), star.getLongitude())) 
-					star.setHouse(house);
-			}
+//			for (Star star : starList.values()) {
+//				if (SkyPoint.getHouse(house.getLongitude(), house2.getLongitude(), star.getLongitude())) 
+//					star.setHouse(house);
+//			}
 		}
 	}
 
