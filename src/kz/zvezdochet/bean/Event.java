@@ -54,7 +54,7 @@ public class Event extends Model {
 		super();
 		name = "";
 		birth = new Date();
-		recalculable = true;
+//		recalculable = true;
 	}
 
 	/**
@@ -498,7 +498,7 @@ public class Event extends Model {
 		value = json.get("tabloid");
 		if (value != JSONObject.NULL)
 			setTabloid(json.getLong("tabloid"));
-		recalculable = true;
+//		recalculable = true;
 		setModified(DateUtil.getDatabaseDateTime(json.getString("updated_at")));
 	}
 
@@ -578,7 +578,7 @@ public class Event extends Model {
 		super();
 		this.name = name;
 		birth = date;
-		recalculable = true;
+//		recalculable = true;
 	}
 
 	/**
