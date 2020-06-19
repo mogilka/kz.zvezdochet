@@ -472,4 +472,15 @@ limit 500
         object.put("speed_distance", getSpeedDistance());
         return object.toString();
     }
+
+    /**
+     * Генерация идентификатора планеты
+     * @return код планеты
+     */
+	public String getAnchor() {
+		String res = code;
+		if (house != null)
+			res += "_" + house.getCode();
+		return res;
+	}
 }
