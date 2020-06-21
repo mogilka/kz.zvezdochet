@@ -68,7 +68,9 @@ public class Ingress {
 	public static String[] getKeys() {
 		return new String[] {
 			_EXACT, _EXACT_HOUSE,
-			_SEPARATION, _SEPARATION_HOUSE
+			_SEPARATION, _SEPARATION_HOUSE,
+			_RETRO, _DIRECT,
+			_REPEAT, _REPEAT_HOUSE
 		};
 	}
 }
