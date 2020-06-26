@@ -1,7 +1,10 @@
 package kz.zvezdochet.bean;
 
 import java.util.Arrays;
+import java.util.List;
 
+import kz.zvezdochet.core.bean.ITextGender;
+import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.service.AspectTypeService;
 
 /**
@@ -308,5 +311,31 @@ public class SkyPointAspect {
 
 	public void setReverse(boolean reverse) {
 		this.reverse = reverse;
+	}
+
+	/**
+	 * Толкование аспекта
+	 */
+	private ITextGender text;
+
+	public ITextGender getText() {
+		return text;
+	}
+
+	public void setText(ITextGender text) {
+		this.text = text;
+	}
+
+	/**
+	 * Толкования аспекта
+	 */
+	private List<Model> texts;
+
+	public List<Model> getTexts() {
+		return texts;
+	}
+
+	public void setTexts(List<Model> texts) {
+		this.texts = texts;
 	}
 }
