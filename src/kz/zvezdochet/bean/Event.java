@@ -1649,14 +1649,7 @@ public class Event extends Model {
 					if (p2.getCode().equals("Rakhu") && p.getCode().equals("Kethu"))
 						continue;
 
-					double one = p.getLongitude();
-					double two = p2.getLongitude();
-
 					double res = CalcUtil.getDifference(p.getLongitude(), p2.getLongitude());
-					if (p2.getCode().equals("Rakhu") || p2.getCode().equals("Kethu"))
-						if ((res >= 179 && res < 180)
-								|| CalcUtil.compareAngles(one, two))
-							++res;
 
 					for (Model realasp : aspects) {
 						Aspect a = (Aspect)realasp;
@@ -1699,13 +1692,7 @@ public class Event extends Model {
 
 			for (Planet p : planets) {
 				for (House p2 : houses) {
-					double one = p.getLongitude();
-					double two = p2.getLongitude();
-
 					double res = CalcUtil.getDifference(p.getLongitude(), p2.getLongitude());
-					if ((res >= 179 && res < 180)
-							|| CalcUtil.compareAngles(one, two))
-						++res;
 
 					for (Model realasp : aspects) {
 						Aspect a = (Aspect)realasp;
