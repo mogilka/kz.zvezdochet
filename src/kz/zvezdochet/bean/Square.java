@@ -1,5 +1,8 @@
 package kz.zvezdochet.bean;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import kz.zvezdochet.core.bean.DiagramDictionary;
 import kz.zvezdochet.core.service.ModelService;
 import kz.zvezdochet.service.SquareService;
@@ -14,5 +17,17 @@ public class Square extends DiagramDictionary {
 	@Override
 	public ModelService getService() {
 		return new SquareService();
+	}
+
+	public static Map<String, Double> getMap() {
+		return new HashMap<String, Double>() {
+			private static final long serialVersionUID = 7191513234414149484L;
+			{
+		        put("Childhood", 0.0);
+		        put("Youth", 0.0);
+		        put("Maturity", 0.0);
+		        put("Oldage", 0.0);
+		    }
+		};
 	}
 }

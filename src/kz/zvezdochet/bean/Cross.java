@@ -1,5 +1,8 @@
 package kz.zvezdochet.bean;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import kz.zvezdochet.core.bean.DiagramDictionary;
 import kz.zvezdochet.core.service.ModelService;
 import kz.zvezdochet.service.CrossService;
@@ -39,5 +42,16 @@ public class Cross extends DiagramDictionary {
 	@Override
 	public ModelService getService() {
 		return new CrossService();
+	}
+
+	public static Map<String, Double> getMap() {
+		return new HashMap<String, Double>() {
+			private static final long serialVersionUID = -5031149237694234316L;
+			{
+		        put("Cardinal", 0.0);
+		        put("Fixed", 0.0);
+		        put("Mutable", 0.0);
+		    }
+		};
 	}
 }

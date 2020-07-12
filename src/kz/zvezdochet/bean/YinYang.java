@@ -1,5 +1,8 @@
 package kz.zvezdochet.bean;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import kz.zvezdochet.core.bean.DiagramDictionary;
 import kz.zvezdochet.core.service.ModelService;
 import kz.zvezdochet.service.YinYangService;
@@ -14,5 +17,15 @@ public class YinYang extends DiagramDictionary {
 	@Override
 	public ModelService getService() {
 		return new YinYangService();
+	}
+
+	public static Map<String, Double> getMap() {
+		return new HashMap<String, Double>() {
+			private static final long serialVersionUID = 9179267417802759621L;
+			{
+		        put("Male", 0.0);
+		        put("Female", 0.0);
+		    }
+		};
 	}
 }

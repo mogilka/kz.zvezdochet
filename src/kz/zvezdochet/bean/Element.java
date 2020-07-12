@@ -1,5 +1,8 @@
 package kz.zvezdochet.bean;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.swt.graphics.Color;
 
 import kz.zvezdochet.core.bean.DiagramDictionary;
@@ -120,5 +123,17 @@ public class Element extends DiagramDictionary {
 
 	public void setLoyalty(boolean loyalty) {
 		this.loyalty = loyalty;
+	}
+
+	public static Map<String, Double> getMap() {
+		return new HashMap<String, Double>() {
+			private static final long serialVersionUID = 3501100288331136747L;
+			{
+		        put("fire", 0.0);
+		        put("earth", 0.0);
+		        put("air", 0.0);
+		        put("water", 0.0);
+		    }
+		};
 	}
 }
