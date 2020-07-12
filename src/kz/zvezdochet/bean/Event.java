@@ -377,7 +377,7 @@ public class Event extends Model {
 //		  	  	IPreferenceStore preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, "kz.zvezdochet.runner");
 //		        String dir = preferenceStore.getString(CACHE_DIR_PATH);
 
-	  	  		String dir = null;
+	  	  		String dir = "/media/nataly/toshiba/cache/";
 	  	  		if (null == dir)
 	  	  			dir = PlatformUtil.getPath(kz.zvezdochet.Activator.PLUGIN_ID, "/cache/").getPath();
 	  	  		String filename = dir + cachekey + ".txt";
