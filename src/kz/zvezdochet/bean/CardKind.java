@@ -66,4 +66,17 @@ public class CardKind extends TextGenderDictionary {
 	public void setLow(String low) {
 		this.low = low;
 	}
+
+	/**
+	 * Описание занимаемых градусов
+	 */	
+	private String degree;
+
+	public String getDegree() {
+		return degree;
+	}
+
+	public void setDegree(String degree) {
+		this.degree = degree;
+	}
 }

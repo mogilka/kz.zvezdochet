@@ -31,6 +31,7 @@ public class CardKindService extends TextGenderDictionaryService {
 		type.setHigh(rs.getString("high"));
 		type.setMedium(rs.getString("medium"));
 		type.setLow(rs.getString("low"));
+		type.setDegree(rs.getString("degree"));
 		return type;
 	}
 }
