@@ -250,8 +250,15 @@ public class EventPart extends ModelPart implements ICalculable {
 		item.setText("Толкования");
 		item.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet.core", "icons/configure.gif").createImage());
 		Group group = new Group(tabfolder, SWT.NONE);
-		lb = new Label(group, SWT.NONE);
-		lb.setText("Лунный день");
+		Link ln = new Link(group, SWT.NONE);
+		String url = "http://goroskop.org/luna/form.shtml";
+		ln.setText("<a href=\"" + url + "\">Лунный день</a>");
+		ln.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(org.eclipse.swt.widgets.Event event) {
+				Program.launch(event.text);
+			}
+		});
 		cvMoonday = new ComboViewer(group, SWT.BORDER | SWT.READ_ONLY);
 
 		lb = new Label(group, SWT.NONE);
@@ -743,7 +750,7 @@ public class EventPart extends ModelPart implements ICalculable {
 				}
 			});
 
-			txOptions.setText("{\"cardkind\":{\"planet\":0,\"planet2\":0,\"direction\":\"\"}}");
+			txOptions.setText("{\"cardkind\":{\"planet\":0,\"planet2\":0,\"direction\":\"\",\"signs\":\"\"}}");
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
@@ -828,7 +835,7 @@ public class EventPart extends ModelPart implements ICalculable {
 				int year = calendar.get(Calendar.YEAR);
 				int month = calendar.get(Calendar.MONTH);
 				String url = "http://zvezdochet.local/month/transits?id=" + month + "&year=" + year + "&eventid=" + id + "&placeid=7095";
-				lbID.setText(id + " " + "<a href=\"" + url + "\">транзиты</a>");			    
+				lbID.setText(id + " " + "<a href=\"" + url + "\">транзиты</a>");
 			}
 			txName.setText(event.getName());
 			cvGender.getCombo().setText(genders[event.isFemale() ? 2 : 1]);
@@ -895,7 +902,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		txConversation.setText(""); //$NON-NLS-1$
 		cvMoonday.setSelection(null);
 		cvCardKind.setSelection(null);
-		txOptions.setText("{\"cardkind\":{\"planet\":0,\"planet2\":0,\"direction\":\"\"}}");
+		txOptions.setText("{\"cardkind\":{\"planet\":0,\"planet2\":0,\"direction\":\"\",\"signs\":\"\"}}");
 		refreshCard();
 		refreshTabs();
 	}
