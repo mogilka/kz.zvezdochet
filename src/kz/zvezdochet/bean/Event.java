@@ -851,7 +851,9 @@ public class Event extends Model {
 							long asplanetid = a.getPlanetid();
 							if (asplanetid > 0 && asplanetid != p.getId())
 								continue;
-							if (res <= 0.17 && !a.getCode().equals("KERNEL"))
+							if (res <= 0.17
+									&& !a.getCode().equals("KERNEL")
+									&& p.getCode().equals("Sun"))
 								continue;
 							if (a.isAspect(res)) {
 //								if (19 == p.getId() && 24 == p2.getId())
