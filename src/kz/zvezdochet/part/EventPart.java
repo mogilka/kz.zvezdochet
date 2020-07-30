@@ -750,7 +750,7 @@ public class EventPart extends ModelPart implements ICalculable {
 				}
 			});
 
-			txOptions.setText("{\"cardkind\":{\"planet\":0,\"planet2\":0,\"direction\":\"\",\"signs\":\"\"}}");
+			txOptions.setText("{\"cardkind\":{\"planet\":0,\"planet2\":0,\"direction\":\"\",\"signs\":\"\",\"houses\":\"\"}}");
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
@@ -864,12 +864,12 @@ public class EventPart extends ModelPart implements ICalculable {
 			if (event.getConversation() != null)
 				txConversation.setText(event.getConversation());
 			if (event.getMoondayid() > 0) {
-				MoonDay day = (MoonDay)new MoonDayService().find((long)event.getMoondayid());
+				MoonDay day = (MoonDay)new MoonDayService().find(event.getMoondayid());
 				cvMoonday.getCombo().setText(day.getId() + " " + day.getSymbol());
 			}
 			if (event.getCardkindid() > 0) {
-				CardKind kind = (CardKind)new CardKindService().find((long)event.getCardkindid());
-				cvCardKind.getCombo().setText(kind.getName() + " - " + kind.getDescription());
+				CardKind kind = (CardKind)new CardKindService().find(event.getCardkindid());
+				cvCardKind.getCombo().setText(kind.getName() + " - " + kind.getDegree());
 			}
 			if (event.getOptions() != null)
 				txOptions.setText(event.getOptions());
@@ -902,7 +902,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		txConversation.setText(""); //$NON-NLS-1$
 		cvMoonday.setSelection(null);
 		cvCardKind.setSelection(null);
-		txOptions.setText("{\"cardkind\":{\"planet\":0,\"planet2\":0,\"direction\":\"\",\"signs\":\"\"}}");
+		txOptions.setText("{\"cardkind\":{\"planet\":0,\"planet2\":0,\"direction\":\"\",\"signs\":\"\",\"houses\":\"\"}}");
 		refreshCard();
 		refreshTabs();
 	}
