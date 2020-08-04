@@ -37,24 +37,24 @@ public class AspectHandler extends Handler {
 	public void execute(@Active MPart activePart) {
 		try {
 			EventPart eventPart = (EventPart)activePart.getObject();
-			Event event = (Event)eventPart.getModel(EventPart.MODE_CALC, true);
+			Event event = (Event)eventPart.getModel(EventPart.MODE_ASPECT_PLANET_PLANET, true);
 			if (null == event) return;
 			if (null == event.getPlanets()) return; //TODO выдавать сообщение
-			updateStatus("Расчёт аспектов планет", false);
+			updateStatus("Расчёт аспектов между планетами", false);
 
 			Collection<Planet> planets = event.getPlanets().values();
 			int pcount = planets.size();
-			Object[][] data = new Object[pcount][pcount + 1];
+			Object[][] datap2p = new Object[pcount][pcount + 1];
 			//заполняем заголовки строк названиями планет и их координатами
 			for (Planet planet : planets)
-				data[planet.getId().intValue() - 19][0] = planet.getName() + " (" + CalcUtil.roundTo(planet.getLongitude(), 1) + ")";
+				datap2p[planet.getId().intValue() - 19][0] = planet.getName() + " (" + CalcUtil.roundTo(planet.getLongitude(), 1) + ")";
 
 			//формируем массив аспектов планет
 			List<Model> aspects = new AspectService().getList();
 			for (Planet planet : planets) {
 				for (Planet planet2 : planets) {
 					if (planet.getId().equals(planet2.getId())) {
-						data[planet.getId().intValue() - 19][planet2.getId().intValue() - 18] = null;
+						datap2p[planet.getId().intValue() - 19][planet2.getId().intValue() - 18] = null;
 						continue;
 					}
 					double res = CalcUtil.getDifference(planet.getLongitude(), planet2.getLongitude());
@@ -71,19 +71,19 @@ public class AspectHandler extends Handler {
 							continue;
 						}
 					}
-					data[planet.getId().intValue() - 19][planet2.getId().intValue() - 18] = aspect;
+					datap2p[planet.getId().intValue() - 19][planet2.getId().intValue() - 18] = aspect;
 				}
 			}
-			updateStatus("Расчёт аспектов завершён", false);
+			updateStatus("Расчёт аспектов между планетами завершён", false);
 
-			updateStatus("Расчёт аспектов домов", false);
+			updateStatus("Расчёт аспектов планет с домами", false);
 			if (null == event.getHouses()) return; //TODO выдавать сообщение
 			Collection<House> houses = event.getHouses().values();
 			int hcount = houses.size();
-			Object[][] datah = new Object[pcount][hcount + 1];
+			Object[][] datap2h = new Object[pcount][hcount + 1];
 			//заполняем заголовки строк названиями планет и их координатами
 			for (Planet planet : planets)
-				datah[planet.getId().intValue() - 19][0] = planet.getName() + " (" + CalcUtil.roundTo(planet.getLongitude(), 1) + ")";
+				datap2h[planet.getId().intValue() - 19][0] = planet.getName() + " (" + CalcUtil.roundTo(planet.getLongitude(), 1) + ")";
 
 			//формируем массив аспектов домов
 			for (House house : houses) {
@@ -102,18 +102,52 @@ public class AspectHandler extends Handler {
 							continue;
 						}
 					}
-					datah[planet.getId().intValue() - 19][house.getId().intValue() - 141] = aspect;
+					datap2h[planet.getId().intValue() - 19][house.getId().intValue() - 141] = aspect;
 				}
 			}
-			updateStatus("Расчёт аспектов домов завершён", false);
-			
+			updateStatus("Расчёт аспектов планет с домами завершён", false);
+
+			updateStatus("Расчёт аспектов домов с домами", false);
+			Object[][] datah2h = new Object[hcount][hcount + 1];
+			//заполняем заголовки строк названиями планет и их координатами
+			for (House house : houses)
+				datah2h[house.getId().intValue() - 142][0] = house.getName() + " (" + CalcUtil.roundTo(house.getLongitude(), 1) + ")";
+
+			//формируем массив аспектов домов
+			for (House house : houses) {
+				for (House house2 : houses) {
+					if (house.getId().equals(house2.getId())) {
+						datah2h[house.getId().intValue() - 142][house2.getId().intValue() - 141] = null;
+						continue;
+					}
+
+					double res = CalcUtil.getDifference(house2.getLongitude(), house.getLongitude());
+					SkyPointAspect aspect = new SkyPointAspect();
+					aspect.setSkyPoint1(house);
+					aspect.setSkyPoint2(house2);
+					aspect.setScore(CalcUtil.roundTo(res, 2));
+					for (Model realasp : aspects) {
+						Aspect a = (Aspect)realasp;
+						if (a.isAspect(res)) {
+							aspect.setAspect(a);
+							aspect.setExact(a.isExact(res));
+							aspect.setApplication(a.isApplication(res));
+							continue;
+						}
+					}
+					datah2h[house.getId().intValue() - 142][house2.getId().intValue() - 141] = aspect;
+				}
+			}
+			updateStatus("Расчёт аспектов домов с домами завершён", false);
+
 			MPart part = partService.findPart("kz.zvezdochet.part.aspect");
 		    part.setVisible(true);
 		    partService.showPart(part, PartState.VISIBLE);
 		    AspectPart aspectPart = (AspectPart)part.getObject();
 		    aspectPart.setEvent(event);
-		    aspectPart.setData(data);
-		    aspectPart.setDatah(datah);
+		    aspectPart.setData(datap2p);
+		    aspectPart.setDatap2h(datap2h);
+		    aspectPart.setDatah2h(datah2h);
 			updateStatus("Таблица аспектов сформирована", false);
 		} catch (Exception e) {
 			DialogUtil.alertError(e);

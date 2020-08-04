@@ -656,7 +656,7 @@ public class Event extends Model {
 	 */
 	private	TreeMap<Long, House> houseList;
 	/**
-	 * Список аспектов домов
+	 * Список аспектов планет с домами
 	 */
 	private	List<SkyPointAspect> aspecthList;
 	/**
@@ -965,6 +965,7 @@ public class Event extends Model {
 		initPlanetPositions();
 		initPlanetRank();
 		initHouseAspects();
+		initCuspidAspects();
 //		initIngress();
 	}
 
@@ -1746,4 +1747,43 @@ public class Event extends Model {
 	public void setOptions(String options) {
 		this.options = options;
 	}
+
+	/**
+	 * Расчёт аспектов куспидов домов
+	 * @throws DataAccessException 
+	 */
+	public void initCuspidAspects() throws DataAccessException {
+		try {
+			if (null == houseList || houseList.isEmpty())
+				return;
+			aspectcList = new ArrayList<SkyPointAspect>();
+			List<Model> aspects = new AspectService().getList();
+			Collection<House> houses = houseList.values();
+			for (House h : houses) {
+				for (House h2 : houses) {
+					double res = CalcUtil.getDifference(h.getLongitude(), h2.getLongitude());
+					for (Model realasp : aspects) {
+						Aspect a = (Aspect)realasp;
+						if (a.isAspect(res)) {
+							SkyPointAspect aspect = new SkyPointAspect();
+							aspect.setSkyPoint1(h);
+							aspect.setSkyPoint2(h2);
+							aspect.setAspect(a);
+							aspect.setExact(a.isExact(res));
+							aspect.setApplication(a.isApplication(res));
+							h.getAspectHouseList().add(aspect);
+							aspectcList.add(aspect);
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Список аспектов куспидов с домами
+	 */
+	private	List<SkyPointAspect> aspectcList;
 }

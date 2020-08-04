@@ -37,6 +37,7 @@ public class AspectPart extends ListView {
 	protected Event event;
 
 	private TableViewer tableViewer2;
+	private TableViewer tableViewer3;
 
 	@Inject
 	public AspectPart() {}
@@ -62,17 +63,26 @@ public class AspectPart extends ListView {
 		table2.setHeaderVisible(true);
 		table2.setLinesVisible(true);
 
+		tableViewer3 = new TableViewer(sashForm, SWT.BORDER | SWT.FULL_SELECTION);
+		Table table3 = tableViewer3.getTable();
+		table3.setHeaderVisible(true);
+		table3.setLinesVisible(true);
+
 		addColumns();
 		tableViewer.setContentProvider(new ArrayContentProvider());
 		tableViewer.setLabelProvider(getLabelProvider());
 		tableViewer2.setContentProvider(new ArrayContentProvider());
 		tableViewer2.setLabelProvider(getLabelProvider());
+		tableViewer3.setContentProvider(new ArrayContentProvider());
+		tableViewer3.setLabelProvider(getLabelProvider());
 
 		ListSelectionListener listener = getSelectionListener();
 		tableViewer.addSelectionChangedListener(listener);
 		tableViewer.addDoubleClickListener(listener);
 		tableViewer2.addSelectionChangedListener(listener);
 		tableViewer2.addDoubleClickListener(listener);
+		tableViewer3.addSelectionChangedListener(listener);
+		tableViewer3.addDoubleClickListener(listener);
 		initTable();
 	}
 
@@ -99,13 +109,21 @@ public class AspectPart extends ListView {
 				tableColumn.setToolTipText(planet.getName());
 			}
 			Table table2 = tableViewer2.getTable();
-			tableColumn = new TableColumn(table2, SWT.NONE);
+			Table table3 = tableViewer3.getTable();
+			TableColumn tableColumn2 = new TableColumn(table2, SWT.NONE);
+			TableColumn tableColumn3 = new TableColumn(table3, SWT.NONE);
 			Collection<House> houses = event.getHouses().values();
 			for (House house : houses) {
-				tableColumn = new TableColumn(table2, SWT.NONE);
-				tableColumn.setText(CalcUtil.roundTo(house.getLongitude(), 1) + "");
-				tableColumn.setText(house.getCode());
-				tableColumn.setToolTipText(house.getName());
+				tableColumn2 = new TableColumn(table2, SWT.NONE);
+				String title = CalcUtil.roundTo(house.getLongitude(), 1) + "";
+				tableColumn.setText(title);
+				tableColumn2.setText(house.getCode());
+				tableColumn2.setToolTipText(house.getName());
+
+				tableColumn3 = new TableColumn(table3, SWT.NONE);
+				tableColumn3.setText(title);
+				tableColumn3.setText(house.getCode());
+				tableColumn3.setToolTipText(house.getName());
 			}
 		}
 	}
@@ -127,17 +145,22 @@ public class AspectPart extends ListView {
 		if (table.getColumns() != null)
 			for (TableColumn column : table.getColumns())
 				column.dispose();
+
+		table = tableViewer3.getTable();
+		if (table.getColumns() != null)
+			for (TableColumn column : table.getColumns())
+				column.dispose();
 	}
 
 	/**
 	 * Инициализация содержимого таблицы домов
 	 * @param data массив данных
 	 */
-	public void setDatah(Object data) {
+	public void setDatap2h(Object data) {
 		try {
 			showBusy(true);
-			this.datah = data;
-			initTable();	
+			this.datap2h = data;
+			initTable2();	
 		} finally {
 			showBusy(false);
 		}
@@ -146,15 +169,49 @@ public class AspectPart extends ListView {
 	/**
 	 * Массив данных таблицы домов
 	 */
-	protected Object datah;
+	protected Object datap2h;
+	protected Object datah2h;
 
 	@Override
-	protected void initTable() {
-		super.initTable();
+	protected void arrange(Composite parent) {
+		super.arrange(parent);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(tableViewer2.getTable());
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(tableViewer3.getTable());
+	}
+
+	@Override
+	public void refresh() {
+		super.refresh();
+		tableViewer2.refresh();
+		tableViewer3.refresh();
+	}
+
+	@Override
+	public void reset() {
+		super.reset();
+		tableViewer2.getTable().removeAll();
+		tableViewer3.getTable().removeAll();
+	}
+
+	/**
+	 * Инициализация содержимого таблицы куспидов
+	 * @param data массив данных
+	 */
+	public void setDatah2h(Object data) {
 		try {
 			showBusy(true);
-			if (datah != null)
-				tableViewer2.setInput(datah);
+			this.datah2h = data;
+			initTable3();	
+		} finally {
+			showBusy(false);
+		}
+	}
+
+	private void initTable2() {
+		try {
+			showBusy(true);
+			if (datap2h != null)
+				tableViewer2.setInput(datap2h);
 			Table table = tableViewer2.getTable();
 			for (int i = 0; i < table.getColumnCount(); i++)
 				table.getColumn(i).pack();
@@ -165,21 +222,18 @@ public class AspectPart extends ListView {
 		}
 	}
 
-	@Override
-	protected void arrange(Composite parent) {
-		super.arrange(parent);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(tableViewer2.getTable());
-	}
-
-	@Override
-	public void refresh() {
-		super.refresh();
-		tableViewer2.refresh();
-	}
-
-	@Override
-	public void reset() {
-		super.reset();
-		tableViewer2.getTable().removeAll();
+	private void initTable3() {
+		try {
+			showBusy(true);
+			if (datah2h != null)
+				tableViewer3.setInput(datah2h);
+			Table table = tableViewer3.getTable();
+			for (int i = 0; i < table.getColumnCount(); i++)
+				table.getColumn(i).pack();
+		} catch(Exception e) {
+			e.printStackTrace();
+		} finally {
+			showBusy(false);
+		}
 	}
 }

@@ -19,12 +19,12 @@ public class CalcHandler extends Handler {
 	public void execute(@Active MPart activePart) {
 		try {
 			EventPart eventPart = (EventPart)activePart.getObject();
-			Event event = (Event)eventPart.getModel(EventPart.MODE_CALC, true);
+			Event event = (Event)eventPart.getModel(EventPart.MODE_ASPECT_PLANET_PLANET, true);
 			if (null == event) return;
 			updateStatus("Расчет конфигурации", false);
 			event.calc(false);
 			eventPart.setModel(event, false);
-			eventPart.onCalc(EventPart.MODE_CALC);
+			eventPart.onCalc(EventPart.MODE_ASPECT_PLANET_PLANET);
 			updateStatus("Расчетная конфигурация создана", false);
 		} catch (Exception e) {
 			DialogUtil.alertError(e);

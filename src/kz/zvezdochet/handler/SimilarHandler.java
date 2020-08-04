@@ -29,7 +29,7 @@ public class SimilarHandler extends Handler {
 	public void execute(@Active MPart activePart) {
 		try {
 			EventPart eventPart = (EventPart)activePart.getObject();
-			Event event = (Event)eventPart.getModel(EventPart.MODE_CALC, true);
+			Event event = (Event)eventPart.getModel(EventPart.MODE_ASPECT_PLANET_PLANET, true);
 			if (null == event) return;
 			updateStatus("Поиск", false);
 			Object data = new EventService().findSimilar(event, -1);

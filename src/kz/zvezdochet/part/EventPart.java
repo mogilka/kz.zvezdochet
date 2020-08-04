@@ -91,8 +91,9 @@ public class EventPart extends ModelPart implements ICalculable {
 	 * Режим синхронизации данных события,
 	 * при котором проверяются только расчётные показатели
 	 */
-	public static int MODE_CALC = 1;
-	public static int MODE_ASPECT_HOUSE = 2;
+	public static int MODE_ASPECT_PLANET_PLANET = 1;
+	public static int MODE_ASPECT_PLANET_HOUSE = 2;
+	public static int MODE_ASPECT_CUSPID_HOUSE = 3;
 
 	private Label lbGender;
 	private Link lbID;
@@ -131,7 +132,9 @@ public class EventPart extends ModelPart implements ICalculable {
 	private Group grStars;
 
 	private SashForm shCosmogram;
-	private Button btHouseAspects;
+	private Button btP2PAspects;
+	private Button btP2HAspects;
+	private Button btH2HAspects;
 
 	@PostConstruct
 	public View create(Composite parent) {
@@ -511,15 +514,27 @@ public class EventPart extends ModelPart implements ICalculable {
 
 			//настройки аспектов
 			gr = new Group(grAspectType, SWT.NONE);
-			btHouseAspects = new Button(gr, SWT.BORDER | SWT.CHECK);
-			btHouseAspects.setText("Аспекты планет с куспидами");
+			btP2PAspects = new Button(gr, SWT.BORDER | SWT.RADIO);
+			btP2PAspects.setText("Аспекты планет с планетами");
+			btP2PAspects.setSelection(true);
+
+			btP2HAspects = new Button(gr, SWT.BORDER | SWT.RADIO);
+			btP2HAspects.setText("Аспекты планет с куспидами");
+
+			btH2HAspects = new Button(gr, SWT.BORDER | SWT.RADIO);
+			btH2HAspects.setText("Аспекты домов с куспидами");
 
 			bt = new Button(gr, SWT.NONE);
 			bt.setText("Расчёт");
 			bt.addSelectionListener(new SelectionListener() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					refreshCard();
+					int mode = MODE_ASPECT_PLANET_PLANET;
+					if (btP2HAspects.getSelection())
+						mode = MODE_ASPECT_PLANET_HOUSE;
+					else if (btH2HAspects.getSelection())
+						mode = MODE_ASPECT_CUSPID_HOUSE;
+					refreshCard(mode);
 				}
 				@Override
 				public void widgetDefaultSelected(SelectionEvent e) {}
@@ -829,7 +844,7 @@ public class EventPart extends ModelPart implements ICalculable {
 			reset();
 			model = (null == model) ? new Event() : model;
 			Event event = (Event)model;
-			long id = event.getId();
+			long id = (null == event) ? 0 : event.getId();
 			if (id > 0) {
 				Calendar calendar = Calendar.getInstance();
 				int year = calendar.get(Calendar.YEAR);
@@ -903,7 +918,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		cvMoonday.setSelection(null);
 		cvCardKind.setSelection(null);
 		txOptions.setText("{\"cardkind\":{\"planet\":0,\"planet2\":0,\"direction\":\"\",\"signs\":\"\",\"houses\":\"\"}}");
-		refreshCard();
+		refreshCard(MODE_ASPECT_PLANET_PLANET);
 		refreshTabs();
 	}
 	
@@ -914,13 +929,13 @@ public class EventPart extends ModelPart implements ICalculable {
 	@Override
 	public void onCalc(Object obj) {
 		if (null == obj)
-			obj = MODE_CALC;
+			obj = MODE_ASPECT_PLANET_PLANET;
 		int mode = (int)obj;
-		if (MODE_CALC == mode) {
+		if (MODE_ASPECT_PLANET_PLANET == mode) {
 			part.setDirty(true);
-			refreshCard();
+			refreshCard(mode);
 			refreshTabs();
-		} else if (MODE_ASPECT_HOUSE == mode) {
+		} else if (MODE_ASPECT_PLANET_HOUSE == mode) {
 			Map<String, Object> params = new HashMap<>();
 			List<String> aparams = new ArrayList<String>();
 			Map<String, String[]> types = AspectType.getHierarchy();
@@ -1123,8 +1138,9 @@ public class EventPart extends ModelPart implements ICalculable {
 
 	/**
 	 * Перерисовка космограммы
+	 * @param mode 0|1|2 аспекты планет с планетами|планет с домами|домов с домами
 	 */
-	private void refreshCard() {
+	private void refreshCard(int mode) {
 		if (null == model)
 			return;
 		Map<String, Object> params = new HashMap<>();
@@ -1138,8 +1154,8 @@ public class EventPart extends ModelPart implements ICalculable {
 		}
 		params.put("aspects", subparams);
 
-		if (btHouseAspects.getSelection()) {
-			params.put("houseAspectable", true);
+		if (MODE_ASPECT_PLANET_HOUSE == mode) {
+			params.put("aspectMode", "houseAspectable");
 			
 			subparams = new ArrayList<String>();
 			group = (Group)grAspectType.getChildren()[1];
@@ -1149,6 +1165,18 @@ public class EventPart extends ModelPart implements ICalculable {
 					subparams.add(button.getData("planet").toString());
 			}
 			params.put("planets", subparams);
+
+			subparams = new ArrayList<String>();
+			ScrolledComposite scroll = (ScrolledComposite)grAspectType.getChildren()[2];
+			group = (Group)scroll.getChildren()[0];
+			for (Control control : group.getChildren()) {
+				Button button = (Button)control;
+				if (button.getSelection())
+					subparams.add(button.getData("house").toString());
+			}
+			params.put("houses", subparams);
+		} else if (MODE_ASPECT_CUSPID_HOUSE == mode) {
+			params.put("aspectMode", "houseCuspidable");
 
 			subparams = new ArrayList<String>();
 			ScrolledComposite scroll = (ScrolledComposite)grAspectType.getChildren()[2];
@@ -1198,7 +1226,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		}
 		super.setModel(model, sync);
 		if (sync) {
-			refreshCard();
+			refreshCard(MODE_ASPECT_PLANET_PLANET);
 			refreshTabs();
 		}
 	}
