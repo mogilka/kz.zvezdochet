@@ -1396,7 +1396,18 @@ public class Event extends Model {
 			init(false);
 			double lat = place.getLatitude();
 			double lon = place.getLongitude();
-			double nzone = cachable ? place.getZone() : zone;
+			double nzone = 0;
+			if (cachable)
+				nzone = place.getZone();
+			else {
+				int izone = (int)zone;
+				if (izone == zone)
+					nzone = zone;
+				else {
+					double zmin = ((NumberUtil.round(zone, 2) - izone) * 100) / 60.0;
+					nzone = izone + zmin;
+				}
+			}
 			double ndst = cachable ? (place.isDst() ? 1 : 0) : dst;
 			//System.out.println("calculate\t" + date + "\t" + time + "\tzone:\t" + szone + "\tlat\t" + slat + "\tlon\t" + slon);
 
@@ -1419,12 +1430,12 @@ public class Event extends Model {
 		  		sweph.swe_set_sid_mode(SweConst.SE_SIDM_DJWHAL_KHUL, 0, 0);
 
 		  		//обрабатываем дату
-		  		int iyear, imonth, iday, ihour = 0, imin = 0, isec = 0;
+		  		int iyear, imonth, iday, imin = 0, isec = 0;
 		  		iday = Integer.parseInt(date.substring(0, 2));
 		  		imonth = Integer.parseInt(date.substring(3, 5));
 		  		iyear = Integer.parseInt(date.substring(6, 10));
 		  		
-		  		//обрабатываем время
+		  		//обрабатываем время, чтобы получить время по Гринвичу
 		  		double timing = Double.parseDouble(NumberUtil.trimLeadZero(time.substring(0, 2))); //час по местному времени
 		  		nzone += ndst; //часовой пояс + DST
 		  		if (nzone < 0) {
@@ -1497,7 +1508,6 @@ public class Event extends Model {
 		  		}
 		  		if (timing >= 24)
 		  			timing -= 24;
-		  		ihour = (int)timing; //гринвичский час
 		  		imin = Integer.parseInt(NumberUtil.trimLeadZero(time.substring(3,5)));
 		  		isec = Integer.parseInt(NumberUtil.trimLeadZero(time.substring(6,8)));
 
@@ -1506,7 +1516,7 @@ public class Event extends Model {
 				double tjd, tjdet, tjdut, tsid, armc, dhour, deltat;
 		  		@SuppressWarnings("unused")
 				double eps_true, nut_long, glon, glat;
-		  		dhour = ihour + imin/60.0 + isec/3600.0;
+		  		dhour = timing + imin/60.0 + isec/3600.0;
 		  		tjd = SweDate.getJulDay(iyear, imonth, iday, dhour, true);
 		  		deltat = SweDate.getDeltaT(tjd);
 		  		//Universal Time
@@ -1786,4 +1796,12 @@ public class Event extends Model {
 	 * Список аспектов куспидов с домами
 	 */
 	private	List<SkyPointAspect> aspectcList;
+
+	/**
+	 * Проверка, является ли событие персоной
+	 * @return true - человек
+	 */
+	public boolean isHuman() {
+		return (1 == human);
+	}
 }
