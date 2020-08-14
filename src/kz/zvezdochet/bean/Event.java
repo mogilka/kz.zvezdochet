@@ -1804,4 +1804,16 @@ public class Event extends Model {
 	public boolean isHuman() {
 		return (1 == human);
 	}
+
+	/**
+	 * Текущее место проживания
+	 */
+	private Place currentPlace;
+
+	public Place getCurrentPlace() {
+		return currentPlace;
+	}
+	public void setCurrentPlace(Place currentPlace) {
+		this.currentPlace = currentPlace;
+	}
 }

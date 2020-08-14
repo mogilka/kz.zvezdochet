@@ -122,6 +122,7 @@ public class EventPart extends ModelPart implements ICalculable {
 	private ComboViewer cvCardKind;
 	private Text txOptions;
 	private Button btTerm;
+	private Text txCurrentPlace;
 
 	private CosmogramComposite cmpCosmogram;
 	private Group grPlanets;
@@ -216,6 +217,9 @@ public class EventPart extends ModelPart implements ICalculable {
 		lb = new Label(secPlace, SWT.NONE);
 		lb.setText("DST"); //$NON-NLS-1$
 		cvDST = new ComboViewer(secPlace, SWT.BORDER | SWT.READ_ONLY);
+
+		txCurrentPlace = new Text(secPlace, SWT.BORDER);
+		new InfoDecoration(txCurrentPlace, SWT.TOP | SWT.LEFT);
 
 		GridLayoutFactory.swtDefaults().numColumns(4).applyTo(secPlace);
 		GridDataFactory.fillDefaults().span(4, 1).grab(true, false).applyTo(secPlace);
@@ -644,6 +648,8 @@ public class EventPart extends ModelPart implements ICalculable {
 			grab(true, false).applyTo(txGreenwich);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			grab(true, false).applyTo(cvDST.getCombo());
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
+			span(4, 1).grab(true, false).applyTo(txCurrentPlace);
 
 //		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 //			grab(true, false).applyTo(cvMoonday.getCombo());
@@ -690,19 +696,25 @@ public class EventPart extends ModelPart implements ICalculable {
 //		txBiography.addModifyListener(listener);
 //		txComment.addModifyListener(listener);
 //		btCelebrity.addSelectionListener(listener);
+//		txCurrentPlace.addModifyListener(listener);
 	}
 
 	/**
 	 * Инициализация представления местности события
 	 * @param place местность
+	 * @param current true|false текущее|натальное
 	 */
-	private void initPlace(Place place) {
+	private void initPlace(Place place, boolean current) {
 		if (null == place) return;
-		txPlace.setText(place.getName());
-		txLatitude.setText(CalcUtil.formatNumber("###.##", place.getLatitude())); //$NON-NLS-1$
-		txLongitude.setText(CalcUtil.formatNumber("###.##", place.getLongitude())); //$NON-NLS-1$
-		txGreenwich.setText(CalcUtil.formatNumber("###.##", place.getGreenwich())); //$NON-NLS-1$
-		txZone.setText(String.valueOf(place.getGreenwich()));
+		if (current)
+			txCurrentPlace.setText(place.getName());
+		else {
+			txPlace.setText(place.getName());
+			txLatitude.setText(CalcUtil.formatNumber("###.##", place.getLatitude())); //$NON-NLS-1$
+			txLongitude.setText(CalcUtil.formatNumber("###.##", place.getLongitude())); //$NON-NLS-1$
+			txGreenwich.setText(CalcUtil.formatNumber("###.##", place.getGreenwich())); //$NON-NLS-1$
+			txZone.setText(String.valueOf(place.getGreenwich()));
+		}
 	}
 
 	private String[] genders = {"",
@@ -848,8 +860,9 @@ public class EventPart extends ModelPart implements ICalculable {
 			if (id > 0) {
 				Calendar calendar = Calendar.getInstance();
 				int year = calendar.get(Calendar.YEAR);
-				int month = calendar.get(Calendar.MONTH);
-				String url = "http://zvezdochet.local/month/transits?id=" + month + "&year=" + year + "&eventid=" + id + "&placeid=7095";
+				int month = calendar.get(Calendar.MONTH) + 1;
+				long placeid = (null == event.getCurrentPlace()) ? Place._GREENWICH : event.getCurrentPlace().getId();
+				String url = "http://zvezdochet.local/month/transits?id=" + month + "&year=" + year + "&eventid=" + id + "&placeid=" + placeid;
 				lbID.setText(id + " " + "<a href=\"" + url + "\">транзиты</a>");
 			}
 			txName.setText(event.getName());
@@ -867,10 +880,12 @@ public class EventPart extends ModelPart implements ICalculable {
 			if (event.getBio() != null)
 				txBio.setText(event.getBio());
 			if (event.getPlace() != null)
-				initPlace(event.getPlace());
+				initPlace(event.getPlace(), false);
 			txZone.setText(CalcUtil.formatNumber("###.##", event.getZone()));
 			String dststr = dst.get((int)event.getDst());
 			cvDST.getCombo().setText(null == dststr ? "0" : dststr);
+			if (event.getCurrentPlace() != null)
+				initPlace(event.getCurrentPlace(), true);
 			int human = event.getHuman();
 			if (human > -1)
 				cvHuman.getCombo().setText(humans[human]);
@@ -918,6 +933,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		cvMoonday.setSelection(null);
 		cvCardKind.setSelection(null);
 		txOptions.setText("{\"cardkind\":{\"planet\":0,\"planet2\":0,\"direction\":\"\",\"signs\":\"\",\"houses\":\"\"}}");
+		txCurrentPlace.setText(""); //$NON-NLS-1$
 		refreshCard(MODE_ASPECT_PLANET_PLANET);
 		refreshTabs();
 	}
@@ -1209,11 +1225,29 @@ public class EventPart extends ModelPart implements ICalculable {
 					if (null == model)
 						model = new Event();
 					((Event)model).setPlace(place);
-					initPlace(place);
+					initPlace(place, false);
 				}
 			}
 		});
-	}
+
+	    adapter = new ContentProposalAdapter(
+		        txCurrentPlace, new TextContentAdapter(),
+		        proposalProvider, KeyStroke.getInstance(SWT.CTRL, 32), new char[] {' '});
+		    adapter.setPropagateKeys(true);
+		    adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
+		    adapter.addContentProposalListener(new IContentProposalListener() {
+				@Override
+				public void proposalAccepted(IContentProposal proposal) {
+					Place place = (Place)((PlaceContentProposal)proposal).getObject();
+					if (place != null) {
+						if (null == model)
+							model = new Event();
+						((Event)model).setCurrentPlace(place);
+						initPlace(place, true);
+					}
+				}
+			});
+}
 
 	@Override
 	public void setModel(Model model, boolean sync) {

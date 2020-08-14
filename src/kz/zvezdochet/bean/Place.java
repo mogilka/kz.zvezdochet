@@ -164,4 +164,9 @@ public class Place extends Dictionary {
 	public void setDst(boolean dst) {
 		this.dst = dst;
 	}
+
+	/**
+	 * Идентификатор местоположения Гринвича
+	 */
+	public static long _GREENWICH = 7095L;
 }

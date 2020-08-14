@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 import kz.zvezdochet.bean.Aspect;
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.House;
+import kz.zvezdochet.bean.Place;
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.bean.Sign;
 import kz.zvezdochet.bean.SkyPoint;
@@ -94,7 +95,7 @@ public class EventService extends ModelService {
 		try {
 			String sql;
 			if (null == model.getId())
-				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
 					"name = ?, " +
@@ -122,7 +123,8 @@ public class EventService extends ModelService {
 					"biography = ?, " +
 					"conversation = ?, " +
 					"updated_at = ?, " +
-					"options = ? " +
+					"options = ?, " +
+					"curplaceid = ? " +
 					"where id = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setString(1, event.getName());
@@ -180,8 +182,13 @@ public class EventService extends ModelService {
 			ps.setString(25, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
 			ps.setString(26, event.getOptions());
 
+			if (event.getCurrentPlace() != null && event.getCurrentPlace().getId() != null && event.getCurrentPlace().getId() > 0)
+				ps.setLong(27, event.getCurrentPlace().getId());
+			else
+				ps.setNull(27, java.sql.Types.NULL);
+
 			if (model.getId() != null)
-				ps.setLong(27, model.getId());
+				ps.setLong(28, model.getId());
 			System.out.println(ps);
 
 			result = ps.executeUpdate();
@@ -265,6 +272,12 @@ public class EventService extends ModelService {
 		event.setConversation(rs.getString("conversation"));
 		event.setModified(DateUtil.getDatabaseDateTime(rs.getString("updated_at")));
 		event.setOptions(rs.getString("options"));
+		try {
+			if (rs.getString("curplaceid") != null)
+				event.setCurrentPlace((Place)new PlaceService().find(rs.getLong("curplaceid")));
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+		}
 		return event;
 	}
 
