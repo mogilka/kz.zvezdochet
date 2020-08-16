@@ -68,7 +68,7 @@ public class ImportRunHandler extends Handler {
 							++canceled;
 						}
 					}
-				} else { //связанная запись найдена
+				} else { //связанная запись найдена TODO импортировать биографию и журнал
 					back.setName(event.getName());
 					back.setBirth(event.getBirth());
 					back.setDeath(event.getDeath());
