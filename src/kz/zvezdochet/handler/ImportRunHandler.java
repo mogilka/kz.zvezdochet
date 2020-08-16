@@ -41,7 +41,7 @@ public class ImportRunHandler extends Handler {
 			EventService service = new EventService();
 			for (Event event : events) {
 				Event back = (Event)service.findBack(event.getId());
-				if (null == back.getId()) { //связанная запись не найдена
+				if (null == back || null == back.getId()) { //связанная запись не найдена
 					back = (Event)service.find(event.getId());
 					if (null == back.getId()) { //оригинальная запись тоже не найдена, создаём
 						event.setBackid(event.getId());
