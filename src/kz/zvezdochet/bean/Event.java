@@ -804,8 +804,10 @@ public class Event extends Model {
 						house.setLilithed();
 					else if (planet.getCode().equals("Selena"))
 						house.setSelened();
-					else if (planet.getCode().equals("Kethu"))
+					if (planet.getCode().equals("Kethu"))
 						house.setKethued();
+					else if (planet.getCode().equals("Rakhu"))
+						house.setRakhued();
 				}
 			}
 			//звёзды
