@@ -26,6 +26,7 @@ import kz.zvezdochet.core.util.CalcUtil;
 import kz.zvezdochet.core.util.DateUtil;
 import kz.zvezdochet.core.util.IOUtil;
 import kz.zvezdochet.core.util.NumberUtil;
+import kz.zvezdochet.core.util.OsUtil;
 import kz.zvezdochet.core.util.PlatformUtil;
 import kz.zvezdochet.part.Messages;
 import kz.zvezdochet.service.AspectService;
@@ -377,7 +378,7 @@ public class Event extends Model {
 //		  	  	IPreferenceStore preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, "kz.zvezdochet.runner");
 //		        String dir = preferenceStore.getString(CACHE_DIR_PATH);
 
-	  	  		String dir = "/media/nataly/toshiba/cache/";
+	  	  		String dir = OsUtil.getOS().equals(OsUtil.OS.LINUX) ? "/media/nataly/toshiba/cache/" : null;
 	  	  		if (null == dir)
 	  	  			dir = PlatformUtil.getPath(kz.zvezdochet.Activator.PLUGIN_ID, "/cache/").getPath();
 	  	  		String filename = dir + cachekey + ".txt";
@@ -979,15 +980,15 @@ public class Event extends Model {
 			PlanetService service = new PlanetService();
 			List<Model> positions = new PositionTypeService().getList();
 			Collection<Planet> planets = planetList.values();
+			boolean daily = DateUtil.isDaily(birth);
+
 			for (Planet planet : planets) {
 //				System.out.println(planet);
 				for (Model type : positions) {
 					PositionType pType = (PositionType)type;
 					String pCode = pType.getCode();
-					boolean daily = true;
 					if (!planet.getCode().equals("Sun") &&
 							(pCode.equals("HOME") || pCode.equals("EXILE")))
-						daily = DateUtil.isDaily(birth);
 
 					if (planet.getSign() != null) {
 						Sign sign = service.getSignPosition(planet, pCode, daily);
@@ -1253,8 +1254,9 @@ public class Event extends Model {
 			List<SkyPointAspect> easpects = initTransits(today);
 			List<SkyPointAspect> easpects2 = initTransits(yesterday);
 
-			List<SkyPointAspect> easpectsh = initHousesTransits(today);
-			List<SkyPointAspect> easpectsh2 = initHousesTransits(yesterday);
+			boolean housable = isHousable();
+			List<SkyPointAspect> easpectsh = housable ? initHousesTransits(today) : null;
+			List<SkyPointAspect> easpectsh2 = housable ? initHousesTransits(yesterday) : null;
 			Collection<House> houses = getHouses().values();
 
 	    	//изменилось ли направление планеты
@@ -1306,6 +1308,8 @@ public class Event extends Model {
 		                		ingressList.get(Ingress._REPEAT).add(trspa2);
 				}
 
+			    if (!housable)
+			    	continue;
 			    for (House p2 : houses) {
 		            //изменились ли транзиты дома?
 		            String acode = null;
