@@ -665,27 +665,6 @@ public class Event extends Model {
 	 */
 	private	Map<Long, Star> starList;
 
-	/**
-	 * Система домов
-	 * P	Placidus
-	 * K	Koch
-	 * O	Porphyrius
-	 * R	Regiomontanus
-	 * C	Campanus
-	 * A E	Equal (cusp 1 is Ascendant)
-	 * V	Vehlow equal (Asc. in middle of house 1)
-	 * W	Whole sign
-	 * X	axial rotation system / meridian system / zariel
-	 * H	azimuthal or horizontal system
-	 * T	Polich/Page (“topocentric” system)
-	 * B	Alcabitus
-	 * M	Morinus
-	 * U	Krusinski-Pisa
-	 * G	Gauquelin sector
-	 * Y	APC houses
-	 */
-	private char hsys = 'P';
-
   	/**
   	 * Метод, возвращающий массив планет по Швейцарским эфемеридам
   	 * @return массив индексов планет
@@ -1560,6 +1539,27 @@ public class Event extends Model {
 		  			p.setLongitude(planets[10] + 180);
 
 		  		//расчёт куспидов домов
+		  		/*
+		  		 * Система домов
+		  		 * P	Placidus
+		  		 * K	Koch
+		  		 * O	Porphyrius
+		  		 * R	Regiomontanus
+		  		 * C	Campanus
+		  		 * A E	Equal (cusp 1 is Ascendant)
+		  		 * V	Vehlow equal (Asc. in middle of house 1)
+		  		 * W	Whole sign
+		  		 * X	axial rotation system / meridian system / zariel
+		  		 * H	azimuthal or horizontal system
+		  		 * T	Polich/Page (“topocentric” system)
+		  		 * B	Alcabitus
+		  		 * M	Morinus
+		  		 * U	Krusinski-Pisa
+		  		 * G	Gauquelin sector
+		  		 * Y	APC houses
+		  		 */
+		  		char hsys = 'P';
+
 		  		sb = new StringBuffer(new String(serr));
 		  		//{ for houses: ecliptic obliquity and nutation }
 		  		rflag = sweph.swe_calc_ut(tjdut, SweConst.SE_ECL_NUT, 0, xx, sb);
