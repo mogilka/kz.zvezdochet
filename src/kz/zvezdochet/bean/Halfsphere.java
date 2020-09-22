@@ -30,4 +30,17 @@ public class Halfsphere extends DiagramDictionary {
 		    }
 		};
 	}
+
+	/**
+	 * Толкование для вида космограммы "Чаша"
+	 */
+	private String cup;
+
+	public String getCup() {
+		return cup;
+	}
+
+	public void setCup(String cup) {
+		this.cup = cup;
+	}
 }

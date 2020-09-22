@@ -1,8 +1,11 @@
 package kz.zvezdochet.service;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import kz.zvezdochet.bean.Halfsphere;
+import kz.zvezdochet.core.bean.Dictionary;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.TextGenderDiagramService;
@@ -27,5 +30,13 @@ public class HalfsphereService extends TextGenderDiagramService {
 		if (null == list)
 			list = super.getList();
 		return list;
+	}
+
+	@Override
+	public Halfsphere init(ResultSet rs, Model model) throws DataAccessException, SQLException {
+		Dictionary type = super.init(rs, model);
+		Halfsphere halfsphere = (Halfsphere)type;
+		halfsphere.setCup(rs.getString("cup"));
+		return halfsphere;
 	}
 }
