@@ -43,4 +43,17 @@ public class Halfsphere extends DiagramDictionary {
 	public void setCup(String cup) {
 		this.cup = cup;
 	}
+
+	/**
+	 * Толкование для вида космограммы "Лук"
+	 */
+	private String bow;
+
+	public String getBow() {
+		return bow;
+	}
+
+	public void setBow(String bow) {
+		this.bow = bow;
+	}
 }

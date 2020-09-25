@@ -37,6 +37,7 @@ public class HalfsphereService extends TextGenderDiagramService {
 		Dictionary type = super.init(rs, model);
 		Halfsphere halfsphere = (Halfsphere)type;
 		halfsphere.setCup(rs.getString("cup"));
+		halfsphere.setBow(rs.getString("bow"));
 		return halfsphere;
 	}
 }
