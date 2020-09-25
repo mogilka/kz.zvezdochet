@@ -154,4 +154,17 @@ public class EventConfiguration extends Model {
 	public void setHouseid(long houseid) {
 		this.houseid = houseid;
 	}
+
+	/**
+	 * Толкование
+	 */
+	private String text;
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
+	}
 }
