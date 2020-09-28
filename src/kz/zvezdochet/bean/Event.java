@@ -1822,4 +1822,26 @@ public class Event extends Model {
 	public void setCurrentPlace(Place currentPlace) {
 		this.currentPlace = currentPlace;
 	}
+
+	/**
+	 * Имя по-английски
+	 */
+	private String name_en;
+	/**
+	 * Комментарий по-английски
+	 */
+	private String comment_en;
+
+	public String getName_en() {
+		return name_en;
+	}
+	public void setName_en(String name_en) {
+		this.name_en = name_en;
+	}
+	public String getComment_en() {
+		return comment_en;
+	}
+	public void setComment_en(String comment_en) {
+		this.comment_en = comment_en;
+	}
 }

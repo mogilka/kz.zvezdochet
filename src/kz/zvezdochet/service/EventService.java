@@ -95,7 +95,7 @@ public class EventService extends ModelService {
 		try {
 			String sql;
 			if (null == model.getId())
-				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
 					"name = ?, " +
@@ -124,7 +124,9 @@ public class EventService extends ModelService {
 					"conversation = ?, " +
 					"updated_at = ?, " +
 					"options = ?, " +
-					"curplaceid = ? " +
+					"curplaceid = ?, " +
+					"name_en = ?, " +
+					"comment_en = ? " +
 					"where id = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setString(1, event.getName());
@@ -187,8 +189,11 @@ public class EventService extends ModelService {
 			else
 				ps.setNull(27, java.sql.Types.NULL);
 
+			ps.setString(28, event.getName_en());
+			ps.setString(29, event.getComment_en());
+
 			if (model.getId() != null)
-				ps.setLong(28, model.getId());
+				ps.setLong(30, model.getId());
 			System.out.println(ps);
 
 			result = ps.executeUpdate();
