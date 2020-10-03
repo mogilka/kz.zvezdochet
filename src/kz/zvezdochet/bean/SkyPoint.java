@@ -1,6 +1,7 @@
 package kz.zvezdochet.bean;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -78,6 +79,8 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
 	}
 
 	public Map<String, Integer> getAspectCountMap() {
+		if (null == aspectCountMap)
+			aspectCountMap = new HashMap<String, Integer>();
 		return aspectCountMap;
 	}
 
