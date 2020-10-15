@@ -301,6 +301,19 @@ public class AspectConfiguration extends TextGenderDictionary {
 		this.shape = shape;
 	}
 
+	/**
+	 * Идентификатор стихии
+	 */
+	private long elementid;
+
+	public long getElementid() {
+		return elementid;
+	}
+
+	public void setElementid(long elementid) {
+		this.elementid = elementid;
+	}
+
 //	/**
 //	 * Конвертация параметров JSON в объект
 //	 * @param json объект JSON
