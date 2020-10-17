@@ -126,7 +126,7 @@ public class AspectTypeService extends DictionaryService {
 	 * @throws DataAccessException
 	 */
 	public List<AspectType> getMainList() throws DataAccessException {
-		Map<String, String[]> types = AspectType.getHierarchy();
+		Map<String, String[]> types = AspectType.getHierarchy(false);
 		List<AspectType> main = new ArrayList<AspectType>();
 		for (Model model : getList())
 			if (types.containsKey(((Dictionary)model).getCode()))

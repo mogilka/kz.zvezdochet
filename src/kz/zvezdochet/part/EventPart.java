@@ -413,7 +413,7 @@ public class EventPart extends ModelPart implements ICalculable {
 			List<Model> types = new AspectTypeService().getList();
 			for (Model model : types) {
 				AspectType type = (AspectType)model;
-				if (type.getImage() != null) {
+				if (type.getImage() != null && !type.getCode().contains("HIDDEN")) {
 					final Button bt = new Button(gr, SWT.BORDER | SWT.CHECK);
 					bt.setText(type.getName());
 					bt.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/" + type.getImage()).createImage());
@@ -953,7 +953,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		} else if (MODE_ASPECT_PLANET_HOUSE == mode) {
 			Map<String, Object> params = new HashMap<>();
 			List<String> aparams = new ArrayList<String>();
-			Map<String, String[]> types = AspectType.getHierarchy();
+			Map<String, String[]> types = AspectType.getHierarchy(false);
 			for (Control control : grAspectType.getChildren()) {
 				Button button = (Button)control;
 				if (button.getSelection())
@@ -1160,7 +1160,7 @@ public class EventPart extends ModelPart implements ICalculable {
 			return;
 		Map<String, Object> params = new HashMap<>();
 		List<String> subparams = new ArrayList<String>();
-		Map<String, String[]> types = AspectType.getHierarchy();
+		Map<String, String[]> types = AspectType.getHierarchy(false);
 		Group group = (Group)grAspectType.getChildren()[0];
 		for (Control control : group.getChildren()) {
 			Button button = (Button)control;

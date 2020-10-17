@@ -100,13 +100,21 @@ public class AspectType extends DiagramObject {
 
 	/**
 	 * Возвращает иерархию типов аспектов
+	 * @param synastry true - разделяем сильные и слабые аспекты
 	 * @return карта типов
 	 */
-	public static Map<String, String[]> getHierarchy() {
+	public static Map<String, String[]> getHierarchy(boolean synastry) {
 		Map<String, String[]> map = new HashMap<String, String[]>();
 		map.put("NEUTRAL", new String[] {"NEUTRAL"});
-		map.put("POSITIVE", new String[] {"POSITIVE", "POSITIVE_HIDDEN"});
-		map.put("NEGATIVE", new String[] {"NEGATIVE", "NEGATIVE_HIDDEN"});
+		if (synastry) {
+			map.put("POSITIVE", new String[] {"POSITIVE"});
+			map.put("POSITIVE_HIDDEN", new String[] {"POSITIVE_HIDDEN"});
+			map.put("NEGATIVE", new String[] {"NEGATIVE"});
+			map.put("NEGATIVE_HIDDEN", new String[] {"NEGATIVE_HIDDEN"});
+		} else {
+			map.put("POSITIVE", new String[] {"POSITIVE", "POSITIVE_HIDDEN"});
+			map.put("NEGATIVE", new String[] {"NEGATIVE", "NEGATIVE_HIDDEN"});
+		}
 		map.put("CREATIVE", new String[] {"CREATIVE"});
 		map.put("KARMIC", new String[] {"KARMIC"});
 		map.put("SPIRITUAL", new String[] {"SPIRITUAL", "ENSLAVEMENT", "DAO", "MAGIC"});
