@@ -378,7 +378,7 @@ public class Event extends Model {
 //		  	  	IPreferenceStore preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, "kz.zvezdochet.runner");
 //		        String dir = preferenceStore.getString(CACHE_DIR_PATH);
 
-	  	  		String dir = OsUtil.getOS().equals(OsUtil.OS.LINUX) ? "/media/nataly/toshiba/cache/" : null;
+	  	  		String dir = OsUtil.getOS().equals(OsUtil.OS.LINUX) ? "/media/natalie/toshiba/cache/" : null;
 	  	  		if (null == dir)
 	  	  			dir = PlatformUtil.getPath(kz.zvezdochet.Activator.PLUGIN_ID, "/cache/").getPath();
 	  	  		String filename = dir + cachekey + ".txt";
@@ -1409,7 +1409,7 @@ public class Event extends Model {
 		  	  	SwissEph sweph = new SwissEph();
 				sweph.swe_set_topo(lon, lat, 0);
 		  		long iflag = SweConst.SEFLG_SWIEPH | SweConst.SEFLG_SIDEREAL | SweConst.SEFLG_SPEED | SweConst.SEFLG_TRUEPOS | SweConst.SEFLG_TOPOCTR;
-//		  	  	String path = "/home/nataly/workspace/kz.zvezdochet.sweph/lib/ephe";
+//		  	  	String path = "/home/natalie/workspace/kz.zvezdochet.sweph/lib/ephe";
 				String path = PlatformUtil.getPath(Activator.PLUGIN_ID, "/lib/ephe").getPath(); //$NON-NLS-1$
 		  		sweph.swe_set_ephe_path(path);
 		  		sweph.swe_set_sid_mode(SweConst.SE_SIDM_DJWHAL_KHUL, 0, 0);

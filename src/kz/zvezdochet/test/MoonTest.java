@@ -162,7 +162,7 @@ public class MoonTest {
   			glat = -glat;
 
   	  	SwissEph sweph = new SwissEph();
-  		sweph.swe_set_ephe_path("/home/nataly/workspace/kz.zvezdochet.sweph/lib/ephe");
+  		sweph.swe_set_ephe_path("/home/natalie/workspace/kz.zvezdochet.sweph/lib/ephe");
 
   		MoonTest test = new MoonTest();
   		test.pheno(sweph, tjdut);

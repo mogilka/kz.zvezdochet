@@ -98,7 +98,7 @@ public class Swestar {
   	  	SwissEph sweph = new SwissEph();
 		sweph.swe_set_topo(lon, lat, 0);
 		int iflag = SweConst.SEFLG_SWIEPH | SweConst.SEFLG_SIDEREAL | SweConst.SEFLG_SPEED | SweConst.SEFLG_TRUEPOS | SweConst.SEFLG_TOPOCTR;
-  		sweph.swe_set_ephe_path("/home/nataly/workspace/kz.zvezdochet.sweph/lib/ephe");
+  		sweph.swe_set_ephe_path("/home/natalie/workspace/kz.zvezdochet.sweph/lib/ephe");
   		sweph.swe_set_sid_mode(SweConst.SE_SIDM_DJWHAL_KHUL, 0, 0);
 
   		//обрабатываем дату
