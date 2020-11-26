@@ -776,7 +776,7 @@ public class EventPart extends ModelPart implements ICalculable {
 					Program.launch(event.text);
 				}
 			});
-			txOptions.setText("{\"cardkind\":{\"planet\":0,\"planet2\":0,\"planet3\":\"\",\"direction\":\"\",\"signs\":\"\",\"houses\":\"\"}}");
+			txOptions.setText("{\"cardkind\":{\"planet\":0,\"planet2\":0,\"planet3\":\"\",\"direction\":\"\",\"signs\":\"\",\"houses\":\"\",\"houses2\":\"\"}}");
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
@@ -931,7 +931,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		txConversation.setText(""); //$NON-NLS-1$
 		cvMoonday.setSelection(null);
 		cvCardKind.setSelection(null);
-		txOptions.setText("{\"cardkind\":{\"planet\":0,\"planet2\":0,\"planet3\":\"\",\"direction\":\"\",\"signs\":\"\",\"houses\":\"\"}}");
+		txOptions.setText("{\"cardkind\":{\"planet\":0,\"planet2\":0,\"planet3\":\"\",\"direction\":\"\",\"signs\":\"\",\"houses\":\"\",\"houses2\":\"\"}}");
 		txCurrentPlace.setText(""); //$NON-NLS-1$
 		refreshCard(MODE_ASPECT_PLANET_PLANET);
 		refreshTabs();
