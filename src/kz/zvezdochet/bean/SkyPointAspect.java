@@ -295,9 +295,13 @@ public class SkyPointAspect {
      * @return код аспекта
      */
 	public String getCode() {
-		return skyPoint1.getCode() + "_" + 
-			aspect.getCode() + "_" + 
-			skyPoint2.getCode();
+		return reverse
+			? skyPoint2.getCode() + "_" + 
+				aspect.getCode() + "_" + 
+				skyPoint1.getCode()
+			: skyPoint1.getCode() + "_" + 
+				aspect.getCode() + "_" + 
+				skyPoint2.getCode();
 	}
 
 	/**
