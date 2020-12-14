@@ -381,9 +381,13 @@ public class Event extends Model {
 	  	  		String dir = OsUtil.getOS().equals(OsUtil.OS.LINUX) ? "/media/natalie/toshiba/cache/" : null;
 	  	  		if (null == dir)
 	  	  			dir = PlatformUtil.getPath(kz.zvezdochet.Activator.PLUGIN_ID, "/cache/").getPath();
+	  	  		File file = new File(dir);
+	  	  		if (!file.exists())
+	  	  			return;
+
 	  	  		String filename = dir + cachekey + ".txt";
-	  	  		File file = new File(filename);
-	  	  		if (file.exists()) { 
+	  	  		file = new File(filename);
+	  	  		if (file.exists()) {
 	  	  			String json = IOUtil.getTextFromFile(filename);
 	  	  			init(json);
 	  	  		} else {
