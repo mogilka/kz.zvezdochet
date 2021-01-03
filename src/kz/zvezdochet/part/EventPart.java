@@ -123,6 +123,7 @@ public class EventPart extends ModelPart implements ICalculable {
 	private Text txOptions;
 	private Button btTerm;
 	private Text txCurrentPlace;
+	private Button btAccuracy;
 
 	private CosmogramComposite cmpCosmogram;
 	private Group grPlanets;
@@ -527,6 +528,9 @@ public class EventPart extends ModelPart implements ICalculable {
 
 			btH2HAspects = new Button(gr, SWT.BORDER | SWT.RADIO);
 			btH2HAspects.setText("Аспекты домов с куспидами");
+
+			btAccuracy = new Button(gr, SWT.BORDER | SWT.CHECK);
+			btAccuracy.setText("Только точные");
 
 			bt = new Button(gr, SWT.NONE);
 			bt.setText("Расчёт");
@@ -976,7 +980,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		table.removeAll();
 		Event event = (Event)model;
 		if (event != null) {
-			folder.setSelection(1);
+//			folder.setSelection(1);
 			Collection<Planet> planets = event.getPlanets().values();
 			for (Planet planet : planets) {
 				TableItem item = new TableItem(table, SWT.NONE);
@@ -1203,6 +1207,7 @@ public class EventPart extends ModelPart implements ICalculable {
 			}
 			params.put("houses", subparams);
 		}
+		params.put("aspectAccuracy", btAccuracy.getSelection());
 		cmpCosmogram.paint((Event)model, null, params);
 	}
 

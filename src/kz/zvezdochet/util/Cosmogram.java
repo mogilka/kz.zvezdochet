@@ -228,6 +228,7 @@ public class Cosmogram {
 		List<String> aparams = new ArrayList<>();
 		List<String> pparams = new ArrayList<>();
 		List<String> hparams = new ArrayList<>();
+		boolean accuracy = false;
 		if (params != null) {
 			if (params.get("aspects") != null)
 				aparams = (List<String>)params.get("aspects");
@@ -235,6 +236,8 @@ public class Cosmogram {
 				pparams = (List<String>)params.get("planets");
 			if (params.get("houses") != null)
 				hparams = (List<String>)params.get("houses");
+			if (params.get("aspectAccuracy") != null)
+				accuracy = (boolean)params.get("aspectAccuracy");
 		}
 
 		for (Model model : aspects) {
@@ -269,6 +272,9 @@ public class Cosmogram {
 
 					List<SkyPointAspect> paspects = h.getAspectHouseList();
 					for (SkyPointAspect spa : paspects) {
+						if (accuracy && !spa.isExact())
+							continue;
+
 						Aspect a = spa.getAspect();
 						if (!aspectypes.contains(a.getId()))
 							continue;
@@ -298,6 +304,12 @@ public class Cosmogram {
 		
 						List<SkyPointAspect> paspects = houseAspectable ? p.getAspectHouseList() : p.getAspectList();
 						for (SkyPointAspect spa : paspects) {
+//							if (28 == spa.getSkyPoint1().getId() && 29 == spa.getSkyPoint2().getId())
+//								System.out.println("aspect " + spa);
+
+							if (accuracy && !spa.isExact())
+								continue;
+
 							Aspect a = spa.getAspect();
 							if (!aspectypes.contains(a.getId()))
 								continue;
@@ -327,6 +339,9 @@ public class Cosmogram {
 			List<SkyPointAspect> paspects = event2.getAspectList();
 
 			for (SkyPointAspect spa : paspects) {
+				if (accuracy && !spa.isExact())
+					continue;
+
 //				if (20 == spa.getSkyPoint1().getId() && 19 == spa.getSkyPoint2().getId())
 //					System.out.println(spa.getSkyPoint1().getCode() + " " + spa.getSkyPoint2().getCode() + " = " + spa.getScore());
 //				else if (19 == spa.getSkyPoint1().getId() && 20 == spa.getSkyPoint2().getId())
