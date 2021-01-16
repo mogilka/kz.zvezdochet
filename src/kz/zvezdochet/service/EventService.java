@@ -247,7 +247,7 @@ public class EventService extends ModelService {
 		if (finaldate != null) 
 			event.setDeath(rs.getTimestamp("finaldate"));
 		s = rs.getString("RightHanded");
-		event.setRightHanded(s.equals("1") ? true : false);
+		event.setRightHanded(s != null && s.equals("1") ? true : false);
 		if (rs.getString("Rectification") != null) 
 			event.setRectification(rs.getInt("Rectification"));
 		s = rs.getString("Celebrity");
