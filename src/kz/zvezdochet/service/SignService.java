@@ -213,4 +213,35 @@ public class SignService extends DictionaryService {
 		}
 		return list;
 	}
+
+	/**
+	 * Поиск зодиакальных созвездий
+	 * @return список созвездий
+	 * @throws DataAccessException
+	 */
+	public List<Sign> getZodiac() throws DataAccessException {
+		List<Sign> sings = new ArrayList<Sign>();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		String sql;
+		try {
+			sql = "select * from " + tableName + " where zodiac = 1 order by ordinalnumber";
+			ps = Connector.getInstance().getConnection().prepareStatement(sql);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				Sign sign = init(rs, null);
+				sings.add(sign);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try { 
+				if (rs != null) rs.close();
+				if (ps != null) ps.close();
+			} catch (SQLException e) { 
+				e.printStackTrace(); 
+			}
+		}
+		return sings;
+	}
 }

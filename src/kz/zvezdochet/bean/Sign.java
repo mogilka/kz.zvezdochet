@@ -459,4 +459,34 @@ public class Sign extends DiagramObject {
 	public void setKeyword(String keyword) {
 		this.keyword = keyword;
 	}
+
+	/**
+	 * Определение начала знака по году
+	 * @param year год
+	 * @return координата начала знака Зодиака
+	 */
+	public double getStart(int year) {
+		if (year < 2000)
+			return i1000;
+		else if (year < 3000)
+			return i2000;
+		else if (year < 4000)
+			return i3000;
+		return i0;
+	}
+
+	/**
+	 * Определение конечной координаты знака по году
+	 * @param year год
+	 * @return координата начала знака Зодиака
+	 */
+	public double getFinish(int year) {
+		if (year < 2000)
+			return f1000;
+		else if (year < 3000)
+			return f2000;
+		else if (year < 4000)
+			return f3000;
+		return f0;
+	}
 }
