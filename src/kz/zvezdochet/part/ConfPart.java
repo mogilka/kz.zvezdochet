@@ -1,6 +1,6 @@
 package kz.zvezdochet.part;
 
-import java.util.Date;
+import java.util.Calendar;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -11,8 +11,6 @@ import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.nebula.widgets.cdatetime.CDT;
-import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionEvent;
@@ -21,6 +19,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
@@ -59,7 +58,7 @@ public class ConfPart extends ModelListView {
 	private Text txZone;
 	private Text txGreenwich;
 	private Label lbBirth;
-	private CDateTime dtBirth;
+	private DateTime dtBirth;
 	private Text txDescr;
 	
 	@PostConstruct @Override
@@ -129,9 +128,9 @@ public class ConfPart extends ModelListView {
 
 		lbBirth = new Label(secEvent, SWT.NONE);
 		lbBirth.setText(Messages.getString("PersonView.BirthDate")); //$NON-NLS-1$
-		dtBirth = new CDateTime(secEvent, CDT.BORDER | CDT.COMPACT | CDT.DROP_DOWN | CDT.DATE_LONG | CDT.TIME_MEDIUM);
-		dtBirth.setNullText(""); //$NON-NLS-1$
-		dtBirth.setSelection(new Date());
+		dtBirth = new DateTime(secEvent, SWT.DROP_DOWN);
+//		dtBirth.setNullText(""); //$NON-NLS-1$
+//		dtBirth.setSelection(new Date());
 
 		Group secPlace = new Group(secEvent, SWT.NONE);
 		secPlace.setText(Messages.getString("PersonView.Place")); //$NON-NLS-1$
@@ -177,8 +176,8 @@ public class ConfPart extends ModelListView {
 		GridLayoutFactory.swtDefaults().numColumns(3).applyTo(secEvent);
 		GridDataFactory.fillDefaults().span(2, 1).align(SWT.FILL, SWT.CENTER).
 			grab(true, false).applyTo(txName);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
-			grab(true, false).applyTo(dtBirth);
+//		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
+//			grab(true, false).applyTo(dtBirth);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			span(4, 1).grab(true, false).applyTo(txPlace);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
@@ -230,8 +229,8 @@ public class ConfPart extends ModelListView {
 	@Override
 	public boolean check(int mode) throws Exception {
 		StringBuffer msgBody = new StringBuffer();
-		if (null == dtBirth.getSelection())
-			msgBody.append(lbBirth.getText());
+//		if (null == dtBirth.getSelection())
+//			msgBody.append(lbBirth.getText());
 		if (Handler.MODE_SAVE == mode) {
 			if (txName.getText().length() == 0) 
 				msgBody.append(lbName.getText());
@@ -250,8 +249,10 @@ public class ConfPart extends ModelListView {
 		txLongitude.setText(""); //$NON-NLS-1$
 		txZone.setText(""); //$NON-NLS-1$
 		txGreenwich.setText(""); //$NON-NLS-1$
-		dtBirth.setSelection(new Date());
 		txDescr.setText(""); //$NON-NLS-1$
+
+		Calendar calendar = Calendar.getInstance();
+		dtBirth.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 	}
 
 	/**

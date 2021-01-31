@@ -30,5 +30,4 @@ Import-Package: javax.inject;version="1.0.0",
  org.eclipse.e4.ui.model.application.ui,
  org.eclipse.e4.ui.model.application.ui.basic,
  org.eclipse.e4.ui.workbench.modeling,
- org.eclipse.nebula.widgets.cdatetime,
  swisseph

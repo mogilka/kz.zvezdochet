@@ -1,18 +1,17 @@
 package kz.zvezdochet.part;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
-import org.eclipse.nebula.widgets.cdatetime.CDT;
-import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
@@ -40,16 +39,16 @@ public class ImportPart extends ModelListView {
 		return super.create(parent);
 	}
 
-	protected CDateTime dtDate;
+	protected DateTime dtDate;
 
 	@Override
 	public void initFilter(Composite parent) {
 		grFilter = new Group(parent, SWT.NONE);
 		grFilter.setText("Поиск");
 		grFilter.setLayout(new GridLayout());
-		dtDate = new CDateTime(grFilter, CDT.BORDER | CDT.COMPACT | CDT.DROP_DOWN | CDT.DATE_LONG | CDT.TIME_MEDIUM);
-		dtDate.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		dtDate.setSelection(new Date());
+		dtDate = new DateTime(grFilter, SWT.DROP_DOWN);
+//		dtDate.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+//		dtDate.setSelection(new Date());
 	}
 
 	@Override
@@ -103,7 +102,11 @@ public class ImportPart extends ModelListView {
 	 * @return дата последнего импорта
 	 */
 	public Date getDate() {
-		return dtDate.getSelection();
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.DAY_OF_MONTH, dtDate.getDay());
+		calendar.set(Calendar.MONTH, dtDate.getMonth());
+		calendar.set(Calendar.YEAR, dtDate.getYear());
+		return calendar.getTime();
 	}
 
 	@Override
@@ -116,7 +119,9 @@ public class ImportPart extends ModelListView {
 		super.initControls();
 		try {
 			Date date = new EventService().findLastDate();
-			dtDate.setSelection(date);
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(date);
+			dtDate.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

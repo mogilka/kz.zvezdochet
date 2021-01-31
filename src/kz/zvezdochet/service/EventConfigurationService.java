@@ -9,7 +9,6 @@ import java.util.Map;
 
 import kz.zvezdochet.bean.AspectConfiguration;
 import kz.zvezdochet.bean.Event;
-import kz.zvezdochet.service.AspectConfigurationService;
 import kz.zvezdochet.bean.EventConfiguration;
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.core.bean.Model;

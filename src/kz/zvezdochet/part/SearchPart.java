@@ -1,5 +1,8 @@
 package kz.zvezdochet.part;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -9,8 +12,6 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.nebula.widgets.cdatetime.CDT;
-import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -21,6 +22,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -305,23 +307,35 @@ public class SearchPart extends ModelListView {
 
 		lb = new Label(group, SWT.NONE);
 		lb.setText("Начало");
-		final CDateTime dt = new CDateTime(group, CDT.BORDER | CDT.COMPACT | CDT.DROP_DOWN | CDT.DATE_LONG | CDT.TIME_MEDIUM);
-		dt.setNullText(""); //$NON-NLS-1$
+		final DateTime dt = new DateTime(group, SWT.DROP_DOWN);
+//		dt.setNullText(""); //$NON-NLS-1$
 
 		lb = new Label(group, SWT.NONE);
 		lb.setText("Конец");
-		final CDateTime dt2 = new CDateTime(group, CDT.BORDER | CDT.COMPACT | CDT.DROP_DOWN | CDT.DATE_LONG | CDT.TIME_MEDIUM);
-		dt2.setNullText(""); //$NON-NLS-1$
+		final DateTime dt2 = new DateTime(group, SWT.DROP_DOWN);
+//		dt2.setNullText(""); //$NON-NLS-1$
 
 		bt = new Button(group, SWT.NONE);
 		bt.setText("Искать");
 		bt.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (null == dt.getSelection() || null == dt2.getSelection())
-					return;
+//				if (null == dt.getSelection() || null == dt2.getSelection())
+//					return;
 				try {
-					setData(new EventService().findByDateRange(dt.getSelection(), dt2.getSelection()));
+					Calendar calendar = Calendar.getInstance();
+					calendar.set(Calendar.DAY_OF_MONTH, dt.getDay());
+					calendar.set(Calendar.MONTH, dt.getMonth());
+					calendar.set(Calendar.YEAR, dt.getYear());
+					Date date = calendar.getTime();
+
+					calendar = Calendar.getInstance();
+					calendar.set(Calendar.DAY_OF_MONTH, dt2.getDay());
+					calendar.set(Calendar.MONTH, dt2.getMonth());
+					calendar.set(Calendar.YEAR, dt2.getYear());
+					Date date2 = calendar.getTime();
+
+					setData(new EventService().findByDateRange(date, date2));
 				} catch (DataAccessException e1) {
 					e1.printStackTrace();
 				}

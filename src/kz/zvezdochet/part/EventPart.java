@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +21,6 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.nebula.widgets.cdatetime.CDT;
-import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -40,6 +37,7 @@ import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
@@ -70,7 +68,6 @@ import kz.zvezdochet.core.ui.util.GUIutil;
 import kz.zvezdochet.core.ui.view.ModelPart;
 import kz.zvezdochet.core.ui.view.View;
 import kz.zvezdochet.core.util.CalcUtil;
-import kz.zvezdochet.core.util.DateUtil;
 import kz.zvezdochet.provider.CardKindLabelProvider;
 import kz.zvezdochet.provider.MoonDayLabelProvider;
 import kz.zvezdochet.provider.PlaceProposalProvider;
@@ -110,9 +107,9 @@ public class EventPart extends ModelPart implements ICalculable {
 	private Text txGreenwich;
 	private Text txComment;
 	private Text txBio;
-	private Label lbBirth;
-	private CDateTime dtBirth;
-	private CDateTime dtDeath; 
+	private DateTime dtBirth;
+	private DateTime dtBirth2;
+	private DateTime dtDeath; 
 	private Button btCelebrity;
 	private ComboViewer cvHuman;
 	private Text txAccuracy;
@@ -165,16 +162,20 @@ public class EventPart extends ModelPart implements ICalculable {
 		lb.setText(Messages.getString("PersonView.Hand")); //$NON-NLS-1$
 		cvHand = new ComboViewer(secEvent, SWT.BORDER | SWT.READ_ONLY);
 		
-		lbBirth = new Label(secEvent, SWT.NONE);
-		lbBirth.setText(Messages.getString("PersonView.BirthDate")); //$NON-NLS-1$
-		dtBirth = new CDateTime(secEvent, CDT.BORDER | CDT.COMPACT | CDT.DROP_DOWN | CDT.DATE_LONG | CDT.TIME_MEDIUM);
-		dtBirth.setNullText(""); //$NON-NLS-1$
-		new RequiredDecoration(lbBirth, SWT.TOP | SWT.RIGHT);
+		lb = new Label(secEvent, SWT.NONE);
+		lb.setText(Messages.getString("PersonView.BirthDate")); //$NON-NLS-1$
+		dtBirth = new DateTime(secEvent, SWT.DROP_DOWN);
+//		dtBirth.setNullText(""); //$NON-NLS-1$
+		new RequiredDecoration(lb, SWT.TOP | SWT.RIGHT);
+
+		lb = new Label(secEvent, SWT.NONE);
+		lb.setText("Время");
+		dtBirth2 = new DateTime (secEvent, SWT.TIME);
 
 		lb = new Label(secEvent, SWT.CENTER);
 		lb.setText(Messages.getString("PersonView.DeathDate")); //$NON-NLS-1$
-		dtDeath = new CDateTime(secEvent, CDT.BORDER | CDT.COMPACT | CDT.DROP_DOWN | CDT.DATE_LONG | CDT.TIME_MEDIUM);
-		dtDeath.setNullText(""); //$NON-NLS-1$
+		dtDeath = new DateTime(secEvent, SWT.DROP_DOWN);
+//		dtDeath.setNullText(""); //$NON-NLS-1$
 		
 		lb = new Label(secEvent, SWT.NONE);
 		lb.setText("Тип");
@@ -630,7 +631,9 @@ public class EventPart extends ModelPart implements ICalculable {
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			grab(true, false).applyTo(cvHand.getCombo());
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
-			span(3, 1).grab(true, false).applyTo(dtBirth);
+			grab(true, false).applyTo(dtBirth);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
+			grab(true, false).applyTo(dtBirth2);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			span(3, 1).grab(true, false).applyTo(dtDeath);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
@@ -794,18 +797,18 @@ public class EventPart extends ModelPart implements ICalculable {
 				DialogUtil.alertWarning(Messages.getString("EventView.PlaceIsWrong"));
 				return false;
 			}
-			if (dtBirth.getSelection() != null && dtDeath.getSelection() != null)
-				if (!DateUtil.isDateRangeValid(dtBirth.getSelection(), dtDeath.getSelection())) {
-					DialogUtil.alertWarning(GUIutil.INVALID_DATE_RANGE);
-					return false;
-				}
+//			if (dtBirth.getdSelection() != null && dtDeath.getSelection() != null)
+//				if (!DateUtil.isDateRangeValid(dtBirth.getSelection(), dtDeath.getSelection())) {
+//					DialogUtil.alertWarning(GUIutil.INVALID_DATE_RANGE);
+//					return false;
+//				}
 			if (txName.getText().length() == 0) 
 				msgBody.append(lbName.getText());
 			if (cvGender.getSelection().isEmpty())
 				msgBody.append(lbGender.getText());
 		}
-		if (null == dtBirth.getSelection())
-			msgBody.append(lbBirth.getText());
+//		if (null == dtBirth.getSelection())
+//			msgBody.append(lbBirth.getText());
 
 		if (msgBody.length() > 0) {
 			DialogUtil.alertWarning(GUIutil.SOME_FIELDS_NOT_FILLED + msgBody);
@@ -819,12 +822,18 @@ public class EventPart extends ModelPart implements ICalculable {
 		if (!check(mode)) return;//TODO часто дублируется вызов из хэндлеров
 		model = (null == model) ? new Event() : model;
 		Event event = (Event)model;
+		Calendar calendar = Calendar.getInstance();
 		if (Handler.MODE_SAVE == mode) {
 			event.setName(txName.getText());
 			event.setFemale(2 == cvGender.getCombo().getSelectionIndex());
 			event.setRightHanded(2 == cvHand.getCombo().getSelectionIndex());
 			event.setRectification(cvRectification.getCombo().getSelectionIndex());
-			event.setDeath(dtDeath.getSelection());
+
+			calendar.set(Calendar.DAY_OF_MONTH, dtDeath.getDay());
+			calendar.set(Calendar.MONTH, dtDeath.getMonth());
+			calendar.set(Calendar.YEAR, dtDeath.getYear());
+			event.setDeath(calendar.getTime());
+
 			event.setBio(txBio.getText());
 			event.setComment(txComment.getText());
 			event.setCelebrity(btCelebrity.getSelection());
@@ -832,7 +841,14 @@ public class EventPart extends ModelPart implements ICalculable {
 			event.setConversation(txConversation.getText());
 			event.setOptions(txOptions.getText());
 		}
-		event.setBirth(dtBirth.getSelection());
+		calendar = Calendar.getInstance();
+		calendar.set(Calendar.DAY_OF_MONTH, dtBirth.getDay());
+		calendar.set(Calendar.MONTH, dtBirth.getMonth());
+		calendar.set(Calendar.YEAR, dtBirth.getYear());
+		calendar.set(Calendar.HOUR_OF_DAY, dtBirth2.getHours());
+		calendar.set(Calendar.MINUTE, dtBirth2.getMinutes());
+		calendar.set(Calendar.SECOND, dtBirth2.getYear());
+		event.setBirth(calendar.getTime());
 		double zone = (txZone.getText() != null && txZone.getText().length() > 0) ? Double.parseDouble(txZone.getText()) : 0;
 		event.setZone(zone);
 		event.setDst(cvDST.getCombo().getSelectionIndex() - 3);
@@ -860,8 +876,8 @@ public class EventPart extends ModelPart implements ICalculable {
 			model = (null == model) ? new Event() : model;
 			Event event = (Event)model;
 			long id = (null == event) ? 0 : event.getId();
+			Calendar calendar = Calendar.getInstance();
 			if (id > 0) {
-				Calendar calendar = Calendar.getInstance();
 				int year = calendar.get(Calendar.YEAR);
 				int month = calendar.get(Calendar.MONTH) + 1;
 				long placeid = (null == event.getCurrentPlace()) ? Place._GREENWICH : event.getCurrentPlace().getId();
@@ -873,10 +889,17 @@ public class EventPart extends ModelPart implements ICalculable {
 			cvHand.getCombo().setText(hands[event.isRightHanded() ? 0 : 1]);
 			if (event.getRectification() > 0)
 				cvRectification.getCombo().setText(Event.calcs[event.getRectification()]);
-			if (event.getBirth() != null)
-				dtBirth.setSelection(event.getBirth());
-			if (event.getDeath() != null)
-				dtDeath.setSelection(event.getDeath());
+			if (event.getBirth() != null) {
+				calendar = Calendar.getInstance();
+				calendar.setTime(event.getBirth());
+				dtBirth.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+				dtBirth2.setTime(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
+			}
+			if (event.getDeath() != null) {
+				calendar = Calendar.getInstance();
+				calendar.setTime(event.getDeath());
+				dtDeath.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+			}
 			btCelebrity.setSelection(event.isCelebrity());
 			if (event.getComment() != null)
 				txComment.setText(event.getComment());
@@ -923,8 +946,8 @@ public class EventPart extends ModelPart implements ICalculable {
 		txGreenwich.setText(""); //$NON-NLS-1$
 		txBio.setText(""); //$NON-NLS-1$
 		txComment.setText(""); //$NON-NLS-1$
-		dtBirth.setSelection(new Date());
-		dtDeath.setSelection(null);
+//		dtBirth.setSelection(new Date());
+//		dtDeath.setSelection(null);
 		cvGender.setSelection(null);
 		cvHand.setSelection(null);
 		cvRectification.setSelection(null);

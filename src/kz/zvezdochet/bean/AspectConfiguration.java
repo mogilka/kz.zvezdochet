@@ -5,11 +5,11 @@ import java.net.URL;
 
 import org.eclipse.swt.graphics.Color;
 
-import kz.zvezdochet.service.AspectConfigurationService;
 import kz.zvezdochet.Activator;
 import kz.zvezdochet.core.bean.TextGenderDictionary;
 import kz.zvezdochet.core.service.ModelService;
 import kz.zvezdochet.core.util.PlatformUtil;
+import kz.zvezdochet.service.AspectConfigurationService;
 
 
 /**
