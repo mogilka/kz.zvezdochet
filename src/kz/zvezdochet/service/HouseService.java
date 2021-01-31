@@ -60,7 +60,7 @@ public class HouseService extends DictionaryService {
 			String sql;
 			if (null == model.getId()) 
 				sql = "insert into " + tableName + 
-					"(ordinalnumber, color, code, name, description, designation, diagram, linkname) " +
+					"(ordinalnumber, color, code, name, description, designation, diagram, category) " +
 					"values(?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
@@ -71,7 +71,7 @@ public class HouseService extends DictionaryService {
 					"description = ?, " +
 					"designation = ?, " +
 					"diagram = ?, " +
-					"linkname = ? " +
+					"category = ? " +
 					"where id = " + dict.getId();
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setInt(1, dict.getNumber());
@@ -81,7 +81,7 @@ public class HouseService extends DictionaryService {
 			ps.setString(5, dict.getDescription());
 			ps.setString(8, dict.getDesignation());
 			ps.setString(9, dict.getDiaName());
-			ps.setString(11, dict.getLinkName());
+			ps.setString(11, dict.getCategory());
 			result = ps.executeUpdate();
 			if (result == 1) {
 				if (null == model.getId()) { 
@@ -114,7 +114,7 @@ public class HouseService extends DictionaryService {
 		house.setNumber(rs.getInt("OrdinalNumber"));
 		house.setDesignation(rs.getString("Designation"));
 		house.setDiaName(rs.getString("Diagram"));
-		house.setLinkName(rs.getString("LinkName"));
+		house.setCategory(rs.getString("category"));
 		house.setColor(CoreUtil.rgbToColor(rs.getString("Color")));
 		house.setElementId(rs.getInt("elementid"));
 		house.setYinyangId(rs.getInt("yinyangid"));

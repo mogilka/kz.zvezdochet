@@ -32,18 +32,18 @@ public class House extends SkyPoint {
 		this.designation = designation;
 	}
 
-	public String getLinkName() {
-		return linkName;
+	public String getCategory() {
+		return category;
 	}
 
-	public void setLinkName(String linkName) {
-		this.linkName = linkName;
+	public void setCategory(String linkName) {
+		this.category = linkName;
 	}
 
 	/**
-     * Обозначение, используемое в html-ссылке
+     * Категории для синастрии
      */
-    private String linkName;
+    private String category;
     
 	public House() {}
 
