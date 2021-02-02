@@ -175,7 +175,14 @@ public class EventPart extends ModelPart implements ICalculable {
 		lb = new Label(secEvent, SWT.CENTER);
 		lb.setText(Messages.getString("PersonView.DeathDate")); //$NON-NLS-1$
 		dtDeath = new DateTime(secEvent, SWT.DROP_DOWN);
-//		dtDeath.setNullText(""); //$NON-NLS-1$
+	    dtDeath.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				dtDeath.setData("modified", true);
+			}
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
 		
 		lb = new Label(secEvent, SWT.NONE);
 		lb.setText("Тип");
@@ -829,11 +836,12 @@ public class EventPart extends ModelPart implements ICalculable {
 			event.setRightHanded(2 == cvHand.getCombo().getSelectionIndex());
 			event.setRectification(cvRectification.getCombo().getSelectionIndex());
 
-			calendar.set(Calendar.DAY_OF_MONTH, dtDeath.getDay());
-			calendar.set(Calendar.MONTH, dtDeath.getMonth());
-			calendar.set(Calendar.YEAR, dtDeath.getYear());
-			event.setDeath(calendar.getTime());
-
+			if (dtDeath.getData("modified").equals(true)) {
+				calendar.set(Calendar.DAY_OF_MONTH, dtDeath.getDay());
+				calendar.set(Calendar.MONTH, dtDeath.getMonth());
+				calendar.set(Calendar.YEAR, dtDeath.getYear());
+				event.setDeath(calendar.getTime());
+			}
 			event.setBio(txBio.getText());
 			event.setComment(txComment.getText());
 			event.setCelebrity(btCelebrity.getSelection());
@@ -847,7 +855,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		calendar.set(Calendar.YEAR, dtBirth.getYear());
 		calendar.set(Calendar.HOUR_OF_DAY, dtBirth2.getHours());
 		calendar.set(Calendar.MINUTE, dtBirth2.getMinutes());
-		calendar.set(Calendar.SECOND, dtBirth2.getYear());
+		calendar.set(Calendar.SECOND, dtBirth2.getSeconds());
 		event.setBirth(calendar.getTime());
 		double zone = (txZone.getText() != null && txZone.getText().length() > 0) ? Double.parseDouble(txZone.getText()) : 0;
 		event.setZone(zone);
