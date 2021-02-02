@@ -59,6 +59,7 @@ public class AspectConfigurationService extends TextGenderDictionaryService {
 		type.setDegree(rs.getString("degree"));
 		type.setShape(rs.getString("shape"));
 		type.setElementid(rs.getLong("elementid"));
+		type.setSynastry(rs.getString("synastry"));
 		return type;
 	}
 }

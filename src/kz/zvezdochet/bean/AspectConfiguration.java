@@ -337,4 +337,17 @@ public class AspectConfiguration extends TextGenderDictionary {
 //		setType(json.getString("type"));
 //		setDate(DateUtil.getDatabaseDateTime(json.getString("date")));
 //	}
+
+	/**
+	 * Толкование для синастрии
+	 */
+	private String synastry;
+
+	public String getSynastry() {
+		return synastry;
+	}
+
+	public void setSynastry(String synastry) {
+		this.synastry = synastry;
+	}
 }
