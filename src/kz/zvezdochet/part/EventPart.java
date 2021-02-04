@@ -836,7 +836,7 @@ public class EventPart extends ModelPart implements ICalculable {
 			event.setRightHanded(2 == cvHand.getCombo().getSelectionIndex());
 			event.setRectification(cvRectification.getCombo().getSelectionIndex());
 
-			if (dtDeath.getData("modified").equals(true)) {
+			if (dtDeath.getData() != null && dtDeath.getData("modified").equals(true)) {
 				calendar.set(Calendar.DAY_OF_MONTH, dtDeath.getDay());
 				calendar.set(Calendar.MONTH, dtDeath.getMonth());
 				calendar.set(Calendar.YEAR, dtDeath.getYear());
