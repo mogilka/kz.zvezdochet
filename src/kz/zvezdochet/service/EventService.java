@@ -935,7 +935,8 @@ order by year(initialdate)
 		try {
 			String sql = "select * from " + tableName +  
 				" where initialdate between ? and ?" +
-				" order by initialdate";
+				" order by initialdate" +
+				" limit 30";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setString(1, DateUtil.dbdtf.format(date));
 			ps.setString(2, DateUtil.dbdtf.format(date2));
