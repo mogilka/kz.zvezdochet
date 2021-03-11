@@ -637,7 +637,7 @@ public class Event extends Model {
 	 * @return false - неизвестно
 	 */
 	public boolean isHousable() {
-		return getRectification() < 3;
+		return rectification < 3;
 	}
 
 	/**
@@ -1847,5 +1847,13 @@ public class Event extends Model {
 	}
 	public void setComment_en(String comment_en) {
 		this.comment_en = comment_en;
+	}
+
+	/**
+	 * Проверка, является ли время рождения точным
+	 * @return false - нет
+	 */
+	public boolean isRectified() {
+		return 1 == rectification;
 	}
 }
