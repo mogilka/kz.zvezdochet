@@ -1358,7 +1358,7 @@ public class Event extends Model {
 	 * @return
 	 */
 	public boolean isBaby() {
-		return getAge() < MAX_CHILD_AGE;
+		return getAge() <= MAX_CHILD_AGE;
 	}
 
 	/**
