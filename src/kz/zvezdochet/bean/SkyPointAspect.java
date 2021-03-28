@@ -342,4 +342,20 @@ public class SkyPointAspect {
 	public void setTexts(List<Model> texts) {
 		this.texts = texts;
 	}
+
+	/**
+	 * Сокращённое представление аспекта
+	 * @return текст аспекта в символах
+	 */
+	public String getSymbol() {
+		SkyPoint skyPoint = getSkyPoint1();
+		String text = skyPoint.getSymbol();
+		if (skyPoint.isRetrograde())
+			text += "®";
+		text += getAspect().getSymbol();
+		skyPoint = getSkyPoint2();
+		boolean housable = skyPoint instanceof House;
+		text += (housable ? skyPoint.getCode() : skyPoint.getSymbol());
+		return text;
+	}
 }
