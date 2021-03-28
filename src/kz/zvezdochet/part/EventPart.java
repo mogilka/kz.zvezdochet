@@ -727,7 +727,7 @@ public class EventPart extends ModelPart implements ICalculable {
 			txLatitude.setText(CalcUtil.formatNumber("###.##", place.getLatitude())); //$NON-NLS-1$
 			txLongitude.setText(CalcUtil.formatNumber("###.##", place.getLongitude())); //$NON-NLS-1$
 			txGreenwich.setText(CalcUtil.formatNumber("###.##", place.getGreenwich())); //$NON-NLS-1$
-			txZone.setText(String.valueOf(place.getGreenwich()));
+			txZone.setText(String.valueOf(place.getZone()));
 		}
 	}
 
