@@ -32,34 +32,41 @@ public class PlaceService extends DictionaryService {
 		try {
 			String sql;
 			if (null == model.getId()) 
-				sql = "insert into " + tableName + 
-					"(latitude, longitude, code, name, description, greenwich, parentid, type, date) values(?,?,?,?,?,?,?,?,?)";
+				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
 					"latitude = ?, " +
 					"longitude = ?, " +
-					"code = ?, " +
 					"name = ?, " +
-					"description = ?, " +
 					"greenwich = ?, " +
+					"description = ?, " +
+					"code = ?, " +
+					"date = ?, " +
 					"parentid = ?, " +
 					"type = ?, " +
-					"date = ? " +
-				"where id = " + dict.getId();
+					"zone = ?, " +
+					"dst = ? " +
+				"where id = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setDouble(1, dict.getLatitude());
 			ps.setDouble(2, dict.getLongitude());
-			ps.setString(3, dict.getCode());
-			ps.setString(4, dict.getName());
+			ps.setString(3, dict.getName());
+			ps.setDouble(4, dict.getGreenwich());
 			ps.setString(5, dict.getDescription());
-			ps.setDouble(6, dict.getGreenwich());
+			ps.setString(6, dict.getCode());
+			ps.setString(7, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
 			if (dict.getParentid() > 0)
-				ps.setLong(7, dict.getParentid());
+				ps.setLong(8, dict.getParentid());
 			else
-				ps.setNull(7, java.sql.Types.NULL);
-			ps.setString(8, dict.getType());
-			ps.setString(9, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
+				ps.setNull(8, java.sql.Types.NULL);
+			ps.setString(9, dict.getType());
+			ps.setDouble(10, dict.getZone());
+			ps.setBoolean(11, dict.isDst());
+
+			if (model.getId() != null)
+				ps.setLong(12, model.getId());
 			System.out.println(ps);
+
 			result = ps.executeUpdate();
 			if (result == 1) {
 				if (null == model.getId()) { 
@@ -92,6 +99,7 @@ public class PlaceService extends DictionaryService {
 		place.setLatitude(rs.getDouble("Latitude"));
 		place.setLongitude(rs.getDouble("Longitude"));
 		place.setGreenwich(rs.getDouble("Greenwich"));
+		place.setZone(rs.getDouble("zone"));
 		place.setParentid(rs.getLong("parentid"));
 		place.setType(rs.getString("type"));
 		place.setDate(DateUtil.getDatabaseDateTime(rs.getString("date")));
