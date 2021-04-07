@@ -1170,6 +1170,26 @@ public class Event extends Model {
 	    }
 		if (planets.size() < 2)
 			planets.get(0).setKing();
+
+		//к управителям знаков минорных планет добавляем +1
+		Map<Long, Integer> signids = new HashMap<Long, Integer>();
+		for (Planet planet : planetList.values()) {
+			if (!planet.isMain())
+				continue;
+	    	long sid = planet.getSign().getId();
+	    	int val = signids.containsKey(sid) ? signids.get(sid) : 0;
+    		signids.put(sid, val + 1);
+	    }
+		PlanetService service = new PlanetService();
+		try {
+			for (Map.Entry<Long, Integer> entry : signids.entrySet()) {
+				Planet ruler = service.getRuler(entry.getKey(), true, false);
+				Planet planet = planetList.get(ruler.getId());
+			    planet.setPoints(planet.getPoints() + entry.getValue());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
 	}
 
 	/**

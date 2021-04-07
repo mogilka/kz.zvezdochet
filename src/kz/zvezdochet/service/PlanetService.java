@@ -229,13 +229,14 @@ public class PlanetService extends DictionaryService {
 	}
 
 	/**
-	 * Поиск управителя знака
-	 * @param sign знак Зодиака
+	 * Поиск планеты-управителя знака
+	 * @param signid идентификатор знака Зодиака
 	 * @param daily true|false - дневное|ночное рождение
+	 * @param fictious true|false - фиктивные|реальные планеты
 	 * @return планета
 	 * @throws DataAccessException
 	 */
-	public Planet getRuler(Sign sign, boolean daily) throws DataAccessException {
+	public Planet getRuler(long signid, boolean daily, boolean fictious) throws DataAccessException {
         PreparedStatement ps = null;
         ResultSet rs = null;
 		String sql;
@@ -244,11 +245,13 @@ public class PlanetService extends DictionaryService {
 				"inner join " + new PositionTypeService().getTableName() + " t on p.typeid = t.id " +
 				"where p.signid = ? " +
 					"and t.code like ? " +
-					"and day = ?";
+					"and day = ? " +
+					"and fictious = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			ps.setLong(1, sign.getId());
+			ps.setLong(1, signid);
 			ps.setString(2, "HOME");
 			ps.setBoolean(3, daily);
+			ps.setBoolean(4, fictious);
 			rs = ps.executeQuery();
 			if (rs.next()) {
 				Long id = rs.getLong(1);
