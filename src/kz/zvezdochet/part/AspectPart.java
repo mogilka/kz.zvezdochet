@@ -208,6 +208,8 @@ public class AspectPart extends ListView {
 	}
 
 	private void initTable2() {
+		if (!event.isHousable())
+			return;
 		try {
 			showBusy(true);
 			if (datap2h != null)
@@ -223,6 +225,8 @@ public class AspectPart extends ListView {
 	}
 
 	private void initTable3() {
+		if (!event.isHousable())
+			return;
 		try {
 			showBusy(true);
 			if (datah2h != null)

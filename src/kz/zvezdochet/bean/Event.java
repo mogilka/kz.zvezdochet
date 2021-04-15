@@ -1176,6 +1176,9 @@ public class Event extends Model {
 		for (Planet planet : planetList.values()) {
 			if (!planet.isMain())
 				continue;
+			Sign sign = planet.getSign();
+			if (null == sign)
+				continue;
 	    	long sid = planet.getSign().getId();
 	    	int val = signids.containsKey(sid) ? signids.get(sid) : 0;
     		signids.put(sid, val + 1);
@@ -1582,30 +1585,31 @@ public class Event extends Model {
 		  		 * G	Gauquelin sector
 		  		 * Y	APC houses
 		  		 */
-		  		char hsys = 'P';
-
-		  		sb = new StringBuffer(new String(serr));
-		  		//{ for houses: ecliptic obliquity and nutation }
-		  		rflag = sweph.swe_calc_ut(tjdut, SweConst.SE_ECL_NUT, 0, xx, sb);
-		  		eps_true = xx[0];
-		  		nut_long = xx[2];
-		  		//{ geographic position }
-		  		glon = Math.abs(ilondeg) + ilonmin/60.0 + ilonsec/3600.0;
-		  		if (lon < 0)
-		  			glon = -glon;
-		  		glat = Math.abs(ilatdeg) + ilatmin/60.0 + ilatsec/3600.0;
-		  		if (lat < 0)
-		  			glat = -glat;
-		  		//{ sidereal time }
-		  		tsid = new SwissLib().swe_sidtime(tjdut);
-		  		tsid = tsid + glon / 15;
-		  		armc = tsid * 15;
-		  		//{ house method }
-		  		double[] ascmc = new double[10];
-		  		double[] hcusps = new double[13];
-		  		sweph.swe_houses(tjdut, SweConst.SEFLG_SIDEREAL, glat, glon, hsys, hcusps, ascmc);
-		  		calcHouseParts(hcusps);
-
+		  		if (isHousable()) {
+			  		char hsys = 'P';
+	
+			  		sb = new StringBuffer(new String(serr));
+			  		//{ for houses: ecliptic obliquity and nutation }
+			  		rflag = sweph.swe_calc_ut(tjdut, SweConst.SE_ECL_NUT, 0, xx, sb);
+			  		eps_true = xx[0];
+			  		nut_long = xx[2];
+			  		//{ geographic position }
+			  		glon = Math.abs(ilondeg) + ilonmin/60.0 + ilonsec/3600.0;
+			  		if (lon < 0)
+			  			glon = -glon;
+			  		glat = Math.abs(ilatdeg) + ilatmin/60.0 + ilatsec/3600.0;
+			  		if (lat < 0)
+			  			glat = -glat;
+			  		//{ sidereal time }
+			  		tsid = new SwissLib().swe_sidtime(tjdut);
+			  		tsid = tsid + glon / 15;
+			  		armc = tsid * 15;
+			  		//{ house method }
+			  		double[] ascmc = new double[10];
+			  		double[] hcusps = new double[13];
+			  		sweph.swe_houses(tjdut, SweConst.SEFLG_SIDEREAL, glat, glon, hsys, hcusps, ascmc);
+			  		calcHouseParts(hcusps);
+		  		}
 		  		//расчёт координат звёзд
 		  		for (Star star : starList.values()) {
 		  			sb = new StringBuffer(new String(serr));
