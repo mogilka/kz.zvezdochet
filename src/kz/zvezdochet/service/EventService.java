@@ -215,8 +215,7 @@ public class EventService extends ModelService {
 				saveAspects(event);
 //				saveAspectsh(event);
 				saveSigns(event);
-				if (!birth.contains("00:00:00"))
-					saveHouses(event);
+				saveHouses(event);
 //				saveIngress(event);
 //				saveStars(event);
 			}
@@ -470,47 +469,61 @@ public class EventService extends ModelService {
 	public void saveHouses(Event event) throws DataAccessException {
 		if (null == event) return;
         PreparedStatement ps = null;
-        ResultSet rs = null;
         String table = getHouseTable();
-		try {
-			String sql = "select id from " + table + " where eventid = ?";
-			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			ps.setLong(1, event.getId());
-			rs = ps.executeQuery();
-			long id = (rs.next()) ? rs.getLong("id") : 0;
-			ps.close();
-			
-			Collection<House> houses = event.getHouses().values();
-			if (0 == id)
-				sql = "insert into " + table + " values(0,?,"
-						+ "?,?,?,?,?,?,?,?,?,?,"
-						+ "?,?,?,?,?,?,?,?,?,?,"
-						+ "?,?,?,?,?,?,?,?,?,?,"
-						+ "?,?,?,?,?,?)";
-			else {
-				sql = "update " + table + " set eventid = ?,";
-				for (House house : houses) {
-					sql += " " + house.getCode() + " = ?";
-					if (house.getNumber() < houses.size())
-						sql += ",";
-				}
-				sql += " where id = ?";
-			}
-			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			ps.setLong(1, event.getId());
-			for (House house : houses)
-				ps.setDouble(house.getNumber() + 1, house.getLongitude());
-			if (id != 0)
-				ps.setLong(38, id);
-			ps.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
+
+		boolean housable = event.isHousable();
+		if (!housable) {
+			Connection conn = Connector.getInstance().getConnection();
 			try {
-				if (rs != null) rs.close();
-				if (ps != null)	ps.close();
-			} catch (SQLException e) {
+				String sql = "delete from " + table + " where eventid = ?";
+				ps = conn.prepareStatement(sql);
+				ps.setLong(1, event.getId());
+				ps.execute();
+			} catch (Exception e) {
 				e.printStackTrace();
+			}
+		} else if (housable) {
+	        ResultSet rs = null;
+			try {
+				String sql = "select id from " + table + " where eventid = ?";
+				ps = Connector.getInstance().getConnection().prepareStatement(sql);
+				ps.setLong(1, event.getId());
+				rs = ps.executeQuery();
+				long id = (rs.next()) ? rs.getLong("id") : 0;
+				ps.close();
+				
+				Collection<House> houses = event.getHouses().values();
+				if (0 == id)
+					sql = "insert into " + table + " values(0,?,"
+							+ "?,?,?,?,?,?,?,?,?,?,"
+							+ "?,?,?,?,?,?,?,?,?,?,"
+							+ "?,?,?,?,?,?,?,?,?,?,"
+							+ "?,?,?,?,?,?)";
+				else {
+					sql = "update " + table + " set eventid = ?,";
+					for (House house : houses) {
+						sql += " " + house.getCode() + " = ?";
+						if (house.getNumber() < houses.size())
+							sql += ",";
+					}
+					sql += " where id = ?";
+				}
+				ps = Connector.getInstance().getConnection().prepareStatement(sql);
+				ps.setLong(1, event.getId());
+				for (House house : houses)
+					ps.setDouble(house.getNumber() + 1, house.getLongitude());
+				if (id != 0)
+					ps.setLong(38, id);
+				ps.executeUpdate();
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if (rs != null) rs.close();
+					if (ps != null)	ps.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
