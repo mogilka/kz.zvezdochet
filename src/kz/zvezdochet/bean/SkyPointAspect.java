@@ -283,7 +283,7 @@ public class SkyPointAspect {
    			else if (pcode.equals("Proserpina"))
    				res = housable ? "7 месяцев" : "7 месяцев";
    			else if (Arrays.asList(nodes).contains(pcode))
-   				res = housable ? "3 недели" : "2 недели";
+   				res = housable ? "2 недели" : "2 недели";
    			else if (Arrays.asList(moons).contains(pcode))
    				res = housable ? "1 неделя" : "1 неделя";
     	}
