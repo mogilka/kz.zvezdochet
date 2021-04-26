@@ -358,4 +358,20 @@ public class SkyPointAspect {
 		text += (housable ? skyPoint.getCode() : skyPoint.getSymbol());
 		return text;
 	}
+
+	/**
+	 * Проверка, является ли аспект негативным
+	 * @return true - если сам аспект негативный, либо в соединении одна из планет негативна
+	 */
+	public boolean isNegative() {
+		AspectType type = aspect.getType();
+		if (type.getPoints() < 0)
+			return true;
+
+		if (type.getCode().equals("NEUTRAL"))
+			return ((Planet)skyPoint1).isBad()
+					|| ((Planet)skyPoint2).isBad();
+
+		return false;
+	}
 }

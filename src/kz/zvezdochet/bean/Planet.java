@@ -1,6 +1,7 @@
 package kz.zvezdochet.bean;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -420,7 +421,7 @@ limit 500
 	/**
 	 * Признак позитивной планеты для транзита (по толкованию)
 	 */
-	boolean good;
+	private boolean good;
 
 	public boolean isGood() {
 		return good;
@@ -482,5 +483,40 @@ limit 500
 		if (house != null)
 			res += "_" + house.getCode();
 		return res;
+	}
+
+	/**
+     * Краткое негативное описание
+     */
+    private String badName;
+
+	public String getBadName() {
+		return badName;
+	}
+
+	public void setBadName(String badName) {
+		this.badName = badName;
+	}
+
+	/**
+	 * Проверка, является ли планета негативной по своей природе
+	 * @return true - если планета Лилит или Кету
+	 */
+	public boolean isBad() {
+		String[] negatives = {"Kethu", "Lilith"};
+		return Arrays.asList(negatives).contains(getCode());
+	}
+
+	/**
+     * Краткое позитивное описание
+     */
+    private String goodName;
+
+	public String getGoodName() {
+		return goodName;
+	}
+
+	public void setGoodName(String goodName) {
+		this.goodName = goodName;
 	}
 }

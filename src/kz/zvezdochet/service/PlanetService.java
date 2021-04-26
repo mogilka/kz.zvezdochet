@@ -126,6 +126,8 @@ public class PlanetService extends DictionaryService {
 		f = s.equals("1") ? true : false;
 		planet.setGood(f);
 		planet.setLoyalty(rs.getString("loyalty"));
+		planet.setBadName(rs.getString("badname"));
+		planet.setGoodName(rs.getString("goodname"));
 		return planet;
 	}
 
