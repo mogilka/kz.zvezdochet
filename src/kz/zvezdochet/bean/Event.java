@@ -1695,6 +1695,8 @@ public class Event extends Model {
 				for (Planet p2 : planets2) {
 					if (p2.getCode().equals("Rakhu") && p.getCode().equals("Kethu"))
 						continue;
+					if (p2.getCode().equals("Kethu") && p.getCode().equals("Kethu"))
+						continue;
 
 					double one = p.getLongitude();
 					double two = p2.getLongitude();
