@@ -308,12 +308,6 @@ public class SearchPart extends ModelListView {
 		lb = new Label(group, SWT.NONE);
 		lb.setText("Начало");
 		final DateTime dt = new DateTime(group, SWT.DROP_DOWN);
-//		dt.setNullText(""); //$NON-NLS-1$
-
-		lb = new Label(group, SWT.NONE);
-		lb.setText("Конец");
-		final DateTime dt2 = new DateTime(group, SWT.DROP_DOWN);
-//		dt2.setNullText(""); //$NON-NLS-1$
 
 		bt = new Button(group, SWT.NONE);
 		bt.setText("Искать");
@@ -327,12 +321,12 @@ public class SearchPart extends ModelListView {
 					calendar.set(Calendar.DAY_OF_MONTH, dt.getDay());
 					calendar.set(Calendar.MONTH, dt.getMonth());
 					calendar.set(Calendar.YEAR, dt.getYear());
+					calendar.set(Calendar.HOUR_OF_DAY, 0);
+					calendar.set(Calendar.MINUTE, 0);
+					calendar.set(Calendar.SECOND, 0);
 					Date date = calendar.getTime();
 
-					calendar = Calendar.getInstance();
-					calendar.set(Calendar.DAY_OF_MONTH, dt2.getDay());
-					calendar.set(Calendar.MONTH, dt2.getMonth());
-					calendar.set(Calendar.YEAR, dt2.getYear());
+					calendar.add(Calendar.DATE, 1);
 					Date date2 = calendar.getTime();
 
 					setData(new EventService().findByDateRange(date, date2));
