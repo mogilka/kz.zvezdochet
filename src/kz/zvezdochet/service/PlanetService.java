@@ -4,7 +4,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Planet;
@@ -195,10 +197,12 @@ public class PlanetService extends DictionaryService {
 	 * @param planet планета
 	 * @param type тип позиции планеты в доме
 	 * @param daily true|false - дневное|ночное рождение
-	 * @return астрологический дом
+	 * @return массив астрологических домов
 	 * @throws DataAccessException
 	 */
-	public House getHousePosition(Planet planet, String type, boolean daily) throws DataAccessException {
+	public Map<Long, House> getHousePosition(Planet planet, String type, boolean daily) throws DataAccessException {
+		Map<Long, House> list = new HashMap<Long, House>();
+		HouseService service = new HouseService();
         PreparedStatement ps = null;
         ResultSet rs = null;
 		String sql;
@@ -213,9 +217,9 @@ public class PlanetService extends DictionaryService {
 			ps.setString(2, type);
 			ps.setBoolean(3, daily);
 			rs = ps.executeQuery();
-			if (rs.next()) {
+			while (rs.next()) {
 				Long id = rs.getLong(1);
-				return (House)new HouseService().find(id);
+				list.put(id, (House)service.find(id));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -227,7 +231,7 @@ public class PlanetService extends DictionaryService {
 				e.printStackTrace(); 
 			}
 		}
-		return null;
+		return list;
 	}
 
 	/**
