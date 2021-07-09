@@ -313,4 +313,15 @@ public class House extends SkyPoint {
 	public void setGeneral(String general) {
 		this.general = general;
 	}
+
+	/**
+	 * Проверка является ли дом угловым
+	 * @return
+	 */
+	public boolean isAngled() {
+		return id == 142
+			|| id == 151
+			|| id == 160
+			|| id == 169;
+	}
 }
