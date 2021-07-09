@@ -337,7 +337,7 @@ public class Event extends Model {
 	}
 
 	public int MAX_CHILD_AGE = 10;
-	public int MAX_TEEN_AGE = 17;
+	public int MAX_TEEN_AGE = 18;
 
 	/**
 	 * Определение возраста персоны
@@ -960,18 +960,15 @@ public class Event extends Model {
 			PlanetService service = new PlanetService();
 			List<Model> positions = new PositionTypeService().getList();
 			Collection<Planet> planets = planetList.values();
-			boolean daily = DateUtil.isDaily(birth);
 
 			for (Planet planet : planets) {
 //				System.out.println(planet);
 				for (Model type : positions) {
 					PositionType pType = (PositionType)type;
 					String pCode = pType.getCode();
-					if (!planet.getCode().equals("Sun") &&
-							(pCode.equals("HOME") || pCode.equals("EXILE")))
 
 					if (planet.getSign() != null) {
-						Sign sign = service.getSignPosition(planet, pCode, daily);
+						Sign sign = service.getSignPosition(planet, pCode, true);
 						if (sign != null && sign.getId() == planet.getSign().getId()) {
 							switch (pCode) {
 								case "HOME": planet.setSignHome(); break;
@@ -982,9 +979,8 @@ public class Event extends Model {
 						}
 					}
 					if (null == planet.getHouse()) continue;
-					House house = service.getHousePosition(planet, pCode, daily);
-					int hnumber = CalcUtil.trunc((planet.getHouse().getNumber() + 2) / 3);
-					if (house != null && CalcUtil.trunc((house.getNumber() + 2) / 3) == hnumber) {
+					Map<Long, House> houses = service.getHousePosition(planet, pCode, true);
+					if (houses != null && houses.containsKey(planet.getHouse().getId())) {
 						switch (pCode) {
 							case "HOME": planet.setHouseHome(); break;
 							case "EXALTATION": planet.setHouseExaltated(); break;
