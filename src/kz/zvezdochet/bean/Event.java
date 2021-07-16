@@ -1685,17 +1685,19 @@ public class Event extends Model {
 			List<Model> aspects = new AspectService().getMajorList();
 
 			for (Planet p : planets) {
+				String pcode = p.getCode();
 				for (Planet p2 : planets2) {
-					if (p2.getCode().equals("Rakhu") && p.getCode().equals("Kethu"))
+					String pcode2 = p2.getCode();
+					if (pcode2.equals("Rakhu") && pcode.equals("Kethu"))
 						continue;
-					if (p2.getCode().equals("Kethu") && p.getCode().equals("Kethu"))
+					if (pcode2.equals("Kethu") && pcode.equals("Kethu"))
 						continue;
 
 					double one = p.getLongitude();
 					double two = p2.getLongitude();
 
 					double res = CalcUtil.getDifference(p.getLongitude(), p2.getLongitude());
-					if (p2.getCode().equals("Rakhu") || p2.getCode().equals("Kethu"))
+					if (pcode.equals("Rakhu") || pcode2.equals("Kethu"))
 						if ((res >= 179 && res < 180)
 								|| CalcUtil.compareAngles(one, two))
 							++res;
@@ -1707,7 +1709,8 @@ public class Event extends Model {
 						if (a.getPlanetid() > 0)
 							continue;
 
-						if (a.isExact(res)) {
+						boolean exact = pcode.equals("Moon") ? a.isExact(res) : a.isExactTransit(res);
+						if (exact) {
 							SkyPointAspect aspect = new SkyPointAspect();
 							aspect.setSkyPoint1(p);
 							aspect.setSkyPoint2(p2);
