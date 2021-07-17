@@ -519,4 +519,17 @@ limit 500
 	public void setGoodName(String goodName) {
 		this.goodName = goodName;
 	}
+
+	/**
+	 * Транзитный орбис
+	 */
+    private double orbis;
+
+	public double getOrbis() {
+		return orbis;
+	}
+
+	public void setOrbis(double orbis) {
+		this.orbis = orbis;
+	}
 }

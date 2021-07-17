@@ -243,9 +243,9 @@ public class SkyPointAspect {
    				if (housable)
 					res = "2 дня";
    			} else if (Arrays.asList(innerPlanets).contains(pcode))
-   				res = housable ? "3 дня" : "2 дня";
+   				res = housable ? "2 дня" : "2 дня";
    			else if (pcode.equals("Mars"))
-   				res = housable ? "4 дня" : "3 дня";
+   				res = housable ? "2 дня" : "2 дня";
    			else if (pcode.equals("Jupiter"))
    				res = housable ? "10 дней" : "5 дней";
    			else if (pcode.equals("Saturn"))
@@ -259,9 +259,9 @@ public class SkyPointAspect {
    			else if (pcode.equals("Proserpina"))
    				res = housable ? "7 месяцев" : "7 месяцев";
    			else if (Arrays.asList(nodes).contains(pcode))
-   				res = housable ? "3 недели" : "3 недели";
+   				res = housable ? "1 декада" : "1 неделя";
    			else if (Arrays.asList(moons).contains(pcode))
-   				res = housable ? "2 недели" : "2 недели";
+   				res = housable ? "3 дня" : "2 дня";
     	} else {
    			if (pcode.equals("Mercury")) {
    				if (housable)
@@ -270,23 +270,23 @@ public class SkyPointAspect {
    				if (housable)
    					res = "2 дня";
    			} else if (pcode.equals("Mars"))
-   				res = housable ? "3 дня" : "2 дня";
+   				res = housable ? "2 дня" : "2 дня";
    			else if (pcode.equals("Jupiter"))
    				res = housable ? "5 дней" : "4 дня";
    			else if (pcode.equals("Saturn"))
    				res = housable ? "10 дней" : "1 неделя";
    			else if (Arrays.asList(urans).contains(pcode))
-   				res = housable ? "3 недели" : "3 недели";
+   				res = housable ? "4 дня" : "4 дня";
    			else if (pcode.equals("Neptune"))
    				res = housable ? "1 месяц" : "1 месяц";
    			else if (pcode.equals("Pluto"))
-   				res = housable ? "1 месяц" : "1 месяц";
+   				res = housable ? "2 недели" : "2 недели";
    			else if (pcode.equals("Proserpina"))
    				res = housable ? "7 месяцев" : "7 месяцев";
    			else if (Arrays.asList(nodes).contains(pcode))
-   				res = housable ? "2 недели" : "2 недели";
+   				res = housable ? "1 неделя" : "4 дня";
    			else if (Arrays.asList(moons).contains(pcode))
-   				res = housable ? "1 неделя" : "1 неделя";
+   				res = housable ? "2 дня" : "2 дня";
     	}
     	return res;
     }

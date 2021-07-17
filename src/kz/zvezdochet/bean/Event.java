@@ -1709,8 +1709,7 @@ public class Event extends Model {
 						if (a.getPlanetid() > 0)
 							continue;
 
-						boolean exact = pcode.equals("Moon") ? a.isExact(res) : a.isExactTransit(res);
-						if (exact) {
+						if (a.isExactTransit(res, p.getOrbis())) {
 							SkyPointAspect aspect = new SkyPointAspect();
 							aspect.setSkyPoint1(p);
 							aspect.setSkyPoint2(p2);
@@ -1719,6 +1718,8 @@ public class Event extends Model {
 							aspect.setRetro(p.isRetrograde());
 							aspect.setExact(true);
 							spas.add(aspect);
+//					        if (23 == p.getId() && 23 == p2.getId())
+//					        	System.out.println(event.getBirth() + " " + one + " " + two + " " + p.getId() + " " + res + " " + p2.getId() + " " + p.getOrbis());
 						}
 					}
 				}
@@ -1743,6 +1744,7 @@ public class Event extends Model {
 			List<Model> aspects = new AspectService().getMajorList();
 
 			for (Planet p : planets) {
+				String pcode = p.getCode();
 				for (House p2 : houses) {
 					double one = p.getLongitude();
 					double two = p2.getLongitude();
@@ -1759,7 +1761,7 @@ public class Event extends Model {
 						if (a.getPlanetid() > 0)
 							continue;
 
-						if (a.isExact(res)) {
+						if (a.isExactTransit(res, p.getOrbis())) {
 							SkyPointAspect aspect = new SkyPointAspect();
 							aspect.setSkyPoint1(p);
 							aspect.setSkyPoint2(p2);

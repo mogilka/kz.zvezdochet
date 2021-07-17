@@ -55,12 +55,13 @@ public class Aspect extends Dictionary {
 	}
 
 	/**
-	 * Проверка, является ли указанное значение аспектом
-	 * @param d значение
+	 * Проверка, является ли указанное значение аспектом в пределах его орбисов
+	 * @param d угол между объектами
 	 * @return true - значение находится в диапазоне аспекта
 	 */
 	public boolean isAspect(double d) {
-		return ((getFloor() <= d) && (d <= getCeiling()));
+		double val = value > 0 ? d : 360 + d;
+		return ((getFloor(0) <= val) && (val <= getCeiling(0)));
 	}
 
 	/**
@@ -102,20 +103,26 @@ public class Aspect extends Dictionary {
 
 	/**
 	 * Вычисление максимального значения аспекта
-	 * @return
-	 * @todo учитывать нулевой градус
+	 * @param orb орбис планеты
+	 * @return максимальное значение аспекта
 	 */
-	public double getCeiling() {
-		return value + orbis;
+	public double getCeiling(double orb) {
+		double res = (orb > 0) ? orb : orbis;
+		double val = value > 0 ? value : 360;
+		return val + res;
 	}
 
 	/**
-	 * Вычисление минимального значения аспекта
-	 * @return
-	 * @todo учитывать нулевой градус
+	 * Вычисление минимального значения аспекта. 
+	 * Кроме соединения, все аспекты больше орбисов, поэтому берём значение аспекта как есть,
+	 * а для соединения добавляем 360 градусов
+	 * @param orb орбис транзита планеты
+	 * @return минимальное значение аспекта
 	 */
-	public double getFloor() {
-		return value - orbis;
+	public double getFloor(double orb) {
+		double res = (orb > 0) ? orb : orbis;
+		double val = value > 0 ? value : 360;
+		return val - res;
 	}
 
 	public DictionaryService getService() {
@@ -189,11 +196,13 @@ public class Aspect extends Dictionary {
 
 	/**
 	 * Проверка, является ли аспект аппликацией
-	 * @param val значение реального аспекта между объектами
+	 * @param angle угол между объектами
 	 * @return true|false аппликация|сепарация
 	 */
-	public boolean isApplication(double val) {
-	    return val <= value && getFloor() <= val;
+	public boolean isApplication(double angle) {
+		double aval = value > 0 ? value : 360;
+		double val = value > 0 ? angle : 360 - angle;
+	    return val < aval && getFloor(0) <= val;
 	}
 
 	/**
@@ -212,15 +221,33 @@ public class Aspect extends Dictionary {
 
 	/**
 	 * Проверка, является ли аспект аппликацией с орбисом в размере не более 1°
-	 * @param val значение реального аспекта между объектами
+	 * @param angle угол между объектами
 	 * @return true|false аппликация|сепарация
 	 */
-	public boolean isApproximation(double val) {
-	    return val < value && value - 1 < val;
+	public boolean isApproximation(double angle) {
+		double val = value > 0 ? angle : 360 + angle;
+		return ((getFloor(1) <= val) && (val <= getCeiling(1)));
 	}
 
 	public Aspect(AspectType type) {
 		super();
 		this.type = type;
+	}
+
+	/**
+	 * Проверка, эквивалентно ли значение аспекту с учётом транзитного орбиса.
+	 * Применяется только к аспекту между планетами, потому что точность гарантирована (в отличие от домов)
+	 * @param d угол транзита
+	 * @param orbis орбис планеты
+	 * @return true - значение эквивалентно значению аспекта с учётом орбисов планеты
+	 */
+	public boolean isExactTransit(double d, double orbis) {
+		double val = value > 0 ? d : 360 + d;
+		return ((getFloor(orbis) <= val) && (val <= getCeiling(orbis)));
+		
+//		if (!isExact(d))
+//			return false;
+//		double res = Math.abs(d - value);
+//        return res <= orbis;
 	}
 }

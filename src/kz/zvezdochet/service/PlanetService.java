@@ -130,6 +130,7 @@ public class PlanetService extends DictionaryService {
 		planet.setLoyalty(rs.getString("loyalty"));
 		planet.setBadName(rs.getString("badname"));
 		planet.setGoodName(rs.getString("goodname"));
+		planet.setOrbis(rs.getDouble("orbis"));
 		return planet;
 	}
 
