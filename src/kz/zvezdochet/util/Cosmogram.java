@@ -207,7 +207,9 @@ public class Cosmogram {
 			int x = CalcUtil.trunc(getXPoint(radius, p.getLongitude())) + xcenter - 5;
 			int y = CalcUtil.trunc(getYPoint(radius, p.getLongitude())) + ycenter - 5;
 			//String tooltip = p.getName() + " (" + Utils.replace(String.valueOf(p.getCoord()), ".", "\u00b0") + "\u2032)";
-			gc.drawImage(p.getImage(), x, y);
+			Image image = p.getImage();
+			gc.drawImage(image, x, y);
+			image.dispose();
 		}
 	}
 
@@ -369,9 +371,12 @@ public class Cosmogram {
 					synastry = true;
 
 				double one = 0, two = 0;
+				Color color = a.getType().getColor();
 				if (synastry) { //TODO
 					one = planets.get(spa.getSkyPoint1().getId()).getLongitude();
 					two = planets2.get(spa.getSkyPoint2().getId()).getLongitude();
+					if (spa.getSkyPoint1().getNumber() > spa.getSkyPoint2().getNumber())
+						color = a.getType().getDimColor();
 				} else {
 					one = spa.getSkyPoint1() instanceof Planet
 						? planets2.get(spa.getSkyPoint1().getId()).getLongitude()
@@ -383,7 +388,7 @@ public class Cosmogram {
 					arrow = !a.getCode().equals("CONJUNCTION");
 				}
 				drawAspect(
-					a.getType().getColor(),
+					color,
 					0f, 
 					one,
 					two,
