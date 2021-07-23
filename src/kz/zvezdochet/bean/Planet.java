@@ -323,42 +323,67 @@ limit 500
 	/**
 	 * Поиск знака силы планеты
 	 * @param type sign|house|null для знака|дома|описания
+	 * @param term true|false полный|сокращённый
 	 * @return знак силы
 	 */
-	public String getMark(String type) {
+	public String getMark(String type, boolean term) {
 		String res = "";
 		if (type != null) {
 			if (type.equals("sign")) {
 				if (isSignHome())
-					res = "обт "; //U+1F3E0
+					res = term ? "обитель, " : "обт "; //U+1F3E0
 				else if (isSignExaltated())
-					res = "экз ";
+					res = term ? "экзальтация, " : "экз ";
 				else if (isSignDeclined())
-					res = "пдн ";
+					res = term ? "падение, " : "пдн ";
 				else if (isSignExile())
-					res = "изг ";
+					res = term ? "изгнание, " : "изг ";
 			} else if (type.equals("house")) {
 				if (isHouseHome())
-					res = "обт ";
+					res = term ? "обитель, " : "обт ";
 				else if (isHouseExaltated())
-					res = "экз ";
+					res = term ? "экзальтация, " : "экз ";
 				else if (isHouseDeclined())
-					res = "пдн ";
+					res = term ? "падение, " : "пдн ";
 				else if (isHouseExile())
-					res = "изг ";
+					res = term ? "изгнание, " : "изг ";
 			}
 		}
-		if (isBelt() || isDamaged() || isLilithed() || isBroken() || inMine())
+		if (isBelt() || isDamaged() || isLilithed() || isBroken() || inMine()) {
 			res += "\u2193";
-		else if (isKernel() || isPerfect())
+			if (term) {
+				if (isBelt())
+					res += "сожжение, ";
+				else if (isDamaged())
+					res += "поражение, ";
+				else if (isLilithed())
+					res += "под Чёрной Луной, ";
+				else if (isBroken())
+					res += "слабость, ";
+				else if (inMine())
+					res += "в шахте, ";				
+			}
+		} else if (isKernel() || isPerfect()) {
 			res += "\u2191";
-
+			if (term) {
+				if (isKernel())
+					res += "ядро Солнца, ";
+				else if (isPerfect())
+					res += "гармония, ";
+			}
+		}
 		if (isLord())
-			res += "влд ";
+			res += term ? "владыка гороскопа, " : "влд ";
 		if (isKing())
-			res += "крл ";
+			res += term ? "король аспектов, " : "крл ";
 		if (isRetrograde())
 			res += "R";
+
+		if (term && res.length() > 2) {
+			int margin = res.length() - 2;
+			if (res.indexOf(", ", margin) == margin)
+				res = res.substring(0, margin);
+		}
 		return res;
 	}
 
