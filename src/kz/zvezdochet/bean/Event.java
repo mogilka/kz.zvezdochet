@@ -1709,7 +1709,7 @@ public class Event extends Model {
 						if (a.getPlanetid() > 0)
 							continue;
 
-						if (a.isExactTransit(res, p.getOrbis())) {
+						if (a.isTransit(res, p.getOrbis())) {
 							SkyPointAspect aspect = new SkyPointAspect();
 							aspect.setSkyPoint1(p);
 							aspect.setSkyPoint2(p2);
@@ -1744,7 +1744,6 @@ public class Event extends Model {
 			List<Model> aspects = new AspectService().getMajorList();
 
 			for (Planet p : planets) {
-				String pcode = p.getCode();
 				for (House p2 : houses) {
 					double one = p.getLongitude();
 					double two = p2.getLongitude();
@@ -1761,7 +1760,7 @@ public class Event extends Model {
 						if (a.getPlanetid() > 0)
 							continue;
 
-						if (a.isExactTransit(res, p.getOrbis())) {
+						if (a.isTransit(res, p.getOrbis())) {
 							SkyPointAspect aspect = new SkyPointAspect();
 							aspect.setSkyPoint1(p);
 							aspect.setSkyPoint2(p2);

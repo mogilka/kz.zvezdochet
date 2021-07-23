@@ -103,7 +103,7 @@ public class Aspect extends Dictionary {
 
 	/**
 	 * Вычисление максимального значения аспекта
-	 * @param orb орбис планеты
+	 * @param orb орбис транзита планеты
 	 * @return максимальное значение аспекта
 	 */
 	public double getCeiling(double orb) {
@@ -235,19 +235,13 @@ public class Aspect extends Dictionary {
 	}
 
 	/**
-	 * Проверка, эквивалентно ли значение аспекту с учётом транзитного орбиса.
-	 * Применяется только к аспекту между планетами, потому что точность гарантирована (в отличие от домов)
+	 * Проверка, эквивалентно ли значение аспекту с учётом транзитного орбиса
 	 * @param d угол транзита
 	 * @param orbis орбис планеты
 	 * @return true - значение эквивалентно значению аспекта с учётом орбисов планеты
 	 */
-	public boolean isExactTransit(double d, double orbis) {
+	public boolean isTransit(double d, double orbis) {
 		double val = value > 0 ? d : 360 + d;
 		return ((getFloor(orbis) <= val) && (val <= getCeiling(orbis)));
-		
-//		if (!isExact(d))
-//			return false;
-//		double res = Math.abs(d - value);
-//        return res <= orbis;
 	}
 }
