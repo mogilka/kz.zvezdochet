@@ -18,9 +18,13 @@ public class Aspect extends Dictionary {
 	 */
 	private double value = 0.0;
 	/**
-	 * Орбис
+	 * Максимальный орбис
 	 */
 	private double orbis = 0.0;
+	/**
+	 * Минимальный орбис
+	 */
+	private double orbis_min = 0.0;
 	/**
 	 * Идентификатор типа аспекта
 	 */
@@ -243,5 +247,13 @@ public class Aspect extends Dictionary {
 	public boolean isTransit(double d, double orbis) {
 		double val = value > 0 ? d : 360 + d;
 		return ((getFloor(orbis) <= val) && (val <= getCeiling(orbis)));
+	}
+
+	public double getMinOrbis() {
+		return orbis_min;
+	}
+
+	public void setMinOrbis(double orbis_min) {
+		this.orbis_min = orbis_min;
 	}
 }
