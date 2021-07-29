@@ -240,13 +240,15 @@ public class Aspect extends Dictionary {
 
 	/**
 	 * Проверка, эквивалентно ли значение аспекту с учётом транзитного орбиса
-	 * @param d угол транзита
+	 * @param angle угол транзита
 	 * @param orbis орбис планеты
 	 * @return true - значение эквивалентно значению аспекта с учётом орбисов планеты
 	 */
-	public boolean isTransit(double d, double orbis) {
-		double val = value > 0 ? d : 360 + d;
-		return ((getFloor(orbis) <= val) && (val <= getCeiling(orbis)));
+	public boolean isTransit(double angle, double orbis) {
+	    if (orbis < 4 && !isExact(angle))
+	        return false;
+        double res = Math.abs(angle - value);
+        return res <= orbis;
 	}
 
 	public double getMinOrbis() {
