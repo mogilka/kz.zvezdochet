@@ -1753,9 +1753,6 @@ public class Event extends Model {
 							|| CalcUtil.compareAngles(one, two))
 						++res;
 
-					boolean moonable = (20 == p.getId());
-					boolean orbisable = moonable || p.isFictitious();
-
 					for (Model realasp : aspects) {
 						Aspect a = (Aspect)realasp;
 						if (!a.isMain())
@@ -1763,7 +1760,7 @@ public class Event extends Model {
 						if (a.getPlanetid() > 0)
 							continue;
 
-						if (a.isTransit(res, orbisable ? p.getOrbis() : 0.99)) {
+						if (a.isTransit(res, p.getOrbis())) {
 							SkyPointAspect aspect = new SkyPointAspect();
 							aspect.setSkyPoint1(p);
 							aspect.setSkyPoint2(p2);
