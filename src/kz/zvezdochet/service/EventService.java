@@ -27,6 +27,7 @@ import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.ModelService;
 import kz.zvezdochet.core.tool.Connector;
+import kz.zvezdochet.core.ui.util.DialogUtil;
 import kz.zvezdochet.core.util.DateUtil;
 import kz.zvezdochet.core.util.Translit;
 
@@ -221,6 +222,7 @@ public class EventService extends ModelService {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			DialogUtil.alertError(e);
 		} finally {
 			try {
 				if (ps != null)	ps.close();
