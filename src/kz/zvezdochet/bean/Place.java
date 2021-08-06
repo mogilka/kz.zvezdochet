@@ -123,6 +123,8 @@ public class Place extends Dictionary {
 		value = json.get("dst");
 		setDst((int)value > 0);
 		setZone(json.getDouble("zone"));
+		setNameEn(json.getString("name_en"));
+		setDescrEn(json.getString("descr_en"));
 	}
 
 	public Place() {}
@@ -169,4 +171,20 @@ public class Place extends Dictionary {
 	 * Идентификатор местоположения Гринвича
 	 */
 	public static long _GREENWICH = 7095L;
+
+	private String name_en;
+	private String descr_en;
+
+	public String getNameEn() {
+		return name_en;
+	}
+	public void setNameEn(String name_en) {
+		this.name_en = name_en;
+	}
+	public String getDescrEn() {
+		return descr_en;
+	}
+	public void setDescrEn(String descr_en) {
+		this.descr_en = descr_en;
+	}
 }

@@ -12,6 +12,7 @@ import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.DictionaryService;
 import kz.zvezdochet.core.tool.Connector;
+import kz.zvezdochet.core.ui.util.DialogUtil;
 import kz.zvezdochet.core.util.DateUtil;
 
 /**
@@ -32,7 +33,7 @@ public class PlaceService extends DictionaryService {
 		try {
 			String sql;
 			if (null == model.getId()) 
-				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?)";
+				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
 					"latitude = ?, " +
@@ -45,7 +46,9 @@ public class PlaceService extends DictionaryService {
 					"parentid = ?, " +
 					"type = ?, " +
 					"zone = ?, " +
-					"dst = ? " +
+					"dst = ?, " +
+					"name_en = ?, " +
+					"descr_en = ? " +
 				"where id = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setDouble(1, dict.getLatitude());
@@ -62,9 +65,11 @@ public class PlaceService extends DictionaryService {
 			ps.setString(9, dict.getType());
 			ps.setDouble(10, dict.getZone());
 			ps.setBoolean(11, dict.isDst());
+			ps.setString(12, dict.getNameEn());
+			ps.setString(13, dict.getDescrEn());
 
 			if (model.getId() != null)
-				ps.setLong(12, model.getId());
+				ps.setLong(14, model.getId());
 			System.out.println(ps);
 
 			result = ps.executeUpdate();
@@ -81,6 +86,7 @@ public class PlaceService extends DictionaryService {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			DialogUtil.alertError(e);
 		} finally {
 			try {
 				if (ps != null)	ps.close();
@@ -103,6 +109,8 @@ public class PlaceService extends DictionaryService {
 		place.setParentid(rs.getLong("parentid"));
 		place.setType(rs.getString("type"));
 		place.setDate(DateUtil.getDatabaseDateTime(rs.getString("date")));
+		place.setNameEn(rs.getString("name_en"));
+		place.setDescrEn(rs.getString("descr_en"));
 		return place;
 	}
 
@@ -148,7 +156,7 @@ public class PlaceService extends DictionaryService {
 		int result = -1;
         PreparedStatement ps = null;
 		try {
-			String sql = "insert into " + tableName + " values(?,?,?,?,?,?,?,?,?,?,?,?)";
+			String sql = "insert into " + tableName + " values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
 			ps.setLong(1, dict.getId());
 			ps.setDouble(2, dict.getLatitude());
@@ -165,6 +173,8 @@ public class PlaceService extends DictionaryService {
 			ps.setString(10, dict.getType());
 			ps.setDouble(11, dict.getZone());
 			ps.setBoolean(12, dict.isDst());
+			ps.setString(13, dict.getNameEn());
+			ps.setString(14, dict.getDescrEn());
 			System.out.println(ps);
 			result = ps.executeUpdate();
 			if (result == 1) {
