@@ -982,6 +982,7 @@ order by year(initialdate)
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
+			//select * from events where celebrity = 0 order by updated_at desc limit 30
 			String sql = "select * from " + tableName + 
 				" where celebrity = ? " +
 				"order by updated_at desc limit 30";
