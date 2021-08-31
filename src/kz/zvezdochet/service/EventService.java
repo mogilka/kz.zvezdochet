@@ -894,6 +894,7 @@ order by year(initialdate)
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
+			AspectService service = new AspectService();
 			Map<Long, Planet> pmap = event.getPlanets();
 			for (Planet planet : pmap.values())
 				planet.setAspectList(new ArrayList<SkyPointAspect>());
@@ -909,7 +910,7 @@ order by year(initialdate)
 				rs = ps.executeQuery();
 				while (rs.next()) {
 					Planet planet2 = pmap.get(rs.getLong("planet2id"));
-					Aspect aspect = (Aspect)new AspectService().find(rs.getLong("aspectid"));
+					Aspect aspect = (Aspect)service.find(rs.getLong("aspectid"));
 					SkyPointAspect spa = new SkyPointAspect();
 					spa.setSkyPoint1(planet);
 					spa.setSkyPoint2(planet2);

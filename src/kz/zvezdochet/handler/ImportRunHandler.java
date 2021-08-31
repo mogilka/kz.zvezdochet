@@ -48,7 +48,7 @@ public class ImportRunHandler extends Handler {
 						event.setId(null);
 						event.calc(false);
 						event.setCalculated(true);
-						service.save(event);
+						event.save();
 						++imported;
 						log.append("Новый добавлен: " + event.toLog() + "\n");
 					} else { //оригинальная запись найдена
@@ -59,7 +59,7 @@ public class ImportRunHandler extends Handler {
 							event.setBackid(event.getId());
 							event.calc(false);
 							event.setCalculated(true);
-							service.save(event);
+							event.save();
 							++updated;
 							log.append("Старый обновлён: " + event.toLog() + "\n");
 						} else {
@@ -86,7 +86,7 @@ public class ImportRunHandler extends Handler {
 					back.setFancy(event.getFancy());
 					back.calc(false);
 					back.setCalculated(true);
-					service.save(back);
+					event.save();
 					log.append("Связь обновлена: " + back.toLog() + "\n");
 					++updated;
 				}
