@@ -324,4 +324,17 @@ public class House extends SkyPoint {
 			|| id == 160
 			|| id == 169;
 	}
+
+	/**
+	 * Предназначение по дому
+	 */
+	private String mission;
+
+	public String getMission() {
+		return mission;
+	}
+
+	public void setMission(String mission) {
+		this.mission = mission;
+	}
 }

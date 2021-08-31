@@ -131,6 +131,7 @@ public class HouseService extends DictionaryService {
 		house.setNegative(rs.getString("negative"));
 		house.setSynastry(rs.getString("synastry"));
 		house.setGeneral(rs.getString("general"));
+		house.setMission(rs.getString("mission"));
 		return house;
 	}
 
