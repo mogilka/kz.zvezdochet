@@ -557,4 +557,41 @@ limit 500
 	public void setOrbis(double orbis) {
 		this.orbis = orbis;
 	}
+
+	private String aspectingName;
+	private String aspectingBadName;
+	private String aspectedName;
+	private String aspectedBadName;
+
+	public String getAspectingName() {
+		return aspectingName;
+	}
+
+	public void setAspectingName(String aspectingName) {
+		this.aspectingName = aspectingName;
+	}
+
+	public String getAspectingBadName() {
+		return aspectingBadName;
+	}
+
+	public void setAspectingBadName(String aspectingBadName) {
+		this.aspectingBadName = aspectingBadName;
+	}
+
+	public String getAspectedName() {
+		return aspectedName;
+	}
+
+	public void setAspectedName(String aspectedName) {
+		this.aspectedName = aspectedName;
+	}
+
+	public String getAspectedBadName() {
+		return aspectedBadName;
+	}
+
+	public void setAspectedBadName(String aspectedBadName) {
+		this.aspectedBadName = aspectedBadName;
+	}
 }

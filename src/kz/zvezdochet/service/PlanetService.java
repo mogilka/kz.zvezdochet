@@ -131,6 +131,10 @@ public class PlanetService extends DictionaryService {
 		planet.setBadName(rs.getString("badname"));
 		planet.setGoodName(rs.getString("goodname"));
 		planet.setOrbis(rs.getDouble("orbis"));
+		planet.setAspectingName(rs.getString("aspecting"));
+		planet.setAspectingBadName(rs.getString("aspecting_bad"));
+		planet.setAspectedName(rs.getString("aspected"));
+		planet.setAspectedBadName(rs.getString("aspected_bad"));
 		return planet;
 	}
 
