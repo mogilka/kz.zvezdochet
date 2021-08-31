@@ -124,7 +124,9 @@ public class Place extends Dictionary {
 		setDst((int)value > 0);
 		setZone(json.getDouble("zone"));
 		setNameEn(json.getString("name_en"));
-		setDescrEn(json.getString("descr_en"));
+		value =json.get("descr_en");
+		if (value != JSONObject.NULL)
+			setDescrEn(value.toString());
 	}
 
 	public Place() {}
