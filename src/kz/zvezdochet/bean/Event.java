@@ -777,10 +777,12 @@ public class Event extends Model {
 		for (House house : houseList.values()) {
 			long h = (house.getNumber() == houseList.size()) ? 142 : house.getId() + 1;
 			House house2 = houseList.get(h);
+			int pnum = 0;
 			//планеты
 			for (Planet planet : planetList.values()) {
 				if (SkyPoint.getHouse(house.getLongitude(), house2.getLongitude(), planet.getLongitude())) {
 					planet.setHouse(house);
+					++pnum;
 					if (planet.getCode().equals("Lilith"))
 						house.setLilithed();
 					else if (planet.getCode().equals("Selena"))
@@ -791,6 +793,7 @@ public class Event extends Model {
 						house.setRakhued();
 				}
 			}
+			house.setPoints(pnum);
 			//звёзды
 //			for (Star star : starList.values()) {
 //				if (SkyPoint.getHouse(house.getLongitude(), house2.getLongitude(), star.getLongitude())) 
