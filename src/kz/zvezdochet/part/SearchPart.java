@@ -82,7 +82,8 @@ public class SearchPart extends ModelListView {
 		for (Tab tab : tabs) {
 			CTabItem item = new CTabItem(folder, SWT.CLOSE);
 			item.setText(tab.name);
-			item.setImage(tab.image);
+//			if (tab.image != null)
+//				item.setImage(tab.image);
 			item.setControl(tab.control);
 		}
 		folder.setSelection(0);
@@ -96,7 +97,9 @@ public class SearchPart extends ModelListView {
 		Tab[] tabs = new Tab[7];
 		Tab tab = new Tab();
 		tab.name = "по имени";
-		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet.core", "icons/correction_linked_rename.gif").createImage();
+		Image image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet.core", "icons/correction_linked_rename.gif").createImage();
+		tab.image = image;
+		image.dispose();
 		final Text txSearch = new Text(folder, SWT.BORDER);
 		txSearch.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		txSearch.setFocus();
@@ -119,7 +122,9 @@ public class SearchPart extends ModelListView {
 		
 		tab = new Tab();
 		tab.name = "по знакам Зодиака";
-		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/cosmogram.png").createImage();
+		image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/cosmogram.png").createImage();
+		tab.image = image;
+		image.dispose();
 		Group group = new Group(folder, SWT.NONE);
 
 		Label lb = new Label(group, SWT.NONE);
@@ -175,7 +180,9 @@ public class SearchPart extends ModelListView {
 		
 		tab = new Tab();
 		tab.name = "по домам";
-		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/home.gif").createImage();
+		image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/home.gif").createImage();
+		tab.image = image;
+		image.dispose();
 		group = new Group(folder, SWT.NONE);
 
 		lb = new Label(group, SWT.NONE);
@@ -231,7 +238,9 @@ public class SearchPart extends ModelListView {
 
 		tab = new Tab();
 		tab.name = "по аспектам";
-		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect.gif").createImage();
+		image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect.gif").createImage();
+		tab.image = image;
+		image.dispose();
 		group = new Group(folder, SWT.NONE);
 
 		lb = new Label(group, SWT.NONE);
@@ -302,7 +311,9 @@ public class SearchPart extends ModelListView {
 
 		tab = new Tab();
 		tab.name = "по дате";
-		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/calendar_view_day.png").createImage();
+		image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/calendar_view_day.png").createImage();
+		tab.image = image;
+		image.dispose();
 		group = new Group(folder, SWT.NONE);
 
 		lb = new Label(group, SWT.NONE);
@@ -347,7 +358,9 @@ public class SearchPart extends ModelListView {
 		
 		tab = new Tab();
 		tab.name = "по номеру";
-		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/keycolumn.gif").createImage();
+		image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/keycolumn.gif").createImage();
+		tab.image = image;
+		image.dispose();
 		final Text txNumber = new Text(folder, SWT.BORDER);
 		txNumber.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		txNumber.addListener(SWT.DefaultSelection, new Listener() {
@@ -371,7 +384,9 @@ public class SearchPart extends ModelListView {
 
 		tab = new Tab();
 		tab.name = "по биографии";
-		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/document.gif").createImage();
+		image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/document.gif").createImage();
+		tab.image = image;
+		image.dispose();
 		final Text txText = new Text(folder, SWT.BORDER);
 		txText.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		txText.setFocus();
@@ -424,15 +439,15 @@ public class SearchPart extends ModelListView {
 				return null;
 			}
 			
-			@Override
-			public Image getColumnImage(Object element, int columnIndex) {
-				kz.zvezdochet.bean.Event event = (kz.zvezdochet.bean.Event)element;
-				switch (columnIndex) {
-					case 0: String file = event.isFemale() ? "female.png" : "male.png";
-						return AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet.core", "icons/" + file).createImage();
-				}
-				return null;
-			}
+//			@Override
+//			public Image getColumnImage(Object element, int columnIndex) {
+//				kz.zvezdochet.bean.Event event = (kz.zvezdochet.bean.Event)element;
+//				switch (columnIndex) {
+//					case 0: String file = event.isFemale() ? "female.png" : "male.png";
+//						return AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet.core", "icons/" + file).createImage();
+//				}
+//				return null;
+//			}
 		};
 	}
 

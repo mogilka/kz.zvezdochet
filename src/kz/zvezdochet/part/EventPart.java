@@ -252,19 +252,25 @@ public class EventPart extends ModelPart implements ICalculable {
 
 		CTabItem item = new CTabItem(tabfolder, SWT.CLOSE);
 		item.setText(Messages.getString("PersonView.Biography"));
-		item.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/contact_enabled.gif").createImage());
+		Image image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/contact_enabled.gif").createImage();
+		item.setImage(image);
+		image.dispose();
 		txBio = new Text(tabfolder, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		item.setControl(txBio);
 
 		item = new CTabItem(tabfolder, SWT.CLOSE);
 		item.setText("Журнал");
-		item.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/contact_away.gif").createImage());
+		image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/contact_away.gif").createImage();
+		item.setImage(image);
+		image.dispose();
 		txConversation = new Text(tabfolder, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		item.setControl(txConversation);
 
 		item = new CTabItem(tabfolder, SWT.CLOSE);
 		item.setText("Толкования");
-		item.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet.core", "icons/configure.gif").createImage());
+		image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet.core", "icons/configure.gif").createImage();
+		item.setImage(image);
+		image.dispose();
 		Group group = new Group(tabfolder, SWT.NONE);
 		Link ln = new Link(group, SWT.NONE);
 		String url = "http://goroskop.org/luna/form.shtml";
@@ -290,7 +296,9 @@ public class EventPart extends ModelPart implements ICalculable {
 
 		item = new CTabItem(tabfolder, SWT.CLOSE);
 		item.setText("Фигуры");
-//		item.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/constellation.png").createImage());
+		image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/constellation.png").createImage();
+		item.setImage(image);
+		image.dispose();
 //		txLog = new Text(tabfolder, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 //		item.setControl(txLog);
 
@@ -317,7 +325,11 @@ public class EventPart extends ModelPart implements ICalculable {
 		for (Tab tab : tabs) {
 			item = new CTabItem(folder, SWT.CLOSE);
 			item.setText(tab.name);
-			item.setImage(tab.image);
+//			if (tab.image != null) {
+//				image = tab.image;
+//				item.setImage(image);
+//				image.dispose();
+//			}
 			item.setControl(tab.control);
 		}
 		folder.pack();
@@ -338,7 +350,9 @@ public class EventPart extends ModelPart implements ICalculable {
 		//настройки расчёта
 		Tab tab = new Tab();
 		tab.name = "Настройки";
-		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet.runner", "icons/configure.gif").createImage();
+		Image image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet.runner", "icons/configure.gif").createImage();
+		tab.image = image;
+		image.dispose();
 		Group group = new Group(folder, SWT.NONE);
 		group.setText("Общие");
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -348,7 +362,9 @@ public class EventPart extends ModelPart implements ICalculable {
 //-------- планеты
 		tab = new Tab();
 		tab.name = "Планеты";
-		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet.gif").createImage();
+		image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet.gif").createImage();
+		tab.image = image;
+		image.dispose();
 		grPlanets = new Group(folder, SWT.NONE);
 		Object[] titles = {
 			"Планета",
@@ -392,7 +408,9 @@ public class EventPart extends ModelPart implements ICalculable {
 //-------- дома
 		tab = new Tab();
 		tab.name = "Дома";
-		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/home.gif").createImage();
+		image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/home.gif").createImage();
+		tab.image = image;
+		image.dispose();
 		grHouses = new Group(folder, SWT.NONE);
 		String[] titles2 = {"Дом", "Координата", "Знак"};
 		table = new Table(grHouses, SWT.BORDER | SWT.V_SCROLL);
@@ -413,7 +431,9 @@ public class EventPart extends ModelPart implements ICalculable {
 		try {
 			tab = new Tab();
 			tab.name = "Аспекты";
-			tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect.gif").createImage();
+			image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect.gif").createImage();
+			tab.image = image;
+			image.dispose();
 			grAspectType = new Group(folder, SWT.NONE);
 			grAspectType.setLayout(new GridLayout());
 	
@@ -425,7 +445,9 @@ public class EventPart extends ModelPart implements ICalculable {
 				if (type.getImage() != null && !type.getCode().contains("HIDDEN")) {
 					final Button bt = new Button(gr, SWT.BORDER | SWT.CHECK);
 					bt.setText(type.getName());
-					bt.setImage(AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/" + type.getImage()).createImage());
+					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/" + type.getImage()).createImage();
+					bt.setImage(image);
+					image.dispose();
 					bt.setSelection(true);
 					bt.setData("type", type.getCode());
 				}
@@ -569,7 +591,9 @@ public class EventPart extends ModelPart implements ICalculable {
 		//ингрессии
 		tab = new Tab();
 		tab.name = "Ингрессии";
-		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/runtoline_co.gif").createImage();
+		image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/runtoline_co.gif").createImage();
+		tab.image = image;
+		image.dispose();
 		grIngress = new Group(folder, SWT.NONE);
 		titles2 = new String[] {"Планета", "Тип", "Объект", "Точка"};
 		table = new Table(grIngress, SWT.BORDER | SWT.V_SCROLL);
@@ -589,7 +613,9 @@ public class EventPart extends ModelPart implements ICalculable {
 		//звёзды
 		tab = new Tab();
 		tab.name = "Звёзды";
-		tab.image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/star.png").createImage();
+		image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/star.png").createImage();
+		tab.image = image;
+		image.dispose();
 		grStars = new Group(folder, SWT.NONE);
 		titles = new String[] {
 			"Звезда",
@@ -1024,24 +1050,31 @@ public class EventPart extends ModelPart implements ICalculable {
 				item.setText(6, String.valueOf(CalcUtil.roundTo(planet.getSpeedDistance(), 3)));
 
 				item.setText(7, planet.isRetrograde() ? "R" : "");
-				item.setImage(8, planet.isDamaged() ?
-					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/disharmonic.gif").createImage() : null);
-				item.setImage(9, planet.isPerfect() ?
-					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/harmonic.gif").createImage() : null);
-				item.setImage(10, planet.inMine() ?
-					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/mine.gif").createImage() : null);
-				item.setImage(11, planet.isSword() ?
-					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/sword.png").createImage() : null);
-				item.setImage(12, planet.isShield() ?
-					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/shield.png").createImage() : null);
-				item.setImage(13, planet.isKernel() ?
-					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/core.png").createImage() : null);
-				item.setImage(14, planet.isBelt() ?
-					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/belt.png").createImage() : null);
+				Image image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/disharmonic.gif").createImage();
+				item.setImage(8, planet.isDamaged() ? image : null);
+				image.dispose();
+				image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/harmonic.gif").createImage();
+				item.setImage(9, planet.isPerfect() ? image : null);
+				image.dispose();
+				image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/mine.gif").createImage();
+				item.setImage(10, planet.inMine() ? image : null);
+				image.dispose();
+				image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/sword.png").createImage();
+				item.setImage(11, planet.isSword() ? image : null);
+				image.dispose();
+				image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/shield.png").createImage();
+				item.setImage(12, planet.isShield() ? image : null);
+				image.dispose();
+				image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/core.png").createImage();
+				item.setImage(13, planet.isKernel() ? image : null);
+				image.dispose();
+				image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/belt.png").createImage();
+				item.setImage(14, planet.isBelt() ? image : null);
+				image.dispose();
 
 				Sign sign = planet.getSign();
 				item.setText(15, null == sign ? "" : sign.getName());
-				Image image = null;
+				image = null;
 				if (planet.isSignHome())
 					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/home.gif").createImage();
 				else if (planet.isSignExaltated())
@@ -1067,26 +1100,27 @@ public class EventPart extends ModelPart implements ICalculable {
 				if (image != null)
 					item.setImage(16, image);
 
-				item.setImage(17, planet.isLilithed() ?
-					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Lilith.png").createImage() : null);
-
-				item.setImage(18, planet.isSelened() ?
-						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Selena.png").createImage() : null);
-
-				item.setImage(19, planet.isRakhued() ?
-						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Rakhu.png").createImage() : null);
-
-				item.setImage(20, planet.isKethued() ?
-						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Kethu.png").createImage() : null);
-
-				item.setImage(21, planet.isKing() ?
-					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/crown.png").createImage() : null);
-
-				item.setImage(22, planet.isLord() ?
-						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/throne.png").createImage() : null);
-
-				item.setImage(23, planet.isBroken() ?
-						AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/ilow_obj.gif").createImage() : null);
+				image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Lilith.png").createImage();
+				item.setImage(17, planet.isLilithed() ? image : null);
+				image.dispose();
+				image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Selena.png").createImage();
+				item.setImage(18, planet.isSelened() ? image : null);
+				image.dispose();
+				image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Rakhu.png").createImage();
+				item.setImage(19, planet.isRakhued() ? image : null);
+				image.dispose();
+				image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Kethu.png").createImage();
+				item.setImage(20, planet.isKethued() ? image : null);
+				image.dispose();
+				image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/crown.png").createImage();
+				item.setImage(21, planet.isKing() ? image : null);
+				image.dispose();
+				image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/throne.png").createImage();
+				item.setImage(22, planet.isLord() ? image : null);
+				image.dispose();
+				image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/ilow_obj.gif").createImage();
+				item.setImage(23, planet.isBroken() ? image : null);
+				image.dispose();
 			}
 			for (int i = 0; i < table.getColumnCount(); i++)
 				table.getColumn(i).pack();
