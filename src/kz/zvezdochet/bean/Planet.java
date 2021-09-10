@@ -94,8 +94,13 @@ public class Planet extends SkyPoint {
 	}
 
 	public Image getImage() {
-		return AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/" + 
-			getCode() + ".png").createImage();
+		try {
+			Image image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/" + 
+				getCode() + ".png").createImage();
+			return image;			
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	public DictionaryService getService() {
