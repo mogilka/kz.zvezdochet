@@ -1083,9 +1083,10 @@ public class EventPart extends ModelPart implements ICalculable {
 					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/exile.png").createImage();
 				else if (planet.isSignDeclined())
 					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/next_nav.gif").createImage();
-				if (image != null)
+				if (image != null) {
 					item.setImage(15, image);
-
+					image.dispose();
+				}
 				House house = planet.getHouse();
 				item.setText(16, null == house ? "" : house.getCode());
 				image = null;
@@ -1097,9 +1098,10 @@ public class EventPart extends ModelPart implements ICalculable {
 					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/exile.png").createImage();
 				else if (planet.isHouseDeclined())
 					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/next_nav.gif").createImage();
-				if (image != null)
+				if (image != null) {
 					item.setImage(16, image);
-
+					image.dispose();
+				}
 				image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Lilith.png").createImage();
 				item.setImage(17, planet.isLilithed() ? image : null);
 				image.dispose();
