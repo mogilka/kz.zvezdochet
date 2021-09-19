@@ -491,7 +491,7 @@ public class EventPart extends ModelPart implements ICalculable {
 				Planet planet = (Planet)model;
 				final Button b = new Button(grp, SWT.BORDER | SWT.CHECK);
 				b.setText(planet.getName());
-				b.setImage(planet.getImage());
+//				b.setImage(planet.getImage());
 				b.setSelection(true);
 				b.setData("planet", planet.getCode());
 			}
