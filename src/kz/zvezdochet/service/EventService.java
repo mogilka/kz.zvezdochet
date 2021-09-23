@@ -211,7 +211,7 @@ public class EventService extends ModelService {
 						rsid.close();
 				}
 			}
-			if (event.isRecalcable()) {
+			if (event.isRecalculable()) {
 				savePlanets(event);
 				saveAspects(event);
 //				saveAspectsh(event);

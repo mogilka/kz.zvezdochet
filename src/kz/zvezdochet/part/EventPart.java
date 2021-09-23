@@ -1004,6 +1004,10 @@ public class EventPart extends ModelPart implements ICalculable {
 
 	@Override
 	public void onCalc(Object obj) {
+		Event event = (Event)model;
+		event.setCalculated(true);
+		event.setRecalculable(true);
+
 		if (null == obj)
 			obj = MODE_ASPECT_PLANET_PLANET;
 		int mode = (int)obj;
@@ -1022,7 +1026,6 @@ public class EventPart extends ModelPart implements ICalculable {
 			}
 			params.put("aspects", aparams);
 			params.put("houseAspectable", true);
-			Event event = (Event)model;
 			cmpCosmogram.paint(event, null, params);
 		}
 	}

@@ -55,7 +55,6 @@ public class Event extends Model {
 		super();
 		name = "";
 		birth = new Date();
-//		recalculable = true;
 	}
 
 	/**
@@ -426,7 +425,7 @@ public class Event extends Model {
 	 */
 	private boolean recalculable = false;
 
-	public boolean isRecalcable() {
+	public boolean isRecalculable() {
 		return recalculable;
 	}
 	public void setRecalculable(boolean needRecalc) {
@@ -1881,5 +1880,10 @@ public class Event extends Model {
 	 */
 	public boolean isRectified() {
 		return 1 == rectification;
+	}
+
+	@Override
+	protected void onSave() {
+		recalculable = false;
 	}
 }
