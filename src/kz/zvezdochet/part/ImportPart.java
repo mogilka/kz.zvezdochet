@@ -40,6 +40,7 @@ public class ImportPart extends ModelListView {
 	}
 
 	protected DateTime dtDate;
+	protected DateTime dtTime;
 
 	@Override
 	public void initFilter(Composite parent) {
@@ -47,8 +48,7 @@ public class ImportPart extends ModelListView {
 		grFilter.setText("Поиск");
 		grFilter.setLayout(new GridLayout());
 		dtDate = new DateTime(grFilter, SWT.DROP_DOWN);
-//		dtDate.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-//		dtDate.setSelection(new Date());
+		dtTime = new DateTime(grFilter, SWT.TIME);
 	}
 
 	@Override
@@ -106,6 +106,9 @@ public class ImportPart extends ModelListView {
 		calendar.set(Calendar.DAY_OF_MONTH, dtDate.getDay());
 		calendar.set(Calendar.MONTH, dtDate.getMonth());
 		calendar.set(Calendar.YEAR, dtDate.getYear());
+		calendar.set(Calendar.HOUR_OF_DAY, dtTime.getHours());
+		calendar.set(Calendar.MINUTE, dtTime.getMinutes());
+		calendar.set(Calendar.SECOND, dtTime.getSeconds());
 		return calendar.getTime();
 	}
 
@@ -122,6 +125,7 @@ public class ImportPart extends ModelListView {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(date);
 			dtDate.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+			dtTime.setDate(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -41,17 +41,18 @@ public class ImportRunHandler extends Handler {
 			EventService service = new EventService();
 			for (Event event : events) {
 				Event back = (Event)service.findBack(event.getId());
-				if (null == back || null == back.getId()) { //связанная запись не найдена
+				if (null == back || null == back.getId() || 0 == back.getId()) { //запись по backid не найдена
 					back = (Event)service.find(event.getId());
-					if (null == back.getId()) { //оригинальная запись тоже не найдена, создаём
+					if (null == back.getId()) { //запись по id тоже не найдена, создаём
 						event.setBackid(event.getId());
 						event.setId(null);
 						event.calc(false);
 						event.setCalculated(true);
+						//event.setRecalculable(true);
 						event.save();
 						++imported;
-						log.append("Новый добавлен: " + event.toLog() + "\n");
-					} else { //оригинальная запись найдена
+						log.append("Новый добавлен: " + event.getId() + " " + event.toLog() + "\n");
+					} else { //запись по id найдена
 						String bdate = DateUtil.formatCustomDateTime(back.getBirth(), "yyyy-MM-dd");
 						String idate = DateUtil.formatCustomDateTime(event.getBirth(), "yyyy-MM-dd");
 						//если даты совпадают, перезаписываем, иначе отменяем и пишем об этом в лог
@@ -59,36 +60,37 @@ public class ImportRunHandler extends Handler {
 							event.setBackid(event.getId());
 							event.calc(false);
 							event.setCalculated(true);
+							//event.setRecalculable(true);
 							event.save();
 							++updated;
-							log.append("Старый обновлён: " + event.toLog() + "\n");
+							log.append("Старый обновлён: " + event.getId() + " " + event.toLog() + "\n\t");
+							log.append("вместо: " + back.getId() + " " + back.toLog() + "\n");
 						} else {
-							log.append("Новый не соответствует: " + event.toLog() + "\n\t");
-							log.append("Старому: " + back.toLog() + "\n");
+							log.append("Новый не соответствует: " + event.getId() + " " + event.toLog() + "\n\t");
+							log.append("Старому: " + back.getId() + " " + back.toLog() + "\n");
 							++canceled;
 						}
 					}
-				} else { //связанная запись найдена TODO импортировать биографию и журнал
-					back.setName(event.getName());
-					back.setBirth(event.getBirth());
-					back.setDeath(event.getDeath());
-					back.setFemale(event.isFemale());
-					back.setPlaceid(event.getPlaceid());
-					back.setFinalPlaceid(event.getFinalplaceid());
-					back.setZone(event.getZone());
-					back.setDst(event.getDst());
-					back.setCelebrity(true);
-					back.setComment(event.getComment());
-					back.setRectification(event.getRectification());
-					back.setRightHanded(event.isRightHanded());
-					back.setHuman(event.getHuman());
-					back.setAccuracy(event.getAccuracy());
-					back.setFancy(event.getFancy());
-					back.calc(false);
-					back.setCalculated(true);
-					event.save();
-					log.append("Связь обновлена: " + back.toLog() + "\n");
-					++updated;
+				} else { //запись по backid найдена TODO импортировать биографию и журнал
+					String bdate = DateUtil.formatCustomDateTime(back.getBirth(), "yyyy-MM-dd");
+					String idate = DateUtil.formatCustomDateTime(event.getBirth(), "yyyy-MM-dd");
+					//если даты совпадают, перезаписываем, иначе отменяем и пишем об этом в лог
+					if (idate.equals(bdate)) {
+						event.setBackid(event.getId());
+						event.calc(false);
+						event.setCalculated(true);
+						//event.setRecalculable(true);
+						event.save();
+						log.append("Связь обновлена: №" + event.getId() + " " + event.toLog() + "\n\t");
+						log.append("вместо: " + back.getId() + " " + back.toLog() + "\n");
+						++updated;
+					} else {
+						back.setBackid(0);
+						back.save();
+						log.append("Новый не соответствует: " + event.getId() + " " + event.toLog() + "\n\t");
+						log.append("Старому: " + back.getId() + " " + back.toLog() + "\n");
+						++canceled;
+					}
 				}
 			}
 			//логируем
@@ -105,6 +107,7 @@ public class ImportRunHandler extends Handler {
 			//а ещё лучше открывать его
 			System.out.println("Импорт завершён");
 			updateStatus("Импорт завершён", false);
+			DialogUtil.alertInfo("Импорт завершён");
 		} catch (Exception e) {
 			DialogUtil.alertError(e);
 			e.printStackTrace();
