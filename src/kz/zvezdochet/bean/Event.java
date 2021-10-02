@@ -1886,4 +1886,16 @@ public class Event extends Model {
 	protected void onSave() {
 		recalculable = false;
 	}
+
+	/**
+	 * Проверка, задано ли время, отличное от нулевой полуночи
+	 * @return false - время рождения неизвестно
+	 */
+	public boolean isTimable() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(birth);
+		return calendar.get(Calendar.HOUR_OF_DAY) > 0
+			|| calendar.get(Calendar.MINUTE) > 0
+			|| calendar.get(Calendar.SECOND) > 0;
+	}
 }
