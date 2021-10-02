@@ -350,4 +350,17 @@ public class AspectConfiguration extends TextGenderDictionary {
 	public void setSynastry(String synastry) {
 		this.synastry = synastry;
 	}
+
+	/**
+	 * Признак перекрёстной фигуры
+	 */
+	private boolean cross;
+
+	public boolean isCross() {
+		return cross;
+	}
+
+	public void setCross(boolean cross) {
+		this.cross = cross;
+	}
 }
