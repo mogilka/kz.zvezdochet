@@ -104,8 +104,7 @@ public class AspectPart extends ListView {
 			Collection<Planet> planets = event.getPlanets().values();
 			for (Planet planet : planets) {
 				tableColumn = new TableColumn(table, SWT.NONE);
-				tableColumn.setText(CalcUtil.roundTo(planet.getLongitude(), 1) + "");
-				tableColumn.setImage(planet.getImage());
+				tableColumn.setText(planet.getSymbol() + " " + CalcUtil.roundTo(planet.getLongitude(), 1) + "");
 				tableColumn.setToolTipText(planet.getName());
 			}
 			Table table2 = tableViewer2.getTable();

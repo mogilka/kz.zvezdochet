@@ -170,7 +170,7 @@ public class EventPart extends ModelPart implements ICalculable {
 
 		lb = new Label(secEvent, SWT.NONE);
 		lb.setText("Время");
-		dtBirth2 = new DateTime (secEvent, SWT.TIME);
+		dtBirth2 = new DateTime(secEvent, SWT.TIME);
 
 		lb = new Label(secEvent, SWT.CENTER);
 		lb.setText(Messages.getString("PersonView.DeathDate")); //$NON-NLS-1$
