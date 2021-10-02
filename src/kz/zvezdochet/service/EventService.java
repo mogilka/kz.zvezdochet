@@ -137,7 +137,7 @@ public class EventService extends ModelService {
 			else if (event.getPlaceid() > 0)
 				ps.setLong(3, event.getPlaceid());
 			else
-				ps.setNull(3, java.sql.Types.NULL);
+				ps.setLong(3, Place._GREENWICH);
 			ps.setDouble(4, event.getZone());
 			ps.setBoolean(5, event.isCelebrity());
 			ps.setString(6, event.getComment());
@@ -153,7 +153,10 @@ public class EventService extends ModelService {
 			ps.setString(11, date);
 			ps.setInt(12, event.getHuman());
 			ps.setString(13, event.getAccuracy());
-			ps.setLong(14, 3);
+			if (event.isCelebrity())
+				ps.setNull(14, java.sql.Types.NULL);
+			else
+				ps.setLong(14, 3);
 			ps.setInt(15, event.isCalculated() ? 1 : 0);
 			ps.setString(16, Translit.convert(event.getName(), true));
 			ps.setDouble(17, event.getDst());
