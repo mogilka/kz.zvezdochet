@@ -367,11 +367,13 @@ public class SearchPart extends ModelListView {
 			@Override
 			public void handleEvent(Event event) {
 				String text = txNumber.getText();
-				if (text.length() > 1)
+				if (text.length() > 0)
 					try {
 						Model model = new EventService().find(Long.valueOf(text));
 						if (model != null)
 							setData(new Model[] {model});
+					} catch (NumberFormatException e) {
+						//
 					} catch (DataAccessException e) {
 						e.printStackTrace();
 					}
