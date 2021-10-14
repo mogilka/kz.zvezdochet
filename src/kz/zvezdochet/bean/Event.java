@@ -1043,6 +1043,7 @@ public class Event extends Model {
 			int bad = map.get("NEGATIVE");
 			int badh = map.get("NEGATIVE_HIDDEN");
 			int neutral = map.get("NEUTRAL") + map.get("NEUTRAL_KERNEL") + map.get("NEGATIVE_BELT");
+			int karm = map.get("KARMIC");
 
 			if (bad > 0
 					&& (0 == good + goodh)
@@ -1050,7 +1051,7 @@ public class Event extends Model {
 						|| (1 == neutral && (planet.isKethued() || planet.isLilithed())))
 						|| (2 == neutral && planet.isKethued() && planet.isLilithed()))
 				planet.setDamaged(true);
-			else if (0 == bad + badh
+			else if (0 == bad + badh + karm
 					&& good > 0
 					&& !planet.isKethued()
 					&& !planet.isLilithed())
