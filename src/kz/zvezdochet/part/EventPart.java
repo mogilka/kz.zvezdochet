@@ -911,13 +911,9 @@ public class EventPart extends ModelPart implements ICalculable {
 			Event event = (Event)model;
 			long id = (null == event) ? 0 : event.getId();
 			Calendar calendar = Calendar.getInstance();
-			if (id > 0) {
-				int year = calendar.get(Calendar.YEAR);
-				int month = calendar.get(Calendar.MONTH) + 1;
-				long placeid = (null == event.getCurrentPlace()) ? Place._GREENWICH : event.getCurrentPlace().getId();
-				String url = "http://zvezdochet.local/month/transits?id=" + month + "&year=" + year + "&eventid=" + id + "&placeid=" + placeid;
-				lbID.setText(id + " " + "<a href=\"" + url + "\">транзиты</a>");
-			}
+			if (id > 0)
+				lbID.setText(String.valueOf(id));
+
 			txName.setText(event.getName());
 			cvGender.getCombo().setText(genders[event.isFemale() ? 2 : 1]);
 			cvHand.getCombo().setText(hands[event.isRightHanded() ? 0 : 1]);
