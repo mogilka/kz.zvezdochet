@@ -94,15 +94,11 @@ public class Event extends Model {
 	 */
 	private long placeid;
 	/**
-	 * Идентификатор места смерти
-	 */
-	private long finalplaceid;
-	/**
 	 * Место рождения
 	 */
 	private Place place;
 	/**
-	 * Место смерти
+	 * Место проживания
 	 */
 	private Place finalplace;
 	/**
@@ -407,12 +403,6 @@ public class Event extends Model {
 	public void setDst(double dst) {
 		this.dst = dst;
 	}
-	public long getFinalplaceid() {
-		return finalplaceid;
-	}
-	public void setFinalPlaceid(long finalplaceid) {
-		this.finalplaceid = finalplaceid;
-	}
 	public Place getFinalPlace() {
 		return finalplace;
 	}
@@ -468,42 +458,46 @@ public class Event extends Model {
 	 */
 	public Event(JSONObject json) {
 		super();
-		setId(json.getLong("ID"));
-		setName(json.getString("name"));
-		setBirth(DateUtil.getDatabaseDateTime(json.getString("InitialDate")));
-		Object value =json.get("FinalDate");
-		if (value != JSONObject.NULL)
-			setDeath(DateUtil.getDatabaseDateTime(value.toString()));
-		value = json.getInt("RightHanded");
-		setRightHanded(1 == (int)value ? true : false);
-		setRectification(json.getInt("Rectification"));
-		value = json.getInt("Celebrity");
-		setCelebrity(1 == (int)value ? true : false);
-		setComment(json.get("Comment").toString());
-		value = json.getInt("Gender");
-		setFemale(1 == (int)value ? true : false);
-		value = json.get("Placeid");
-		if (value != JSONObject.NULL)
-			setPlaceid(json.getLong("Placeid"));
-		value = json.get("finalplaceid");
-		if (value != JSONObject.NULL)
-			setFinalPlaceid((int)value);
-		value = json.get("Zone");
-		if (value != JSONObject.NULL)
-			setZone(json.getDouble("Zone"));
-		setHuman(json.getInt("human"));
-		setAccuracy(json.get("accuracy").toString());
-		setDate(DateUtil.getDatabaseDateTime(json.getString("date")));
-		setFancy(json.getString("fancy"));
-		value = json.get("backid");
-		if (value != JSONObject.NULL)
-			setBackid(json.getLong("backid"));
-		setDst(json.getDouble("dst"));
-		value = json.get("tabloid");
-		if (value != JSONObject.NULL)
-			setTabloid(json.getLong("tabloid"));
-//		recalculable = true;
-		setModified(DateUtil.getDatabaseDateTime(json.getString("updated_at")));
+		try {
+			setId(json.getLong("ID"));
+			setName(json.getString("name"));
+			setBirth(DateUtil.getDatabaseDateTime(json.getString("InitialDate")));
+			Object value =json.get("FinalDate");
+			if (value != JSONObject.NULL)
+				setDeath(DateUtil.getDatabaseDateTime(value.toString()));
+			value = json.getInt("RightHanded");
+			setRightHanded(1 == (int)value ? true : false);
+			setRectification(json.getInt("Rectification"));
+			value = json.getInt("Celebrity");
+			setCelebrity(1 == (int)value ? true : false);
+			setComment(json.get("Comment").toString());
+			value = json.getInt("Gender");
+			setFemale(1 == (int)value ? true : false);
+			value = json.get("Placeid");
+			if (value != JSONObject.NULL)
+				setPlaceid(json.getLong("Placeid"));
+			value = json.get("finalplaceid");
+			if (value != JSONObject.NULL)
+				setFinalplace((Place)new PlaceService().find((long)value));
+			value = json.get("Zone");
+			if (value != JSONObject.NULL)
+				setZone(json.getDouble("Zone"));
+			setHuman(json.getInt("human"));
+			setAccuracy(json.get("accuracy").toString());
+			setDate(DateUtil.getDatabaseDateTime(json.getString("date")));
+			setFancy(json.getString("fancy"));
+			value = json.get("backid");
+			if (value != JSONObject.NULL)
+				setBackid(json.getLong("backid"));
+			setDst(json.getDouble("dst"));
+			value = json.get("tabloid");
+			if (value != JSONObject.NULL)
+				setTabloid(json.getLong("tabloid"));
+//			recalculable = true;
+			setModified(DateUtil.getDatabaseDateTime(json.getString("updated_at")));			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -1839,18 +1833,6 @@ public class Event extends Model {
 	 */
 	public boolean isHuman() {
 		return (1 == human);
-	}
-
-	/**
-	 * Текущее место проживания
-	 */
-	private Place currentPlace;
-
-	public Place getCurrentPlace() {
-		return currentPlace;
-	}
-	public void setCurrentPlace(Place currentPlace) {
-		this.currentPlace = currentPlace;
 	}
 
 	/**

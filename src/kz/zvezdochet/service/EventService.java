@@ -96,7 +96,7 @@ public class EventService extends ModelService {
 		try {
 			String sql;
 			if (null == model.getId())
-				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
 					"name = ?, " +
@@ -125,7 +125,6 @@ public class EventService extends ModelService {
 					"conversation = ?, " +
 					"updated_at = ?, " +
 					"options = ?, " +
-					"curplaceid = ?, " +
 					"name_en = ?, " +
 					"comment_en = ? " +
 					"where id = ?";
@@ -187,17 +186,11 @@ public class EventService extends ModelService {
 			ps.setString(24, event.getConversation());
 			ps.setString(25, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
 			ps.setString(26, event.getOptions());
-
-			if (event.getCurrentPlace() != null && event.getCurrentPlace().getId() != null && event.getCurrentPlace().getId() > 0)
-				ps.setLong(27, event.getCurrentPlace().getId());
-			else
-				ps.setNull(27, java.sql.Types.NULL);
-
-			ps.setString(28, event.getName_en());
-			ps.setString(29, event.getComment_en());
+			ps.setString(27, event.getName_en());
+			ps.setString(28, event.getComment_en());
 
 			if (model.getId() != null)
-				ps.setLong(30, model.getId());
+				ps.setLong(29, model.getId());
 			System.out.println(ps);
 
 			result = ps.executeUpdate();
@@ -237,7 +230,7 @@ public class EventService extends ModelService {
 	}
 
 	@Override
-	public Model init(ResultSet rs, Model model) throws SQLException {
+	public Model init(ResultSet rs, Model model) throws SQLException, DataAccessException {
 		Event event = (model != null) ? (Event)model : (Event)create();
 		event.setId(Long.parseLong(rs.getString("ID")));
 		if (rs.getString("name") != null)
@@ -263,7 +256,7 @@ public class EventService extends ModelService {
 		if (rs.getString("Placeid") != null)
 			event.setPlaceid(rs.getLong("Placeid"));
 		if (rs.getString("finalplaceid") != null)
-			event.setFinalPlaceid(rs.getLong("finalplaceid"));
+			event.setFinalplace((Place)new PlaceService().find(rs.getLong("finalplaceid")));
 		if (rs.getString("Zone") != null)
 			event.setZone(rs.getDouble("Zone"));
 		event.setHuman(rs.getInt("human"));
@@ -281,12 +274,6 @@ public class EventService extends ModelService {
 		event.setConversation(rs.getString("conversation"));
 		event.setModified(DateUtil.getDatabaseDateTime(rs.getString("updated_at")));
 		event.setOptions(rs.getString("options"));
-		try {
-			if (rs.getString("curplaceid") != null)
-				event.setCurrentPlace((Place)new PlaceService().find(rs.getLong("curplaceid")));
-		} catch (DataAccessException e) {
-			e.printStackTrace();
-		}
 		return event;
 	}
 

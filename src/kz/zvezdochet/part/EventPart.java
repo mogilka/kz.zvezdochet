@@ -940,8 +940,8 @@ public class EventPart extends ModelPart implements ICalculable {
 			txZone.setText(CalcUtil.formatNumber("###.##", event.getZone()));
 			String dststr = dst.get((int)event.getDst());
 			cvDST.getCombo().setText(null == dststr ? "0" : dststr);
-			if (event.getCurrentPlace() != null)
-				initPlace(event.getCurrentPlace(), true);
+			if (event.getFinalPlace() != null)
+				initPlace(event.getFinalPlace(), true);
 			int human = event.getHuman();
 			if (human > -1)
 				cvHuman.getCombo().setText(humans[human]);
@@ -1312,7 +1312,7 @@ public class EventPart extends ModelPart implements ICalculable {
 					if (place != null) {
 						if (null == model)
 							model = new Event();
-						((Event)model).setCurrentPlace(place);
+						((Event)model).setFinalplace(place);
 						initPlace(place, true);
 					}
 				}

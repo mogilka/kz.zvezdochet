@@ -17,12 +17,14 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DateTime;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -417,10 +419,8 @@ public class SearchPart extends ModelListView {
 			"№",
 			"Имя",
 			"Дата",
-			"Описание",
 			"Дата создания",
-			"Дата изменения",
-			"#" };
+			"Дата изменения" };
 		return columns;
 	}
 
@@ -432,26 +432,26 @@ public class SearchPart extends ModelListView {
 				kz.zvezdochet.bean.Event event = (kz.zvezdochet.bean.Event)element;
 				if (event != null)
 					switch (columnIndex) {
+						case 0: return event.isFemale() ? "♀" : "♂";
 						case 1: return event.getId().toString();
 						case 2: return event.getName();
 						case 3: return DateUtil.formatDateTime(event.getBirth());
-						case 4: return event.getComment();
-						case 5: return DateUtil.formatDateTime(event.getDate());
-						case 6: return DateUtil.formatDateTime(event.getModified());
-						case 7: return String.valueOf(event.getBackid());
+						case 4: return DateUtil.formatDateTime(event.getDate());
+						case 5: return DateUtil.formatDateTime(event.getModified());
 					}
 				return null;
 			}
-			
-//			@Override
-//			public Image getColumnImage(Object element, int columnIndex) {
-//				kz.zvezdochet.bean.Event event = (kz.zvezdochet.bean.Event)element;
-//				switch (columnIndex) {
-//					case 0: String file = event.isFemale() ? "female.png" : "male.png";
-//						return AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet.core", "icons/" + file).createImage();
-//				}
-//				return null;
-//			}
+
+			@Override
+			public Color getForeground(Object element, int columnIndex) {
+				kz.zvezdochet.bean.Event event = (kz.zvezdochet.bean.Event)element;
+				if (event != null)
+					switch (columnIndex) {
+						case 0: int color = event.isFemale() ? SWT.COLOR_RED : SWT.COLOR_BLUE;
+						return Display.getCurrent().getSystemColor(color);
+					}
+				return null;
+			}
 		};
 	}
 
