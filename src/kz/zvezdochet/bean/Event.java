@@ -1715,8 +1715,9 @@ public class Event extends Model {
 							aspect.setRetro(p.isRetrograde());
 							aspect.setExact(true);
 							spas.add(aspect);
-//					        if (23 == p.getId() && 23 == p2.getId())
-//					        	System.out.println(event.getBirth() + " " + one + " " + two + " " + p.getId() + " " + res + " " + p2.getId() + " " + p.getOrbis());
+//					        if (28 == p.getId() && 21 == p2.getId())
+//					        	System.out.println(event.getBirth() + " " + p.getCode() + ":" + one + " " + p2.getCode() + ":" + two + " = " + res + " orbis:" + p.getOrbis());
+							break;
 						}
 					}
 				}
