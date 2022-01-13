@@ -136,12 +136,12 @@ public class SkyPointAspect {
 
 				AspectTypeService service = new AspectTypeService();
 
-				String positive[] = {"Selena"};
-				if (Arrays.asList(positive).contains(pcode1) ||
-						Arrays.asList(positive).contains(pcode2))
-					type = (AspectType)service.find("POSITIVE");
-
 				if (state) {
+					String positive[] = {"Selena"};
+					if (Arrays.asList(positive).contains(pcode1) ||
+							Arrays.asList(positive).contains(pcode2))
+						type = (AspectType)service.find("POSITIVE");
+
 					String negative[] = {"Lilith", "Kethu"};
 					if (Arrays.asList(negative).contains(pcode1) ||
 							Arrays.asList(negative).contains(pcode2))
