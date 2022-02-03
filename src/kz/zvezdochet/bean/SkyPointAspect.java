@@ -243,9 +243,9 @@ public class SkyPointAspect {
    				if (housable)
 					res = "2 дня";
    			} else if (Arrays.asList(innerPlanets).contains(pcode))
-   				res = housable ? "2 дня" : "2 дня";
+   				res = housable ? "3 дня" : "2 дня";
    			else if (pcode.equals("Mars"))
-   				res = housable ? "2 дня" : "2 дня";
+   				res = housable ? "3 дня" : "2 дня";
    			else if (pcode.equals("Jupiter"))
    				res = housable ? "10 дней" : "5 дней";
    			else if (pcode.equals("Saturn"))
