@@ -1002,14 +1002,25 @@ public class Event extends Model {
 			final String SELENA = "Selena";
 			final String RAKHU = "Rakhu";
 
+			Map<String, Integer> map = planet.getAspectCountMap(); 
+			int good = map.get("POSITIVE");
+			int goodh =	map.get("POSITIVE_HIDDEN");
+			int bad = map.get("NEGATIVE");
+			int badh = map.get("NEGATIVE_HIDDEN");
+			int neutral = map.get("NEUTRAL") + map.get("NEUTRAL_KERNEL") + map.get("NEGATIVE_BELT");
+			int karm = map.get("KARMIC");
+			int heavy = 0; //признак соединения с тяжёлой планетой, из-за которого планета не м.б. полностью гармоничной
+
 			String pcode = planet.getCode();
 			if (!pcode.equals(LILITH) && !pcode.equals(KETHU)
 					&& !pcode.equals(SELENA)) {
 				List<SkyPointAspect> aspectList = planet.getAspectList();
 				if (null == aspectList)
 					continue;
+
 				for (SkyPointAspect aspect : aspectList) {
-					String pcode2 = aspect.getSkyPoint2().getCode();
+					SkyPoint planet2 = aspect.getSkyPoint2();
+					String pcode2 = planet2.getCode();
 					if (pcode.equals(pcode2))
 						continue;
 					if (!aspect.getSkyPoint1().getCode().equals(pcode)
@@ -1026,26 +1037,20 @@ public class Event extends Model {
 							planet.setSelened();
 						else if (pcode2.equals(RAKHU))
 							planet.setRakhued();
+						else if (planet2.getId() > 28)
+							heavy++;
 					}
 				}
 			}
 
 			//сравнение количества хороших и плохих аспектов
-			Map<String, Integer> map = planet.getAspectCountMap(); 
-			int good = map.get("POSITIVE");
-			int goodh =	map.get("POSITIVE_HIDDEN");
-			int bad = map.get("NEGATIVE");
-			int badh = map.get("NEGATIVE_HIDDEN");
-			int neutral = map.get("NEUTRAL") + map.get("NEUTRAL_KERNEL") + map.get("NEGATIVE_BELT");
-			int karm = map.get("KARMIC");
-
 			if (bad > 0
 					&& (0 == good + goodh)
 					&& (0 == neutral
 						|| (1 == neutral && (planet.isKethued() || planet.isLilithed())))
 						|| (2 == neutral && planet.isKethued() && planet.isLilithed()))
 				planet.setDamaged(true);
-			else if (0 == bad + badh + karm
+			else if (0 == bad + badh + karm + heavy
 					&& good > 0
 					&& !planet.isKethued()
 					&& !planet.isLilithed())
