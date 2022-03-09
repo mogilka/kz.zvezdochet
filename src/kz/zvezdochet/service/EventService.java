@@ -96,7 +96,7 @@ public class EventService extends ModelService {
 		try {
 			String sql;
 			if (null == model.getId())
-				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
 					"name = ?, " +
@@ -117,10 +117,9 @@ public class EventService extends ModelService {
 					"fancy = ?, " +
 					"dst = ?, " +
 					"finalplaceid = ?, " +
-					"backid = ?, " +
+					"top = ?, " +
 					"moondayid = ?, " +
 					"cardkindid = ?, " +
-					"tabloid = ?, " +
 					"biography = ?, " +
 					"conversation = ?, " +
 					"updated_at = ?, " +
@@ -165,7 +164,7 @@ public class EventService extends ModelService {
 			else
 				ps.setNull(18, java.sql.Types.NULL);
 
-			ps.setLong(19, event.getBackid());
+			ps.setLong(19, 0);
 
 			if (event.getMoondayid() > 0)
 				ps.setLong(20, event.getMoondayid());
@@ -177,20 +176,15 @@ public class EventService extends ModelService {
 			else
 				ps.setNull(21, java.sql.Types.NULL);
 
-			if (event.getTabloid() > 0)
-				ps.setLong(22, event.getTabloid());
-			else
-				ps.setNull(22, java.sql.Types.NULL);
-
-			ps.setString(23, event.getBio());
-			ps.setString(24, event.getConversation());
-			ps.setString(25, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
-			ps.setString(26, event.getOptions());
-			ps.setString(27, event.getName_en());
-			ps.setString(28, event.getComment_en());
+			ps.setString(22, event.getBio());
+			ps.setString(23, event.getConversation());
+			ps.setString(24, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
+			ps.setString(25, event.getOptions());
+			ps.setString(26, event.getName_en());
+			ps.setString(27, event.getComment_en());
 
 			if (model.getId() != null)
-				ps.setLong(29, model.getId());
+				ps.setLong(28, model.getId());
 			System.out.println(ps);
 
 			result = ps.executeUpdate();
@@ -264,7 +258,6 @@ public class EventService extends ModelService {
 			event.setAccuracy(rs.getString("accuracy"));
 		event.setDate(DateUtil.getDatabaseDateTime(rs.getString("date")));
 		event.setFancy(rs.getString("fancy"));
-		event.setBackid(rs.getLong("backid"));
 		event.setDst(rs.getDouble("dst"));
 		s = rs.getString("calculated");
 		event.setCalculated(s.equals("1") ? true : false);
@@ -1101,37 +1094,6 @@ and e.id <> 31
 and e.celebrity = 1 
 order by year(initialdate)
  */
-	}
-
-	/**
-	 * Поиск связанного события для импорта
-	 * @param id идентификатор серверного события
-	 * @return событие
-	 * @throws DataAccessException
-	 */
-	public Model findBack(Long id) throws DataAccessException {
-		if (null == id) return null;
-		Model model = create();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-		try {
-			String sql = "select * from " + tableName + " where backid = ?";
-			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			ps.setLong(1, id);
-			rs = ps.executeQuery();
-			if (rs.next()) 
-				model = init(rs, model);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try { 
-				if (rs != null) rs.close();
-				if (ps != null) ps.close();
-			} catch (SQLException e) { 
-				e.printStackTrace(); 
-			}
-		}
-		return model;
 	}
 
 	/**

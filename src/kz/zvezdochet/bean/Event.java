@@ -441,18 +441,6 @@ public class Event extends Model {
 	}
 
 	/**
-	 * Идентификатор обратной совместимости для импорта знаменитостей с сайта
-	 */
-	private long backid;
-
-	public long getBackid() {
-		return backid;
-	}
-	public void setBackid(long backid) {
-		this.backid = backid;
-	}
-
-	/**
 	 * Конвертация параметров JSON в объект события
 	 * @param json объект JSON
 	 */
@@ -486,13 +474,7 @@ public class Event extends Model {
 			setAccuracy(json.get("accuracy").toString());
 			setDate(DateUtil.getDatabaseDateTime(json.getString("date")));
 			setFancy(json.getString("fancy"));
-			value = json.get("backid");
-			if (value != JSONObject.NULL)
-				setBackid(json.getLong("backid"));
 			setDst(json.getDouble("dst"));
-			value = json.get("tabloid");
-			if (value != JSONObject.NULL)
-				setTabloid(json.getLong("tabloid"));
 //			recalculable = true;
 			setModified(DateUtil.getDatabaseDateTime(json.getString("updated_at")));			
 		} catch (Exception e) {
@@ -628,18 +610,6 @@ public class Event extends Model {
 	 */
 	public boolean isHousable() {
 		return rectification < 3;
-	}
-
-	/**
-	 * Идентификатор спортсмена в Tablo.moe
-	 */
-	private long tabloid;
-
-	public long getTabloid() {
-		return tabloid;
-	}
-	public void setTabloid(long tabloid) {
-		this.tabloid = tabloid;
 	}
 
 	/**

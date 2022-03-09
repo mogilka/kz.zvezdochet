@@ -40,11 +40,11 @@ public class ImportRunHandler extends Handler {
 			int imported = 0, updated = 0, canceled = 0;
 			EventService service = new EventService();
 			for (Event event : events) {
-				Event back = (Event)service.findBack(event.getId());
+				Event back = null; // (Event)service.findBack(event.getId());
 				if (null == back || null == back.getId() || 0 == back.getId()) { //запись по backid не найдена
 					back = (Event)service.find(event.getId());
 					if (null == back.getId()) { //запись по id тоже не найдена, создаём
-						event.setBackid(event.getId());
+						//event.setBackid(event.getId());
 						event.setId(null);
 						event.calc(false);
 						event.setCalculated(true);
@@ -57,7 +57,7 @@ public class ImportRunHandler extends Handler {
 						String idate = DateUtil.formatCustomDateTime(event.getBirth(), "yyyy-MM-dd");
 						//если даты совпадают, перезаписываем, иначе отменяем и пишем об этом в лог
 						if (idate.equals(bdate)) {
-							event.setBackid(event.getId());
+							//event.setBackid(event.getId());
 							event.calc(false);
 							event.setCalculated(true);
 							//event.setRecalculable(true);
@@ -76,7 +76,7 @@ public class ImportRunHandler extends Handler {
 					String idate = DateUtil.formatCustomDateTime(event.getBirth(), "yyyy-MM-dd");
 					//если даты совпадают, перезаписываем, иначе отменяем и пишем об этом в лог
 					if (idate.equals(bdate)) {
-						event.setBackid(event.getId());
+						//event.setBackid(event.getId());
 						event.calc(false);
 						event.setCalculated(true);
 						//event.setRecalculable(true);
@@ -85,7 +85,7 @@ public class ImportRunHandler extends Handler {
 						log.append("вместо: " + back.getId() + " " + back.toLog() + "\n");
 						++updated;
 					} else {
-						back.setBackid(0);
+						//back.setBackid(0);
 						back.save();
 						log.append("Новый не соответствует: " + event.getId() + " " + event.toLog() + "\n\t");
 						log.append("Старому: " + back.getId() + " " + back.toLog() + "\n");
