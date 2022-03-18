@@ -961,17 +961,14 @@ order by year(initialdate)
 	 * @return список событий
 	 * @throws DataAccessException
 	 */
-	public List<Model> findRecent(boolean celebrity) throws DataAccessException {
+	public List<Model> findRecent() throws DataAccessException {
         List<Model> list = new ArrayList<Model>();
         PreparedStatement ps = null;
         ResultSet rs = null;
 		try {
 			//select * from events where celebrity = 0 order by updated_at desc limit 30
-			String sql = "select * from " + tableName + 
-				" where celebrity = ? " +
-				"order by updated_at desc limit 30";
+			String sql = "select * from " + tableName + " order by updated_at desc limit 30";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			ps.setInt(1, celebrity ? 1 : 0);
 			rs = ps.executeQuery();
 			while (rs.next())
 				list.add(init(rs, null));
