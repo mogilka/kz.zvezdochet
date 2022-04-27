@@ -368,7 +368,7 @@ public class Event extends Model {
 	  	  	String time = DateUtil.formatCustomDateTime(birth, DateUtil.stf.toPattern());
 
 	  	  	if (cachable) {
-	  	  		String cachekey = calcplace.getId() + "_" + DateUtil.formatCustomDateTime(birth, new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").toPattern());
+	  	  		String cachekey = calcplace.getId() + "_" + calcplace.getZone() + "_" + (calcplace.isDst() ? 1 : 0) + "_" + DateUtil.formatCustomDateTime(birth, new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").toPattern());
 
 //		  	  	IPreferenceStore preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, "kz.zvezdochet.runner");
 //		        String dir = preferenceStore.getString(CACHE_DIR_PATH);
