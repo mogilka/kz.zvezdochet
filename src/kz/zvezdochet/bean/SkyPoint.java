@@ -393,6 +393,7 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
 	 * @param house1 координата дома
 	 * @param house2 координата следующего дома
 	 * @param coord координата объекта
+	 * @return true - если координата находится внутри указанном интервале
 	 */ 
 	public static boolean getHouse(double house1, double house2, double coord) {
 		//если границы домов находятся по разные стороны нуля

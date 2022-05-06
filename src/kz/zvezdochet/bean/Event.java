@@ -1208,9 +1208,10 @@ public class Event extends Model {
 	/**
 	 * Расчёт ингрессий на дату
 	 * @param today транзитное событие
+	 * @param term true - с терминами
 	 * @return список ингрессий
 	 */
-	public Map<String, List<Object>> initIngresses(Event today) {
+	public Map<String, List<Object>> initIngresses(Event today, boolean term) {
 		Map<String, List<Object>> ingressList = new TreeMap<>();
 		try {
 			for (String key : Ingress.getKeys())
@@ -1222,8 +1223,8 @@ public class Event extends Model {
 			Collection<Planet> planets2 = planetList.values();
 			Map<Long, Planet> tplanets = today.getPlanets();
 
-			List<SkyPointAspect> easpects = initTransits(today);
-			List<SkyPointAspect> easpects2 = initTransits(yesterday);
+			List<SkyPointAspect> easpects = initTransits(today, term);
+			List<SkyPointAspect> easpects2 = initTransits(yesterday, term);
 
 			boolean housable = isHousable();
 			List<SkyPointAspect> easpectsh = housable ? initHousesTransits(today) : null;
@@ -1646,10 +1647,11 @@ public class Event extends Model {
 	/**
 	 * Расчёт транзитов
 	 * @param event транзитное событие
+	 * @param term true - с терминами
 	 * @return список транзитов планет
 	 * @throws DataAccessException
 	 */
-    private List<SkyPointAspect> initTransits(Event event) throws DataAccessException {
+    private List<SkyPointAspect> initTransits(Event event, boolean term) throws DataAccessException {
 		List<SkyPointAspect> spas = new ArrayList<SkyPointAspect>();
 		try {
 			Collection<Planet> planets = event.getPlanets().values();
@@ -1657,6 +1659,11 @@ public class Event extends Model {
 			List<Model> aspects = new AspectService().getMajorList();
 
 			for (Planet p : planets) {
+				if (term) {
+					p.setSign(SkyPoint.getSign(p.getLongitude(), getBirthYear()));
+					p.setHouse(getHouse(p.getLongitude()));
+				}
+
 				String pcode = p.getCode();
 				for (Planet p2 : planets2) {
 					String pcode2 = p2.getCode();
@@ -1856,5 +1863,22 @@ public class Event extends Model {
 		return calendar.get(Calendar.HOUR_OF_DAY) > 0
 			|| calendar.get(Calendar.MINUTE) > 0
 			|| calendar.get(Calendar.SECOND) > 0;
+	}
+
+	/**
+	 * Поиск дома, в котором находится координата
+	 * @param coord координата
+	 * @return House астрологический дом
+	 */
+	private House getHouse(double coord) {
+		if (null == houseList)
+			initHouseList();
+		for (House house : houseList.values()) {
+			long h = (house.getNumber() == houseList.size()) ? 142 : house.getId() + 1;
+			House house2 = houseList.get(h);
+			if (SkyPoint.getHouse(house.getLongitude(), house2.getLongitude(), coord))
+				return house;
+		}
+		return null;
 	}
 }
