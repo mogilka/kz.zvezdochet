@@ -11,7 +11,7 @@ import swisseph.SwissLib;
 public class Swetest {
 
   	public static void main(String[] argv) {
-  		argv = new String[] {"08.12.2007", "08:08:08", "6", "43.15", "76.55"};
+  		argv = new String[] {"25.08.1981", "20:10:48", "4", "57.35", "39.53"};
   		new Swetest().calculate(argv);
   		// $ java Swetest 08.12.2007 08:08:08 6 43.15 76.55
   	}
