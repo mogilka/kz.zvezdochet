@@ -1,7 +1,6 @@
 package kz.zvezdochet.handler;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -39,10 +38,9 @@ public class ImportCheckHandler extends Handler {
 			partid = dict;
 			MPart part = partService.findPart(dict);
 			ImportPart importPart = (ImportPart)part.getObject();
-			Date date = importPart.getDate();
-			long time = date.getTime() / 1000;
+			long id = importPart.getObject();
 
-			url = String.format(url, time, 100);
+			url = String.format(url, id, 2);
 			System.out.println(url);
 			String res = IOUtil.getUriContent(url);
 			if (null == res) {
@@ -72,6 +70,9 @@ public class ImportCheckHandler extends Handler {
 			}
 		    importPart.setData(models);
 			updateStatus("Поиск завершён", false);
+/*
+{"success":true,"message":"","models":[{"ID":37730,"name":"Сауль Альварес","Gender":0,"Placeid":1131,"Zone":-6,"Celebrity":1,"Comment":"боксёр","Rectification":2,"RightHanded":1,"InitialDate":"1990-07-18 00:00:00","FinalDate":null,"date":"2015-06-27 23:25:11","human":1,"accuracy":null,"userid":null,"calculated":1,"fancy":"saul-alvares","dst":0,"finalplaceid":null,"top":0,"moondayid":null,"cardkindid":null,"updated_at":"2022-04-23 05:04:37","biography":"","conversation":"","options":null,"name_en":"Saul Alvarez\n","comment_en":"boxer\n"}]}
+ */
 		} catch (Exception e) {
 			DialogUtil.alertError(e);
 			e.printStackTrace();
