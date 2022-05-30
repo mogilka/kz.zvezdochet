@@ -121,6 +121,7 @@ public class EventPart extends ModelPart implements ICalculable {
 	private Button btTerm;
 	private Text txCurrentPlace;
 	private Button btAccuracy;
+	private ComboViewer cvHouseSystem;
 
 	private CosmogramComposite cmpCosmogram;
 	private Group grPlanets;
@@ -243,6 +244,10 @@ public class EventPart extends ModelPart implements ICalculable {
 		lb = new Label(secEvent, SWT.NONE);
 		lb.setText("Термины");
 		btTerm = new Button(secEvent, SWT.BORDER | SWT.CHECK);
+
+		lb = new Label(secEvent, SWT.CENTER);
+		lb.setText("Система домов");
+		cvHouseSystem = new ComboViewer(secEvent, SWT.BORDER | SWT.READ_ONLY);
 
 //		secEvent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		tabfolder = new CTabFolder(secEvent, SWT.BORDER);
@@ -674,7 +679,9 @@ public class EventPart extends ModelPart implements ICalculable {
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			grab(true, false).applyTo(cvRectification.getCombo());
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
-			span(3, 1).grab(true, false).applyTo(txAccuracy);
+			span(2, 1).grab(true, false).applyTo(cvHouseSystem.getCombo());
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
+			grab(true, false).applyTo(txAccuracy);
 
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			span(4, 1).grab(true, false).applyTo(txPlace);
@@ -793,6 +800,30 @@ public class EventPart extends ModelPart implements ICalculable {
 		cvDST.setInput(dst.values());
 		setPlaces();
 
+		Map<String, String> hs = new HashMap<String, String>() {
+			private static final long serialVersionUID = -5113102696821269969L;
+			{
+		        put("P", "Placidus");
+		        put("K", "Koch");
+		        put("O", "Porphyrius");
+		        put("R", "Regiomontanus");
+		        put("C", "Campanus");
+		        put("E", "Equal (cusp 1 is Ascendant)");
+		        put("V", "Vehlow equal (Asc. in middle of house 1)");
+		        put("W", "Whole sign");
+		        put("X", "axial rotation system / meridian system / zariel");
+		        put("H", "azimuthal or horizontal system");
+		        put("T", "Polich/Page (“topocentric” system)");
+		        put("B", "Alcabitus");
+		        put("M", "Morinus");
+		        put("U", "Krusinski-Pisa");
+		        put("G", "Gauquelin sector");
+		        put("Y", "APC houses");
+		    }
+		};
+		cvHouseSystem.setContentProvider(new ArrayContentProvider());
+		cvHouseSystem.setInput(hs.values());
+		
 		try {
 			cvMoonday.setContentProvider(new ArrayContentProvider());
 			cvMoonday.setLabelProvider(new MoonDayLabelProvider());
@@ -901,7 +932,16 @@ public class EventPart extends ModelPart implements ICalculable {
 			if (kind.getId() > 0)
 				event.setCardkindid(kind.getId());
 		}
-	}
+
+		selection = (IStructuredSelection)cvHouseSystem.getSelection();
+		if (selection.getFirstElement() != null) {
+			Object object = selection.getFirstElement();
+			System.out.println(object);
+			//String system = (String)selection.getFirstElement();
+			//event.setHouseSystem(system);
+			System.out.println();
+		}
+}
 	
 	@Override
 	protected void syncView() {
