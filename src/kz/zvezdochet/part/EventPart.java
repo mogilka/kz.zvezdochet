@@ -679,8 +679,6 @@ public class EventPart extends ModelPart implements ICalculable {
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			grab(true, false).applyTo(cvRectification.getCombo());
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
-			span(2, 1).grab(true, false).applyTo(cvHouseSystem.getCombo());
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			grab(true, false).applyTo(txAccuracy);
 
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
@@ -713,6 +711,8 @@ public class EventPart extends ModelPart implements ICalculable {
 			grab(false, false).applyTo(btTerm);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			grab(true, false).applyTo(txOptions);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
+			grab(true, false).applyTo(cvHouseSystem.getCombo());
 
 		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.FILL).
 			hint(514, 514).grab(true, false).applyTo(cmpCosmogram);
@@ -800,29 +800,26 @@ public class EventPart extends ModelPart implements ICalculable {
 		cvDST.setInput(dst.values());
 		setPlaces();
 
-		Map<String, String> hs = new HashMap<String, String>() {
-			private static final long serialVersionUID = -5113102696821269969L;
-			{
-		        put("P", "Placidus");
-		        put("K", "Koch");
-		        put("O", "Porphyrius");
-		        put("R", "Regiomontanus");
-		        put("C", "Campanus");
-		        put("E", "Equal (cusp 1 is Ascendant)");
-		        put("V", "Vehlow equal (Asc. in middle of house 1)");
-		        put("W", "Whole sign");
-		        put("X", "axial rotation system / meridian system / zariel");
-		        put("H", "azimuthal or horizontal system");
-		        put("T", "Polich/Page (“topocentric” system)");
-		        put("B", "Alcabitus");
-		        put("M", "Morinus");
-		        put("U", "Krusinski-Pisa");
-		        put("G", "Gauquelin sector");
-		        put("Y", "APC houses");
-		    }
+		String[] hs = {
+		        "P",
+		        "K",
+		        "O",
+		        "R",
+		        "C",
+		        "E",
+		        "V",
+		        "W",
+		        "X",
+		        "H",
+		        "T",
+		        "B",
+		        "M",
+		        "U",
+		        "G",
+		        "Y"
 		};
 		cvHouseSystem.setContentProvider(new ArrayContentProvider());
-		cvHouseSystem.setInput(hs.values());
+		cvHouseSystem.setInput(hs);
 		
 		try {
 			cvMoonday.setContentProvider(new ArrayContentProvider());
@@ -935,11 +932,8 @@ public class EventPart extends ModelPart implements ICalculable {
 
 		selection = (IStructuredSelection)cvHouseSystem.getSelection();
 		if (selection.getFirstElement() != null) {
-			Object object = selection.getFirstElement();
-			System.out.println(object);
-			//String system = (String)selection.getFirstElement();
-			//event.setHouseSystem(system);
-			System.out.println();
+			String system = (String)selection.getFirstElement();
+			event.setHouseSystem(system.charAt(0));
 		}
 }
 	

@@ -55,6 +55,7 @@ public class Event extends Model {
 		super();
 		name = "";
 		birth = new Date();
+		dst = 0;
 	}
 
 	/**
@@ -368,7 +369,7 @@ public class Event extends Model {
 	  	  	String time = DateUtil.formatCustomDateTime(birth, DateUtil.stf.toPattern());
 
 	  	  	if (cachable) {
-	  	  		String cachekey = calcplace.getId() + "_" + calcplace.getZone() + "_" + (calcplace.isDst() ? 1 : 0) + "_" + DateUtil.formatCustomDateTime(birth, new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").toPattern());
+	  	  		String cachekey = calcplace.getId() + "_" + calcplace.getZone() + "_" + (calcplace.isDst() ? 1 : 0) + "_" + DateUtil.formatCustomDateTime(birth, new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").toPattern()) + "_" + houseSystem;
 
 //		  	  	IPreferenceStore preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, "kz.zvezdochet.runner");
 //		        String dir = preferenceStore.getString(CACHE_DIR_PATH);
@@ -1552,7 +1553,7 @@ public class Event extends Model {
 		  		 * Y	APC houses
 		  		 */
 		  		if (isHousable()) {
-			  		char hsys = 'P';
+			  		char hsys = houseSystem;
 	
 			  		sb = new StringBuffer(new String(serr));
 			  		//{ for houses: ecliptic obliquity and nutation }
@@ -1880,5 +1881,17 @@ public class Event extends Model {
 				return house;
 		}
 		return null;
+	}
+
+	/**
+	 * Система домов для расчёта
+	 */
+	private char houseSystem = 'P';
+
+	public char getHouseSystem() {
+		return houseSystem;
+	}
+	public void setHouseSystem(char houseSystem) {
+		this.houseSystem = houseSystem;
 	}
 }
