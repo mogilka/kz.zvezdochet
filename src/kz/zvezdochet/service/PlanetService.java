@@ -11,6 +11,7 @@ import java.util.Map;
 import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.bean.Sign;
+import kz.zvezdochet.bean.SkyPoint;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.DictionaryService;
@@ -145,13 +146,13 @@ public class PlanetService extends DictionaryService {
 
 	/**
 	 * Поиск позиции планеты в знаках Зодиака
-	 * @param planet планета
+	 * @param skypoint небесная точка
 	 * @param type тип позиции планеты в знаке
 	 * @param daily true|false - дневное|ночное рождение
 	 * @return знак Зодиака
 	 * @throws DataAccessException
 	 */
-	public Sign getSignPosition(Planet planet, String type, boolean daily) throws DataAccessException {
+	public Sign getSignPosition(SkyPoint skypoint, String type, boolean daily) throws DataAccessException {
         PreparedStatement ps = null;
         ResultSet rs = null;
 		String sql;
@@ -161,7 +162,7 @@ public class PlanetService extends DictionaryService {
 				"where p.planetid = ? " +
 					"and t.code like ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			ps.setLong(1, planet.getId());
+			ps.setLong(1, skypoint.getId());
 			ps.setString(2, type);
 			rs = ps.executeQuery();
 			if (rs.next()) {
@@ -199,13 +200,13 @@ public class PlanetService extends DictionaryService {
 
 	/**
 	 * Поиск позиции планеты в домах
-	 * @param planet планета
+	 * @param skypoint небесная точка
 	 * @param type тип позиции планеты в доме
 	 * @param daily true|false - дневное|ночное рождение
 	 * @return массив астрологических домов
 	 * @throws DataAccessException
 	 */
-	public Map<Long, House> getHousePosition(Planet planet, String type, boolean daily) throws DataAccessException {
+	public Map<Long, House> getHousePosition(SkyPoint skypoint, String type, boolean daily) throws DataAccessException {
 		Map<Long, House> list = new HashMap<Long, House>();
 		HouseService service = new HouseService();
         PreparedStatement ps = null;
@@ -218,7 +219,7 @@ public class PlanetService extends DictionaryService {
 					"and t.code like ? " +
 					"and p.day = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			ps.setLong(1, planet.getId());
+			ps.setLong(1, skypoint.getId());
 			ps.setString(2, type);
 			ps.setBoolean(3, daily);
 			rs = ps.executeQuery();

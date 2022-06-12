@@ -35,7 +35,6 @@ import kz.zvezdochet.service.EventService;
 import kz.zvezdochet.service.HouseService;
 import kz.zvezdochet.service.PlaceService;
 import kz.zvezdochet.service.PlanetService;
-import kz.zvezdochet.service.PositionTypeService;
 import kz.zvezdochet.service.StarService;
 import kz.zvezdochet.sweph.Activator;
 import kz.zvezdochet.util.SkyPointComparator;
@@ -924,39 +923,9 @@ public class Event extends Model {
 	 */
 	private void initPlanetPositions() {
 		try {
-			PlanetService service = new PlanetService();
-			List<Model> positions = new PositionTypeService().getList();
 			Collection<Planet> planets = planetList.values();
-
-			for (Planet planet : planets) {
-//				System.out.println(planet);
-				for (Model type : positions) {
-					PositionType pType = (PositionType)type;
-					String pCode = pType.getCode();
-
-					if (planet.getSign() != null) {
-						Sign sign = service.getSignPosition(planet, pCode, true);
-						if (sign != null && sign.getId() == planet.getSign().getId()) {
-							switch (pCode) {
-								case "HOME": planet.setSignHome(); break;
-								case "EXALTATION": planet.setSignExaltated(); break;
-								case "EXILE": planet.setSignExile(); break;
-								case "DECLINE": planet.setSignDeclined(); break;
-							}
-						}
-					}
-					if (null == planet.getHouse()) continue;
-					Map<Long, House> houses = service.getHousePosition(planet, pCode, true);
-					if (houses != null && houses.containsKey(planet.getHouse().getId())) {
-						switch (pCode) {
-							case "HOME": planet.setHouseHome(); break;
-							case "EXALTATION": planet.setHouseExaltated(); break;
-							case "EXILE": planet.setHouseExile(); break;
-							case "DECLINE": planet.setHouseDeclined(); break;
-						}
-					}
-				}
-			}		
+			for (Planet planet : planets)
+				planet.initPositions();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1663,6 +1632,7 @@ public class Event extends Model {
 				if (term) {
 					p.setSign(SkyPoint.getSign(p.getLongitude(), getBirthYear()));
 					p.setHouse(getHouse(p.getLongitude()));
+					p.initPositions();
 				}
 
 				String pcode = p.getCode();

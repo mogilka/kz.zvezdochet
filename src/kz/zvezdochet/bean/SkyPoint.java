@@ -10,6 +10,8 @@ import org.eclipse.swt.graphics.Color;
 import kz.zvezdochet.core.bean.DiagramObject;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
+import kz.zvezdochet.service.PlanetService;
+import kz.zvezdochet.service.PositionTypeService;
 import kz.zvezdochet.service.SignService;
 import kz.zvezdochet.util.ISkyPoint;
 
@@ -508,4 +510,137 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
 			aspectHouseList = new ArrayList<SkyPointAspect>();
 		return aspectHouseList;
 	}
+
+	/**
+	 * Инициализация позиций
+	 */
+	public void initPositions() {
+		try {
+			PlanetService service = new PlanetService();
+			List<Model> positions = new PositionTypeService().getList();
+
+			for (Model type : positions) {
+				PositionType pType = (PositionType)type;
+				String pCode = pType.getCode();
+
+				if (sign != null) {
+					Sign s = service.getSignPosition(this, pCode, true);
+					if (s != null && s.getId() == sign.getId()) {
+						switch (pCode) {
+							case "HOME": setSignHome(); break;
+							case "EXALTATION": setSignExaltated(); break;
+							case "EXILE": setSignExile(); break;
+							case "DECLINE": setSignDeclined(); break;
+						}
+					}
+				}
+				if (null == house) continue;
+				Map<Long, House> houses = service.getHousePosition(this, pCode, true);
+				if (houses != null && houses.containsKey(this.getHouse().getId())) {
+					switch (pCode) {
+						case "HOME": setHouseHome(); break;
+						case "EXALTATION": setHouseExaltated(); break;
+						case "EXILE": setHouseExile(); break;
+						case "DECLINE": setHouseDeclined(); break;
+					}
+				}
+			}		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Позиции в знаках и домах
+	 */
+	private boolean signHome = false;
+	private boolean signExaltated = false;
+	private boolean signExile = false;
+	private boolean signDeclined = false;
+	
+	private boolean houseHome = false;
+	private boolean houseExaltated = false;
+	private boolean houseExile = false;
+	private boolean houseDeclined = false;
+	
+	public boolean isSignHome() {
+		return signHome;
+	}
+
+	public void setSignHome() {
+		signHome = true;
+		addPoints(1);
+	//	System.out.println(this.getCode() + " is in home sign");
+	}
+	
+	public boolean isSignExaltated() {
+		return signExaltated;
+	}
+	
+	public void setSignExaltated() {
+		signExaltated = true;
+		addPoints(1);
+	//	System.out.println(this.getCode() + " is in exalt sign");
+	}
+	
+	public boolean isSignExile() {
+		return signExile;
+	}
+	
+	public void setSignExile() {
+		signExile = true;
+		addPoints(-1);
+	//	System.out.println(this.getCode() + " is in exile sign");
+	}
+	
+	public boolean isSignDeclined() {
+		return signDeclined;
+	}
+	
+	public void setSignDeclined() {
+		signDeclined = true;
+		addPoints(-1);
+	//	System.out.println(this.getCode() + " is in decline sign");
+	}
+	
+	public boolean isHouseHome() {
+		return houseHome;
+	}
+	
+	public void setHouseHome() {
+		houseHome = true;
+		addPoints(1);
+	//	System.out.println(this.getCode() + " is in home house");
+	}
+	
+	public boolean isHouseExaltated() {
+		return houseExaltated;
+	}
+	
+	public void setHouseExaltated() {
+		houseExaltated = true;
+		addPoints(1);
+	//	System.out.println(this.getCode() + " is in exalt house");
+	}
+	
+	public boolean isHouseExile() {
+		return houseExile;
+	}
+	
+	public void setHouseExile() {
+		houseExile = true;
+		addPoints(-1);
+	//	System.out.println(this.getCode() + " is in exile house");
+	}
+	
+	public boolean isHouseDeclined() {
+		return houseDeclined;
+	}
+	
+	public void setHouseDeclined() {
+		houseDeclined = true;
+		addPoints(-1);
+	//	System.out.println(this.getCode() + " is in decline house");
+	}
+
 }
