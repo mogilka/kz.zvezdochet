@@ -1700,6 +1700,13 @@ public class Event extends Model {
 					double two = p2.getLongitude();
 
 					double res = CalcUtil.getDifference(p.getLongitude(), p2.getLongitude());
+					if (res > 170) {
+						if (p.isMain() && p.getSpeedLongitude() >= 0)
+							continue;
+						if (p.isFictitious())
+							continue;
+					}
+
 					if ((res >= 179 && res < 180)
 							|| CalcUtil.compareAngles(one, two))
 						++res;
