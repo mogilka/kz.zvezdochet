@@ -466,7 +466,7 @@ public class Event extends Model {
 				setPlaceid(json.getLong("Placeid"));
 			value = json.get("finalplaceid");
 			if (value != JSONObject.NULL)
-				setFinalplace((Place)new PlaceService().find((long)value));
+				setFinalplace((Place)new PlaceService().find(Long.parseLong(value.toString())));
 			value = json.get("Zone");
 			if (value != JSONObject.NULL)
 				setZone(json.getDouble("Zone"));
