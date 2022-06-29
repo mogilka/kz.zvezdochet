@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1010,8 +1011,10 @@ public class EventPart extends ModelPart implements ICalculable {
 		txGreenwich.setText(""); //$NON-NLS-1$
 		txBio.setText(""); //$NON-NLS-1$
 		txComment.setText(""); //$NON-NLS-1$
-//		dtBirth.setSelection(new Date());
-//		dtDeath.setSelection(null);
+		GregorianCalendar calendar = new GregorianCalendar();
+		dtBirth.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+		dtBirth2.setTime(0,0,0);
+		dtDeath.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 		cvGender.setSelection(null);
 		cvHand.setSelection(null);
 		cvRectification.setSelection(null);
