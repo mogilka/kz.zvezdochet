@@ -363,4 +363,17 @@ public class AspectConfiguration extends TextGenderDictionary {
 	public void setCross(boolean cross) {
 		this.cross = cross;
 	}
+
+	/**
+	 * Очки
+	 */
+	private int points;
+
+	public int getPoints() {
+		return points;
+	}
+
+	public void setPoints(int points) {
+		this.points = points;
+	}
 }

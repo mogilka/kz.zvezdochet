@@ -49,8 +49,10 @@ public class EventConfigurationService extends ModelService {
 		type.setRightHorn(rs.getString("righthorn"));
 		type.setHouseid(rs.getLong("houseid"));
 		type.setText(rs.getString("text"));
+		type.setLevel(rs.getInt("level"));
 
-		AspectConfiguration conf = (AspectConfiguration)new AspectConfigurationService().find(rs.getLong("confid"));
+		long confid = rs.getLong("confid");
+		AspectConfiguration conf = (AspectConfiguration)new AspectConfigurationService().find(confid);
 		conf.setVertex(getPlanets(type.getVertex(), event));
 		conf.setBase(getPlanets(type.getBase(), event));
 		conf.setLeftFoot(getPlanets(type.getLeftFoot(), event));
@@ -61,6 +63,8 @@ public class EventConfigurationService extends ModelService {
 		conf.setRightHorn(getPlanets(type.getRightHorn(), event));
 		conf.setData(type.getHouseid());
 		conf.setDescription(type.getText());
+		if (type.getLevel() > 0)
+			conf.setPoints(type.getLevel());
 		type.setConf(conf);
 		return type;
 	}
