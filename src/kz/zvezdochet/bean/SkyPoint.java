@@ -10,8 +10,8 @@ import org.eclipse.swt.graphics.Color;
 import kz.zvezdochet.core.bean.DiagramObject;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
-import kz.zvezdochet.service.PlanetService;
-import kz.zvezdochet.service.PositionTypeService;
+import kz.zvezdochet.service.PlanetHousePositionService;
+import kz.zvezdochet.service.PlanetSignPositionService;
 import kz.zvezdochet.service.SignService;
 import kz.zvezdochet.util.ISkyPoint;
 
@@ -516,35 +516,30 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
 	 */
 	public void initPositions() {
 		try {
-			PlanetService service = new PlanetService();
-			List<Model> positions = new PositionTypeService().getList();
-
-			for (Model type : positions) {
-				PositionType pType = (PositionType)type;
-				String pCode = pType.getCode();
-
-				if (sign != null) {
-					Sign s = service.getSignPosition(this, pCode, true);
-					if (s != null && s.getId() == sign.getId()) {
-						switch (pCode) {
-							case "HOME": setSignHome(); break;
-							case "EXALTATION": setSignExaltated(); break;
-							case "EXILE": setSignExile(); break;
-							case "DECLINE": setSignDeclined(); break;
-						}
+			if (sign != null) {
+				PlanetSignPositionService service = new PlanetSignPositionService();
+				PlanetSignPosition s = service.find(this);
+				if (s != null) {
+					switch (s.getType().getCode()) {
+						case "HOME": setSignHome(); break;
+						case "EXALTATION": setSignExaltated(); break;
+						case "EXILE": setSignExile(); break;
+						case "DECLINE": setSignDeclined(); break;
 					}
 				}
-				if (null == house) continue;
-				Map<Long, House> houses = service.getHousePosition(this, pCode, true);
-				if (houses != null && houses.containsKey(this.getHouse().getId())) {
-					switch (pCode) {
+			}
+			if (house != null) {
+				PlanetHousePositionService service = new PlanetHousePositionService();
+				PlanetHousePosition s = service.find(this);
+				if (s != null) {
+					switch (s.getType().getCode()) {
 						case "HOME": setHouseHome(); break;
 						case "EXALTATION": setHouseExaltated(); break;
 						case "EXILE": setHouseExile(); break;
 						case "DECLINE": setHouseDeclined(); break;
 					}
 				}
-			}		
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

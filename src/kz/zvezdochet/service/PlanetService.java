@@ -4,14 +4,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import kz.zvezdochet.bean.House;
 import kz.zvezdochet.bean.Planet;
-import kz.zvezdochet.bean.Sign;
-import kz.zvezdochet.bean.SkyPoint;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.DictionaryService;
@@ -145,102 +140,6 @@ public class PlanetService extends DictionaryService {
 	}
 
 	/**
-	 * Поиск позиции планеты в знаках Зодиака
-	 * @param skypoint небесная точка
-	 * @param type тип позиции планеты в знаке
-	 * @param daily true|false - дневное|ночное рождение
-	 * @return знак Зодиака
-	 * @throws DataAccessException
-	 */
-	public Sign getSignPosition(SkyPoint skypoint, String type, boolean daily) throws DataAccessException {
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-		String sql;
-		try {
-			sql = "select p.signid from " + getSignPositionTable() + " p " +
-				"inner join " + new PositionTypeService().getTableName() + " t on p.typeid = t.id " +
-				"where p.planetid = ? " +
-					"and t.code like ?";
-			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			ps.setLong(1, skypoint.getId());
-			ps.setString(2, type);
-			rs = ps.executeQuery();
-			if (rs.next()) {
-				Long id = rs.getLong(1);
-				return (Sign)new SignService().find(id);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try { 
-				if (rs != null) rs.close();
-				if (ps != null) ps.close();
-			} catch (SQLException e) { 
-				e.printStackTrace(); 
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Возвращает наименование таблицы позиций планет в знаках
-	 * @return наименование ТБД
-	 */
-	private String getSignPositionTable() {
-		return "planetsignposition";
-	}
-
-	/**
-	 * Возвращает наименование таблицы позиций планет в домах
-	 * @return наименование ТБД
-	 */
-	private String getHousePositionTable() {
-		return "planethouseposition";
-	}
-
-	/**
-	 * Поиск позиции планеты в домах
-	 * @param skypoint небесная точка
-	 * @param type тип позиции планеты в доме
-	 * @param daily true|false - дневное|ночное рождение
-	 * @return массив астрологических домов
-	 * @throws DataAccessException
-	 */
-	public Map<Long, House> getHousePosition(SkyPoint skypoint, String type, boolean daily) throws DataAccessException {
-		Map<Long, House> list = new HashMap<Long, House>();
-		HouseService service = new HouseService();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-		String sql;
-		try {
-			sql = "select p.houseid from " + getHousePositionTable() + " p " +
-				"inner join " + new PositionTypeService().getTableName() + " t on p.typeid = t.id " +
-				"where p.planetid = ? " +
-					"and t.code like ? " +
-					"and p.day = ?";
-			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			ps.setLong(1, skypoint.getId());
-			ps.setString(2, type);
-			ps.setBoolean(3, daily);
-			rs = ps.executeQuery();
-			while (rs.next()) {
-				Long id = rs.getLong(1);
-				list.put(id, (House)service.find(id));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try { 
-				if (rs != null) rs.close();
-				if (ps != null) ps.close();
-			} catch (SQLException e) { 
-				e.printStackTrace(); 
-			}
-		}
-		return list;
-	}
-
-	/**
 	 * Поиск планеты-управителя знака
 	 * @param signid идентификатор знака Зодиака
 	 * @param daily true|false - дневное|ночное рождение
@@ -253,7 +152,7 @@ public class PlanetService extends DictionaryService {
         ResultSet rs = null;
 		String sql;
 		try {
-			sql = "select p.planetid from " + getSignPositionTable() + " p " +
+			sql = "select p.planetid from " + new PlanetSignPositionService().getTableName() + " p " +
 				"inner join " + new PositionTypeService().getTableName() + " t on p.typeid = t.id " +
 				"where p.signid = ? " +
 					"and t.code like ? " +
