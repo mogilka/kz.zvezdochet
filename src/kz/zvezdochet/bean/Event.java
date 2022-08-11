@@ -295,8 +295,10 @@ public class Event extends Model {
 				service.initStars(this);
 				initHouses();
 			}
-			if (initstat)
+			if (initstat) {
 				initPlanetStatistics();
+				initHouses(); //TODO дубликат!!!
+			}
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
@@ -754,6 +756,8 @@ public class Event extends Model {
 						house.setKethued();
 					else if (planet.getCode().equals("Rakhu"))
 						house.setRakhued();
+					if (planet.isDamaged())
+						house.setDamaged(true);
 				}
 			}
 			house.setPoints(pnum);
@@ -1564,8 +1568,8 @@ public class Event extends Model {
 			if (!cachable) {
 				initSigns();
 				initAspects();
-				initHouses();
 				initPlanetStatistics();
+				initHouses();
 				setRecalculable(true);
 			}
 		} catch (Exception e) {
