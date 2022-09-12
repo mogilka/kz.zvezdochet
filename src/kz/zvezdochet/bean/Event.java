@@ -1148,6 +1148,7 @@ public class Event extends Model {
 				Collection<Planet> planets = planetList.values();
 				Collection<House> houses = houseList.values();
 				for (Planet p : planets) {
+					p.setAspectHouseList(null);
 					for (House h : houses) {
 						double res = CalcUtil.getDifference(p.getLongitude(), h.getLongitude());
 						for (Model realasp : aspects) {
