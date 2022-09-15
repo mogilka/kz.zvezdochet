@@ -369,6 +369,9 @@ public class SkyPointAspect {
 		if (type.getPoints() < 0)
 			return true;
 
+		if (skyPoint2 instanceof House)
+			return false;
+
 		if (texts != null && texts.size() > 0) {
 			TextGenderModel dict = (TextGenderModel)texts.get(0);
 			return !dict.isPositive();
