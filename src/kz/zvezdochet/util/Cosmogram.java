@@ -56,6 +56,7 @@ public class Cosmogram {
 		if (null == gc)
 			gc = new GC(Display.getDefault());
 		paintCard(gc, widget, event, event2);
+		gc.dispose();
 	}
 
 	/**
@@ -92,7 +93,6 @@ public class Cosmogram {
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
-	    gc.dispose(); 
 	    image.dispose();
 	}
 

@@ -115,7 +115,7 @@ public class AspectPart extends ListView {
 			for (House house : houses) {
 				tableColumn2 = new TableColumn(table2, SWT.NONE);
 				String title = CalcUtil.roundTo(house.getLongitude(), 1) + "";
-				tableColumn.setText(title);
+				tableColumn2.setText(title);
 				tableColumn2.setText(house.getCode());
 				tableColumn2.setToolTipText(house.getName());
 
@@ -176,6 +176,7 @@ public class AspectPart extends ListView {
 		super.arrange(parent);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(tableViewer2.getTable());
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(tableViewer3.getTable());
+		sashForm.setWeights(new int[] { 2, 1, 1 });
 	}
 
 	@Override
