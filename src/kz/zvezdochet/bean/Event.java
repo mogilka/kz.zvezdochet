@@ -1648,6 +1648,10 @@ public class Event extends Model {
 					if (pcode2.equals("Kethu") && pcode.equals("Kethu"))
 						continue;
 
+//			        if (19 == p.getId() && 19 == p2.getId()) {
+//			        	//
+//			        } else continue;
+
 					double one = p.getLongitude();
 					double two = p2.getLongitude();
 
@@ -1664,7 +1668,8 @@ public class Event extends Model {
 						if (a.getPlanetid() > 0)
 							continue;
 
-						if (a.isTransit(res, p.getOrbis())) {
+						boolean match = p.isMain() || p.isFictitious() ? a.isTransit(res, p.getOrbis()) : a.isMajorTransit(res, p.getMinOrbis());
+						if (match) {
 							SkyPointAspect aspect = new SkyPointAspect();
 							aspect.setSkyPoint1(p);
 							aspect.setSkyPoint2(p2);
@@ -1673,10 +1678,13 @@ public class Event extends Model {
 							aspect.setRetro(p.isRetrograde());
 							aspect.setExact(true);
 							spas.add(aspect);
-//					        if (28 == p.getId() && 21 == p2.getId())
-//					        	System.out.println(event.getBirth() + " " + p.getCode() + ":" + one + " " + p2.getCode() + ":" + two + " = " + res + " orbis:" + p.getOrbis());
+//					        if (33 == p.getId() && 25 == p2.getId())
+//					        	System.out.println(event.getBirth() + " " + p.getCode() + ":" + one + " " + p2.getCode() + ":" + two + " = " + res + " orbis:" + p.getOrbis() + " >= " + (a.getValue() - res));
 							break;
 						}
+//						if (a.isAspect(res))
+//					        if (24 == p.getId() && 34 == p2.getId())
+//					        	System.out.println(event.getBirth() + " " + p.getCode() + ":" + one + " " + p2.getCode() + ":" + two + " = " + res + " orbis:" + p.getOrbis() + " >= " + (a.getValue() - res));
 					}
 				}
 			}
@@ -1701,8 +1709,8 @@ public class Event extends Model {
 
 			for (Planet p : planets) {
 				for (House p2 : houses) {
-					double one = p.getLongitude();
-					double two = p2.getLongitude();
+//					double one = p.getLongitude();
+//					double two = p2.getLongitude();
 
 					double res = CalcUtil.getDifference(p.getLongitude(), p2.getLongitude());
 					if (res > 170) {
@@ -1712,9 +1720,9 @@ public class Event extends Model {
 							continue;
 					}
 
-					if ((res >= 179 && res < 180)
-							|| CalcUtil.compareAngles(one, two))
-						++res;
+//					if ((res >= 179 && res < 180)
+//							|| CalcUtil.compareAngles(one, two))
+//						++res;
 
 					for (Model realasp : aspects) {
 						Aspect a = (Aspect)realasp;
@@ -1723,7 +1731,10 @@ public class Event extends Model {
 						if (a.getPlanetid() > 0)
 							continue;
 
-						if (a.isTransit(res, p.getOrbis())) {
+						boolean match = p.isMain() || p.isFictitious()
+							? a.isTransit(res, p.getOrbis())
+							: a.isMajorTransit(res, (a.getCode().equals("CONJUNCTION") || p.isRetrograde() ? p.getOrbis() : p.getMinOrbis()));
+						if (match) {
 							SkyPointAspect aspect = new SkyPointAspect();
 							aspect.setSkyPoint1(p);
 							aspect.setSkyPoint2(p2);

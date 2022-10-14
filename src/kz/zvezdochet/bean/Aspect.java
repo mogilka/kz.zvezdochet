@@ -239,7 +239,7 @@ public class Aspect extends Dictionary {
 	}
 
 	/**
-	 * Проверка, эквивалентно ли значение аспекту с учётом транзитного орбиса
+	 * Проверка, эквивалентно ли значение аспекту с учётом транзитного орбиса минорной планеты
 	 * @param angle угол транзита
 	 * @param orbis орбис планеты
 	 * @return true - значение эквивалентно значению аспекта с учётом орбисов планеты
@@ -257,5 +257,20 @@ public class Aspect extends Dictionary {
 
 	public void setMinOrbis(double orbis_min) {
 		this.orbis_min = orbis_min;
+	}
+
+	/**
+	 * Проверка, эквивалентно ли значение аспекту с учётом транзитного орбиса мажорной планеты
+	 * @param angle угол транзита
+	 * @param orbis орбис планеты
+	 * @return true - значение эквивалентно значению аспекта с учётом орбисов планеты
+	 */
+	public boolean isMajorTransit(double angle, double orbis) {
+//		if (angle < 6 && 0.5 == orbis)
+//			System.out.println();
+//		boolean exact = isExact(angle);
+//	    boolean conj = code.equals("CONJUNCTION");
+        double res = Math.abs(angle - value);
+        return orbis >= res;
 	}
 }

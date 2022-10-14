@@ -506,4 +506,17 @@ limit 500
 	public void setAspectedBadName(String aspectedBadName) {
 		this.aspectedBadName = aspectedBadName;
 	}
+
+	/**
+	 * Минимальный транзитный орбис
+	 */
+    private double minOrbis;
+
+	public double getMinOrbis() {
+		return minOrbis;
+	}
+
+	public void setMinOrbis(double minOrbis) {
+		this.minOrbis = minOrbis;
+	}
 }
