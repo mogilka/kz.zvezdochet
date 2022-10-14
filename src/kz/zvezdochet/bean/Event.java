@@ -1668,8 +1668,7 @@ public class Event extends Model {
 						if (a.getPlanetid() > 0)
 							continue;
 
-						boolean match = p.isMain() || p.isFictitious() ? a.isTransit(res, p.getOrbis()) : a.isMajorTransit(res, p.getMinOrbis());
-						if (match) {
+						if (a.isTransit(res, p.getOrbis())) {
 							SkyPointAspect aspect = new SkyPointAspect();
 							aspect.setSkyPoint1(p);
 							aspect.setSkyPoint2(p2);
@@ -1709,8 +1708,8 @@ public class Event extends Model {
 
 			for (Planet p : planets) {
 				for (House p2 : houses) {
-//					double one = p.getLongitude();
-//					double two = p2.getLongitude();
+					double one = p.getLongitude();
+					double two = p2.getLongitude();
 
 					double res = CalcUtil.getDifference(p.getLongitude(), p2.getLongitude());
 					if (res > 170) {
@@ -1720,9 +1719,9 @@ public class Event extends Model {
 							continue;
 					}
 
-//					if ((res >= 179 && res < 180)
-//							|| CalcUtil.compareAngles(one, two))
-//						++res;
+					if ((res >= 179 && res < 180)
+							|| CalcUtil.compareAngles(one, two))
+						++res;
 
 					for (Model realasp : aspects) {
 						Aspect a = (Aspect)realasp;
@@ -1731,10 +1730,7 @@ public class Event extends Model {
 						if (a.getPlanetid() > 0)
 							continue;
 
-						boolean match = p.isMain() || p.isFictitious()
-							? a.isTransit(res, p.getOrbis())
-							: a.isMajorTransit(res, (a.getCode().equals("CONJUNCTION") || p.isRetrograde() ? p.getOrbis() : p.getMinOrbis()));
-						if (match) {
+						if (a.isTransit(res, p.getOrbis())) {
 							SkyPointAspect aspect = new SkyPointAspect();
 							aspect.setSkyPoint1(p);
 							aspect.setSkyPoint2(p2);
