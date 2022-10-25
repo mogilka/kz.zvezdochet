@@ -128,25 +128,22 @@ public class SkyPointAspect {
 	public AspectType checkType(boolean state) {
 		AspectType type = aspect.getType();
 		try {
-			if (type.getCode().equals("NEUTRAL")) {
+			if (state && type.getCode().equals("NEUTRAL")) {
 				Planet planet1 = (Planet)skyPoint1;
 				Planet planet2 = (Planet)skyPoint2;
 				String pcode1 = planet1.getCode();
 				String pcode2 = planet2.getCode();
 
 				AspectTypeService service = new AspectTypeService();
+				String positive[] = {"Selena"};
+				if (Arrays.asList(positive).contains(pcode1) ||
+						Arrays.asList(positive).contains(pcode2))
+					type = (AspectType)service.find("POSITIVE");
 
-				if (state) {
-					String positive[] = {"Selena"};
-					if (Arrays.asList(positive).contains(pcode1) ||
-							Arrays.asList(positive).contains(pcode2))
-						type = (AspectType)service.find("POSITIVE");
-
-					String negative[] = {"Lilith", "Kethu"};
-					if (Arrays.asList(negative).contains(pcode1) ||
-							Arrays.asList(negative).contains(pcode2))
-						type = (AspectType)service.find("NEGATIVE");
-				}
+				String negative[] = {"Lilith", "Kethu"};
+				if (Arrays.asList(negative).contains(pcode1) ||
+						Arrays.asList(negative).contains(pcode2))
+					type = (AspectType)service.find("NEGATIVE");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
