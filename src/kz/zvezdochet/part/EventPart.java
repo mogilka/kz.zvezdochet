@@ -49,6 +49,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
+import kz.zvezdochet.Messages;
 import kz.zvezdochet.bean.AspectType;
 import kz.zvezdochet.bean.CardKind;
 import kz.zvezdochet.bean.Event;
@@ -69,6 +70,7 @@ import kz.zvezdochet.core.ui.util.GUIutil;
 import kz.zvezdochet.core.ui.view.ModelPart;
 import kz.zvezdochet.core.ui.view.View;
 import kz.zvezdochet.core.util.CalcUtil;
+import kz.zvezdochet.listener.LangSelectionListener;
 import kz.zvezdochet.provider.CardKindLabelProvider;
 import kz.zvezdochet.provider.MoonDayLabelProvider;
 import kz.zvezdochet.provider.PlaceProposalProvider;
@@ -136,6 +138,9 @@ public class EventPart extends ModelPart implements ICalculable {
 	private Button btP2PAspects;
 	private Button btP2HAspects;
 	private Button btH2HAspects;
+
+	private Button btRu;
+	private Button btEn;
 
 	@PostConstruct
 	public View create(Composite parent) {
@@ -249,6 +254,15 @@ public class EventPart extends ModelPart implements ICalculable {
 		lb = new Label(secEvent, SWT.CENTER);
 		lb.setText("Система домов");
 		cvHouseSystem = new ComboViewer(secEvent, SWT.BORDER | SWT.READ_ONLY);
+
+		btRu = new Button(secEvent, SWT.BORDER | SWT.RADIO);
+		btRu.setText("ru");
+		btRu.setSelection(true);
+		btRu.addSelectionListener(new LangSelectionListener());
+
+		btEn = new Button(secEvent, SWT.BORDER | SWT.RADIO);
+		btEn.setText("en");
+		btRu.addSelectionListener(new LangSelectionListener());
 
 //		secEvent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		tabfolder = new CTabFolder(secEvent, SWT.BORDER);

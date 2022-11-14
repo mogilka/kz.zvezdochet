@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
+import kz.zvezdochet.Messages;
 import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.bean.EventConfiguration;
 import kz.zvezdochet.core.bean.Model;

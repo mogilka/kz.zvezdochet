@@ -7,6 +7,7 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="OSGI-INF/l10n"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/kz.zvezdochet.sweph"/>
 	<classpathentry exported="true" kind="lib" path="/kz.zvezdochet.sweph/lib/swisseph.jar"/>
 	<classpathentry kind="output" path="bin"/>

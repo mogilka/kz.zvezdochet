@@ -19,6 +19,7 @@ import org.eclipse.swt.graphics.Image;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import kz.zvezdochet.Messages;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.core.service.DataAccessException;
 import kz.zvezdochet.core.service.ModelService;
@@ -28,7 +29,6 @@ import kz.zvezdochet.core.util.IOUtil;
 import kz.zvezdochet.core.util.NumberUtil;
 import kz.zvezdochet.core.util.OsUtil;
 import kz.zvezdochet.core.util.PlatformUtil;
-import kz.zvezdochet.part.Messages;
 import kz.zvezdochet.service.AspectService;
 import kz.zvezdochet.service.AspectTypeService;
 import kz.zvezdochet.service.EventService;
