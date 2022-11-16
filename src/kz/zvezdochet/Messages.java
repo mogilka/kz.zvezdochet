@@ -17,14 +17,21 @@ import kz.zvezdochet.util.Constants;
  * @link https://docs.oracle.com/javase/6/docs/api/java/util/ResourceBundle.html
  * @link https://www.baeldung.com/java-resourcebundle
  */
-public class Messages {
+public class Messages /*extends org.eclipse.osgi.util.NLS*/ {
 	/**
 	 * Название мультиязычных файлов из папки OSGI-INF/l10n
 	 * Данная папка должна быть добавлена в список ресурсов-исходников проекта
 	 */
 	private static final String BUNDLE_NAME = "bundle"; //$NON-NLS-1$
-
+/*
+	static {
+		// initialize resource bundle
+		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
+	}
+*/
 	private static ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
+
+	public static String SearchEventToolItem_Search;
 
 	private Messages() {}
 

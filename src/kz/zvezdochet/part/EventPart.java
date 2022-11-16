@@ -257,12 +257,14 @@ public class EventPart extends ModelPart implements ICalculable {
 
 		btRu = new Button(secEvent, SWT.BORDER | SWT.RADIO);
 		btRu.setText("ru");
+		btRu.setData("ru");
 		btRu.setSelection(true);
 		btRu.addSelectionListener(new LangSelectionListener());
 
 		btEn = new Button(secEvent, SWT.BORDER | SWT.RADIO);
 		btEn.setText("en");
-		btRu.addSelectionListener(new LangSelectionListener());
+		btEn.setData("en");
+		btEn.addSelectionListener(new LangSelectionListener());
 
 //		secEvent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		tabfolder = new CTabFolder(secEvent, SWT.BORDER);
