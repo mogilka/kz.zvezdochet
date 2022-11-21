@@ -8,10 +8,30 @@ import swisseph.SweDate;
 import swisseph.SwissEph;
 import swisseph.SwissLib;
 
+/**
+ * Тестовый расчёт по Швейцарским эфемеридам
+ * @author Natalie Didenko
+ * 
+ * Юлианский календарь начал действовать 1 января 45 года до н.э., но нормально начал функционировать с 1 марта 4 года н.э. (см. ниже).
+ * Чтобы восстановить соответствие календаря временам года, Цезарь вставил 67 дополнительных дней между ноябрём и декабрём, 
+ * разделив их на два месяца: intercalaris prior и intercalaris posterior. Вместе с mensis intercalaris 46 год до н. э. длился 445 дней.
+ * Римские жрецы по неизвестной причине объявляли високосным каждый третий год календаря.
+ * В итоге с 44 до 9 года до н. э. было введено 12 високосных годов вместо 9.
+ * Первый год нового календаря — 45 год до н. э. — был високосным.
+ * После первого года (45 года до н. э.) високосными должны были быть 41, 37, 33, …, 13, 9 годы до н.э.
+ * Но жрецы високосными годами сделали 42, 39, …, 12 и 9 годы до н. э.
+ * Эту ошибку исправил император Август: на протяжении 16 лет — с 9 года до н. э. по 8 год н. э. високосных годов не было,
+ * так как 5 и 1 годы до н. э. и 4 год н. э. (то есть, 749, 753 и 757 годы от «основания Рима») были приняты как невисокосные.
+ * @link https://ru.wikipedia.org/wiki/Юлианский_календарь
+ * 
+ * В 1582 году папа Григорий XIII издал постановление о реформе календаря.
+ * В Григорианском календаре уменьшили количество високосных лет.
+ * Для возврата весеннего равноденствия на 21 марта было пропущено 10 дней, и в 1582 году следующий после 4 октября день был объявлен 15 октября.
+ */
 public class Swetest {
 
   	public static void main(String[] argv) {
-  		argv = new String[] {"25.08.1981", "20:10:48", "4", "57.35", "39.53"};
+  		argv = new String[] {"15.06.1520", "06:28:00", "1", "41.53", "12.3"};
   		new Swetest().calculate(argv);
   		// $ java Swetest 08.12.2007 08:08:08 6 43.15 76.55
   	}
@@ -228,7 +248,12 @@ public class Swetest {
   		double tjd, tjdet, tjdut, tsid, armc, dhour, deltat;
   		double eps_true, nut_long, glon, glat;
   		dhour = ihour + imin/60.0 + isec/3600.0;
-  		tjd = SweDate.getJulDay(iyear, imonth, iday, dhour, true);
+  		boolean julian = (iyear < 1582);
+  		tjd = julian
+  			? SweDate.getJulDay(iyear, imonth, iday, dhour, false)
+  			: SweDate.getJulDay(iyear, imonth, iday, dhour, true);
+//  		System.out.println("greg: " + SweDate.getJulDay(iyear, imonth, iday, dhour)
+//  				+ " jul: "+ SweDate.getJulDay(iyear, imonth, iday, dhour, false));
   		deltat = SweDate.getDeltaT(tjd);
   		//Universal Time
   		tjdut = tjd;

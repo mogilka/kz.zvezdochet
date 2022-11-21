@@ -1470,7 +1470,10 @@ public class Event extends Model {
 		  		@SuppressWarnings("unused")
 				double eps_true, nut_long, glon, glat;
 		  		dhour = timing + imin/60.0 + isec/3600.0;
-		  		tjd = SweDate.getJulDay(iyear, imonth, iday, dhour, true);
+		  		boolean julian = (iyear < 1582);
+		  		tjd = julian
+		  			? SweDate.getJulDay(iyear, imonth, iday, dhour, false)
+		  			: SweDate.getJulDay(iyear, imonth, iday, dhour, true);
 		  		deltat = SweDate.getDeltaT(tjd);
 		  		//Universal Time
 		  		tjdut = tjd;
