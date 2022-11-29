@@ -189,4 +189,14 @@ public class Place extends Dictionary {
 	public void setDescrEn(String descr_en) {
 		this.descr_en = descr_en;
 	}
+
+	/**
+	 * Поиск локации
+	 * @param lang язык ru|en
+	 * @return название локации с учётом языка
+	 */
+	public String getName(String lang) {
+		String _name = lang.equals("ru") ? name : name_en;
+		return _name != null ? _name : "";
+	}
 }

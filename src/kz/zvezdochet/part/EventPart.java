@@ -965,7 +965,7 @@ public class EventPart extends ModelPart implements ICalculable {
 			if (id > 0)
 				lbID.setText(String.valueOf(id));
 
-			txName.setText(event.getName());
+			txName.setText(event.getName("ru"));
 			cvGender.getCombo().setText(genders[event.isFemale() ? 2 : 1]);
 			cvHand.getCombo().setText(hands[event.isRightHanded() ? 0 : 1]);
 			if (event.getRectification() > 0)
@@ -1109,7 +1109,7 @@ public class EventPart extends ModelPart implements ICalculable {
 				item.setImage(9, planet.isPerfect() ? image : null);
 				image.dispose();
 				image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/mine.gif").createImage();
-				item.setImage(10, planet.inMine() ? image : null);
+				item.setImage(10, planet.isUnaspected() ? image : null);
 				image.dispose();
 				image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/sword.png").createImage();
 				item.setImage(11, planet.isSword() ? image : null);
@@ -1121,19 +1121,19 @@ public class EventPart extends ModelPart implements ICalculable {
 				item.setImage(13, planet.isKernel() ? image : null);
 				image.dispose();
 				image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/belt.png").createImage();
-				item.setImage(14, planet.isBelt() ? image : null);
+				item.setImage(14, planet.isCombustion() ? image : null);
 				image.dispose();
 
 				Sign sign = planet.getSign();
 				item.setText(15, null == sign ? "" : sign.getName());
 				image = null;
-				if (planet.isSignHome())
+				if (planet.isSignDomicile())
 					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/home.gif").createImage();
-				else if (planet.isSignExaltated())
+				else if (planet.isSignExaltation())
 					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/previous.gif").createImage();
-				else if (planet.isSignExile())
+				else if (planet.isSignDetriment())
 					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/exile.png").createImage();
-				else if (planet.isSignDeclined())
+				else if (planet.isSignFall())
 					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/next_nav.gif").createImage();
 				if (image != null) {
 					item.setImage(15, image);
@@ -1142,13 +1142,13 @@ public class EventPart extends ModelPart implements ICalculable {
 				House house = planet.getHouse();
 				item.setText(16, null == house ? "" : house.getCode());
 				image = null;
-				if (planet.isHouseHome())
+				if (planet.isHouseDomicile())
 					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/home.gif").createImage();
-				else if (planet.isHouseExaltated())
+				else if (planet.isHouseExaltation())
 					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/previous.gif").createImage();
-				else if (planet.isHouseExile())
+				else if (planet.isHouseDetriment())
 					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/exile.png").createImage();
-				else if (planet.isHouseDeclined())
+				else if (planet.isHouseFall())
 					image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/next_nav.gif").createImage();
 				if (image != null) {
 					item.setImage(16, image);
@@ -1167,10 +1167,10 @@ public class EventPart extends ModelPart implements ICalculable {
 				item.setImage(20, planet.isKethued() ? image : null);
 				image.dispose();
 				image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/crown.png").createImage();
-				item.setImage(21, planet.isKing() ? image : null);
+				item.setImage(21, planet.isBenefic() ? image : null);
 				image.dispose();
 				image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/throne.png").createImage();
-				item.setImage(22, planet.isLord() ? image : null);
+				item.setImage(22, planet.isDominant() ? image : null);
 				image.dispose();
 				image = AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/ilow_obj.gif").createImage();
 				item.setImage(23, planet.isBroken() ? image : null);
@@ -1239,7 +1239,7 @@ public class EventPart extends ModelPart implements ICalculable {
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/disharmonic.gif").createImage() : null);
 				item.setImage(4, star.isPerfect() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/aspect/harmonic.gif").createImage() : null);
-				item.setImage(5, star.inMine() ?
+				item.setImage(5, star.isUnaspected() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/mine.gif").createImage() : null);
 
 				Sign sign = star.getSign();
@@ -1260,10 +1260,10 @@ public class EventPart extends ModelPart implements ICalculable {
 				item.setImage(11, star.isKethued() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/planet/Kethu.png").createImage() : null);
 
-				item.setImage(12, star.isKing() ?
+				item.setImage(12, star.isBenefic() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/crown.png").createImage() : null);
 
-				item.setImage(13, star.isLord() ?
+				item.setImage(13, star.isDominant() ?
 					AbstractUIPlugin.imageDescriptorFromPlugin("kz.zvezdochet", "icons/throne.png").createImage() : null);
 
 				item.setImage(14, star.isBroken() ?
@@ -1377,7 +1377,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		if (sync) {
 			Event event = (Event)model;
 			if (model != null && event.getId() != null)
-				setTitle(event.getName());
+				setTitle(event.getName("ru"));
 			else
 				setTitle(Messages.getString("PersonView.New")); //$NON-NLS-1$
 		}

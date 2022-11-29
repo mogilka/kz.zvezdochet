@@ -181,7 +181,7 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
      * Метод, проверяющий, находится ли объект в шахте
      * @return <i>true</i> если объект не имеет сильных аспектов
      */
-	public boolean inMine() {
+	public boolean isUnaspected() {
 		return aspectCountMap != null && 0 == aspectCountMap.get("COMMON");
 	}
 
@@ -266,7 +266,7 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
 		return onZenith;
 	}
 
-	public boolean isLord() {
+	public boolean isDominant() {
 		return lord;
 	}
 
@@ -331,7 +331,7 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
 	 */
 	protected boolean king;
 
-	public boolean isKing() {
+	public boolean isBenefic() {
 		return king;
 	}
 
@@ -521,10 +521,10 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
 				PlanetSignPosition s = service.find(this);
 				if (s != null) {
 					switch (s.getType().getCode()) {
-						case "HOME": setSignHome(); break;
-						case "EXALTATION": setSignExaltated(); break;
-						case "EXILE": setSignExile(); break;
-						case "DECLINE": setSignDeclined(); break;
+						case "HOME": setSignDomicile(); break;
+						case "EXALTATION": setSignExaltation(); break;
+						case "EXILE": setSignDetriment(); break;
+						case "DECLINE": setSignFall(); break;
 					}
 				}
 			}
@@ -533,10 +533,10 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
 				PlanetHousePosition s = service.find(this);
 				if (s != null) {
 					switch (s.getType().getCode()) {
-						case "HOME": setHouseHome(); break;
-						case "EXALTATION": setHouseExaltated(); break;
-						case "EXILE": setHouseExile(); break;
-						case "DECLINE": setHouseDeclined(); break;
+						case "HOME": setHouseDomicile(); break;
+						case "EXALTATION": setHouseExaltation(); break;
+						case "EXILE": setHouseDetriment(); break;
+						case "DECLINE": setHouseFall(); break;
 					}
 				}
 			}
@@ -558,81 +558,81 @@ public abstract class SkyPoint extends DiagramObject implements ISkyPoint {
 	private boolean houseExile = false;
 	private boolean houseDeclined = false;
 	
-	public boolean isSignHome() {
+	public boolean isSignDomicile() {
 		return signHome;
 	}
 
-	public void setSignHome() {
+	public void setSignDomicile() {
 		signHome = true;
 		addPoints(1);
 	//	System.out.println(this.getCode() + " is in home sign");
 	}
 	
-	public boolean isSignExaltated() {
+	public boolean isSignExaltation() {
 		return signExaltated;
 	}
 	
-	public void setSignExaltated() {
+	public void setSignExaltation() {
 		signExaltated = true;
 		addPoints(1);
 	//	System.out.println(this.getCode() + " is in exalt sign");
 	}
 	
-	public boolean isSignExile() {
+	public boolean isSignDetriment() {
 		return signExile;
 	}
 	
-	public void setSignExile() {
+	public void setSignDetriment() {
 		signExile = true;
 		addPoints(-1);
 	//	System.out.println(this.getCode() + " is in exile sign");
 	}
 	
-	public boolean isSignDeclined() {
+	public boolean isSignFall() {
 		return signDeclined;
 	}
 	
-	public void setSignDeclined() {
+	public void setSignFall() {
 		signDeclined = true;
 		addPoints(-1);
 	//	System.out.println(this.getCode() + " is in decline sign");
 	}
 	
-	public boolean isHouseHome() {
+	public boolean isHouseDomicile() {
 		return houseHome;
 	}
 	
-	public void setHouseHome() {
+	public void setHouseDomicile() {
 		houseHome = true;
 		addPoints(1);
 	//	System.out.println(this.getCode() + " is in home house");
 	}
 	
-	public boolean isHouseExaltated() {
+	public boolean isHouseExaltation() {
 		return houseExaltated;
 	}
 	
-	public void setHouseExaltated() {
+	public void setHouseExaltation() {
 		houseExaltated = true;
 		addPoints(1);
 	//	System.out.println(this.getCode() + " is in exalt house");
 	}
 	
-	public boolean isHouseExile() {
+	public boolean isHouseDetriment() {
 		return houseExile;
 	}
 	
-	public void setHouseExile() {
+	public void setHouseDetriment() {
 		houseExile = true;
 		addPoints(-1);
 	//	System.out.println(this.getCode() + " is in exile house");
 	}
 	
-	public boolean isHouseDeclined() {
+	public boolean isHouseFall() {
 		return houseDeclined;
 	}
 	
-	public void setHouseDeclined() {
+	public void setHouseFall() {
 		houseDeclined = true;
 		addPoints(-1);
 	//	System.out.println(this.getCode() + " is in decline house");

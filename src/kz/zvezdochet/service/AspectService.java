@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import kz.zvezdochet.bean.Aspect;
 import kz.zvezdochet.bean.AspectType;
@@ -20,7 +21,8 @@ import kz.zvezdochet.core.tool.Connector;
 public class AspectService extends DictionaryService {
 
 	public AspectService() {
-		tableName = "aspects";
+		String lang = Locale.getDefault().getLanguage();
+		tableName = lang.equals("ru") ? "aspects" : "us_aspects";
 	}
 
 	@Override

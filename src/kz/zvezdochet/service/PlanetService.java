@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.core.bean.Model;
@@ -20,7 +21,8 @@ import kz.zvezdochet.core.util.CoreUtil;
 public class PlanetService extends DictionaryService {
 
 	public PlanetService() {
-		tableName = "planets";
+		String lang = Locale.getDefault().getLanguage();
+		tableName = lang.equals("ru") ? "planets" : "us_planets";
 	}
 
 	@Override

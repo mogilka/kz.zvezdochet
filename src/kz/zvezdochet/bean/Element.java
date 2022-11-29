@@ -136,4 +136,21 @@ public class Element extends DiagramDictionary {
 		    }
 		};
 	}
+
+	public static String[] getTemperaments(String lang) {
+		boolean rus = lang.equals("ru");
+		return rus
+			? new String[] {
+				"Холерик (стихия Огня) – быстрый, порывистый, страстный, способный преодолевать значительные трудности, но неуравновешенный, склонный к бурным эмоциям и резким сменам настроения. Чувства возникают быстро и ярко отражаются в речи, жестах и мимике",
+				"Флегматик (стихия Земли) – медлительный, спокойный, с устойчивыми стремлениями и более или менее постоянным настроением (внешне слабо выражает своё душевное состояние). Тип нервной системы: сильный, уравновешенный, инертный. Хорошая память, высокий интеллект, склонность к продуманным, взвешенным решениям, без риска",
+				"Сангвиник (стихия Воздуха) – живой, подвижный, сравнительно легко переживающий неудачи и неприятности. Мимика разнообразна и богата, темп речи быстрый. Эмоции преимущественно положительные, – быстро возникают и меняются",
+				"Меланхолик (стихия Воды) – легкоранимый, глубоко переживает даже незначительные неудачи, внешне вяло реагирует на происходящее. Тип нервной системы: высокочувствительный. Тонкая реакция на малейшие оттенки чувств. Переживания глубоки, эмоциональны и очень устойчивы"
+			}
+			: new String[] {
+				"Choleric (Fire element) - fast, impulsive, passionate, able to overcome significant difficulties, but unbalanced, prone to violent emotions and sudden mood swings. Feelings arise quickly and are vividly reflected in speech, gestures and facial expressions",
+				"Phlegmatic (Earth element) - slow, calm, with steady aspirations and a more or less constant mood (outwardly, he weakly expresses his state of mind). Type of nervous system: strong, balanced, inert. Good memory, high intellect, propensity for thoughtful, balanced decisions, without risk",
+				"Sanguine (Air element) - lively, mobile, easy to experience failures and troubles. The facial expressions are varied and rich, the pace of speech is fast. Emotions are positive predominantly, they arise and change quickly",
+				"Melancholic (Water element) - easily injured, deeply worries even minor failures, sluggishly reacts to what is happening. Type of nervous system: highly sensitive. Subtle reaction to the slightest shades of feelings. His experiences are deep, emotional and very stable"					
+			};
+	}
 }

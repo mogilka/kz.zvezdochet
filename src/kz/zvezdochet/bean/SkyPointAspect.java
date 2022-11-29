@@ -196,15 +196,20 @@ public class SkyPointAspect {
 
 	/**
 	 * Поиск описания силы аспекта
+	 * @param lang язык ru|en
 	 * @return описание силы
 	 */
-	public String getMarkDescr() {
+	public String getMarkDescr(String lang) {
+		boolean rus = lang.equals("ru");
 		if (exact)
-			return "точный аспект (наиболее сильное и сконцентрированное сочетание планет)";
+			return rus ? "точный аспект (наиболее сильное и сконцентрированное сочетание планет)" :
+				"exact aspect (the strongest and most concentrated combination of planets)";
 		else if (application)
-			return "аппликация (нарастающее сочетание с тенденцией к усилению)";
+			return rus ? "аппликация (нарастающее сочетание с тенденцией к усилению)" :
+				"application (planetary combination with a tendency to increase)";
 		else
-			return "сепарация (угасающее сочетание с тенденцией к ослаблению)";
+			return rus ? "сепарация (угасающее сочетание с тенденцией к ослаблению)" :
+				"separation (planetary combination with a tendency to fading)";
 	}
 
 	/**

@@ -125,7 +125,7 @@ public class Planet extends SkyPoint {
 //		System.out.println(this.getCode() + " is kernel");
 	}
 
-	public boolean isBelt() {
+	public boolean isCombustion() {
 		return belt;
 	}
 
@@ -236,82 +236,87 @@ limit 500
 	 * Поиск знака силы планеты
 	 * @param type sign|house|null для знака|дома|описания
 	 * @param term true|false полный|сокращённый
+	 * @param lang язык ru|en
 	 * @return знак силы
+	 * @link https://www.astro.com/astrowiki/en/Category:Planet
 	 */
-	public String getMark(String type, boolean term) {
+	public String getMark(String type, boolean term, String lang) {
 		String res = "";
+		boolean rus = lang.equals("ru");
 		if (type != null) {
 			if (type.equals("sign")) {
-				if (isSignHome())
-					res = term ? "обитель, " : "обт "; //U+1F3E0
-				else if (isSignExaltated())
-					res = term ? "экзальтация, " : "экз ";
-				else if (isSignDeclined())
-					res = term ? "падение, " : "пдн ";
-				else if (isSignExile())
-					res = term ? "изгнание, " : "изг ";
+				if (isSignDomicile())
+					res = term ? (rus ? "обитель, " : "domicile, ") : (rus ? "обт " : "dmc "); //U+1F3E0
+				else if (isSignExaltation())
+					res = term ? (rus ? "экзальтация, " : "exaltation, ") : (rus ? "экз " : "exl ");
+				else if (isSignFall())
+					res = term ? (rus ? "падение, " : "fall, ") : (rus ? "пдн " : "fall ");
+				else if (isSignDetriment())
+					res = term ? (rus ? "изгнание, " : "detriment, ") : (rus ? "изг " : "dtr ");
 			} else if (type.equals("house")) {
-				if (isHouseHome())
-					res = term ? "обитель, " : "обт ";
-				else if (isHouseExaltated())
-					res = term ? "экзальтация, " : "экз ";
-				else if (isHouseDeclined())
-					res = term ? "падение, " : "пдн ";
-				else if (isHouseExile())
-					res = term ? "изгнание, " : "изг ";
+				if (isHouseDomicile())
+					res = term ? (rus ? "обитель, " : "domicile, ") : (rus ? "обт " : "dmc ");
+				else if (isHouseExaltation())
+					res = term ? (rus ? "экзальтация, " : "exaltation, ") : (rus ? "экз " : "exl ");
+				else if (isHouseFall())
+					res = term ? (rus ? "падение, " : "fall, ") : (rus ? "пдн " : "fall ");
+				else if (isHouseDetriment())
+					res = term ? (rus ? "изгнание, " : "detriment, ") : (rus ? "изг " : "dtr ");
 			}
 		}
-		if (isBelt() || isDamaged() || isLilithed() || isBroken() || inMine()) {
-			res += "\u2193";
-			if (term) {
-				if (isBelt())
-					res += "сожжение, ";
-				else if (isDamaged())
-					res += "поражение, ";
-				else if (isLilithed())
-					res += "под Чёрной Луной, ";
-				else if (isBroken())
-					res += "слабость, ";
-				else if (inMine())
-					res += "в шахте, ";				
+		if (null == type) {
+			if (isCombustion() || isDamaged() || isLilithed() || isBroken() || isUnaspected()) {
+				res += "\u2193";
+				if (term) {
+					if (isCombustion())
+						res += (rus ? "сожжение, " : "combustion, ");
+					else if (isDamaged())
+						res += (rus ? "поражение, " : "damaged, ");
+					else if (isLilithed())
+						res += (rus ? "под Чёрной Луной, " : "near Black Moon, ");
+					else if (isBroken())
+						res += (rus ? "слабость, " : "weak, ");
+					else if (isUnaspected())
+						res += (rus ? "в шахте, " : "unaspected, ");				
+				}
+			} else if (isKernel() || isPerfect()) {
+				res += "\u2191";
+				if (term) {
+					if (isKernel())
+						res += (rus ? "ядро Солнца, " : "kernel of the Sun, ");
+					else if (isPerfect())
+						res += (rus ? "гармония, " : "harmony, ");
+				}
 			}
-		} else if (isKernel() || isPerfect()) {
-			res += "\u2191";
-			if (term) {
-				if (isKernel())
-					res += "ядро Солнца, ";
-				else if (isPerfect())
-					res += "гармония, ";
+			if (isDominant())
+				res += term ? (rus ? "владыка гороскопа, " : "dominant, ") : (rus ? "влд " : "dmn ");
+			if (isBenefic())
+				res += term ? (rus ? "король аспектов, " : "benefic, ") : (rus ? "крл " : "bnf ");
+			if (isRetrograde())
+				res += "R";
+	
+			if (term && res.length() > 2) {
+				int margin = res.length() - 2;
+				if (res.indexOf(", ", margin) == margin)
+					res = res.substring(0, margin);
 			}
-		}
-		if (isLord())
-			res += term ? "владыка гороскопа, " : "влд ";
-		if (isKing())
-			res += term ? "король аспектов, " : "крл ";
-		if (isRetrograde())
-			res += "R";
-
-		if (term && res.length() > 2) {
-			int margin = res.length() - 2;
-			if (res.indexOf(", ", margin) == margin)
-				res = res.substring(0, margin);
 		}
 		return res;
 	}
 
 	public boolean isPositive() {
-		return isLord() || isPerfect()
+		return isDominant() || isPerfect()
 //				|| isHouseExaltated() || isHouseHome() || isSignExaltated() || isSignHome()
-			&& (!inMine() && !isBelt() && !isBroken() && !isDamaged() && !isRetrograde() && !isLilithed()
+			&& (!isUnaspected() && !isCombustion() && !isBroken() && !isDamaged() && !isRetrograde() && !isLilithed()
 //				&& !isHouseDeclined() && !isHouseExile() && !isSignDeclined() && !isSignExile()
 		);
 	}
 
 	public boolean isNegative() {
-		return inMine() || isBelt() || isBroken() || isDamaged() || isLilithed()
+		return isUnaspected() || isCombustion() || isBroken() || isDamaged() || isLilithed()
 //				|| isRetrograde()
 //				|| isHouseDeclined() || isHouseExile() || isSignDeclined() || isSignExile()
-			&& (!isLord() && !isPerfect()
+			&& (!isDominant() && !isPerfect()
 //				 && !isHouseExaltated() && !isHouseHome() && !isSignExaltated() && !isSignHome()
 		);				
 	}
@@ -373,8 +378,8 @@ limit 500
 	 * @return true|false
 	 */
 	public boolean isInNeutralSign() {
-		return !isSignExaltated() && !isSignHome()
-			&& !isSignDeclined() && !isSignExile();
+		return !isSignExaltation() && !isSignDomicile()
+			&& !isSignFall() && !isSignDetriment();
 	}
 
 	private String loyalty;
@@ -392,7 +397,7 @@ limit 500
 	 * @return
 	 */
 	public boolean isWeak() {
-		return isBroken() || isKethued() || inMine() || isRetrograde();
+		return isBroken() || isKethued() || isUnaspected() || isRetrograde();
 	}
 
 	/**

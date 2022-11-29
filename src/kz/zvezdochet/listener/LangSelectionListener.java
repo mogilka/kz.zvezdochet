@@ -1,5 +1,7 @@
 package kz.zvezdochet.listener;
 
+import java.util.Locale;
+
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -7,7 +9,7 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import kz.zvezdochet.Messages;
-import kz.zvezdochet.util.Constants;
+import kz.zvezdochet.core.util.Constants;
 
 /**
  * Слушатель выбора языка
@@ -28,7 +30,10 @@ public class LangSelectionListener implements SelectionListener {
 			recent.put(Constants.PREF_LANG, lang);
 			preferences.flush();
 			Messages.init();
+			kz.zvezdochet.core.Messages.init();
 			//System.out.println("Switch app language to " + lang);
+			Locale locale = lang.equals("ru") ? new Locale("ru", "RU") : new Locale("en", "US");
+			Locale.setDefault(locale);
 		} catch (BackingStoreException e1) {
 			e1.printStackTrace();
 		}

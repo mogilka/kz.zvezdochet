@@ -3,6 +3,7 @@ package kz.zvezdochet.service;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Locale;
 
 import kz.zvezdochet.bean.Cross;
 import kz.zvezdochet.core.bean.Model;
@@ -16,7 +17,8 @@ import kz.zvezdochet.core.service.TextGenderDiagramService;
 public class CrossService extends TextGenderDiagramService {
 
 	public CrossService() {
-		tableName = "crosses";
+		String lang = Locale.getDefault().getLanguage();
+		tableName = lang.equals("ru") ? "crosses" : "us_crosses";
 	}
 
 	@Override

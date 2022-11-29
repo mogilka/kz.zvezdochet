@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import kz.zvezdochet.bean.Element;
 import kz.zvezdochet.bean.Sign;
@@ -21,7 +22,8 @@ import kz.zvezdochet.core.util.CoreUtil;
 public class SignService extends DictionaryService {
 	
 	public SignService() {
-		tableName = "signs";
+		String lang = Locale.getDefault().getLanguage();
+		tableName = lang.equals("ru") ? "signs" : "us_signs";
 	}
 
 	@Override

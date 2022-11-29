@@ -3,6 +3,7 @@ package kz.zvezdochet.service;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Locale;
 
 import kz.zvezdochet.bean.Halfsphere;
 import kz.zvezdochet.core.bean.Dictionary;
@@ -17,7 +18,8 @@ import kz.zvezdochet.core.service.TextGenderDiagramService;
 public class HalfsphereService extends TextGenderDiagramService {
 
 	public HalfsphereService() {
-		tableName = "halfspheres";
+		String lang = Locale.getDefault().getLanguage();
+		tableName = lang.equals("ru") ? "halfspheres" : "us_halfspheres";
 	}
 
 	@Override

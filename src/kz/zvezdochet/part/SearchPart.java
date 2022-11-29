@@ -434,7 +434,7 @@ public class SearchPart extends ModelListView {
 					switch (columnIndex) {
 						case 0: return event.isFemale() ? "♀" : "♂";
 						case 1: return event.getId().toString();
-						case 2: return event.getName();
+						case 2: return event.getName("ru");
 						case 3: return DateUtil.formatDateTime(event.getBirth());
 						case 4: return DateUtil.formatDateTime(event.getDate());
 						case 5: return DateUtil.formatDateTime(event.getModified());

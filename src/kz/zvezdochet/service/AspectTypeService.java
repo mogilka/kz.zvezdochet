@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import kz.zvezdochet.bean.AspectType;
@@ -22,7 +23,8 @@ import kz.zvezdochet.core.util.CoreUtil;
 public class AspectTypeService extends DictionaryService {
 
 	public AspectTypeService() {
-		tableName = "aspecttypes";
+		String lang = Locale.getDefault().getLanguage();
+		tableName = lang.equals("ru") ? "aspecttypes" : "us_aspecttypes";
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package kz.zvezdochet.service;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Locale;
 
 import kz.zvezdochet.bean.AspectConfiguration;
 import kz.zvezdochet.core.bean.Model;
@@ -16,7 +17,8 @@ import kz.zvezdochet.core.util.CoreUtil;
 public class AspectConfigurationService extends TextGenderDictionaryService {
 
 	public AspectConfigurationService() {
-		tableName = "aspectconfigurations";
+		String lang = Locale.getDefault().getLanguage();
+		tableName = lang.equals("ru") ? "aspectconfigurations" : "us_aspectconfigurations";
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package kz.zvezdochet.service;
 
 import java.util.List;
+import java.util.Locale;
 
 import kz.zvezdochet.bean.Zone;
 import kz.zvezdochet.core.bean.Model;
@@ -14,7 +15,8 @@ import kz.zvezdochet.core.service.TextGenderDiagramService;
 public class ZoneService extends TextGenderDiagramService {
 
 	public ZoneService() {
-		tableName = "zones";
+		String lang = Locale.getDefault().getLanguage();
+		tableName = lang.equals("ru") ? "zones" : "us_zones";
 	}
 
 	@Override

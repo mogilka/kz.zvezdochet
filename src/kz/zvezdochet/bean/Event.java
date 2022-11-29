@@ -167,7 +167,12 @@ public class Event extends Model {
 	public boolean isFemale() {
 		return female;
 	}
-	public String getName() {
+	/**
+	 * Поиск имени
+	 * @param lang язык ru|en
+	 * @return имя на указанном языке
+	 */
+	public String getName(String lang) {
 		return name;
 	}
 
@@ -547,10 +552,12 @@ public class Event extends Model {
 
 	/**
 	 * Возвращает имя события
-	 * @return наименование
+	 * @param lang язык ru|en
+	 * @return наименование на указанном языке
 	 */
-	public String getCallname() {
-		return name.contains(" ") ? name.substring(0, name.indexOf(' ')) : name;
+	public String getCallname(String lang) {
+		String _name = celebrity && lang.equals("en") ? name_en : name;
+		return _name.contains(" ") ? _name.substring(0, _name.indexOf(' ')) : _name;
 	}
 
 	public Event(Date date, String name) {

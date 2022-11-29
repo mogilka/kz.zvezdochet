@@ -128,7 +128,7 @@ public class EventService extends ModelService {
 					"comment_en = ? " +
 					"where id = ?";
 			ps = Connector.getInstance().getConnection().prepareStatement(sql);
-			ps.setString(1, event.getName());
+			ps.setString(1, event.getName("ru"));
 			ps.setBoolean(2, event.isFemale());
 			if (event.getPlace() != null && event.getPlace().getId() != null && event.getPlace().getId() > 0)
 				ps.setLong(3, event.getPlace().getId());
@@ -156,7 +156,7 @@ public class EventService extends ModelService {
 			else
 				ps.setLong(14, 3);
 			ps.setInt(15, event.isCalculated() ? 1 : 0);
-			ps.setString(16, Translit.convert(event.getName(), true));
+			ps.setString(16, Translit.convert(event.getName("ru"), true));
 			ps.setDouble(17, event.getDst());
 
 			if (event.getFinalPlace() != null && event.getFinalPlace().getId() > 0)

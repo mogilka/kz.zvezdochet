@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import kz.zvezdochet.bean.Element;
 import kz.zvezdochet.bean.House;
@@ -21,7 +22,8 @@ import kz.zvezdochet.core.util.CoreUtil;
 public class HouseService extends DictionaryService {
 	
 	public HouseService() {
-		tableName = "houses";
+		String lang = Locale.getDefault().getLanguage();
+		tableName = lang.equals("ru") ? "houses" : "us_houses";
 	}
 
 	@Override

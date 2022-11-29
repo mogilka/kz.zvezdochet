@@ -89,11 +89,13 @@ public class Pheno {
 
 	/**
 	 * Поиск описания фазы
+	 * @param lang язык ru|en
 	 * @return описание фазы
 	 */
-	public String getPhase() {
+	public String getPhase(String lang) {
+		boolean rus = lang.equals("ru");
 	    if (percent < 1 && 1 == age)
-	        return "Новолуние, самая тёмная ночь";
+	        return rus ? "Новолуние, самая тёмная ночь" : "New moon, darkest night";
 	    if (2 == age)
 	        return "Молодая луна, первое появление лунного серпа после новолуния";
 	    if (age < 9)

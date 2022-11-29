@@ -7,7 +7,7 @@ import java.util.ResourceBundle;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.service.prefs.Preferences;
 
-import kz.zvezdochet.util.Constants;
+import kz.zvezdochet.core.util.Constants;
 
 /**
  * Обработчик переводов

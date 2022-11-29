@@ -3,6 +3,7 @@ package kz.zvezdochet.service;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Locale;
 
 import kz.zvezdochet.bean.Planet;
 import kz.zvezdochet.bean.PlanetSignPosition;
@@ -21,7 +22,8 @@ import kz.zvezdochet.core.tool.Connector;
 public class PlanetSignPositionService extends DictionaryService {
 
 	public PlanetSignPositionService() {
-		tableName = "planetsignposition";
+		String lang = Locale.getDefault().getLanguage();
+		tableName = lang.equals("ru") ? "planetsignposition" : "us_planetsignposition";
 	}
 
 	@Override

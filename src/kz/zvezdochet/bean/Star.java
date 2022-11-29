@@ -15,14 +15,14 @@ public class Star extends SkyPoint {
 	}
 
 	public boolean isPositive() {
-		return isLord() || isPerfect()
-			&& (!inMine() && !isBroken() && !isDamaged() && !isLilithed()
+		return isDominant() || isPerfect()
+			&& (!isUnaspected() && !isBroken() && !isDamaged() && !isLilithed()
 		);
 	}
 
 	public boolean isNegative() {
-		return inMine() || isBroken() || isDamaged() || isLilithed()
-			&& (!isLord() && !isPerfect()
+		return isUnaspected() || isBroken() || isDamaged() || isLilithed()
+			&& (!isDominant() && !isPerfect()
 		);				
 	}
 

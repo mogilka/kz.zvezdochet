@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import kz.zvezdochet.bean.Element;
@@ -23,7 +24,8 @@ import kz.zvezdochet.core.util.CoreUtil;
 public class ElementService extends TextGenderDiagramService {
 
 	public ElementService() {
-		tableName = "elements";
+		String lang = Locale.getDefault().getLanguage();
+		tableName = lang.equals("ru") ? "elements" : "us_elements";
 	}
 
 	@Override
