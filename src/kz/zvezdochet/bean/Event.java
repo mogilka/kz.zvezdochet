@@ -367,6 +367,7 @@ public class Event extends Model {
 	/**
 	 * Расчёт положения планет и астрологических домов
 	 * @param cachable признак сохранения данных в кэш
+	 * удалить все файлы кэша: find /media/natalie/toshiba/cache -type f -delete
 	 */
 	public void calc(boolean cachable) {
 		try {
@@ -483,7 +484,11 @@ public class Event extends Model {
 			setFancy(json.getString("fancy"));
 			setDst(json.getDouble("dst"));
 //			recalculable = true;
-			setModified(DateUtil.getDatabaseDateTime(json.getString("updated_at")));			
+			setModified(DateUtil.getDatabaseDateTime(json.getString("updated_at")));
+			setBio(json.getString("biography"));
+			setConversation(json.getString("conversation"));
+			setName_en(json.getString("name_en"));
+			setComment_en(json.getString("comment_en"));			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
