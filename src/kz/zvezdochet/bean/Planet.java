@@ -524,4 +524,12 @@ limit 500
 	public void setMinOrbis(double minOrbis) {
 		this.minOrbis = minOrbis;
 	}
+
+    /**
+     * Проверка, относится ли планета к гигантам
+     * @return <i>true</i> если планета является гигантом (Юпитер, Сатурн, Хирон, Уран, Нептун, Плутон, Прозерпина)
+     */
+	public boolean isGiant() {
+		return id > 27;
+	}
 }
