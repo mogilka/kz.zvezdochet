@@ -1220,7 +1220,7 @@ public class Event extends Model {
 
 	    	//изменилось ли направление планеты
 			for (Planet p : planets) {
-				if (p.isFictitious())
+				if (p.isFictious())
 					continue;
 			    Planet p2 = tplanets.get(p.getId());
 			    if (p.isRetrograde() && !p2.isRetrograde())
@@ -1730,7 +1730,7 @@ public class Event extends Model {
 					if (res > 170) {
 						if (p.isMain() && p.getSpeedLongitude() >= 0)
 							continue;
-						if (p.isFictitious())
+						if (p.isFictious())
 							continue;
 					}
 

@@ -81,7 +81,7 @@ public class PlanetService extends DictionaryService {
 			ps.setString(4, dict.getName());
 			ps.setString(5, dict.getDescription());
 			ps.setDouble(6, dict.getScore());
-			ps.setBoolean(7, dict.isFictitious());
+			ps.setBoolean(7, dict.isFictious());
 			result = ps.executeUpdate();
 			if (result == 1) {
 				if (null == model.getId()) { 

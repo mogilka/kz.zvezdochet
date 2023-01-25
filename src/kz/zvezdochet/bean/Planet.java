@@ -44,7 +44,7 @@ public class Planet extends SkyPoint {
 		this.shortName = shortName;
 	}
 
-	public boolean isFictitious() {
+	public boolean isFictious() {
 		return fictious;
 	}
 
