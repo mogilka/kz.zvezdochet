@@ -29,6 +29,7 @@ import kz.zvezdochet.core.service.ModelService;
 import kz.zvezdochet.core.tool.Connector;
 import kz.zvezdochet.core.ui.util.DialogUtil;
 import kz.zvezdochet.core.util.DateUtil;
+import kz.zvezdochet.core.util.StringUtil;
 import kz.zvezdochet.core.util.Translit;
 
 /**
@@ -176,8 +177,8 @@ public class EventService extends ModelService {
 			else
 				ps.setNull(21, java.sql.Types.NULL);
 
-			ps.setString(22, event.getBio());
-			ps.setString(23, event.getConversation());
+			ps.setString(22, StringUtil.removeEmoji(event.getBio()));
+			ps.setString(23, StringUtil.removeEmoji(event.getConversation()));
 			ps.setString(24, DateUtil.formatCustomDateTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
 			ps.setString(25, event.getOptions());
 			ps.setString(26, event.getName_en());
@@ -185,10 +186,10 @@ public class EventService extends ModelService {
 
 			if (model.getId() != null)
 				ps.setLong(28, model.getId());
-			System.out.println(ps);
 
 			result = ps.executeUpdate();
 			if (1 == result) {
+				System.out.println(ps);
 				if (null == model.getId()) { 
 					Long autoIncKeyFromApi = -1L;
 					ResultSet rsid = ps.getGeneratedKeys();
