@@ -246,22 +246,22 @@ limit 500
 		if (type != null) {
 			if (type.equals("sign")) {
 				if (isSignDomicile())
-					res = term ? (rus ? "обитель, " : "domicile, ") : (rus ? "обт " : "dmc "); //U+1F3E0
+					res = term ? (rus ? "обитель " : "domicile ") : (rus ? "обт " : "dmc "); //U+1F3E0
 				else if (isSignExaltation())
-					res = term ? (rus ? "экзальтация, " : "exaltation, ") : (rus ? "экз " : "exl ");
+					res = term ? (rus ? "экзальтация " : "exaltation ") : (rus ? "экз " : "exl ");
 				else if (isSignFall())
-					res = term ? (rus ? "падение, " : "fall, ") : (rus ? "пдн " : "fall ");
+					res = term ? (rus ? "падение " : "fall ") : (rus ? "пдн " : "fall ");
 				else if (isSignDetriment())
-					res = term ? (rus ? "изгнание, " : "detriment, ") : (rus ? "изг " : "dtr ");
+					res = term ? (rus ? "изгнание " : "detriment ") : (rus ? "изг " : "dtr ");
 			} else if (type.equals("house")) {
 				if (isHouseDomicile())
 					res = term ? (rus ? "обитель, " : "domicile, ") : (rus ? "обт " : "dmc ");
 				else if (isHouseExaltation())
-					res = term ? (rus ? "экзальтация, " : "exaltation, ") : (rus ? "экз " : "exl ");
+					res = term ? (rus ? "экзальтация " : "exaltation ") : (rus ? "экз " : "exl ");
 				else if (isHouseFall())
-					res = term ? (rus ? "падение, " : "fall, ") : (rus ? "пдн " : "fall ");
+					res = term ? (rus ? "падение " : "fall ") : (rus ? "пдн " : "fall ");
 				else if (isHouseDetriment())
-					res = term ? (rus ? "изгнание, " : "detriment, ") : (rus ? "изг " : "dtr ");
+					res = term ? (rus ? "изгнание " : "detriment ") : (rus ? "изг " : "dtr ");
 			}
 		}
 		if (null == type) {
@@ -269,29 +269,29 @@ limit 500
 				res += "\u2193";
 				if (term) {
 					if (isCombustion())
-						res += (rus ? "сожжение, " : "combustion, ");
+						res += (rus ? "сожжение " : "combustion ");
 					else if (isDamaged())
-						res += (rus ? "поражение, " : "damaged, ");
+						res += (rus ? "поражение " : "damaged ");
 					else if (isLilithed())
-						res += (rus ? "под Чёрной Луной, " : "near Black Moon, ");
+						res += (rus ? "под Чёрной Луной " : "near Black Moon ");
 					else if (isBroken())
-						res += (rus ? "слабость, " : "weak, ");
+						res += (rus ? "слабость " : "weak ");
 					else if (isUnaspected())
-						res += (rus ? "в шахте, " : "unaspected, ");				
+						res += (rus ? "в шахте " : "unaspected ");				
 				}
 			} else if (isKernel() || isPerfect()) {
 				res += "\u2191";
 				if (term) {
 					if (isKernel())
-						res += (rus ? "ядро Солнца, " : "kernel of the Sun, ");
+						res += (rus ? "ядро Солнца " : "kernel of the Sun ");
 					else if (isPerfect())
-						res += (rus ? "гармония, " : "harmony, ");
+						res += (rus ? "гармония " : "harmony ");
 				}
 			}
 			if (isDominant())
-				res += term ? (rus ? "владыка гороскопа, " : "dominant, ") : (rus ? "влд " : "dmn ");
+				res += term ? (rus ? "владыка гороскопа " : "dominant ") : (rus ? "влд " : "dmn ");
 			if (isBenefic())
-				res += term ? (rus ? "король аспектов, " : "benefic, ") : (rus ? "крл " : "bnf ");
+				res += term ? (rus ? "король аспектов " : "benefic ") : (rus ? "крл " : "bnf ");
 			if (isRetrograde())
 				res += "R";
 	
