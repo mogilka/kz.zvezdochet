@@ -1,5 +1,6 @@
 package kz.zvezdochet.bean;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -159,5 +160,14 @@ public class AspectType extends DiagramObject {
 
 	public void setKeyword(String keyword) {
 		this.keyword = keyword;
+	}
+
+	/**
+	 * Проверка, относится ли тип к соединениям
+	 * @return true - соединение, пояс Солнца, ядро Солнца
+	 */
+	public boolean isConjunction() {
+		String[] arr = {"NEUTRAL", "NEUTRAL_KERNEL", "NEGATIVE_BELT"};
+		return Arrays.asList(arr).contains(code);
 	}
 }

@@ -377,7 +377,7 @@ public class SkyPointAspect {
 		if (texts != null && texts.size() > 0) {
 			TextGenderModel dict = (TextGenderModel)texts.get(0);
 			return !dict.isPositive();
-		} else if (type.getCode().equals("NEUTRAL"))
+		} else if (type.isConjunction())
 			return ((Planet)skyPoint1).isBad()
 				|| ((Planet)skyPoint2).isBad();
 
