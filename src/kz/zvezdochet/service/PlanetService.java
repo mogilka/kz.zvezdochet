@@ -60,7 +60,7 @@ public class PlanetService extends DictionaryService {
         PreparedStatement ps = null;
 		try {
 			String sql;
-			if (null == model.getId()) 
+			if (!model.isExisting()) 
 				sql = "insert into " + tableName + 
 					"(ordinalnumber, color, code, name, description, score, fictitious) " +
 					"values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";

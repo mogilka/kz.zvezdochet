@@ -52,9 +52,13 @@ public class Event extends Model {
 	
 	public Event() {
 		super();
+		id = 0l;
 		name = "";
 		birth = new Date();
 		dst = 0;
+		female = true;
+		rectification = 2;
+		human = 1;
 	}
 
 	/**

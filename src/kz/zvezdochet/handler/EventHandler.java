@@ -72,7 +72,7 @@ public class EventHandler extends ModelOpenHandler {
 		if (null == event)
 			return;
 		try {
-			if (null == event.getId())
+			if (!event.isExisting())
 				return;
 			String id = event.getId().toString();
 			Preferences preferences = InstanceScope.INSTANCE.getNode("kz.zvezdochet");

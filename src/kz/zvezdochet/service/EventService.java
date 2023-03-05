@@ -96,7 +96,8 @@ public class EventService extends ModelService {
         PreparedStatement ps = null;
 		try {
 			String sql;
-			if (null == model.getId())
+			boolean existing = model.isExisting();
+			if (!existing)
 				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
@@ -184,13 +185,13 @@ public class EventService extends ModelService {
 			ps.setString(26, event.getName_en());
 			ps.setString(27, event.getComment_en());
 
-			if (model.getId() != null)
+			if (existing)
 				ps.setLong(28, model.getId());
 
 			result = ps.executeUpdate();
 			if (1 == result) {
 				System.out.println(ps);
-				if (null == model.getId()) { 
+				if (!existing) { 
 					Long autoIncKeyFromApi = -1L;
 					ResultSet rsid = ps.getGeneratedKeys();
 					if (rsid.next()) {
@@ -575,7 +576,8 @@ public class EventService extends ModelService {
 	 * @throws DataAccessException
 	 */
 	public List<Model> findSimilar(Event event, int celebrity) throws DataAccessException {
-		if (null == event.getId()) return null;
+		if (!event.isExisting())
+			return null;
         List<Model> list = new ArrayList<Model>();
 		event.initSigns();
         PreparedStatement ps = null;
@@ -1165,7 +1167,7 @@ order by year(initialdate)
 	 * @throws DataAccessException
 	 */
 	public List<Model> findAkin(Event event, int celebrity) throws DataAccessException {
-		if (null == event.getId())
+		if (!event.isExisting())
 			return null;
 		if (event.getHuman() != 1)
 			return null;

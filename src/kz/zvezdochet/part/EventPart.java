@@ -360,7 +360,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(grCosmogram);
 		GridLayoutFactory.swtDefaults().applyTo(grSettings);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(grSettings);
-		setModel(null, false);
+		setModel(new Event(), false);
 	}
 	
 	/**
@@ -901,25 +901,24 @@ public class EventPart extends ModelPart implements ICalculable {
 		model = (null == model) ? new Event() : model;
 		Event event = (Event)model;
 		Calendar calendar = Calendar.getInstance();
-		if (Handler.MODE_SAVE == mode) {
-			event.setName(txName.getText());
-			event.setFemale(2 == cvGender.getCombo().getSelectionIndex());
-			event.setRightHanded(2 == cvHand.getCombo().getSelectionIndex());
-			event.setRectification(cvRectification.getCombo().getSelectionIndex());
+		event.setName(txName.getText());
+		event.setFemale(2 == cvGender.getCombo().getSelectionIndex());
+		event.setRightHanded(2 == cvHand.getCombo().getSelectionIndex());
+		event.setRectification(cvRectification.getCombo().getSelectionIndex());
 
-			if (dtDeath.getData() != null && dtDeath.getData("modified").equals(true)) {
-				calendar.set(Calendar.DAY_OF_MONTH, dtDeath.getDay());
-				calendar.set(Calendar.MONTH, dtDeath.getMonth());
-				calendar.set(Calendar.YEAR, dtDeath.getYear());
-				event.setDeath(calendar.getTime());
-			}
-			event.setBio(txBio.getText());
-			event.setComment(txComment.getText());
-			event.setCelebrity(btCelebrity.getSelection());
-			event.setAccuracy(txAccuracy.getText());
-			event.setConversation(txConversation.getText());
-			event.setOptions(txOptions.getText());
+		if (dtDeath.getData() != null && dtDeath.getData("modified").equals(true)) {
+			calendar.set(Calendar.DAY_OF_MONTH, dtDeath.getDay());
+			calendar.set(Calendar.MONTH, dtDeath.getMonth());
+			calendar.set(Calendar.YEAR, dtDeath.getYear());
+			event.setDeath(calendar.getTime());
 		}
+		event.setBio(txBio.getText());
+		event.setComment(txComment.getText());
+		event.setCelebrity(btCelebrity.getSelection());
+		event.setAccuracy(txAccuracy.getText());
+		event.setConversation(txConversation.getText());
+		event.setOptions(txOptions.getText());
+
 		calendar = Calendar.getInstance();
 		calendar.set(Calendar.DAY_OF_MONTH, dtBirth.getDay());
 		calendar.set(Calendar.MONTH, dtBirth.getMonth());
@@ -958,9 +957,10 @@ public class EventPart extends ModelPart implements ICalculable {
 	protected void syncView() {
 		try {
 			reset();
-			model = (null == model) ? new Event() : model;
+			if (null == model)
+				model = new Event();
 			Event event = (Event)model;
-			long id = (null == event) ? 0 : event.getId();
+			long id = event.getId();
 			Calendar calendar = Calendar.getInstance();
 			if (id > 0)
 				lbID.setText(String.valueOf(id));
@@ -1010,6 +1010,11 @@ public class EventPart extends ModelPart implements ICalculable {
 			}
 			if (event.getOptions() != null)
 				txOptions.setText(event.getOptions());
+
+			if (id > 0) {
+				refreshCard(MODE_ASPECT_PLANET_PLANET);
+				refreshTabs();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1043,8 +1048,6 @@ public class EventPart extends ModelPart implements ICalculable {
 		cvCardKind.setSelection(null);
 		txOptions.setText("{\"cardkind\":{\"planet\":0,\"planet2\":0,\"planet3\":\"\",\"direction\":\"\",\"signs\":\"\",\"houses\":\"\",\"houses2\":\"\"}}");
 		txCurrentPlace.setText(""); //$NON-NLS-1$
-		refreshCard(MODE_ASPECT_PLANET_PLANET);
-		refreshTabs();
 	}
 	
 	public Model addModel() {
@@ -1227,7 +1230,7 @@ public class EventPart extends ModelPart implements ICalculable {
 		controls = grStars.getChildren();
 		table = (Table)controls[0];
 		table.removeAll();
-		if (event != null) {
+		if (event != null && event.getStars() != null) {
 			Collection<Star> stars = event.getStars().values();
 			for (Star star : stars) {
 				TableItem item = new TableItem(table, SWT.NONE);
@@ -1370,13 +1373,13 @@ public class EventPart extends ModelPart implements ICalculable {
 					}
 				}
 			});
-}
+	}
 
 	@Override
 	public void setModel(Model model, boolean sync) {
 		if (sync) {
 			Event event = (Event)model;
-			if (model != null && event.getId() != null)
+			if (model != null && event.isExisting())
 				setTitle(event.getName("ru"));
 			else
 				setTitle(Messages.getString("PersonView.New")); //$NON-NLS-1$

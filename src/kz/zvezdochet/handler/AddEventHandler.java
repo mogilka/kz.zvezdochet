@@ -5,6 +5,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 
+import kz.zvezdochet.bean.Event;
 import kz.zvezdochet.core.bean.Model;
 import kz.zvezdochet.part.EventPart;
 
@@ -27,7 +28,7 @@ public class AddEventHandler extends EventHandler {
 	@Override
 	protected void openPart(MPart part, Model model) {
 		EventPart eventPart = (EventPart)part.getObject();
-		eventPart.setModel(model, false);
+		eventPart.setModel(new Event(), false);
 	    part.setVisible(true);
 	    try {
 		    partService.showPart(part, PartState.VISIBLE);

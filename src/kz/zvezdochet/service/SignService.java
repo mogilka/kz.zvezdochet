@@ -62,7 +62,7 @@ public class SignService extends DictionaryService {
         PreparedStatement ps = null;
 		try {
 			String sql;
-			if (null == model.getId()) 
+			if (!model.isExisting()) 
 				sql = "insert into " + tableName + " values(0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			else
 				sql = "update " + tableName + " set " +
