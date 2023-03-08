@@ -70,6 +70,7 @@ import kz.zvezdochet.core.ui.util.GUIutil;
 import kz.zvezdochet.core.ui.view.ModelPart;
 import kz.zvezdochet.core.ui.view.View;
 import kz.zvezdochet.core.util.CalcUtil;
+import kz.zvezdochet.core.util.DateUtil;
 import kz.zvezdochet.listener.LangSelectionListener;
 import kz.zvezdochet.provider.CardKindLabelProvider;
 import kz.zvezdochet.provider.MoonDayLabelProvider;
@@ -96,7 +97,8 @@ public class EventPart extends ModelPart implements ICalculable {
 	public static int MODE_ASPECT_CUSPID_HOUSE = 3;
 
 	private Label lbGender;
-	private Link lbID;
+	private Label lbID;
+	private Label lbDate;
 	private ComboViewer cvGender;
 	private ComboViewer cvHand;
 	private ComboViewer cvRectification;
@@ -155,7 +157,11 @@ public class EventPart extends ModelPart implements ICalculable {
 
 		Label lb = new Label(secEvent, SWT.NONE);
 		lb.setText("ID");
-		lbID = new Link(secEvent, SWT.NONE);
+		lbID = new Label(secEvent, SWT.NONE);
+
+		lb = new Label(secEvent, SWT.NONE);
+		lb.setText("Дата");
+		lbDate = new Label(secEvent, SWT.NONE);
 
 		lbName = new Label(secEvent, SWT.NONE);
 		lbName.setText(Messages.getString("PersonView.Name")); //$NON-NLS-1$
@@ -678,7 +684,9 @@ public class EventPart extends ModelPart implements ICalculable {
 		GridLayoutFactory.swtDefaults().applyTo(shCosmogram);
 
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
-			span(3, 1).grab(true, false).applyTo(lbID);
+			grab(true, false).applyTo(lbID);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
+			grab(true, false).applyTo(lbDate);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
 			span(3, 1).grab(true, false).applyTo(txName);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).
@@ -964,6 +972,13 @@ public class EventPart extends ModelPart implements ICalculable {
 			Calendar calendar = Calendar.getInstance();
 			if (id > 0)
 				lbID.setText(String.valueOf(id));
+
+			String date = "";
+			if (event.getDate() != null)
+				date = DateUtil.sdf.format(event.getDate());
+			if (event.getModified() != null)
+				date += " ... " + DateUtil.sdf.format(event.getModified());
+			lbDate.setText(date);
 
 			txName.setText(event.getName("ru"));
 			cvGender.getCombo().setText(genders[event.isFemale() ? 2 : 1]);
