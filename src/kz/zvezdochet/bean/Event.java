@@ -1233,6 +1233,7 @@ public class Event extends Model {
 			    	ingressList.get(Ingress._RETRO).add(p2);
 			}
 
+			//натальные транзиты
 			for (Planet p : planets) {
 	            boolean moonable = p.getId().equals(20L);
 			    for (Planet p2 : planets2) {
@@ -1307,6 +1308,34 @@ public class Event extends Model {
 		                if (!moonable)
 		                	if (ingressList.containsKey(Ingress._REPEAT_HOUSE))
 		                		ingressList.get(Ingress._REPEAT_HOUSE).add(trspa2);
+				}
+			}
+
+			//глобальные транзиты
+			Aspect conj = (Aspect)new AspectService().find(1l);
+			for (Planet p : tplanets.values()) {
+				if (p.getId() != 20)
+					continue;
+				for (Planet p2 : tplanets.values()) {
+					if (p2.isFictious())
+						continue;
+					if (!p2.isGiant() && !p2.isRetrograde())
+						continue;
+
+					double res = CalcUtil.getDifference(p.getLongitude(), p2.getLongitude());
+					if (res > 15)
+						continue;
+
+					if (conj.isTransit(res, p.getOrbis())) {
+						SkyPointAspect aspect = new SkyPointAspect();
+						aspect.setSkyPoint1(p);
+						aspect.setSkyPoint2(p2);
+						aspect.setScore(res);
+						aspect.setAspect(conj);
+						aspect.setExact(true);
+						ingressList.get(Ingress._EXACT_GLOBAL).add(aspect);
+						break;
+					}
 				}
 			}
 		} catch (Exception e) {

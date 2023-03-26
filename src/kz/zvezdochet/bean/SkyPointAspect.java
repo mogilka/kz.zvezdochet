@@ -383,4 +383,17 @@ public class SkyPointAspect {
 
 		return false;
 	}
+
+    /**
+     * Поле для хранения временного параметра модели
+     */
+    protected Object data;
+
+	public Object getData() {
+		return data;
+	}
+
+	public void setData(Object data) {
+		this.data = data;
+	}
 }

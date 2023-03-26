@@ -60,6 +60,7 @@ public class Ingress {
 	public static String _EXACT_HOUSE = "HOUSE_EXACT";
 	public static String _SEPARATION_HOUSE = "HOUSE_SEPARATION";
 	public static String _REPEAT_HOUSE = "HOUSE_REPEAT";
+	public static String _EXACT_GLOBAL = "GLOBAL_EXACT";
 
 	/**
 	 * Возвращает используемые в отчёте ингрессии
@@ -70,7 +71,8 @@ public class Ingress {
 			_EXACT, _EXACT_HOUSE,
 			_SEPARATION, _SEPARATION_HOUSE,
 			_RETRO, _DIRECT,
-			_REPEAT, _REPEAT_HOUSE
+			_REPEAT, _REPEAT_HOUSE,
+			_EXACT_GLOBAL
 		};
 	}
 }
