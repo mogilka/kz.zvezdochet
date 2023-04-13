@@ -243,6 +243,9 @@ limit 500
 	public String getMark(String type, boolean term, String lang) {
 		String res = "";
 		boolean rus = lang.equals("ru");
+
+		if (isRetrograde())
+			res += "R";
 		if (type != null) {
 			if (type.equals("sign")) {
 				if (isSignDomicile())
@@ -264,36 +267,34 @@ limit 500
 					res = term ? (rus ? "изгнание " : "detriment ") : (rus ? "изг " : "dtr ");
 			}
 		}
-		if (null == type) {
-			if (isCombustion() || isDamaged() || isLilithed() || isBroken() || isUnaspected()) {
+		if (isCombustion() || isDamaged() || isLilithed() || isBroken() || isUnaspected()) {
+			if (term) {
 				res += "\u2193";
-				if (term) {
-					if (isCombustion())
-						res += (rus ? "сожжение " : "combustion ");
-					else if (isDamaged())
-						res += (rus ? "поражение " : "damaged ");
-					else if (isLilithed())
-						res += (rus ? "под Чёрной Луной " : "near Black Moon ");
-					else if (isBroken())
-						res += (rus ? "слабость " : "weak ");
-					else if (isUnaspected())
-						res += (rus ? "в шахте " : "unaspected ");				
-				}
-			} else if (isKernel() || isPerfect()) {
-				res += "\u2191";
-				if (term) {
-					if (isKernel())
-						res += (rus ? "ядро Солнца " : "kernel of the Sun ");
-					else if (isPerfect())
-						res += (rus ? "гармония " : "harmony ");
-				}
+				if (isCombustion())
+					res += (rus ? "сожжение " : "combustion ");
+				else if (isDamaged())
+					res += (rus ? "поражение " : "damaged ");
+				else if (isLilithed())
+					res += (rus ? "под Чёрной Луной " : "near Black Moon ");
+				else if (isBroken())
+					res += (rus ? "слабость " : "weak ");
+				else if (isUnaspected())
+					res += (rus ? "в шахте " : "unaspected ");				
 			}
+		} else if (isKernel() || isPerfect()) {
+			res += "\u2191";
+			if (term) {
+				if (isKernel())
+					res += (rus ? "ядро Солнца " : "kernel of the Sun ");
+				else if (isPerfect())
+					res += (rus ? "гармония " : "harmony ");
+			}
+		}
+		if (null == type) {
 			if (isDominant())
 				res += term ? (rus ? "владыка гороскопа " : "dominant ") : (rus ? "влд " : "dmn ");
 			if (isBenefic())
 				res += term ? (rus ? "король аспектов " : "benefic ") : (rus ? "крл " : "bnf ");
-			if (isRetrograde())
-				res += "R";
 	
 			if (term && res.length() > 2) {
 				int margin = res.length() - 2;
