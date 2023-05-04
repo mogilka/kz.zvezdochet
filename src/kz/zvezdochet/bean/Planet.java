@@ -533,4 +533,12 @@ limit 500
 	public boolean isGiant() {
 		return id > 27;
 	}
+
+	/**
+	 * Проверка, является ли планета сильной
+	 * @return
+	 */
+	public boolean isStrong() {
+		return !isWeak() && !isNegative() && (isDominant() || isRakhued() || isSword());
+	}
 }
