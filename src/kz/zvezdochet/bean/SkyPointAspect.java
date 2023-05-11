@@ -160,12 +160,19 @@ public class SkyPointAspect {
 
 	public SkyPointAspect() {}	
 
-	public SkyPointAspect(SkyPointAspect spa) {
-		skyPoint1 = spa.skyPoint1;
-		skyPoint2 = spa.skyPoint2;
+	/**
+	 * Создаёт копию аспекта
+	 * @param spa аспект
+	 * @param reverse true - поменять местами первую и вторую точку
+	 */
+	public SkyPointAspect(SkyPointAspect spa, boolean reverse) {
+		skyPoint1 = reverse ? spa.skyPoint2 : spa.skyPoint1;
+		skyPoint2 = reverse ? spa.skyPoint1 : spa.skyPoint2;
 		aspect = spa.aspect;
 		exact = spa.exact;
 		application = spa.application;
+		if (reverse)
+			this.reverse = false;
 	}
 
 	/**

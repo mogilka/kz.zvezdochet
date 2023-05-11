@@ -905,7 +905,7 @@ order by year(initialdate)
 					spa.setApplication(rs.getBoolean("application"));
 					planet.getAspectList().add(spa);
 
-					spa = new SkyPointAspect(spa);
+					spa = new SkyPointAspect(spa, false);
 					spa.setSkyPoint1(planet2);
 					spa.setSkyPoint2(planet);
 					pmap.get(planet2.getId()).getAspectList().add(spa);

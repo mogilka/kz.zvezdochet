@@ -273,4 +273,12 @@ public class Aspect extends Dictionary {
         double res = Math.abs(angle - value);
         return orbis >= res;
 	}
+
+	/**
+	 * Проверка является ли аспект сильным
+	 * @return true - основной аспект из числа нейтральных, гармоничных и негармоничных
+	 */
+	public boolean isMajor() {
+		return id < 6;
+	}
 }

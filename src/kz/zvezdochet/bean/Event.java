@@ -835,7 +835,7 @@ public class Event extends Model {
 								aspect.setApplication(a.isApplication(res));
 								p.getAspectList().add(aspect);
 
-								aspect = new SkyPointAspect(aspect);
+								aspect = new SkyPointAspect(aspect, false);
 								aspect.setSkyPoint1(p2);
 								aspect.setSkyPoint2(p);
 								planetList.get(p2.getId()).getAspectList().add(aspect);
